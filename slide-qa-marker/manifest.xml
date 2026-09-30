@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Replace every  https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker
-  with the GitHub Pages address of your repo before installing.
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -14,11 +12,11 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Slide QA Marker"/>
   <Description DefaultValue="Send finished slides to your design manager for review and see their feedback."/>
-  <IconUrl DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/"/>
+  <IconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/"/>
   <AppDomains>
-    <AppDomain>https://YOUR-GITHUB-USERNAME.github.io</AppDomain>
+    <AppDomain>https://ridhoofrahman.github.io</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Presentation"/>
@@ -29,7 +27,7 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/taskpane.html"/>
+    <SourceLocation DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/taskpane.html"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
 
@@ -76,13 +74,13 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-16.png"/>
-        <bt:Image id="Icon.32" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-32.png"/>
-        <bt:Image id="Icon.80" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-80.png"/>
+        <bt:Image id="Icon.16" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/taskpane.html"/>
-        <bt:Url id="Commands.Url" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/commands.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/taskpane.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/commands.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="QA.GroupLabel" DefaultValue="Slide QA"/>
