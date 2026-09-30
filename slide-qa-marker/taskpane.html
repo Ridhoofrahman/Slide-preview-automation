@@ -3,93 +3,100 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Slide Review</title>
+<title>QA Checkpoint</title>
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Poppins:wght@400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --muted: #5A6575; --line: #DCE0E6;
-    --brand: #1F3A93; --brand-hover: #182E78; --focus: #3D66F5;
-    --wait: #8A6412; --wait-tint: #FBF1D9;
-    --ok: #1E8A5A;   --ok-tint: #E4F3EB;
-    --fix: #B4441B;  --fix-tint: #FBEAE2;
-    --font: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    /* From Figma: Task pane / Not sent yet */
+    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --muted: #5A6575;
+    --link: #1F3A93; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
+    --field-label: #2A3142; --field-border: #CDD7E5; --field-placeholder: #6D7395;
+    --tag-bg: #F7F7F7; --tag-border: #CACACA; --tag-text: #393939;
+    --wait: #8A6412; --wait-bg: #FBF1D9; --wait-border: #E6CD8F;
+    --ok: #1E8A5A;   --ok-bg: #E4F3EB;   --ok-border: #A9D6BE;
+    --fix: #B4441B;  --fix-bg: #FBEAE2;  --fix-border: #EDB9A2;
+    --line: #DCE0E6;
+    --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-field: "Poppins", "Segoe UI", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45; }
-  main { padding: 14px 14px 32px; max-width: 480px; margin: 0 auto; }
+  main { padding: 16px 16px 32px; max-width: 520px; margin: 0 auto; }
   button, input, textarea { font: inherit; color: inherit; }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   [hidden] { display: none !important; }
-  h1 { font-size: 18px; margin: 8px 0 4px; }
-  h2 { font-size: 14px; margin: 0 0 8px; }
-  .lead { color: var(--muted); margin: 0 0 16px; }
 
-  .head { display: flex; align-items: center; gap: 8px; }
-  .project { flex: 1; min-width: 0; border: 1px solid transparent; background: transparent; font-size: 16px; font-weight: 600; padding: 4px 6px; margin-left: -6px; border-radius: 6px; }
+  .stack { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Header */
+  .head { display: flex; flex-direction: column; gap: 4px; }
+  .project { width: 100%; height: 32px; border: 1px solid transparent; background: transparent; font-size: 20px; line-height: 32px; font-weight: 500; padding: 0 6px; margin-left: -7px; border-radius: 6px; color: var(--ink); text-overflow: ellipsis; }
   .project:hover { border-color: var(--line); }
   .project:focus { border-color: var(--focus); background: var(--surface); outline: none; }
-  .who { margin: 2px 0 14px; color: var(--muted); font-size: 13px; }
-  .link { border: 0; background: none; padding: 0; color: var(--brand); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-size: inherit; }
-  a.link { display: inline-block; }
+  .link { border: 0; background: none; padding: 0; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-position: from-font; font-size: 13px; line-height: 1.45; font-family: var(--font); }
+  a.link { align-self: flex-start; }
+  #reviewLinkWrap { display: flex; line-height: 0; }
+  #reviewLinkWrap:empty { display: none; }
 
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
-  .thumb { aspect-ratio: 16 / 9; border-radius: 6px; background: #EEF0F3; overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 13px; position: relative; }
-  .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; }
+  /* Slide */
+  .slide { display: flex; flex-direction: column; gap: 12px; }
+  .meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+  .slide-label { font-size: 13px; line-height: 1.45; color: var(--muted); white-space: nowrap; }
+  .tag { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 2px 10px; border-radius: 20px; border: 1px solid var(--tag-border); background: var(--tag-bg); color: var(--tag-text); font-size: 14px; line-height: 20px; white-space: nowrap; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .tag.ready { background: var(--wait-bg); border-color: var(--wait-border); color: var(--wait); }
+  .tag.approved { background: var(--ok-bg); border-color: var(--ok-border); color: var(--ok); }
+  .tag.changes { background: var(--fix-bg); border-color: var(--fix-border); color: var(--fix); }
+  .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #E9ECF0; }
+  .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tpins { position: absolute; inset: 0; pointer-events: none; }
-  .tpin { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; border: 2px solid #fff; font-size: 10px; font-weight: 700; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(24,32,43,.35); }
+  .tpin { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: #fff; border: 2px solid #fff; font-size: 10px; font-weight: 500; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(24,32,43,.35); }
   .tpin.resolved { background: #8C95A3; }
-  .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; background: #fff; }
-  .current-meta { display: flex; align-items: baseline; justify-content: space-between; margin: 12px 0 10px; gap: 8px; }
-  .slide-no { margin: 0; display: flex; align-items: baseline; gap: 6px; }
-  .slide-no strong { font-size: 40px; line-height: 1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-  .slide-no span { color: var(--muted); font-size: 13px; }
 
-  .pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; background: #EEF0F3; color: var(--muted); }
-  .pill.ready { background: var(--wait-tint); color: var(--wait); }
-  .pill.approved { background: var(--ok-tint); color: var(--ok); }
-  .pill.changes { background: var(--fix-tint); color: var(--fix); }
-
-  .field { display: block; margin-bottom: 10px; }
-  .field > span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .field input, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--surface); resize: vertical; }
-  .field input:focus, .field textarea:focus { border-color: var(--focus); outline: none; }
-
-  .primary { width: 100%; border: 0; border-radius: 8px; padding: 11px 12px; cursor: pointer; background: var(--brand); color: #fff; font-weight: 600; }
-  .primary:hover:not(:disabled) { background: var(--brand-hover); }
-  .primary:disabled { opacity: .55; cursor: not-allowed; }
-  .msg { margin: 10px 0 0; font-size: 13px; }
-  .msg.ok { color: var(--ok); }
-  .msg.err { color: var(--fix); background: var(--fix-tint); padding: 8px 10px; border-radius: 8px; }
-  .msg:empty { display: none; }
-  .notice { background: var(--fix-tint); color: var(--fix); padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
-
-  .feedback { margin-top: 14px; }
-  .feedback-head { display: flex; justify-content: space-between; align-items: baseline; }
+  /* Feedback */
+  .feedback { display: flex; flex-direction: column; gap: 8px; }
+  .feedback-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .feedback-head h2 { font-size: 14px; line-height: 20px; font-weight: 500; margin: 0; }
+  .feedback-head small { font-size: 12px; color: var(--muted); }
   .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .comment { display: grid; grid-template-columns: 24px 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .comment { display: grid; grid-template-columns: 22px 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--field-border); border-radius: 8px; padding: 10px; }
   .comment.resolved { opacity: .55; }
-  .pin-no { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+  .pin-no { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 11px; font-weight: 500; display: grid; place-items: center; }
   .pin-no.general { background: #E3E6EB; color: var(--muted); }
   .comment p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
   .comment small { color: var(--muted); font-size: 12px; }
-  .empty { color: var(--muted); font-size: 13px; margin: 0; }
+  .empty { color: var(--muted); font-size: 13px; }
 
-  .progress { margin: 18px 0 8px; }
-  .progress p { margin: 0 0 8px; font-size: 13px; color: var(--muted); }
-  .progress p strong { color: var(--ink); }
-  .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
-  .grid button { width: 100%; aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); }
-  .grid button.ready { background: var(--wait-tint); color: var(--wait); border-color: transparent; }
-  .grid button.approved { background: var(--ok-tint); color: var(--ok); border-color: transparent; }
-  .grid button.changes { background: var(--fix-tint); color: var(--fix); border-color: transparent; }
-  .grid button[aria-current="true"] { outline: 2px solid var(--ink); outline-offset: 1px; }
-  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
-  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  /* Field (Figma: Input long text) */
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field-label { font-family: var(--font-field); font-size: 14px; line-height: 22px; color: var(--field-label); }
+  .field input, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--field-border); border-radius: 4px; padding: 9px 8px; font-family: var(--font-field); font-size: 14px; line-height: 22px; color: var(--ink); }
+  .field textarea { height: 88px; resize: none; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--field-placeholder); opacity: 1; }
+  .field input:focus, .field textarea:focus { border-color: var(--focus); outline: none; }
+
+  /* Button (Figma: Button) */
+  .primary { width: 100%; height: 40px; border: 0; border-radius: 8px; padding: 8px 20px; cursor: pointer; background: var(--primary); color: #fff; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; }
+  .primary:hover:not(:disabled) { background: var(--primary-hover); }
+  .primary:disabled { opacity: .5; cursor: not-allowed; }
+
+  .msg { margin: -8px 0 0; font-size: 13px; }
+  .msg.ok { color: var(--ok); }
+  .msg.err { color: var(--fix); background: var(--fix-bg); padding: 8px 10px; border-radius: 8px; }
+  .msg:empty { display: none; }
+  .notice { background: var(--fix-bg); color: var(--fix); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+  .foot { font-size: 12px; color: var(--muted); }
+  .foot .link { font-size: 12px; color: var(--muted); }
+
+  /* Sign in */
+  .login h1 { font-size: 20px; line-height: 32px; font-weight: 500; margin: 0; }
+  .login .lead { color: var(--muted); margin: 4px 0 0; font-size: 13px; }
+  .login .msg { margin: 0; }
 </style>
 </head>
 <body>
@@ -97,52 +104,47 @@
   <div id="configError" class="notice" hidden>Supabase isn't set up yet. Fill in config.js (see the setup guide).</div>
 
   <!-- Sign in -->
-  <section id="loginView" hidden>
-    <h1>Sign in to Slide Review</h1>
-    <p class="lead">Use the account your team lead created for you.</p>
-    <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username"></label>
-    <label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password"></label>
-    <label class="field"><span>Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
+  <section id="loginView" class="stack login" hidden>
+    <div>
+      <h1>Sign in to QA Checkpoint</h1>
+      <p class="lead">Use the account your team lead created for you.</p>
+    </div>
+    <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username"></label>
+    <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password"></label>
+    <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
     <button id="signInBtn" class="primary">Sign in</button>
     <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
   </section>
 
   <!-- Main -->
-  <section id="appView" hidden>
+  <section id="appView" class="stack" hidden>
     <header class="head">
       <input id="projectName" class="project" aria-label="Project name" spellcheck="false">
+      <span id="reviewLinkWrap"></span>
     </header>
-    <p class="who"><span id="whoName"></span>. <button id="signOutBtn" class="link">Sign out</button><span id="reviewLinkWrap"></span></p>
 
     <div id="unsupported" class="notice" hidden>This PowerPoint version can't capture slide images. Update Microsoft 365 to send slides for review.</div>
 
-    <section class="card" aria-label="Selected slide">
-      <div class="thumb"><div id="thumb" class="thumb-inner"><span>Select a slide</span></div><div id="tpins" class="tpins" aria-hidden="true"></div></div>
-      <div class="current-meta">
-        <p class="slide-no"><strong id="curNo">–</strong><span id="curOf"></span></p>
-        <span class="pill" id="curStatus">Not sent</span>
+    <section class="slide" aria-label="Selected slide">
+      <div class="meta">
+        <span class="slide-label" id="slideLabel">No slide selected</span>
+        <span class="tag none" id="curStatus" hidden>Not sent</span>
       </div>
-      <label class="field"><span>Note for your DM (optional)</span>
-        <textarea id="note" rows="2" placeholder="e.g. Used the client's new icon set on this one"></textarea>
-      </label>
-      <button id="markBtn" class="primary" disabled>Select a slide</button>
-      <p id="msg" class="msg" role="status" aria-live="polite"></p>
+      <div class="thumb"><div id="thumb" class="thumb-inner"><span>Select a slide</span></div><div id="tpins" class="tpins" aria-hidden="true"></div></div>
     </section>
 
     <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
-      <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><small id="feedbackVersion" class="empty"></small></div>
+      <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><small id="feedbackVersion"></small></div>
       <ol id="comments" class="comments"></ol>
     </section>
 
-    <section class="progress" aria-label="Deck progress">
-      <p id="progText"></p>
-      <ol id="grid" class="grid" aria-label="Slides, select to jump"></ol>
-      <div class="legend">
-        <span><i style="background:var(--wait-tint)"></i>Waiting for review</span>
-        <span><i style="background:var(--ok-tint)"></i>Approved</span>
-        <span><i style="background:var(--fix-tint)"></i>Changes requested</span>
-      </div>
-    </section>
+    <label class="field"><span class="field-label">Note for DM</span>
+      <textarea id="note" placeholder="e.g. Used the client's new icon set on this one"></textarea>
+    </label>
+    <button id="markBtn" class="primary" disabled>Select a slide</button>
+    <p id="msg" class="msg" role="status" aria-live="polite"></p>
+
+    <footer class="foot"><span id="whoName"></span> <button id="signOutBtn" class="link">Sign out</button></footer>
   </section>
 </main>
 
@@ -239,35 +241,34 @@ function render() {
   const total = S.slides.length;
 
   $("projectName").value = projectName();
-  $("whoName").textContent = "Signed in as " + displayName(S.user);
+  $("whoName").textContent = "Signed in as " + displayName(S.user) + ".";
 
-  $("curNo").textContent = cur ? cur.n : "–";
-  $("curOf").textContent = cur ? "of " + total : "";
-  const pill = $("curStatus");
-  pill.className = "pill" + (shot ? " " + shot.status : "");
-  pill.textContent = shot ? STATUS_LABEL[shot.status] + (shot.version > 1 ? " (v" + shot.version + ")" : "") : (cur ? "Not sent" : "No slide selected");
+  $("slideLabel").textContent = cur ? "Slide " + cur.n + "/" + total : "No slide selected";
+  const tag = $("curStatus");
+  tag.className = "tag " + (shot ? shot.status : "none");
+  tag.textContent = shot ? STATUS_LABEL[shot.status] + (shot.version > 1 ? " (v" + shot.version + ")" : "") : "Not sent";
+  tag.hidden = !cur;
 
   const btn = $("markBtn");
   btn.disabled = !cur || S.busy || !S.canImage;
   btn.textContent = !cur ? "Select a slide" : shot ? "Send updated version of slide " + cur.n : "Mark slide " + cur.n + " ready for review";
 
-  // Feedback for the latest version of this slide
+  // Pins from the DM, drawn on the preview
   const tp = $("tpins"); tp.innerHTML = "";
-  if (shot) {
-    let k = 0;
-    (S.comments[shot.id] || []).forEach((c) => {
-      if (c.x === null || c.y === null) return; k++;
-      const d = document.createElement("span"); d.className = "tpin" + (c.resolved ? " resolved" : "");
-      d.style.left = (c.x * 100) + "%"; d.style.top = (c.y * 100) + "%"; d.textContent = k; tp.append(d);
-    });
-  }
+  const cs = shot ? (S.comments[shot.id] || []) : [];
+  let k = 0;
+  cs.forEach((c) => {
+    if (c.x === null || c.y === null) return; k++;
+    const d = document.createElement("span"); d.className = "tpin" + (c.resolved ? " resolved" : "");
+    d.style.left = (c.x * 100) + "%"; d.style.top = (c.y * 100) + "%"; d.textContent = k; tp.append(d);
+  });
 
+  // Feedback for the latest version of this slide
   const fb = $("feedback"), list = $("comments");
   fb.hidden = !shot;
   list.innerHTML = "";
   if (shot) {
     $("feedbackVersion").textContent = "on v" + shot.version + (shot.reviewed_by ? ", reviewed by " + shot.reviewed_by : "");
-    const cs = S.comments[shot.id] || [];
     let pinNo = 0;
     if (!cs.length) {
       const li = document.createElement("li"); li.className = "empty"; li.textContent = "No comments yet."; list.append(li);
@@ -284,21 +285,6 @@ function render() {
       body.append(p, sm); li.append(n, body); list.append(li);
     });
   }
-
-  const sent = S.slides.filter((s) => S.latest[s.id]).length;
-  const approved = S.slides.filter((s) => S.latest[s.id] && S.latest[s.id].status === "approved").length;
-  $("progText").innerHTML = "<strong>" + sent + " of " + total + "</strong> slides sent, " + approved + " approved";
-
-  const grid = $("grid"); grid.innerHTML = "";
-  S.slides.forEach((s) => {
-    const r = S.latest[s.id];
-    const li = document.createElement("li"); const b = document.createElement("button");
-    b.textContent = s.n; if (r) b.className = r.status;
-    if (s.id === S.currentId) b.setAttribute("aria-current", "true");
-    b.setAttribute("aria-label", "Slide " + s.n + ", " + (r ? STATUS_LABEL[r.status] : "not sent"));
-    b.onclick = () => selectSlide(s.id).then(refreshDeck);
-    li.append(b); grid.append(li);
-  });
 }
 async function renderThumb() {
   const cur = currentSlide(), box = $("thumb"), token = ++S.thumbToken;
@@ -390,7 +376,7 @@ Office.onReady(async (info) => {
   if (cfg.REVIEW_PAGE_URL) {
     const a = document.createElement("a"); a.className = "link"; a.href = cfg.REVIEW_PAGE_URL; a.target = "_blank"; a.rel = "noopener";
     a.textContent = "Open review page";
-    $("reviewLinkWrap").append(" ", a);
+    $("reviewLinkWrap").append(a);
   }
 
   $("signInBtn").onclick = signIn;
