@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Replace every  https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker
+  with the GitHub Pages address of your repo before installing.
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>6f3c2a1e-8b4d-4e7a-9c52-1d2e3f4a5b6c</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>24Slides</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Slide QA Marker"/>
+  <Description DefaultValue="Send finished slides to your design manager for review and see their feedback."/>
+  <IconUrl DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/"/>
+  <AppDomains>
+    <AppDomain>https://YOUR-GITHUB-USERNAME.github.io</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="PowerPointApi" MinVersion="1.5"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/taskpane.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="QA.GetStartedTitle"/>
+            <Description resid="QA.GetStartedDesc"/>
+            <LearnMoreUrl resid="Taskpane.Url"/>
+          </GetStarted>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="QA.Group">
+                <Label resid="QA.GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="QA.OpenButton">
+                  <Label resid="QA.ButtonLabel"/>
+                  <Supertip>
+                    <Title resid="QA.ButtonLabel"/>
+                    <Description resid="QA.ButtonTip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>SlideQATaskpane</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/taskpane.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/commands.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="QA.GroupLabel" DefaultValue="Slide QA"/>
+        <bt:String id="QA.ButtonLabel" DefaultValue="QA Marker"/>
+        <bt:String id="QA.GetStartedTitle" DefaultValue="Slide QA Marker is ready"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="QA.ButtonTip" DefaultValue="Send finished slides for review and see your DM's comments."/>
+        <bt:String id="QA.GetStartedDesc" DefaultValue="Open QA Marker from the Home tab to mark finished slides."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
