@@ -3,8 +3,8 @@
 // The anon key is designed to be public; data stays private because every table
 // and the image bucket only allow signed-in team members.
 window.SLIDE_REVIEW_CONFIG = {
-  SUPABASE_URL: "",        // e.g. "https://abcdefghijk.supabase.co"
-  SUPABASE_ANON_KEY: "",   // long key starting with "eyJ..."
-  REVIEW_PAGE_URL: "",     // e.g. "https://YOUR-GITHUB-USERNAME.github.io/slide-qa-marker/review.html"
-  DAYS_TO_SHOW: 21         // review page shows slides sent in the last N days
+  SUPABASE_URL: "https://famrojncimymwugjlivz.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_LMRGYwBF8PM884Rn_Nhw_g_tM2RgZMw",
+  REVIEW_PAGE_URL: "https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/review.html",
+  DAYS_TO_SHOW: 21
 };
