@@ -61,3 +61,6 @@ alter publication supabase_realtime add table public.slide_shots, public.shot_co
 
 -- 6. Slide details for QA (fonts, sizes, speaker notes) — added later
 alter table public.slide_shots add column if not exists details jsonb;
+
+-- 7. Voice notes on comments (up to 2 minutes) — added later
+alter table public.shot_comments add column if not exists audio_path text, add column if not exists audio_duration real;

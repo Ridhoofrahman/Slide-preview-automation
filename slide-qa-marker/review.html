@@ -145,6 +145,18 @@
   .composer p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
   .composer textarea { resize: vertical; min-height: 64px; }
   .composer .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+  .composer .row .spacer { flex: 1; }
+  .mic { display: inline-flex; align-items: center; gap: 6px; }
+  .mic svg { width: 16px; height: 16px; flex: none; }
+  .mic.recording { background: var(--fix-bg); border-color: var(--fix); color: var(--fix); font-variant-numeric: tabular-nums; }
+  .mic.recording svg { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .rec-preview { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+  .rec-preview .rec-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+  audio { width: 100%; height: 36px; display: block; }
+  .voice { display: flex; flex-direction: column; gap: 2px; margin: 0 0 4px; }
+  .voice small { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+  .voice small a { color: var(--muted); }
 
   @media (max-width: 900px) {
     .board { grid-template-columns: 1fr; }
@@ -222,8 +234,14 @@
         </div>
         <div class="composer">
           <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
+          <div class="rec-preview" id="recPreview" hidden>
+            <audio id="recAudio" controls preload="metadata"></audio>
+            <div class="rec-row"><span id="recLen"></span><button id="recDiscard" class="link">Discard</button></div>
+          </div>
           <textarea id="commentBody" aria-label="Comment" placeholder="Write a comment"></textarea>
           <div class="row">
+            <button id="recBtn" class="ghost mic" title="Record a voice note, up to 2 minutes"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Record voice</span></button>
+            <span class="spacer"></span>
             <button id="removePin" class="ghost" hidden>Remove pin</button>
             <button id="sendComment" class="primary">Add comment</button>
           </div>
@@ -426,10 +444,80 @@ function renderComments(shot) {
     li.onmouseenter = () => { S.hot = c.id; renderPinsOnly(shot); };
     li.onmouseleave = () => { S.hot = null; renderPinsOnly(shot); };
     const n = el("span", "num" + (nums[c.id] ? "" : " general"), nums[c.id] || "•");
-    const body = el("div"); body.append(el("p", "", c.body));
+    const body = el("div");
+    if (c.audio_path) body.append(voiceEl(c));
+    if (c.body) body.append(el("p", "", c.body));
     const meta = el("div", "meta"); meta.append(el("span", "", c.author + ", " + ago(c.created_at)));
     const r = el("button", "link", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c);
     meta.append(r); body.append(meta); li.append(n, body); list.append(li);
+  });
+  fillVoiceSources(cs);
+}
+// ---- voice notes
+const MAX_REC = 120; // seconds
+const REC = { rec: null, chunks: [], blob: null, url: null, start: 0, timer: null, stream: null, duration: 0 };
+const VOICE = new Map(); // comment id -> element, reused so playback survives re-renders
+const fmtDur = (sec) => { const t = Math.max(0, Math.floor(sec)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+function pickMime() {
+  const c = ["audio/mp4;codecs=mp4a.40.2", "audio/mp4", "audio/aac", "audio/webm;codecs=opus", "audio/webm"];
+  return window.MediaRecorder ? (c.find((t) => MediaRecorder.isTypeSupported(t)) || "") : "";
+}
+async function toggleRecording() {
+  if (REC.rec && REC.rec.state === "recording") { REC.rec.stop(); return; }
+  if (!window.MediaRecorder || !navigator.mediaDevices) { say($("rvMsg"), "This browser can't record audio. Try Chrome.", "err"); return; }
+  try { REC.stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch (e) { say($("rvMsg"), "Microphone access was blocked. Allow it from the icon in the address bar, then try again.", "err"); return; }
+  discardRecording(true); REC.chunks = [];
+  const mime = pickMime();
+  REC.rec = new MediaRecorder(REC.stream, mime ? { mimeType: mime, audioBitsPerSecond: 64000 } : {});
+  REC.rec.ondataavailable = (e) => { if (e.data && e.data.size) REC.chunks.push(e.data); };
+  REC.rec.onstop = () => {
+    clearInterval(REC.timer); REC.stream.getTracks().forEach((t) => t.stop());
+    REC.duration = Math.min(MAX_REC, (Date.now() - REC.start) / 1000);
+    REC.blob = REC.chunks.length ? new Blob(REC.chunks, { type: REC.rec.mimeType || mime || "audio/webm" }) : null;
+    renderRecUI();
+  };
+  REC.start = Date.now(); REC.rec.start(250); say($("rvMsg"), "");
+  REC.timer = setInterval(() => { if ((Date.now() - REC.start) / 1000 >= MAX_REC && REC.rec.state === "recording") REC.rec.stop(); renderRecUI(); }, 250);
+  renderRecUI();
+}
+function discardRecording(silent) {
+  if (REC.url) URL.revokeObjectURL(REC.url);
+  REC.blob = null; REC.url = null; REC.duration = 0;
+  if (!silent) renderRecUI();
+}
+function renderRecUI() {
+  const btn = $("recBtn"); const recording = !!(REC.rec && REC.rec.state === "recording");
+  btn.classList.toggle("recording", recording);
+  btn.lastChild.textContent = recording ? "Stop " + fmtDur((Date.now() - REC.start) / 1000) + " / 2:00" : REC.blob ? "Record again" : "Record voice";
+  $("recPreview").hidden = !REC.blob || recording;
+  if (REC.blob && !recording) {
+    if (!REC.url) REC.url = URL.createObjectURL(REC.blob);
+    if ($("recAudio").src !== REC.url) $("recAudio").src = REC.url;
+    $("recLen").textContent = "Voice note, " + fmtDur(REC.duration);
+  }
+  $("commentBody").placeholder = REC.blob ? "Add a written note (optional)" : "Write a comment";
+}
+function voiceEl(c) {
+  let w = VOICE.get(c.id);
+  if (!w) {
+    w = el("div", "voice");
+    const a = document.createElement("audio"); a.controls = true; a.preload = "metadata";
+    const sm = el("small"); sm.append(el("span", "", "Voice note" + (c.audio_duration ? ", " + fmtDur(c.audio_duration) : "")));
+    const link = document.createElement("a"); link.textContent = "Open"; link.target = "_blank"; link.rel = "noopener"; link.hidden = true;
+    sm.append(link); w.append(a, sm); VOICE.set(c.id, w);
+  }
+  return w;
+}
+async function fillVoiceSources(cs) {
+  const withAudio = cs.filter((c) => c.audio_path);
+  if (!withAudio.length) return;
+  try { await ensureUrls(withAudio.map((c) => ({ image_path: c.audio_path }))); } catch (e) { return; }
+  withAudio.forEach((c) => {
+    const w = VOICE.get(c.id); const u = (S.urls[c.audio_path] || {}).url; if (!w || !u) return;
+    const a = w.querySelector("audio"), link = w.querySelector("a");
+    if (!a.getAttribute("src")) a.src = u;
+    link.href = u; link.hidden = false;
   });
 }
 const SMALL_PT = 10; // flag text smaller than this
@@ -483,16 +571,28 @@ function renderPinsOnly(shot) {
 /* ---------- actions ---------- */
 async function addComment() {
   const shot = currentShot(); const body = $("commentBody").value.trim();
-  if (!shot || !body) { say($("rvMsg"), "Write a comment first.", "err"); return; }
+  if (REC.rec && REC.rec.state === "recording") { say($("rvMsg"), "Stop the recording first.", "err"); return; }
+  const hasAudio = !!REC.blob;
+  if (!shot || (!body && !hasAudio)) { say($("rvMsg"), "Write a comment or record a voice note first.", "err"); return; }
   $("sendComment").disabled = true;
-  const row = { shot_id: shot.id, author: displayName(S.user), body: body, x: S.draft ? S.draft.x : null, y: S.draft ? S.draft.y : null };
+  let audio_path = null;
+  if (hasAudio) {
+    say($("rvMsg"), "Uploading voice note…");
+    const type = (REC.blob.type || "audio/webm").split(";")[0];
+    const ext = type.includes("mp4") || type.includes("aac") ? "m4a" : type.includes("ogg") ? "ogg" : "webm";
+    audio_path = "audio/" + shot.id + "/" + Date.now() + "." + ext;
+    const up = await S.sb.storage.from("slides").upload(audio_path, REC.blob, { contentType: type });
+    if (up.error) { $("sendComment").disabled = false; say($("rvMsg"), "Voice note wasn't uploaded: " + up.error.message, "err"); return; }
+  }
+  const row = { shot_id: shot.id, author: displayName(S.user), body: body, x: S.draft ? S.draft.x : null, y: S.draft ? S.draft.y : null,
+    audio_path: audio_path, audio_duration: hasAudio ? Math.round(REC.duration * 10) / 10 : null };
   const { data, error } = await S.sb.from("shot_comments").insert(row).select().single();
   $("sendComment").disabled = false;
   if (error) { say($("rvMsg"), "Comment wasn't saved: " + error.message, "err"); return; }
   (S.comments[shot.id] = S.comments[shot.id] || []).push(data);
   $("commentBody").value = ""; S.draft = null; say($("rvMsg"), "");
+  discardRecording();
   renderComments(shot);
-  renderDetails(shot, vers);
 }
 async function toggleResolved(c) {
   const { error } = await S.sb.from("shot_comments").update({ resolved: !c.resolved }).eq("id", c.id);
@@ -552,6 +652,8 @@ async function enter(user) {
   $("approveBtn").onclick = () => decide("approved");
   $("changesBtn").onclick = () => decide("changes");
   $("sendComment").onclick = addComment;
+  $("recBtn").onclick = toggleRecording;
+  $("recDiscard").onclick = () => discardRecording();
   $("removePin").onclick = () => { S.draft = null; renderComments(currentShot()); };
   $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) addComment(); });
 

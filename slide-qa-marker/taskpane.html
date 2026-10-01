@@ -88,6 +88,10 @@
   .comment div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .comment p { margin: 0; font-size: 14px; line-height: 20px; color: var(--body); white-space: pre-wrap; overflow-wrap: anywhere; }
   .comment small { font-size: 12px; line-height: 16px; color: var(--secondary); }
+  .voice { display: flex; flex-direction: column; gap: 2px; }
+  .voice audio { width: 100%; height: 36px; display: block; }
+  .voice small { display: flex; justify-content: space-between; }
+  .voice a { color: var(--secondary); }
   .empty { color: var(--muted); font-size: 14px; line-height: 20px; }
 
   /* Summary (Figma: Summary, Closed / Opened) */
@@ -183,7 +187,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "1.5";
+const APP_VERSION = "1.6";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -358,10 +362,12 @@ function render() {
       const li = document.createElement("li"); li.className = "comment" + (c.resolved ? " resolved" : "");
       const n = document.createElement("span"); n.className = "pin-no" + (pinned ? "" : " general"); n.textContent = pinned ? pinNo : "•";
       const body = document.createElement("div");
-      const p = document.createElement("p"); p.textContent = c.body;
+      if (c.audio_path) body.append(voiceEl(c));
+      if (c.body) { const p = document.createElement("p"); p.textContent = c.body; body.append(p); }
       const sm = document.createElement("small"); sm.textContent = ago(c.created_at) + (c.resolved ? ", resolved" : "");
-      body.append(p, sm); li.append(n, body); list.append(li);
+      body.append(sm); li.append(n, body); list.append(li);
     });
+    fillVoiceSources(cs);
   }
 
   // Summary + list of sent slides
@@ -381,6 +387,37 @@ function render() {
     b.setAttribute("aria-label", "Go to slide " + s.n);
     b.onclick = () => selectSlide(s.id).then(refreshDeck);
     li.append(b, makeTag(S.latest[s.id].status)); ul.append(li);
+  });
+}
+// ---- voice notes from the DM
+const VOICE = new Map(); // comment id -> element, reused so playback survives re-renders
+const SIGNED = {};       // storage path -> { url, exp }
+const fmtDur = (sec) => { const t = Math.max(0, Math.floor(sec)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+function voiceEl(c) {
+  let w = VOICE.get(c.id);
+  if (!w) {
+    w = document.createElement("div"); w.className = "voice";
+    const a = document.createElement("audio"); a.controls = true; a.preload = "metadata";
+    const sm = document.createElement("small");
+    const label = document.createElement("span"); label.textContent = "Voice note" + (c.audio_duration ? ", " + fmtDur(c.audio_duration) : "");
+    const link = document.createElement("a"); link.textContent = "Open"; link.target = "_blank"; link.rel = "noopener"; link.hidden = true;
+    sm.append(label, link); w.append(a, sm); VOICE.set(c.id, w);
+  }
+  return w;
+}
+async function fillVoiceSources(cs) {
+  const need = cs.filter((c) => c.audio_path && (!SIGNED[c.audio_path] || SIGNED[c.audio_path].exp < Date.now() + 60000)).map((c) => c.audio_path);
+  if (need.length) {
+    const { data, error } = await S.sb.storage.from("slides").createSignedUrls(need, 3600);
+    if (error) return;
+    data.forEach((d) => { if (d.signedUrl) SIGNED[d.path] = { url: d.signedUrl, exp: Date.now() + 3600 * 1000 }; });
+  }
+  cs.forEach((c) => {
+    const w = c.audio_path && VOICE.get(c.id); const u = c.audio_path && SIGNED[c.audio_path] && SIGNED[c.audio_path].url;
+    if (!w || !u) return;
+    const a = w.querySelector("audio"), link = w.querySelector("a");
+    if (!a.getAttribute("src")) a.src = u;
+    link.href = u; link.hidden = false;
   });
 }
 async function renderThumb() {
