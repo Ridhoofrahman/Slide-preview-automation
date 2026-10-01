@@ -6,6 +6,8 @@
 <title>QA Checkpoint</title>
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="slide-details.js"></script>
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -204,6 +206,19 @@ async function slideImage(id, width) {
   });
   return v;
 }
+async function slideExport(id) {
+  let v = null;
+  await PowerPoint.run(async (ctx) => {
+    const r = ctx.presentation.slides.getItem(id).exportAsBase64();
+    await ctx.sync(); v = r.value;
+  });
+  return v;
+}
+// Fonts, sizes and speaker notes for the DM. Never blocks sending if it fails.
+async function readDetails(id) {
+  try { return await window.SlideDetails.fromBase64(await slideExport(id)); }
+  catch (e) { console.warn("Slide details not captured:", e); return null; }
+}
 async function selectSlide(id) {
   await PowerPoint.run(async (ctx) => { ctx.presentation.setSelectedSlides([id]); await ctx.sync(); });
 }
@@ -311,6 +326,7 @@ async function markReady() {
   say($("msg"), "Capturing slide " + cur.n + "…");
   try {
     const b64 = await slideImage(cur.id, IMAGE_WIDTH);
+    const details = await readDetails(cur.id);
     const key = fileKey();
     const path = key + "/" + cur.id.replace(/[^a-zA-Z0-9_-]/g, "_") + "/v" + version + "-" + Date.now() + ".png";
     say($("msg"), "Uploading slide " + cur.n + "…");
@@ -318,7 +334,7 @@ async function markReady() {
     if (up.error) throw up.error;
     const ins = await S.sb.from("slide_shots").insert({
       file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.n, total_slides: S.slides.length,
-      version: version, designer: displayName(S.user), note: $("note").value.trim() || null, image_path: path
+      version: version, designer: displayName(S.user), note: $("note").value.trim() || null, image_path: path, details: details
     }).select().single();
     if (ins.error) throw ins.error;
     S.latest[cur.id] = ins.data;

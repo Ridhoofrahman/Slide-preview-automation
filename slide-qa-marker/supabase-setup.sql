@@ -58,3 +58,6 @@ create policy "team uploads slide images" on storage.objects for insert to authe
 
 -- 5. Live updates (new slides and comments appear without refreshing)
 alter publication supabase_realtime add table public.slide_shots, public.shot_comments;
+
+-- 6. Slide details for QA (fonts, sizes, speaker notes) — added later
+alter table public.slide_shots add column if not exists details jsonb;

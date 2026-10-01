@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Slide Review</title>
 <link rel="icon" href="assets/icon-32.png">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,10 +93,26 @@
   .navbtns { display: flex; gap: 4px; }
   .navbtns .ghost { padding: 6px 10px; }
   .rv-body { display: grid; grid-template-columns: 1fr 360px; min-height: 0; }
-  .stage { display: grid; place-items: center; padding: 24px; overflow: auto; min-width: 0; }
+  .stage { display: flex; justify-content: center; align-items: flex-start; padding: 24px; overflow: auto; min-width: 0; }
+  .stage-inner { display: inline-flex; flex-direction: column; gap: 16px; max-width: 100%; }
+  .details { width: 0; min-width: 100%; display: grid; grid-template-columns: 3fr 2fr; gap: 12px; }
+  .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .dhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .dhead h3 { margin: 0; color: var(--ink); font-size: 13px; }
+  .dmeta { font-size: 12px; color: var(--muted); }
+  .ftable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ftable th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); }
+  .ftable td { padding: 6px 8px 6px 0; border-bottom: 1px solid #EEF0F3; vertical-align: top; }
+  .ftable tr:last-child td { border-bottom: 0; }
+  .ftable td.size { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .ftable td.size.small { color: var(--fix); font-weight: 600; }
+  .ftable small { display: block; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+  .dnote { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+  .notes-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; max-height: 180px; overflow: auto; }
+  .details-missing { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--muted); }
   .older { background: var(--wait-tint); color: var(--wait); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; display: flex; gap: 10px; align-items: center; justify-content: center; }
   figure.slide { position: relative; margin: 0; display: inline-block; cursor: crosshair; box-shadow: 0 1px 3px rgba(24,32,43,.14), 0 8px 28px rgba(24,32,43,.10); background: #fff; line-height: 0; }
-  figure.slide img { display: block; max-width: 100%; max-height: calc(100vh - 56px - 96px); width: auto; height: auto; user-select: none; -webkit-user-drag: none; }
+  figure.slide img { display: block; max-width: 100%; max-height: calc(100vh - 56px - 240px); width: auto; height: auto; user-select: none; -webkit-user-drag: none; }
   .pin { position: absolute; transform: translate(-50%, -100%); width: 28px; height: 28px; border-radius: 50% 50% 50% 0; rotate: -45deg; background: var(--brand); border: 2px solid #fff; box-shadow: 0 2px 6px rgba(24,32,43,.35); display: grid; place-items: center; cursor: pointer; padding: 0; line-height: 1; }
   .pin span { rotate: 45deg; color: #fff; font-size: 12px; font-weight: 700; }
   .pin.resolved { background: #8C95A3; }
@@ -134,6 +150,7 @@
     .board { grid-template-columns: 1fr; }
     .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
     .rv-body { grid-template-columns: 1fr; grid-template-rows: auto auto; overflow: auto; }
+    .details { grid-template-columns: 1fr; }
     .panel { border-left: 0; border-top: 1px solid var(--line); }
     figure.slide img { max-height: 60vh; }
   }
@@ -183,9 +200,10 @@
     </header>
     <div class="rv-body">
       <div class="stage">
-        <div>
+        <div class="stage-inner">
           <div id="olderBanner" class="older" hidden><span id="olderText"></span><button id="toLatest" class="link">View latest</button></div>
           <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
+          <div id="rvDetails" class="details" aria-label="Slide details"></div>
         </div>
       </div>
       <aside class="panel">
@@ -377,6 +395,7 @@ async function renderReview() {
   if (img.src !== urlFor(shot)) img.src = urlFor(shot);
 
   renderComments(shot);
+  renderDetails(shot, vers);
 }
 function renderComments(shot) {
   const cs = S.comments[shot.id] || [];
@@ -413,6 +432,47 @@ function renderComments(shot) {
     meta.append(r); body.append(meta); li.append(n, body); list.append(li);
   });
 }
+const SMALL_PT = 10; // flag text smaller than this
+const fmtPt = (n) => (Math.round(n * 2) / 2).toString();
+function renderDetails(shot, vers) {
+  const box = $("rvDetails"); box.innerHTML = "";
+  const d = shot.details;
+  if (!d) { box.append(el("p", "details-missing", "Font and speaker-note details weren't captured for this version.")); return; }
+
+  // Fonts
+  const fc = el("section", "dcard"); const fh = el("div", "dhead"); fh.append(el("h3", "", "Fonts"));
+  const families = new Set(d.fonts.map((f) => f.font));
+  const meta = [];
+  if (families.size) meta.push(families.size + (families.size > 1 ? " families" : " family"));
+  if (d.smallest !== null && d.smallest !== undefined) meta.push("smallest " + fmtPt(d.smallest) + "pt");
+  const small = d.smallest !== null && d.smallest < SMALL_PT;
+  fh.append(small ? el("span", "pill changes", "Text under " + SMALL_PT + "pt") : el("span", "dmeta", meta.join(", ")));
+  fc.append(fh);
+  if (!d.fonts.length) fc.append(el("p", "dmeta", "No text on this slide."));
+  else {
+    const t = el("table", "ftable"); const head = el("tr");
+    ["Font", "Size", "Used in"].forEach((h) => head.append(el("th", "", h)));
+    t.append(head);
+    d.fonts.forEach((f) => {
+      const tr = el("tr");
+      tr.append(el("td", "", f.font));
+      tr.append(el("td", "size" + (f.size < SMALL_PT ? " small" : ""), fmtPt(f.size) + "pt"));
+      const used = el("td"); used.append(document.createTextNode(f.roles.join(", ") + (f.count > 1 ? " (" + f.count + "×)" : "")));
+      if (f.sample) { const sm = el("small", "", "“" + f.sample + "”"); sm.title = f.sample; used.append(sm); }
+      tr.append(used); t.append(tr);
+    });
+    fc.append(t);
+  }
+  if (small) fc.append(el("p", "dnote", meta.join(", ") + "."));
+  if (d.shrunk && d.shrunk.length) fc.append(el("p", "dnote", "Autofit is shrinking text in: " + d.shrunk.join(", ") + ". Sizes shown are as displayed."));
+  box.append(fc);
+
+  // Speaker notes, shown as-is; the DM compares them with the client's original file
+  const nc = el("section", "dcard"); const nh = el("div", "dhead"); nh.append(el("h3", "", "Speaker notes"));
+  nc.append(nh);
+  nc.append(d.notes.present ? el("p", "notes-text", d.notes.text) : el("p", "dmeta", "This slide has no speaker notes."));
+  box.append(nc);
+}
 function renderPinsOnly(shot) {
   const cs = S.comments[shot.id] || []; const nums = pinnedNumbers(cs);
   const pins = [...document.querySelectorAll("#pins .pin:not(.draft)")];
@@ -431,6 +491,7 @@ async function addComment() {
   (S.comments[shot.id] = S.comments[shot.id] || []).push(data);
   $("commentBody").value = ""; S.draft = null; say($("rvMsg"), "");
   renderComments(shot);
+  renderDetails(shot, vers);
 }
 async function toggleResolved(c) {
   const { error } = await S.sb.from("shot_comments").update({ resolved: !c.resolved }).eq("id", c.id);
