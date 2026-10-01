@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QA Checkpoint</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="slide-details.js"></script>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* From Figma: QA Checkpoint task pane */
+    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --muted: #5A6575; --title: #000000; --body: #393939; --secondary: #808080;
+    --link: #1F3A93; --slide-link: #002671; --pin: #002671; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
+    --line: #DCE0E6; --line-soft: #E5E5E5;
+    --tag-none-bg: #F7F7F7; --tag-none-bd: #CACACA; --tag-none-fg: #393939;
+    --tag-wait-bg: #FDF5E6; --tag-wait-bd: #F4CC7F; --tag-wait-fg: #BC7B00;
+    --tag-fix-bg: #FAE9EB;  --tag-fix-bd: #E48F9A;  --tag-fix-fg: #CA2135;
+    --tag-ok-bg: #E6F8F2;   --tag-ok-bd: #7FD8BD;   --tag-ok-fg: #008F64;
+    --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 20px; }
+  main { padding: 16px 16px 32px; max-width: 520px; margin: 0 auto; }
+  button, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .stack { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Header */
+  .head { display: flex; flex-direction: column; gap: 4px; }
+  .project { width: 100%; height: 32px; border: 1px solid transparent; background: transparent; font-size: 20px; line-height: 32px; font-weight: 500; padding: 0 6px; margin-left: -7px; border-radius: 6px; color: var(--ink); text-overflow: ellipsis; }
+  .project:hover { border-color: var(--line); }
+  .project:focus { border-color: var(--focus); background: var(--surface); outline: none; }
+  .link { border: 0; background: none; padding: 0; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-position: from-font; font-size: 13px; line-height: 1.45; font-family: var(--font); }
+  a.link { align-self: flex-start; }
+  #reviewLinkWrap { display: flex; line-height: 0; }
+  #reviewLinkWrap:empty { display: none; }
+
+  /* Tag (Figma: Slide status) */
+  .tag { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 2px 10px; border-radius: 20px; border: 1px solid var(--tag-none-bd); background: var(--tag-none-bg); color: var(--tag-none-fg); font-size: 14px; line-height: 20px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .tag.ready { background: var(--tag-wait-bg); border-color: var(--tag-wait-bd); color: var(--tag-wait-fg); }
+  .tag.changes { background: var(--tag-fix-bg); border-color: var(--tag-fix-bd); color: var(--tag-fix-fg); }
+  .tag.approved { background: var(--tag-ok-bg); border-color: var(--tag-ok-bd); color: var(--tag-ok-fg); }
+
+  /* Slide */
+  .slide { display: flex; flex-direction: column; gap: 12px; }
+  .meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+  .slide-label { font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
+  .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #E9ECF0; }
+  .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tpins { position: absolute; inset: 0; pointer-events: none; }
+  .tpin { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--pin); color: #fff; border: 2px solid #fff; font-size: 10px; font-weight: 500; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(24,32,43,.35); }
+  .tpin.resolved { background: #8C95A3; }
+
+  /* Field (Figma: Fields) */
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field-label { font-size: 16px; line-height: 24px; color: var(--title); }
+  .field input, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--line-soft); border-radius: 8px; padding: 9px 8px; font-family: var(--font); font-size: 16px; line-height: 24px; color: var(--ink); }
+  .field textarea { height: 103px; resize: none; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 1; }
+  .field input:focus, .field textarea:focus { border-color: var(--focus); outline: none; }
+
+  /* Button (Figma: Button) */
+  .primary { width: 100%; height: 40px; border: 0; border-radius: 8px; padding: 8px 20px; cursor: pointer; background: var(--primary); color: #fff; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; }
+  .primary:hover:not(:disabled) { background: var(--primary-hover); }
+  .primary:disabled { opacity: .5; cursor: not-allowed; }
+  .actions { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Feedback */
+  .feedback { display: flex; flex-direction: column; gap: 8px; }
+  .feedback-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .feedback-head h2 { font-size: 16px; line-height: 24px; font-weight: 500; margin: 0; }
+  .fb-meta { display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
+  .fb-meta .ver { font-weight: 500; }
+  .dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .7; }
+  .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .comment { display: grid; grid-template-columns: 22px 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .comment.resolved { opacity: .55; }
+  .pin-no { width: 22px; height: 22px; border-radius: 50%; background: var(--pin); color: #fff; font-size: 12px; line-height: 16px; font-weight: 500; display: grid; place-items: center; }
+  .pin-no.general { background: #E3E6EB; color: var(--muted); }
+  .comment div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .comment p { margin: 0; font-size: 14px; line-height: 20px; color: var(--body); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .comment small { font-size: 12px; line-height: 16px; color: var(--secondary); }
+  .voice { display: flex; flex-direction: column; gap: 2px; }
+  .voice audio { width: 100%; height: 36px; display: block; }
+  .voice small { display: flex; justify-content: space-between; }
+  .voice a { color: var(--secondary); }
+  .empty { color: var(--muted); font-size: 14px; line-height: 20px; }
+
+  /* Summary (Figma: Summary, Closed / Opened) */
+  .summary { display: flex; flex-direction: column; gap: 16px; }
+  .summary-toggle { display: flex; align-items: center; gap: 4px; width: 100%; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; color: var(--muted); font-size: 14px; line-height: 20px; }
+  .summary-toggle .count { color: var(--ink); }
+  .summary-toggle span.txt { flex: 1; }
+  .summary-toggle svg { width: 20px; height: 20px; flex: none; color: var(--slide-link); transition: transform .15s ease; }
+  .summary-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .slide-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .slide-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line-soft); }
+  .slide-list li:first-child { border-top: 0; padding-top: 0; }
+  .slide-list li:last-child { padding-bottom: 0; }
+  .slide-list button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--slide-link); font-size: 14px; line-height: 20px; }
+  .slide-list button:hover { text-decoration: underline; text-underline-position: from-font; }
+  .slide-list li.current button { font-weight: 500; }
+
+  .msg { margin: -8px 0 0; font-size: 13px; }
+  .msg.ok { color: var(--tag-ok-fg); }
+  .msg.err { color: var(--tag-fix-fg); background: var(--tag-fix-bg); padding: 8px 10px; border-radius: 8px; }
+  .msg:empty { display: none; }
+  .notice { background: var(--tag-fix-bg); color: var(--tag-fix-fg); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+  /* Footer pinned to the bottom of the panel */
+  .foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 10px 16px; background: var(--bg); border-top: 1px solid var(--line-soft); font-size: 12px; line-height: 16px; color: var(--muted); }
+  #appView { padding-bottom: 36px; }
+  .foot .link { font-size: 12px; color: var(--muted); }
+
+  /* Sign in */
+  .login h1 { font-size: 20px; line-height: 32px; font-weight: 500; margin: 0; }
+  .login .lead { color: var(--muted); margin: 4px 0 0; font-size: 13px; }
+  .login .msg { margin: 0; }
+  @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div id="configError" class="notice" hidden>Supabase isn't set up yet. Fill in config.js (see the setup guide).</div>
+
+  <!-- Sign in -->
+  <section id="loginView" class="stack login" hidden>
+    <div>
+      <h1>Sign in to QA Checkpoint</h1>
+      <p class="lead">Use the account your team lead created for you.</p>
+    </div>
+    <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username"></label>
+    <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password"></label>
+    <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
+    <button id="signInBtn" class="primary">Sign in</button>
+    <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- Main -->
+  <section id="appView" class="stack" hidden>
+    <header class="head">
+      <input id="projectName" class="project" aria-label="Project name" spellcheck="false">
+      <span id="reviewLinkWrap"></span>
+    </header>
+
+    <div id="unsupported" class="notice" hidden>This PowerPoint version can't capture slide images. Update Microsoft 365 to send slides for review.</div>
+
+    <section class="slide" aria-label="Selected slide">
+      <div class="meta">
+        <span class="slide-label" id="slideLabel">No slide selected</span>
+        <span class="tag none" id="curStatus" hidden>Not sent</span>
+      </div>
+      <div class="thumb"><div id="thumb" class="thumb-inner"><span>Select a slide</span></div><div id="tpins" class="tpins" aria-hidden="true"></div></div>
+    </section>
+
+    <div class="actions" id="actions">
+      <label class="field"><span class="field-label">Leave note for DM</span>
+        <textarea id="note" placeholder="e.g. Used the client's new icon set on this one"></textarea>
+      </label>
+      <button id="markBtn" class="primary" disabled>Select a slide</button>
+    </div>
+    <p id="msg" class="msg" role="status" aria-live="polite"></p>
+
+    <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
+      <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><span class="fb-meta" id="feedbackMeta"></span></div>
+      <ol id="comments" class="comments"></ol>
+    </section>
+
+    <section class="summary" id="summary" aria-label="Deck progress">
+      <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="slideList">
+        <span class="txt" id="summaryText"></span>
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <ul class="slide-list" id="slideList" hidden></ul>
+    </section>
+
+    <footer class="foot"><span id="whoName"></span> <button id="signOutBtn" class="link">Sign out</button><span id="appVersion"></span></footer>
+  </section>
+</main>
+
+<script>
+const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
+const APP_VERSION = "1.7";
+const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
+const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
+const $ = (id) => document.getElementById(id);
+
+/* ---------- helpers ---------- */
+const docStore = {
+  get: (k) => Office.context.document.settings.get(k) || "",
+  set: (k, v) => { Office.context.document.settings.set(k, v); Office.context.document.settings.saveAsync(); }
+};
+function fileTitle() {
+  const url = Office.context.document.url || "";
+  const base = decodeURIComponent(url.split(/[\\/]/).pop() || "");
+  return base.replace(/\.(pptx?|potx)$/i, "") || "Untitled presentation";
+}
+const projectName = () => docStore.get("slideqa.project") || fileTitle();
+function fileKey() {
+  let k = docStore.get("slideqa.fileKey");
+  if (!k) { k = crypto.randomUUID(); docStore.set("slideqa.fileKey", k); }
+  return k;
+}
+const displayName = (u) => (u && u.user_metadata && u.user_metadata.name) || (u && u.email ? u.email.split("@")[0] : "");
+const currentSlide = () => S.slides.find((s) => s.id === S.currentId) || null;
+function say(el, text, kind) { el.textContent = text || ""; el.className = "msg" + (kind ? " " + kind : ""); }
+function debounce(fn, ms) { let t; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; }
+function b64ToBlob(b64, type) {
+  const bin = atob(b64); const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: type });
+}
+function ago(iso) {
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return "just now"; if (m < 60) return m + " min ago";
+  const h = Math.round(m / 60); if (h < 24) return h + " h ago";
+  return new Date(iso).toLocaleDateString();
+}
+
+/* ---------- PowerPoint ---------- */
+async function readDeck() {
+  await PowerPoint.run(async (ctx) => {
+    const slides = ctx.presentation.slides; slides.load("items/id");
+    const sel = ctx.presentation.getSelectedSlides(); sel.load("items/id");
+    await ctx.sync();
+    S.slides = slides.items.map((s, i) => ({ id: s.id, n: i + 1 }));
+    S.currentId = sel.items.length ? sel.items[0].id : null;
+  });
+}
+async function slideImage(id, width) {
+  let v = null;
+  await PowerPoint.run(async (ctx) => {
+    const r = ctx.presentation.slides.getItem(id).getImageAsBase64({ width: width });
+    await ctx.sync(); v = r.value;
+  });
+  return v;
+}
+async function slideExport(id) {
+  let v = null;
+  await PowerPoint.run(async (ctx) => {
+    const r = ctx.presentation.slides.getItem(id).exportAsBase64();
+    await ctx.sync(); v = r.value;
+  });
+  return v;
+}
+// Fonts, sizes and speaker notes for the DM. Never blocks sending if it fails.
+async function readDetails(id) {
+  let stage = "load";
+  try {
+    if (!window.JSZip || !window.SlideDetails) throw new Error("inspector scripts did not load");
+    stage = "export";
+    const b64 = await slideExport(id);
+    if (!b64) throw new Error("PowerPoint returned an empty export");
+    stage = "parse";
+    return await window.SlideDetails.fromBase64(b64);
+  } catch (e) {
+    console.warn("Slide details not captured:", e);
+    const msg = (e && e.code ? e.code + ": " : "") + ((e && e.message) || String(e));
+    return { version: 1, error: stage + " step failed (" + msg + ")" };
+  }
+}
+async function selectSlide(id) {
+  await PowerPoint.run(async (ctx) => { ctx.presentation.setSelectedSlides([id]); await ctx.sync(); });
+}
+
+/* ---------- Supabase ---------- */
+async function loadReviews() {
+  const { data, error } = await S.sb.from("slide_shots").select("*").eq("file_key", fileKey()).order("version", { ascending: false });
+  if (error) throw error;
+  S.latest = {};
+  data.forEach((r) => { const cur = S.latest[r.slide_id]; if (!cur || r.version > cur.version) S.latest[r.slide_id] = r; });
+  const ids = Object.values(S.latest).map((r) => r.id);
+  S.comments = {};
+  if (ids.length) {
+    const res = await S.sb.from("shot_comments").select("*").in("shot_id", ids).order("created_at");
+    if (res.error) throw res.error;
+    res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
+  }
+}
+let reviewsTimer = null, lastReviewLoad = 0;
+// Re-check statuses after slide changes and every 20s, in case a live update was missed.
+function refreshReviewsSoon() {
+  if (!S.user || Date.now() - lastReviewLoad < 3000) return;
+  clearTimeout(reviewsTimer);
+  reviewsTimer = setTimeout(async () => { try { lastReviewLoad = Date.now(); await loadReviews(); render(); } catch (e) {} }, 400);
+}
+function subscribe() {
+  if (S.channel) S.sb.removeChannel(S.channel);
+  const reload = debounce(async () => { try { await loadReviews(); render(); } catch (e) {} }, 400);
+  S.channel = S.sb.channel("deck-" + fileKey())
+    .on("postgres_changes", { event: "*", schema: "public", table: "slide_shots", filter: "file_key=eq." + fileKey() }, reload)
+    .on("postgres_changes", { event: "*", schema: "public", table: "shot_comments" }, (p) => {
+      const id = (p.new && p.new.shot_id) || (p.old && p.old.shot_id);
+      if (Object.values(S.latest).some((r) => r.id === id)) reload();
+    })
+    .subscribe();
+}
+
+/* ---------- rendering ---------- */
+function makeTag(status) {
+  const t = document.createElement("span");
+  t.className = "tag " + (status || "none");
+  t.textContent = status ? STATUS_LABEL[status] : "Not sent";
+  return t;
+}
+function render() {
+  const cur = currentSlide();
+  const shot = cur ? S.latest[cur.id] : null;
+  const status = shot ? shot.status : null;
+  const total = S.slides.length;
+
+  $("projectName").value = projectName();
+  $("whoName").textContent = "Signed in as " + displayName(S.user) + ".";
+
+  $("slideLabel").textContent = cur ? "Slide " + cur.n + "/" + total : "No slide selected";
+  const tag = $("curStatus");
+  tag.className = "tag " + (status || "none");
+  tag.textContent = status ? STATUS_LABEL[status] : "Not sent";
+  tag.hidden = !cur;
+
+  // Actions: hidden only once the DM has approved the slide
+  const canSend = !!cur && status !== "approved";
+  $("actions").hidden = !canSend;
+  const btn = $("markBtn");
+  btn.disabled = !canSend || S.busy || !S.canImage;
+  btn.textContent = !cur ? "Select a slide" : shot ? "Send updated version" : "Mark slide " + cur.n + " ready for review";
+
+  // Pins from the DM, drawn on the preview
+  const tp = $("tpins"); tp.innerHTML = "";
+  const cs = shot ? (S.comments[shot.id] || []) : [];
+  let k = 0;
+  cs.forEach((c) => {
+    if (c.x === null || c.y === null) return; k++;
+    const d = document.createElement("span"); d.className = "tpin" + (c.resolved ? " resolved" : "");
+    d.style.left = (c.x * 100) + "%"; d.style.top = (c.y * 100) + "%"; d.textContent = k; tp.append(d);
+  });
+
+  // Feedback for the latest version of this slide
+  const fb = $("feedback"), list = $("comments");
+  fb.hidden = !shot;
+  list.innerHTML = "";
+  if (shot) {
+    const meta = $("feedbackMeta"); meta.innerHTML = "";
+    const ver = document.createElement("span"); ver.className = "ver"; ver.textContent = "v" + shot.version; meta.append(ver);
+    if (shot.reviewed_by) {
+      const dot = document.createElement("span"); dot.className = "dot";
+      const by = document.createElement("span"); by.textContent = "Reviewed by " + shot.reviewed_by;
+      meta.append(dot, by);
+    }
+    let pinNo = 0;
+    if (!cs.length) { const li = document.createElement("li"); li.className = "empty"; li.textContent = "No comments yet."; list.append(li); }
+    cs.forEach((c) => {
+      const pinned = c.x !== null && c.y !== null;
+      if (pinned) pinNo++;
+      const li = document.createElement("li"); li.className = "comment" + (c.resolved ? " resolved" : "");
+      const n = document.createElement("span"); n.className = "pin-no" + (pinned ? "" : " general"); n.textContent = pinned ? pinNo : "•";
+      const body = document.createElement("div");
+      if (c.audio_path) body.append(voiceEl(c));
+      if (c.body) { const p = document.createElement("p"); p.textContent = c.body; body.append(p); }
+      const sm = document.createElement("small"); sm.textContent = ago(c.created_at) + (c.resolved ? ", resolved" : "");
+      body.append(sm); li.append(n, body); list.append(li);
+    });
+    fillVoiceSources(cs);
+  }
+
+  // Summary + list of sent slides
+  const sent = S.slides.filter((s) => S.latest[s.id]);
+  const approved = sent.filter((s) => S.latest[s.id].status === "approved").length;
+  const st = $("summaryText"); st.innerHTML = "";
+  const count = document.createElement("span"); count.className = "count"; count.textContent = sent.length + " of " + total;
+  st.append(count, document.createTextNode(" slides sent, " + approved + " approved"));
+  $("summary").hidden = !total;
+  const open = S.summaryOpen && sent.length > 0;
+  $("summaryToggle").setAttribute("aria-expanded", String(open));
+  $("summaryToggle").disabled = !sent.length;
+  const ul = $("slideList"); ul.hidden = !open; ul.innerHTML = "";
+  sent.forEach((s) => {
+    const li = document.createElement("li"); if (s.id === S.currentId) li.className = "current";
+    const b = document.createElement("button"); b.textContent = "Slide " + s.n;
+    b.setAttribute("aria-label", "Go to slide " + s.n);
+    b.onclick = () => selectSlide(s.id).then(refreshDeck);
+    li.append(b, makeTag(S.latest[s.id].status)); ul.append(li);
+  });
+}
+// ---- voice notes from the DM
+const VOICE = new Map(); // comment id -> element, reused so playback survives re-renders
+const SIGNED = {};       // storage path -> { url, exp }
+const fmtDur = (sec) => { const t = Math.max(0, Math.floor(sec)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+function voiceEl(c) {
+  let w = VOICE.get(c.id);
+  if (!w) {
+    w = document.createElement("div"); w.className = "voice";
+    const a = document.createElement("audio"); a.controls = true; a.preload = "metadata";
+    const sm = document.createElement("small");
+    const label = document.createElement("span"); label.textContent = "Voice note" + (c.audio_duration ? ", " + fmtDur(c.audio_duration) : "");
+    const link = document.createElement("a"); link.textContent = "Open"; link.target = "_blank"; link.rel = "noopener"; link.hidden = true;
+    sm.append(label, link); w.append(a, sm); VOICE.set(c.id, w);
+  }
+  return w;
+}
+async function fillVoiceSources(cs) {
+  const need = cs.filter((c) => c.audio_path && (!SIGNED[c.audio_path] || SIGNED[c.audio_path].exp < Date.now() + 60000)).map((c) => c.audio_path);
+  if (need.length) {
+    const { data, error } = await S.sb.storage.from("slides").createSignedUrls(need, 3600);
+    if (error) return;
+    data.forEach((d) => { if (d.signedUrl) SIGNED[d.path] = { url: d.signedUrl, exp: Date.now() + 3600 * 1000 }; });
+  }
+  cs.forEach((c) => {
+    const w = c.audio_path && VOICE.get(c.id); const u = c.audio_path && SIGNED[c.audio_path] && SIGNED[c.audio_path].url;
+    if (!w || !u) return;
+    const a = w.querySelector("audio"), link = w.querySelector("a");
+    if (!a.getAttribute("src")) a.src = u;
+    link.href = u; link.hidden = false;
+  });
+}
+async function renderThumb() {
+  const cur = currentSlide(), box = $("thumb"), token = ++S.thumbToken;
+  if (!cur) { box.innerHTML = "<span>Select a slide</span>"; return; }
+  if (!S.canImage) { box.innerHTML = "<span>Slide " + cur.n + "</span>"; return; }
+  try {
+    const b64 = await slideImage(cur.id, THUMB_WIDTH);
+    if (token !== S.thumbToken) return;
+    box.innerHTML = ""; const img = new Image();
+    img.alt = "Preview of slide " + cur.n; img.src = "data:image/png;base64," + b64; box.append(img);
+  } catch (e) { box.innerHTML = "<span>Preview unavailable</span>"; }
+}
+async function refreshDeck() {
+  try { await readDeck(); render(); renderThumb(); refreshReviewsSoon(); }
+  catch (e) { say($("msg"), "Couldn't read the presentation: " + e.message, "err"); }
+}
+
+/* ---------- actions ---------- */
+async function markReady() {
+  const cur = currentSlide(); if (!cur) return;
+  const prev = S.latest[cur.id];
+  const version = prev ? prev.version + 1 : 1;
+  S.busy = true; render();
+  say($("msg"), "Capturing slide " + cur.n + "…");
+  try {
+    const b64 = await slideImage(cur.id, IMAGE_WIDTH);
+    const details = await readDetails(cur.id);
+    const key = fileKey();
+    const path = key + "/" + cur.id.replace(/[^a-zA-Z0-9_-]/g, "_") + "/v" + version + "-" + Date.now() + ".png";
+    say($("msg"), "Uploading slide " + cur.n + "…");
+    const up = await S.sb.storage.from("slides").upload(path, b64ToBlob(b64, "image/png"), { contentType: "image/png" });
+    if (up.error) throw up.error;
+    const ins = await S.sb.from("slide_shots").insert({
+      file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.n, total_slides: S.slides.length,
+      version: version, designer: displayName(S.user), note: $("note").value.trim() || null, image_path: path, details: details
+    }).select().single();
+    if (ins.error) throw ins.error;
+    S.latest[cur.id] = ins.data;
+    $("note").value = "";
+    say($("msg"), version > 1 ? "Version " + version + " of slide " + cur.n + " is ready for review." : "Slide " + cur.n + " is ready for review.", "ok");
+  } catch (e) {
+    say($("msg"), "Slide " + cur.n + " wasn't sent: " + (e.message || e) + ". Check your connection and try again.", "err");
+  } finally {
+    S.busy = false;
+    try { await loadReviews(); } catch (e) {}
+    render();
+  }
+}
+
+async function signIn() {
+  const email = $("email").value.trim(), password = $("password").value, name = $("nameInput").value.trim();
+  if (!email || !password) { say($("loginMsg"), "Enter your email and password.", "err"); return; }
+  $("signInBtn").disabled = true; say($("loginMsg"), "Signing in…");
+  const { data, error } = await S.sb.auth.signInWithPassword({ email: email, password: password });
+  $("signInBtn").disabled = false;
+  if (error) { say($("loginMsg"), "Sign-in failed: " + error.message, "err"); return; }
+  let user = data.user;
+  if (name) { const upd = await S.sb.auth.updateUser({ data: { name: name } }); if (!upd.error) user = upd.data.user; }
+  say($("loginMsg"), "");
+  enterApp(user);
+}
+
+async function enterApp(user) {
+  S.user = user;
+  $("loginView").hidden = true; $("appView").hidden = false;
+  if (!S.handlerAdded) {
+    Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, debounce(refreshDeck, 250));
+    S.handlerAdded = true;
+  }
+  await refreshDeck();
+  try { await loadReviews(); } catch (e) { say($("msg"), "Couldn't load review status: " + e.message, "err"); }
+  render();
+  subscribe();
+  setInterval(() => { if (!document.hidden) refreshReviewsSoon(); }, 20000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshReviewsSoon(); });
+}
+
+function showLogin() {
+  S.user = null;
+  $("appView").hidden = true; $("loginView").hidden = false;
+  $("email").focus();
+}
+
+/* ---------- start ---------- */
+Office.onReady(async (info) => {
+  const cfg = window.SLIDE_REVIEW_CONFIG || {};
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { $("configError").hidden = false; return; }
+  S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+  S.canImage = Office.context.requirements.isSetSupported("PowerPointApi", "1.8");
+  $("unsupported").hidden = S.canImage;
+
+  if (cfg.REVIEW_PAGE_URL) {
+    const a = document.createElement("a"); a.className = "link"; a.href = cfg.REVIEW_PAGE_URL; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = "Open review page";
+    $("reviewLinkWrap").append(a);
+  }
+
+  $("signInBtn").onclick = signIn;
+  $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
+  $("markBtn").onclick = markReady;
+  try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
+  $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
+  $("appVersion").textContent = " · v" + APP_VERSION;
+  $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); showLogin(); };
+  $("projectName").addEventListener("change", (e) => {
+    const v = e.target.value.trim();
+    docStore.set("slideqa.project", v && v !== fileTitle() ? v : "");
+    render();
+  });
+
+  const { data } = await S.sb.auth.getSession();
+  if (data.session) enterApp(data.session.user); else showLogin();
+});
+</script>
+</body>
+</html>

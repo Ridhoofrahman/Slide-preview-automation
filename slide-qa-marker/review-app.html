@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slide Review</title>
+<link rel="icon" href="assets/icon-32.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F7F9; --surface: #FFFFFF; --stage: #E4E7EC; --ink: #18202B; --muted: #5A6575; --line: #DCE0E6;
+    --brand: #1F3A93; --brand-hover: #182E78; --focus: #3D66F5;
+    --wait: #8A6412; --wait-tint: #FBF1D9;
+    --ok: #1E8A5A;   --ok-tint: #E4F3EB;
+    --fix: #B4441B;  --fix-tint: #FBEAE2;
+    --font: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: 18px; margin: 0; }
+  h3 { font-size: 13px; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
+
+  .primary { border: 0; border-radius: 8px; padding: 9px 14px; cursor: pointer; background: var(--brand); color: #fff; font-weight: 600; }
+  .primary:hover:not(:disabled) { background: var(--brand-hover); }
+  .primary:disabled { opacity: .5; cursor: not-allowed; }
+  .ghost { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--surface); cursor: pointer; }
+  .ghost:hover:not(:disabled) { border-color: #B9C0CA; }
+  .ghost:disabled { opacity: .5; cursor: not-allowed; }
+  .link { border: 0; background: none; padding: 0; color: var(--brand); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .field { display: block; margin-bottom: 12px; }
+  .field > span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .field input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--surface); }
+  .field input:focus, textarea:focus { border-color: var(--focus); outline: none; }
+  .msg { margin: 10px 0 0; font-size: 13px; }
+  .msg.err { color: var(--fix); background: var(--fix-tint); padding: 8px 10px; border-radius: 8px; }
+  .msg:empty { display: none; }
+  .pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; background: #EEF0F3; color: var(--muted); }
+  .pill.ready { background: var(--wait-tint); color: var(--wait); }
+  .pill.approved { background: var(--ok-tint); color: var(--ok); }
+  .pill.changes { background: var(--fix-tint); color: var(--fix); }
+
+  /* Login */
+  .login { max-width: 360px; margin: 12vh auto; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .login p { color: var(--muted); margin: 6px 0 18px; }
+  .login .primary { width: 100%; }
+
+  /* Board */
+  .topbar { height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 2; }
+  .topbar h1 { flex: 1; }
+  .tabs { display: flex; background: #EEF0F3; border-radius: 9px; padding: 3px; }
+  .tabs button { border: 0; background: none; padding: 5px 12px; border-radius: 7px; cursor: pointer; color: var(--muted); font-weight: 500; }
+  .tabs button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(24,32,43,.12); }
+  .me { color: var(--muted); font-size: 13px; }
+  .board { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 56px); }
+  .sidebar { border-right: 1px solid var(--line); padding: 14px 10px; background: var(--surface); }
+  .projects { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .projects button { width: 100%; text-align: left; border: 0; background: none; padding: 10px 10px; border-radius: 8px; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
+  .projects button:hover { background: var(--bg); }
+  .projects button[aria-current="true"] { background: #E9EDF8; }
+  .projects strong { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .projects small { color: var(--muted); font-size: 12px; grid-column: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { grid-row: 1 / span 2; grid-column: 2; align-self: center; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--wait-tint); color: var(--wait); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+  .count.zero { background: none; color: var(--muted); font-weight: 500; }
+  .content { padding: 20px 24px 40px; min-width: 0; }
+  .content-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .content-head p { margin: 0; color: var(--muted); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+  .slide-card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 0; cursor: pointer; text-align: left; overflow: hidden; display: flex; flex-direction: column; }
+  .slide-card:hover { border-color: #B9C0CA; }
+  .slide-card .img { aspect-ratio: 16 / 9; background: #EEF0F3; display: block; }
+  .slide-card img { width: 100%; height: 100%; object-fit: contain; display: block; background: #fff; }
+  .slide-card .info { padding: 10px 12px 12px; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; }
+  .slide-card .info strong { font-weight: 600; }
+  .slide-card .info small { color: var(--muted); font-size: 12px; grid-column: 1 / -1; }
+  .empty-state { color: var(--muted); padding: 48px 0; text-align: center; }
+  .empty-state strong { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
+
+  /* Review */
+  .review { position: fixed; inset: 0; background: var(--stage); display: grid; grid-template-rows: 56px 1fr; z-index: 10; }
+  .rv-bar { display: flex; align-items: center; gap: 12px; padding: 0 16px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .rv-title { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 10px; }
+  .rv-title strong { font-size: 16px; white-space: nowrap; }
+  .rv-title span { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rv-bar select { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--surface); }
+  .navbtns { display: flex; gap: 4px; }
+  .navbtns .ghost { padding: 6px 10px; }
+  .rv-body { display: grid; grid-template-columns: 1fr 360px; min-height: 0; }
+  .stage { display: flex; justify-content: center; align-items: flex-start; padding: 24px; overflow: auto; min-width: 0; }
+  .stage-inner { display: inline-flex; flex-direction: column; gap: 16px; max-width: 100%; }
+  .details { width: 0; min-width: 100%; display: grid; grid-template-columns: 3fr 2fr; gap: 12px; }
+  .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .dhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .dhead h3 { margin: 0; color: var(--ink); font-size: 13px; }
+  .dmeta { font-size: 12px; color: var(--muted); }
+  .ftable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ftable th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); }
+  .ftable td { padding: 6px 8px 6px 0; border-bottom: 1px solid #EEF0F3; vertical-align: top; }
+  .ftable tr:last-child td { border-bottom: 0; }
+  .ftable td.size { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .ftable td.size.small { color: var(--fix); font-weight: 600; }
+  .ftable small { display: block; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+  .dnote { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+  .notes-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; max-height: 180px; overflow: auto; }
+  .details-missing { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--muted); }
+  .older { background: var(--wait-tint); color: var(--wait); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; display: flex; gap: 10px; align-items: center; justify-content: center; }
+  figure.slide { position: relative; margin: 0; display: inline-block; cursor: crosshair; box-shadow: 0 1px 3px rgba(24,32,43,.14), 0 8px 28px rgba(24,32,43,.10); background: #fff; line-height: 0; }
+  figure.slide img { display: block; max-width: 100%; max-height: calc(100vh - 56px - 240px); width: auto; height: auto; user-select: none; -webkit-user-drag: none; }
+  .pin { position: absolute; transform: translate(-50%, -100%); width: 28px; height: 28px; border-radius: 50% 50% 50% 0; rotate: -45deg; background: var(--brand); border: 2px solid #fff; box-shadow: 0 2px 6px rgba(24,32,43,.35); display: grid; place-items: center; cursor: pointer; padding: 0; line-height: 1; }
+  .pin span { rotate: 45deg; color: #fff; font-size: 12px; font-weight: 700; }
+  .pin.resolved { background: #8C95A3; }
+  .pin.draft { background: var(--surface); border: 2px dashed var(--brand); }
+  .pin.draft span { color: var(--brand); }
+  .pin.hot { background: var(--fix); scale: 1.15; }
+
+  .panel { background: var(--surface); border-left: 1px solid var(--line); display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+  .panel-top { padding: 16px; border-bottom: 1px solid var(--line); }
+  .by { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+  .by strong { color: var(--ink); }
+  .note { background: var(--bg); border-radius: 8px; padding: 8px 10px; margin: 0 0 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .decision { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .decision button { border-radius: 8px; padding: 9px 10px; font-weight: 600; cursor: pointer; border: 1px solid var(--line); background: var(--surface); }
+  .decision .approve[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .decision .changes[aria-pressed="true"] { background: var(--fix); border-color: var(--fix); color: #fff; }
+  .decision button:disabled { opacity: .5; cursor: not-allowed; }
+  .decision-state { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
+  .thread { padding: 16px; overflow: auto; }
+  .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .comment { display: grid; grid-template-columns: 26px 1fr; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .comment.hot { border-color: var(--fix); }
+  .comment.resolved { opacity: .55; }
+  .num { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+  .num.general { background: #E3E6EB; color: var(--muted); }
+  .comment p { margin: 0 0 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .comment .meta { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
+  .comments .empty { color: var(--muted); font-size: 13px; }
+  .composer { border-top: 1px solid var(--line); padding: 12px 16px 16px; }
+  .composer p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+  .composer textarea { resize: vertical; min-height: 64px; }
+  .composer .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+  .composer .row .spacer { flex: 1; }
+  .mic { display: inline-flex; align-items: center; gap: 6px; }
+  .mic svg { width: 16px; height: 16px; flex: none; }
+  .mic.recording { background: var(--fix-bg); border-color: var(--fix); color: var(--fix); font-variant-numeric: tabular-nums; }
+  .mic.recording svg { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .rec-preview { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+  .rec-preview .rec-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+  audio { width: 100%; height: 36px; display: block; }
+  .voice { display: flex; flex-direction: column; gap: 2px; margin: 0 0 4px; }
+  .voice small { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+  .voice small a { color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .board { grid-template-columns: 1fr; }
+    .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
+    .rv-body { grid-template-columns: 1fr; grid-template-rows: auto auto; overflow: auto; }
+    .details { grid-template-columns: 1fr; }
+    .panel { border-left: 0; border-top: 1px solid var(--line); }
+    figure.slide img { max-height: 60vh; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <div id="configError" class="login" hidden><h1>Setup needed</h1><p>Fill in config.js with your Supabase details (see the setup guide).</p></div>
+
+  <!-- Sign in -->
+  <section id="loginView" class="login" hidden>
+    <h1>Slide Review</h1>
+    <p>Sign in with your team account to review slides.</p>
+    <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username"></label>
+    <label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password"></label>
+    <button id="signInBtn" class="primary">Sign in</button>
+    <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- Board -->
+  <div id="boardView" hidden>
+    <header class="topbar">
+      <h1>Slide Review</h1>
+      <div class="tabs" role="group" aria-label="Show">
+        <button id="tabWaiting" aria-pressed="true">Waiting for review</button>
+        <button id="tabAll" aria-pressed="false">All slides</button>
+      </div>
+      <span class="me" id="me"></span>
+      <button id="signOutBtn" class="link">Sign out</button>
+    </header>
+    <div class="board">
+      <nav class="sidebar" aria-label="Projects"><ol id="projects" class="projects"></ol></nav>
+      <main class="content" id="content"></main>
+    </div>
+  </div>
+
+  <!-- Review one slide -->
+  <div id="reviewView" class="review" hidden role="dialog" aria-modal="true" aria-labelledby="rvSlide">
+    <header class="rv-bar">
+      <button id="backBtn" class="ghost">Back to slides</button>
+      <div class="rv-title"><strong id="rvSlide"></strong><span id="rvProject"></span></div>
+      <label><span class="sr" hidden>Version</span><select id="versionSelect" aria-label="Version"></select></label>
+      <div class="navbtns">
+        <button id="prevBtn" class="ghost" aria-label="Previous slide">‹</button>
+        <button id="nextBtn" class="ghost" aria-label="Next slide">›</button>
+      </div>
+    </header>
+    <div class="rv-body">
+      <div class="stage">
+        <div class="stage-inner">
+          <div id="olderBanner" class="older" hidden><span id="olderText"></span><button id="toLatest" class="link">View latest</button></div>
+          <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
+          <div id="rvDetails" class="details" aria-label="Slide details"></div>
+        </div>
+      </div>
+      <aside class="panel">
+        <div class="panel-top">
+          <p class="by" id="rvBy"></p>
+          <p class="note" id="rvNote" hidden></p>
+          <div class="decision">
+            <button id="approveBtn" class="approve" aria-pressed="false">Approve</button>
+            <button id="changesBtn" class="changes" aria-pressed="false">Request changes</button>
+          </div>
+          <p class="decision-state" id="decisionState"></p>
+        </div>
+        <div class="thread">
+          <h3 id="commentCount">Comments</h3>
+          <ol id="comments" class="comments"></ol>
+        </div>
+        <div class="composer">
+          <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
+          <div class="rec-preview" id="recPreview" hidden>
+            <audio id="recAudio" controls preload="metadata"></audio>
+            <div class="rec-row"><span id="recLen"></span><button id="recDiscard" class="link">Discard</button></div>
+          </div>
+          <textarea id="commentBody" aria-label="Comment" placeholder="Write a comment"></textarea>
+          <div class="row">
+            <button id="recBtn" class="ghost mic" title="Record a voice note, up to 2 minutes"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Record voice</span></button>
+            <span class="spacer"></span>
+            <button id="removePin" class="ghost" hidden>Remove pin</button>
+            <button id="sendComment" class="primary">Add comment</button>
+          </div>
+          <p id="rvMsg" class="msg" role="status" aria-live="polite"></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+const cfg = window.SLIDE_REVIEW_CONFIG || {};
+const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Changes requested" };
+const S = { sb: null, user: null, shots: [], comments: {}, urls: {}, versions: {}, projects: {}, filter: "waiting", project: null, slideKey: null, shotId: null, draft: null, hot: null };
+const $ = (id) => document.getElementById(id);
+const keyOf = (s) => s.file_key + "|" + s.slide_id;
+const displayName = (u) => (u && u.user_metadata && u.user_metadata.name) || (u && u.email ? u.email.split("@")[0] : "");
+function debounce(fn, ms) { let t; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; }
+function say(el, text, kind) { el.textContent = text || ""; el.className = "msg" + (kind ? " " + kind : ""); }
+function ago(iso) {
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return "just now"; if (m < 60) return m + " min ago";
+  const h = Math.round(m / 60); if (h < 24) return h + " h ago";
+  return new Date(iso).toLocaleDateString([], { day: "numeric", month: "short" });
+}
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+/* ---------- data ---------- */
+async function loadAll() {
+  const since = new Date(Date.now() - (cfg.DAYS_TO_SHOW || 21) * 864e5).toISOString();
+  const { data, error } = await S.sb.from("slide_shots").select("*").gte("created_at", since).order("created_at", { ascending: false }).limit(3000);
+  if (error) throw error;
+  S.shots = data;
+  S.comments = {};
+  const ids = data.map((r) => r.id);
+  for (let i = 0; i < ids.length; i += 150) {
+    const res = await S.sb.from("shot_comments").select("*").in("shot_id", ids.slice(i, i + 150)).order("created_at");
+    if (res.error) throw res.error;
+    res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
+  }
+  buildIndex();
+}
+function buildIndex() {
+  S.versions = {};
+  S.shots.forEach((s) => { (S.versions[keyOf(s)] = S.versions[keyOf(s)] || []).push(s); });
+  Object.values(S.versions).forEach((a) => a.sort((x, y) => y.version - x.version));
+  S.projects = {};
+  Object.values(S.versions).forEach((a) => {
+    const l = a[0];
+    const p = S.projects[l.project] = S.projects[l.project] || { name: l.project, slides: [], designers: new Set(), waiting: 0, lastAt: "" };
+    p.slides.push(l); p.designers.add(l.designer);
+    if (l.status === "ready") p.waiting++;
+    if (l.created_at > p.lastAt) p.lastAt = l.created_at;
+  });
+  Object.values(S.projects).forEach((p) => p.slides.sort((a, b) => a.designer.localeCompare(b.designer) || a.slide_number - b.slide_number));
+}
+async function ensureUrls(shots) {
+  const now = Date.now();
+  const need = [...new Set(shots.map((s) => s.image_path))].filter((p) => !S.urls[p] || S.urls[p].exp < now + 60000);
+  for (let i = 0; i < need.length; i += 100) {
+    const { data, error } = await S.sb.storage.from("slides").createSignedUrls(need.slice(i, i + 100), 3600);
+    if (error) throw error;
+    data.forEach((d) => { if (d.signedUrl) S.urls[d.path] = { url: d.signedUrl, exp: now + 3600 * 1000 }; });
+  }
+}
+const urlFor = (s) => (S.urls[s.image_path] || {}).url || "";
+const pinnedNumbers = (cs) => { let n = 0; const m = {}; cs.forEach((c) => { if (c.x !== null && c.y !== null) m[c.id] = ++n; }); return m; };
+
+/* ---------- board ---------- */
+function visibleProjects() {
+  return Object.values(S.projects)
+    .filter((p) => S.filter === "all" || p.waiting > 0)
+    .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || b.lastAt.localeCompare(a.lastAt));
+}
+async function renderBoard() {
+  const totalWaiting = Object.values(S.projects).reduce((n, p) => n + p.waiting, 0);
+  $("tabWaiting").textContent = "Waiting for review" + (totalWaiting ? " (" + totalWaiting + ")" : "");
+  $("tabWaiting").setAttribute("aria-pressed", String(S.filter === "waiting"));
+  $("tabAll").setAttribute("aria-pressed", String(S.filter === "all"));
+  $("me").textContent = displayName(S.user);
+
+  const projects = visibleProjects();
+  if (!projects.find((p) => p.name === S.project)) S.project = projects.length ? projects[0].name : null;
+
+  const list = $("projects"); list.innerHTML = "";
+  projects.forEach((p) => {
+    const li = el("li"); const b = el("button");
+    if (p.name === S.project) b.setAttribute("aria-current", "true");
+    b.append(el("strong", "", p.name), el("span", "count" + (p.waiting ? "" : " zero"), p.waiting ? p.waiting : "0"), el("small", "", [...p.designers].join(", ") + ", " + ago(p.lastAt)));
+    b.onclick = () => { S.project = p.name; renderBoard(); };
+    li.append(b); list.append(li);
+  });
+
+  const c = $("content"); c.innerHTML = "";
+  if (!S.project) {
+    const e = el("div", "empty-state");
+    e.append(el("strong", "", S.filter === "waiting" ? "Nothing waiting for review" : "No slides yet"),
+      document.createTextNode(S.filter === "waiting" ? "New slides appear here as soon as a designer marks them ready." : "Slides show up here once designers mark them ready in PowerPoint."));
+    c.append(e); return;
+  }
+  const p = S.projects[S.project];
+  const slides = p.slides.filter((s) => S.filter === "all" || s.status === "ready");
+  const head = el("div", "content-head");
+  head.append(el("h2", "", p.name), el("p", "", p.waiting + " waiting, " + p.slides.filter((s) => s.status === "approved").length + " approved, " + p.slides.length + " sent"));
+  c.append(head);
+
+  const multi = p.designers.size > 1;
+  const grid = el("div", "cards");
+  slides.forEach((s) => {
+    const b = el("button", "slide-card");
+    const box = el("span", "img"); const img = new Image(); img.alt = "Slide " + s.slide_number; img.loading = "lazy"; img.dataset.path = s.image_path;
+    box.append(img);
+    const info = el("span", "info");
+    const cs = S.comments[s.id] || [];
+    const open = cs.filter((x) => !x.resolved).length;
+    info.append(el("strong", "", "Slide " + s.slide_number + (multi ? ", " + s.designer : "")), el("span", "pill " + s.status, STATUS_LABEL[s.status]),
+      el("small", "", (multi ? "" : s.designer + ", ") + ago(s.created_at) + (s.version > 1 ? ", v" + s.version : "") + (open ? ", " + open + " open comment" + (open > 1 ? "s" : "") : "")));
+    b.append(box, info);
+    b.onclick = () => openReview(keyOf(s));
+    grid.append(b);
+  });
+  c.append(grid);
+  try { await ensureUrls(slides); } catch (e) {}
+  grid.querySelectorAll("img[data-path]").forEach((img) => { const u = (S.urls[img.dataset.path] || {}).url; if (u) img.src = u; });
+}
+
+/* ---------- review ---------- */
+function projectSlides() { const p = S.projects[S.project]; return p ? p.slides : []; }
+function openReview(slideKey, shotId) {
+  S.slideKey = slideKey; S.shotId = shotId || null; S.draft = null; S.hot = null;
+  $("commentBody").value = ""; say($("rvMsg"), "");
+  $("reviewView").hidden = false;
+  renderReview();
+  $("backBtn").focus();
+}
+function closeReview() { $("reviewView").hidden = true; S.slideKey = null; renderBoard(); }
+function currentShot() {
+  const vers = S.versions[S.slideKey]; if (!vers) return null;
+  return vers.find((v) => v.id === S.shotId) || vers[0];
+}
+async function renderReview() {
+  const shot = currentShot(); if (!shot) { closeReview(); return; }
+  S.shotId = shot.id;
+  const vers = S.versions[S.slideKey];
+  const latest = vers[0], isLatest = shot.id === latest.id;
+
+  $("rvSlide").textContent = "Slide " + shot.slide_number + " of " + shot.total_slides;
+  $("rvProject").textContent = shot.project;
+  const sel = $("versionSelect"); sel.innerHTML = "";
+  vers.forEach((v) => { const o = el("option", "", "v" + v.version + ", " + ago(v.created_at)); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
+  sel.hidden = vers.length < 2;
+  $("olderBanner").hidden = isLatest;
+  $("olderText").textContent = "You're viewing v" + shot.version + ". The latest is v" + latest.version + ".";
+
+  const list = projectSlides(); const i = list.findIndex((s) => keyOf(s) === S.slideKey);
+  $("prevBtn").disabled = i <= 0; $("nextBtn").disabled = i < 0 || i >= list.length - 1;
+
+  $("rvBy").innerHTML = ""; $("rvBy").append("Sent by ", el("strong", "", shot.designer), ", " + ago(shot.created_at));
+  $("rvNote").hidden = !shot.note; $("rvNote").textContent = shot.note || "";
+
+  $("approveBtn").setAttribute("aria-pressed", String(shot.status === "approved"));
+  $("changesBtn").setAttribute("aria-pressed", String(shot.status === "changes"));
+  $("approveBtn").disabled = $("changesBtn").disabled = !isLatest;
+  $("decisionState").textContent = !isLatest ? "Decisions apply to the latest version." :
+    shot.reviewed_by ? STATUS_LABEL[shot.status] + " by " + shot.reviewed_by + ", " + ago(shot.reviewed_at) : "Not reviewed yet.";
+
+  // image
+  const img = $("rvImg"); img.alt = "Slide " + shot.slide_number + ", version " + shot.version;
+  try { await ensureUrls([shot]); } catch (e) {}
+  if (img.src !== urlFor(shot)) img.src = urlFor(shot);
+
+  renderComments(shot);
+  renderDetails(shot, vers);
+}
+function renderComments(shot) {
+  const cs = S.comments[shot.id] || [];
+  const nums = pinnedNumbers(cs);
+  const pins = $("pins"); pins.innerHTML = "";
+  cs.forEach((c) => {
+    if (!nums[c.id]) return;
+    const p = el("button", "pin" + (c.resolved ? " resolved" : "") + (S.hot === c.id ? " hot" : ""));
+    p.style.left = (c.x * 100) + "%"; p.style.top = (c.y * 100) + "%";
+    p.setAttribute("aria-label", "Comment " + nums[c.id]);
+    p.append(el("span", "", nums[c.id]));
+    p.onclick = (e) => { e.stopPropagation(); S.hot = c.id; renderComments(shot); const t = document.querySelector('[data-cid="' + c.id + '"]'); if (t) t.scrollIntoView({ block: "nearest" }); };
+    pins.append(p);
+  });
+  if (S.draft) {
+    const d = el("span", "pin draft"); d.style.left = (S.draft.x * 100) + "%"; d.style.top = (S.draft.y * 100) + "%";
+    d.append(el("span", "", Object.keys(nums).length + 1)); pins.append(d);
+  }
+  $("pinHint").textContent = S.draft ? "Pin " + (Object.keys(nums).length + 1) + " placed. Write what should change there." : "Click anywhere on the slide to pin a comment, or write a general comment.";
+  $("removePin").hidden = !S.draft;
+
+  const open = cs.filter((c) => !c.resolved).length;
+  $("commentCount").textContent = cs.length ? cs.length + " comment" + (cs.length > 1 ? "s" : "") + (open !== cs.length ? ", " + open + " open" : "") : "Comments";
+  const list = $("comments"); list.innerHTML = "";
+  if (!cs.length) { list.append(el("li", "empty", "No comments yet.")); }
+  cs.forEach((c) => {
+    const li = el("li", "comment" + (c.resolved ? " resolved" : "") + (S.hot === c.id ? " hot" : "")); li.dataset.cid = c.id;
+    li.onmouseenter = () => { S.hot = c.id; renderPinsOnly(shot); };
+    li.onmouseleave = () => { S.hot = null; renderPinsOnly(shot); };
+    const n = el("span", "num" + (nums[c.id] ? "" : " general"), nums[c.id] || "•");
+    const body = el("div");
+    if (c.audio_path) body.append(voiceEl(c));
+    if (c.body) body.append(el("p", "", c.body));
+    const meta = el("div", "meta"); meta.append(el("span", "", c.author + ", " + ago(c.created_at)));
+    const r = el("button", "link", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c);
+    meta.append(r); body.append(meta); li.append(n, body); list.append(li);
+  });
+  fillVoiceSources(cs);
+}
+// ---- voice notes
+const MAX_REC = 120; // seconds
+const REC = { rec: null, chunks: [], blob: null, url: null, start: 0, timer: null, stream: null, duration: 0 };
+const VOICE = new Map(); // comment id -> element, reused so playback survives re-renders
+const fmtDur = (sec) => { const t = Math.max(0, Math.floor(sec)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+function pickMime() {
+  const c = ["audio/mp4;codecs=mp4a.40.2", "audio/mp4", "audio/aac", "audio/webm;codecs=opus", "audio/webm"];
+  return window.MediaRecorder ? (c.find((t) => MediaRecorder.isTypeSupported(t)) || "") : "";
+}
+async function toggleRecording() {
+  if (REC.rec && REC.rec.state === "recording") { REC.rec.stop(); return; }
+  if (!window.MediaRecorder || !navigator.mediaDevices) { say($("rvMsg"), "This browser can't record audio. Try Chrome.", "err"); return; }
+  try { REC.stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch (e) { say($("rvMsg"), "Microphone access was blocked. Allow it from the icon in the address bar, then try again.", "err"); return; }
+  discardRecording(true); REC.chunks = [];
+  const mime = pickMime();
+  REC.rec = new MediaRecorder(REC.stream, mime ? { mimeType: mime, audioBitsPerSecond: 64000 } : {});
+  REC.rec.ondataavailable = (e) => { if (e.data && e.data.size) REC.chunks.push(e.data); };
+  REC.rec.onstop = () => {
+    clearInterval(REC.timer); REC.stream.getTracks().forEach((t) => t.stop());
+    REC.duration = Math.min(MAX_REC, (Date.now() - REC.start) / 1000);
+    REC.blob = REC.chunks.length ? new Blob(REC.chunks, { type: REC.rec.mimeType || mime || "audio/webm" }) : null;
+    renderRecUI();
+  };
+  REC.start = Date.now(); REC.rec.start(250); say($("rvMsg"), "");
+  REC.timer = setInterval(() => { if ((Date.now() - REC.start) / 1000 >= MAX_REC && REC.rec.state === "recording") REC.rec.stop(); renderRecUI(); }, 250);
+  renderRecUI();
+}
+function discardRecording(silent) {
+  if (REC.url) URL.revokeObjectURL(REC.url);
+  REC.blob = null; REC.url = null; REC.duration = 0;
+  if (!silent) renderRecUI();
+}
+function renderRecUI() {
+  const btn = $("recBtn"); const recording = !!(REC.rec && REC.rec.state === "recording");
+  btn.classList.toggle("recording", recording);
+  btn.lastChild.textContent = recording ? "Stop " + fmtDur((Date.now() - REC.start) / 1000) + " / 2:00" : REC.blob ? "Record again" : "Record voice";
+  $("recPreview").hidden = !REC.blob || recording;
+  if (REC.blob && !recording) {
+    if (!REC.url) REC.url = URL.createObjectURL(REC.blob);
+    if ($("recAudio").src !== REC.url) $("recAudio").src = REC.url;
+    $("recLen").textContent = "Voice note, " + fmtDur(REC.duration);
+  }
+  $("commentBody").placeholder = REC.blob ? "Add a written note (optional)" : "Write a comment";
+}
+function voiceEl(c) {
+  let w = VOICE.get(c.id);
+  if (!w) {
+    w = el("div", "voice");
+    const a = document.createElement("audio"); a.controls = true; a.preload = "metadata";
+    const sm = el("small"); sm.append(el("span", "", "Voice note" + (c.audio_duration ? ", " + fmtDur(c.audio_duration) : "")));
+    const link = document.createElement("a"); link.textContent = "Open"; link.target = "_blank"; link.rel = "noopener"; link.hidden = true;
+    sm.append(link); w.append(a, sm); VOICE.set(c.id, w);
+  }
+  return w;
+}
+async function fillVoiceSources(cs) {
+  const withAudio = cs.filter((c) => c.audio_path);
+  if (!withAudio.length) return;
+  try { await ensureUrls(withAudio.map((c) => ({ image_path: c.audio_path }))); } catch (e) { return; }
+  withAudio.forEach((c) => {
+    const w = VOICE.get(c.id); const u = (S.urls[c.audio_path] || {}).url; if (!w || !u) return;
+    const a = w.querySelector("audio"), link = w.querySelector("a");
+    if (!a.getAttribute("src")) a.src = u;
+    link.href = u; link.hidden = false;
+  });
+}
+const SMALL_PT = 10; // flag text smaller than this
+const fmtPt = (n) => (Math.round(n * 2) / 2).toString();
+function renderDetails(shot, vers) {
+  const box = $("rvDetails"); box.innerHTML = "";
+  const d = shot.details;
+  if (!d) { box.append(el("p", "details-missing", "Font and speaker-note details weren't captured for this version.")); return; }
+  if (d.error) { box.append(el("p", "details-missing", "Details couldn't be read on the designer's computer: " + d.error + ".")); return; }
+
+  // Fonts
+  const fc = el("section", "dcard"); const fh = el("div", "dhead"); fh.append(el("h3", "", "Fonts"));
+  const families = new Set(d.fonts.map((f) => f.font));
+  const meta = [];
+  if (families.size) meta.push(families.size + (families.size > 1 ? " families" : " family"));
+  if (d.smallest !== null && d.smallest !== undefined) meta.push("smallest " + fmtPt(d.smallest) + "pt");
+  const small = d.smallest !== null && d.smallest < SMALL_PT;
+  fh.append(small ? el("span", "pill changes", "Text under " + SMALL_PT + "pt") : el("span", "dmeta", meta.join(", ")));
+  fc.append(fh);
+  if (!d.fonts.length) fc.append(el("p", "dmeta", "No text on this slide."));
+  else {
+    const t = el("table", "ftable"); const head = el("tr");
+    ["Font", "Size", "Used in"].forEach((h) => head.append(el("th", "", h)));
+    t.append(head);
+    d.fonts.forEach((f) => {
+      const tr = el("tr");
+      tr.append(el("td", "", f.font));
+      tr.append(el("td", "size" + (f.size < SMALL_PT ? " small" : ""), fmtPt(f.size) + "pt"));
+      const used = el("td"); used.append(document.createTextNode(f.roles.join(", ") + (f.count > 1 ? " (" + f.count + "×)" : "")));
+      if (f.sample) { const sm = el("small", "", "“" + f.sample + "”"); sm.title = f.sample; used.append(sm); }
+      tr.append(used); t.append(tr);
+    });
+    fc.append(t);
+  }
+  if (small) fc.append(el("p", "dnote", meta.join(", ") + "."));
+  if (d.shrunk && d.shrunk.length) fc.append(el("p", "dnote", "Autofit is shrinking text in: " + d.shrunk.join(", ") + ". Sizes shown are as displayed."));
+  box.append(fc);
+
+  // Speaker notes, shown as-is; the DM compares them with the client's original file
+  const nc = el("section", "dcard"); const nh = el("div", "dhead"); nh.append(el("h3", "", "Speaker notes"));
+  nc.append(nh);
+  nc.append(d.notes.present ? el("p", "notes-text", d.notes.text) : el("p", "dmeta", "This slide has no speaker notes."));
+  box.append(nc);
+}
+function renderPinsOnly(shot) {
+  const cs = S.comments[shot.id] || []; const nums = pinnedNumbers(cs);
+  const pins = [...document.querySelectorAll("#pins .pin:not(.draft)")];
+  cs.filter((c) => nums[c.id]).forEach((c, i) => { if (pins[i]) pins[i].classList.toggle("hot", S.hot === c.id); });
+}
+
+/* ---------- actions ---------- */
+async function addComment() {
+  const shot = currentShot(); const body = $("commentBody").value.trim();
+  if (REC.rec && REC.rec.state === "recording") { say($("rvMsg"), "Stop the recording first.", "err"); return; }
+  const hasAudio = !!REC.blob;
+  if (!shot || (!body && !hasAudio)) { say($("rvMsg"), "Write a comment or record a voice note first.", "err"); return; }
+  $("sendComment").disabled = true;
+  let audio_path = null;
+  if (hasAudio) {
+    say($("rvMsg"), "Uploading voice note…");
+    const type = (REC.blob.type || "audio/webm").split(";")[0];
+    const ext = type.includes("mp4") || type.includes("aac") ? "m4a" : type.includes("ogg") ? "ogg" : "webm";
+    audio_path = "audio/" + shot.id + "/" + Date.now() + "." + ext;
+    const up = await S.sb.storage.from("slides").upload(audio_path, REC.blob, { contentType: type });
+    if (up.error) { $("sendComment").disabled = false; say($("rvMsg"), "Voice note wasn't uploaded: " + up.error.message, "err"); return; }
+  }
+  const row = { shot_id: shot.id, author: displayName(S.user), body: body, x: S.draft ? S.draft.x : null, y: S.draft ? S.draft.y : null,
+    audio_path: audio_path, audio_duration: hasAudio ? Math.round(REC.duration * 10) / 10 : null };
+  const { data, error } = await S.sb.from("shot_comments").insert(row).select().single();
+  $("sendComment").disabled = false;
+  if (error) { say($("rvMsg"), "Comment wasn't saved: " + error.message, "err"); return; }
+  (S.comments[shot.id] = S.comments[shot.id] || []).push(data);
+  $("commentBody").value = ""; S.draft = null; say($("rvMsg"), "");
+  discardRecording();
+  renderComments(shot);
+}
+async function toggleResolved(c) {
+  const { error } = await S.sb.from("shot_comments").update({ resolved: !c.resolved }).eq("id", c.id);
+  if (error) { say($("rvMsg"), "Couldn't update the comment: " + error.message, "err"); return; }
+  c.resolved = !c.resolved; renderComments(currentShot());
+}
+async function decide(status) {
+  const shot = currentShot(); if (!shot) return;
+  const next = shot.status === status ? "ready" : status; // pressing again undoes the decision
+  const patch = { status: next, reviewed_by: next === "ready" ? null : displayName(S.user), reviewed_at: next === "ready" ? null : new Date().toISOString() };
+  const { error } = await S.sb.from("slide_shots").update(patch).eq("id", shot.id);
+  if (error) { say($("rvMsg"), "Couldn't save the decision: " + error.message, "err"); return; }
+  Object.assign(shot, patch); buildIndex(); renderReview();
+}
+function step(dir) {
+  const list = projectSlides(); const i = list.findIndex((s) => keyOf(s) === S.slideKey);
+  const t = list[i + dir]; if (t) openReview(keyOf(t));
+}
+
+/* ---------- auth + start ---------- */
+async function signIn() {
+  const email = $("email").value.trim(), password = $("password").value;
+  if (!email || !password) { say($("loginMsg"), "Enter your email and password.", "err"); return; }
+  $("signInBtn").disabled = true; say($("loginMsg"), "Signing in…");
+  const { data, error } = await S.sb.auth.signInWithPassword({ email: email, password: password });
+  $("signInBtn").disabled = false;
+  if (error) { say($("loginMsg"), "Sign-in failed: " + error.message, "err"); return; }
+  say($("loginMsg"), ""); enter(data.user);
+}
+async function enter(user) {
+  S.user = user;
+  $("loginView").hidden = true; $("boardView").hidden = false;
+  $("content").innerHTML = '<p class="empty-state">Loading slides…</p>';
+  try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
+  renderBoard();
+  const reload = debounce(async () => { try { await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview(); } catch (e) {} }, 500);
+  S.sb.channel("review-board")
+    .on("postgres_changes", { event: "*", schema: "public", table: "slide_shots" }, reload)
+    .on("postgres_changes", { event: "*", schema: "public", table: "shot_comments" }, reload)
+    .subscribe();
+}
+
+(async function start() {
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { $("configError").hidden = false; return; }
+  S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+
+  $("signInBtn").onclick = signIn;
+  $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
+  $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); location.reload(); };
+  $("tabWaiting").onclick = () => { S.filter = "waiting"; renderBoard(); };
+  $("tabAll").onclick = () => { S.filter = "all"; renderBoard(); };
+  $("backBtn").onclick = closeReview;
+  $("prevBtn").onclick = () => step(-1);
+  $("nextBtn").onclick = () => step(1);
+  $("versionSelect").onchange = (e) => { S.shotId = e.target.value; S.draft = null; renderReview(); };
+  $("toLatest").onclick = () => { S.shotId = null; S.draft = null; renderReview(); };
+  $("approveBtn").onclick = () => decide("approved");
+  $("changesBtn").onclick = () => decide("changes");
+  $("sendComment").onclick = addComment;
+  $("recBtn").onclick = toggleRecording;
+  $("recDiscard").onclick = () => discardRecording();
+  $("removePin").onclick = () => { S.draft = null; renderComments(currentShot()); };
+  $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) addComment(); });
+
+  $("figure").addEventListener("click", (e) => {
+    if (e.target.closest(".pin:not(.draft)")) return;
+    const r = $("rvImg").getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    if (x < 0 || x > 1 || y < 0 || y > 1) return;
+    S.draft = { x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000 };
+    renderComments(currentShot());
+    $("commentBody").focus();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if ($("reviewView").hidden) return;
+    const typing = /^(TEXTAREA|INPUT|SELECT)$/.test(document.activeElement.tagName);
+    if (e.key === "Escape") { if (S.draft) { S.draft = null; renderComments(currentShot()); } else if (!typing) closeReview(); }
+    if (!typing && e.key === "ArrowLeft") step(-1);
+    if (!typing && e.key === "ArrowRight") step(1);
+  });
+
+  const { data } = await S.sb.auth.getSession();
+  if (data.session) enter(data.session.user); else { $("loginView").hidden = false; $("email").focus(); }
+})();
+</script>
+</body>
+</html>
