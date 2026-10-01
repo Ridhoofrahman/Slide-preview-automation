@@ -438,6 +438,7 @@ function renderDetails(shot, vers) {
   const box = $("rvDetails"); box.innerHTML = "";
   const d = shot.details;
   if (!d) { box.append(el("p", "details-missing", "Font and speaker-note details weren't captured for this version.")); return; }
+  if (d.error) { box.append(el("p", "details-missing", "Details couldn't be read on the designer's computer: " + d.error + ".")); return; }
 
   // Fonts
   const fc = el("section", "dcard"); const fh = el("div", "dhead"); fh.append(el("h3", "", "Fonts"));

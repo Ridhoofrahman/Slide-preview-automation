@@ -216,8 +216,19 @@ async function slideExport(id) {
 }
 // Fonts, sizes and speaker notes for the DM. Never blocks sending if it fails.
 async function readDetails(id) {
-  try { return await window.SlideDetails.fromBase64(await slideExport(id)); }
-  catch (e) { console.warn("Slide details not captured:", e); return null; }
+  let stage = "load";
+  try {
+    if (!window.JSZip || !window.SlideDetails) throw new Error("inspector scripts did not load");
+    stage = "export";
+    const b64 = await slideExport(id);
+    if (!b64) throw new Error("PowerPoint returned an empty export");
+    stage = "parse";
+    return await window.SlideDetails.fromBase64(b64);
+  } catch (e) {
+    console.warn("Slide details not captured:", e);
+    const msg = (e && e.code ? e.code + ": " : "") + ((e && e.message) || String(e));
+    return { version: 1, error: stage + " step failed (" + msg + ")" };
+  }
 }
 async function selectSlide(id) {
   await PowerPoint.run(async (ctx) => { ctx.presentation.setSelectedSlides([id]); await ctx.sync(); });
