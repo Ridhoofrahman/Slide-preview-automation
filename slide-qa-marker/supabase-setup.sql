@@ -64,3 +64,8 @@ alter table public.slide_shots add column if not exists details jsonb;
 
 -- 7. Voice notes on comments (up to 2 minutes) — added later
 alter table public.shot_comments add column if not exists audio_path text, add column if not exists audio_duration real;
+
+-- 8. Let the team delete finished projects (rows, comments and files) — added later
+create policy "team deletes shots"       on public.slide_shots   for delete to authenticated using (true);
+create policy "team deletes comments"    on public.shot_comments for delete to authenticated using (true);
+create policy "team deletes slide files" on storage.objects      for delete to authenticated using (bucket_id = 'slides');
