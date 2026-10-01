@@ -11,28 +11,25 @@
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Poppins:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* From Figma: Task pane / Not sent yet */
-    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --muted: #5A6575;
-    --link: #1F3A93; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
-    --field-label: #2A3142; --field-border: #CDD7E5; --field-placeholder: #6D7395;
-    --tag-bg: #F7F7F7; --tag-border: #CACACA; --tag-text: #393939;
-    --wait: #8A6412; --wait-bg: #FBF1D9; --wait-border: #E6CD8F;
-    --ok: #1E8A5A;   --ok-bg: #E4F3EB;   --ok-border: #A9D6BE;
-    --fix: #B4441B;  --fix-bg: #FBEAE2;  --fix-border: #EDB9A2;
-    --line: #DCE0E6;
+    /* From Figma: QA Checkpoint task pane */
+    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --muted: #5A6575; --title: #000000; --body: #393939; --secondary: #808080;
+    --link: #1F3A93; --slide-link: #002671; --pin: #002671; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
+    --line: #DCE0E6; --line-soft: #E5E5E5;
+    --tag-none-bg: #F7F7F7; --tag-none-bd: #CACACA; --tag-none-fg: #393939;
+    --tag-wait-bg: #FDF5E6; --tag-wait-bd: #F4CC7F; --tag-wait-fg: #BC7B00;
+    --tag-fix-bg: #FAE9EB;  --tag-fix-bd: #E48F9A;  --tag-fix-fg: #CA2135;
+    --tag-ok-bg: #E6F8F2;   --tag-ok-bd: #7FD8BD;   --tag-ok-fg: #008F64;
     --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
-    --font-field: "Poppins", "Segoe UI", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 20px; }
   main { padding: 16px 16px 32px; max-width: 520px; margin: 0 auto; }
   button, input, textarea { font: inherit; color: inherit; }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   [hidden] { display: none !important; }
-
   .stack { display: flex; flex-direction: column; gap: 20px; }
 
   /* Header */
@@ -45,60 +42,82 @@
   #reviewLinkWrap { display: flex; line-height: 0; }
   #reviewLinkWrap:empty { display: none; }
 
+  /* Tag (Figma: Slide status) */
+  .tag { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 2px 10px; border-radius: 20px; border: 1px solid var(--tag-none-bd); background: var(--tag-none-bg); color: var(--tag-none-fg); font-size: 14px; line-height: 20px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .tag.ready { background: var(--tag-wait-bg); border-color: var(--tag-wait-bd); color: var(--tag-wait-fg); }
+  .tag.changes { background: var(--tag-fix-bg); border-color: var(--tag-fix-bd); color: var(--tag-fix-fg); }
+  .tag.approved { background: var(--tag-ok-bg); border-color: var(--tag-ok-bd); color: var(--tag-ok-fg); }
+
   /* Slide */
   .slide { display: flex; flex-direction: column; gap: 12px; }
   .meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
-  .slide-label { font-size: 13px; line-height: 1.45; color: var(--muted); white-space: nowrap; }
-  .tag { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 2px 10px; border-radius: 20px; border: 1px solid var(--tag-border); background: var(--tag-bg); color: var(--tag-text); font-size: 14px; line-height: 20px; white-space: nowrap; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
-  .tag.ready { background: var(--wait-bg); border-color: var(--wait-border); color: var(--wait); }
-  .tag.approved { background: var(--ok-bg); border-color: var(--ok-border); color: var(--ok); }
-  .tag.changes { background: var(--fix-bg); border-color: var(--fix-border); color: var(--fix); }
+  .slide-label { font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
   .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #E9ECF0; }
   .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tpins { position: absolute; inset: 0; pointer-events: none; }
-  .tpin { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: #fff; border: 2px solid #fff; font-size: 10px; font-weight: 500; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(24,32,43,.35); }
+  .tpin { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--pin); color: #fff; border: 2px solid #fff; font-size: 10px; font-weight: 500; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(24,32,43,.35); }
   .tpin.resolved { background: #8C95A3; }
 
-  /* Feedback */
-  .feedback { display: flex; flex-direction: column; gap: 8px; }
-  .feedback-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .feedback-head h2 { font-size: 14px; line-height: 20px; font-weight: 500; margin: 0; }
-  .feedback-head small { font-size: 12px; color: var(--muted); }
-  .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .comment { display: grid; grid-template-columns: 22px 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--field-border); border-radius: 8px; padding: 10px; }
-  .comment.resolved { opacity: .55; }
-  .pin-no { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 11px; font-weight: 500; display: grid; place-items: center; }
-  .pin-no.general { background: #E3E6EB; color: var(--muted); }
-  .comment p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .comment small { color: var(--muted); font-size: 12px; }
-  .empty { color: var(--muted); font-size: 13px; }
-
-  /* Field (Figma: Input long text) */
-  .field { display: flex; flex-direction: column; gap: 4px; }
-  .field-label { font-family: var(--font-field); font-size: 14px; line-height: 22px; color: var(--field-label); }
-  .field input, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--field-border); border-radius: 4px; padding: 9px 8px; font-family: var(--font-field); font-size: 14px; line-height: 22px; color: var(--ink); }
-  .field textarea { height: 88px; resize: none; }
-  .field input::placeholder, .field textarea::placeholder { color: var(--field-placeholder); opacity: 1; }
+  /* Field (Figma: Fields) */
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field-label { font-size: 16px; line-height: 24px; color: var(--title); }
+  .field input, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--line-soft); border-radius: 8px; padding: 9px 8px; font-family: var(--font); font-size: 16px; line-height: 24px; color: var(--ink); }
+  .field textarea { height: 103px; resize: none; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 1; }
   .field input:focus, .field textarea:focus { border-color: var(--focus); outline: none; }
 
   /* Button (Figma: Button) */
   .primary { width: 100%; height: 40px; border: 0; border-radius: 8px; padding: 8px 20px; cursor: pointer; background: var(--primary); color: #fff; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; }
   .primary:hover:not(:disabled) { background: var(--primary-hover); }
   .primary:disabled { opacity: .5; cursor: not-allowed; }
+  .actions { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Feedback */
+  .feedback { display: flex; flex-direction: column; gap: 8px; }
+  .feedback-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .feedback-head h2 { font-size: 16px; line-height: 24px; font-weight: 500; margin: 0; }
+  .fb-meta { display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
+  .fb-meta .ver { font-weight: 500; }
+  .dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .7; }
+  .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .comment { display: grid; grid-template-columns: 22px 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .comment.resolved { opacity: .55; }
+  .pin-no { width: 22px; height: 22px; border-radius: 50%; background: var(--pin); color: #fff; font-size: 12px; line-height: 16px; font-weight: 500; display: grid; place-items: center; }
+  .pin-no.general { background: #E3E6EB; color: var(--muted); }
+  .comment div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .comment p { margin: 0; font-size: 14px; line-height: 20px; color: var(--body); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .comment small { font-size: 12px; line-height: 16px; color: var(--secondary); }
+  .empty { color: var(--muted); font-size: 14px; line-height: 20px; }
+
+  /* Summary (Figma: Summary, Closed / Opened) */
+  .summary { display: flex; flex-direction: column; gap: 16px; }
+  .summary-toggle { display: flex; align-items: center; gap: 4px; width: 100%; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; color: var(--muted); font-size: 14px; line-height: 20px; }
+  .summary-toggle .count { color: var(--ink); }
+  .summary-toggle span.txt { flex: 1; }
+  .summary-toggle svg { width: 20px; height: 20px; flex: none; color: var(--slide-link); transition: transform .15s ease; }
+  .summary-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .slide-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .slide-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line-soft); }
+  .slide-list li:first-child { border-top: 0; padding-top: 0; }
+  .slide-list li:last-child { padding-bottom: 0; }
+  .slide-list button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--slide-link); font-size: 14px; line-height: 20px; }
+  .slide-list button:hover { text-decoration: underline; text-underline-position: from-font; }
+  .slide-list li.current button { font-weight: 500; }
 
   .msg { margin: -8px 0 0; font-size: 13px; }
-  .msg.ok { color: var(--ok); }
-  .msg.err { color: var(--fix); background: var(--fix-bg); padding: 8px 10px; border-radius: 8px; }
+  .msg.ok { color: var(--tag-ok-fg); }
+  .msg.err { color: var(--tag-fix-fg); background: var(--tag-fix-bg); padding: 8px 10px; border-radius: 8px; }
   .msg:empty { display: none; }
-  .notice { background: var(--fix-bg); color: var(--fix); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
-  .foot { font-size: 12px; color: var(--muted); }
+  .notice { background: var(--tag-fix-bg); color: var(--tag-fix-fg); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+  .foot { font-size: 12px; line-height: 16px; color: var(--muted); }
   .foot .link { font-size: 12px; color: var(--muted); }
 
   /* Sign in */
   .login h1 { font-size: 20px; line-height: 32px; font-weight: 500; margin: 0; }
   .login .lead { color: var(--muted); margin: 4px 0 0; font-size: 13px; }
   .login .msg { margin: 0; }
+  @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } }
 </style>
 </head>
 <body>
@@ -135,25 +154,36 @@
       <div class="thumb"><div id="thumb" class="thumb-inner"><span>Select a slide</span></div><div id="tpins" class="tpins" aria-hidden="true"></div></div>
     </section>
 
+    <div class="actions" id="actions">
+      <label class="field"><span class="field-label">Leave note for DM</span>
+        <textarea id="note" placeholder="e.g. Used the client's new icon set on this one"></textarea>
+      </label>
+      <button id="markBtn" class="primary" disabled>Select a slide</button>
+    </div>
+    <p id="msg" class="msg" role="status" aria-live="polite"></p>
+
     <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
-      <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><small id="feedbackVersion"></small></div>
+      <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><span class="fb-meta" id="feedbackMeta"></span></div>
       <ol id="comments" class="comments"></ol>
     </section>
 
-    <label class="field"><span class="field-label">Note for DM</span>
-      <textarea id="note" placeholder="e.g. Used the client's new icon set on this one"></textarea>
-    </label>
-    <button id="markBtn" class="primary" disabled>Select a slide</button>
-    <p id="msg" class="msg" role="status" aria-live="polite"></p>
+    <section class="summary" id="summary" aria-label="Deck progress">
+      <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="slideList">
+        <span class="txt" id="summaryText"></span>
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <ul class="slide-list" id="slideList" hidden></ul>
+    </section>
 
-    <footer class="foot"><span id="whoName"></span> <button id="signOutBtn" class="link">Sign out</button></footer>
+    <footer class="foot"><span id="whoName"></span> <button id="signOutBtn" class="link">Sign out</button><span id="appVersion"></span></footer>
   </section>
 </main>
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Changes requested" };
-const S = { sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
+const APP_VERSION = "1.4";
+const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
+const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
 
 /* ---------- helpers ---------- */
@@ -248,6 +278,13 @@ async function loadReviews() {
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
 }
+let reviewsTimer = null, lastReviewLoad = 0;
+// Re-check statuses after slide changes and every 20s, in case a live update was missed.
+function refreshReviewsSoon() {
+  if (!S.user || Date.now() - lastReviewLoad < 3000) return;
+  clearTimeout(reviewsTimer);
+  reviewsTimer = setTimeout(async () => { try { lastReviewLoad = Date.now(); await loadReviews(); render(); } catch (e) {} }, 400);
+}
 function subscribe() {
   if (S.channel) S.sb.removeChannel(S.channel);
   const reload = debounce(async () => { try { await loadReviews(); render(); } catch (e) {} }, 400);
@@ -261,9 +298,16 @@ function subscribe() {
 }
 
 /* ---------- rendering ---------- */
+function makeTag(status) {
+  const t = document.createElement("span");
+  t.className = "tag " + (status || "none");
+  t.textContent = status ? STATUS_LABEL[status] : "Not sent";
+  return t;
+}
 function render() {
   const cur = currentSlide();
   const shot = cur ? S.latest[cur.id] : null;
+  const status = shot ? shot.status : null;
   const total = S.slides.length;
 
   $("projectName").value = projectName();
@@ -271,13 +315,16 @@ function render() {
 
   $("slideLabel").textContent = cur ? "Slide " + cur.n + "/" + total : "No slide selected";
   const tag = $("curStatus");
-  tag.className = "tag " + (shot ? shot.status : "none");
-  tag.textContent = shot ? STATUS_LABEL[shot.status] + (shot.version > 1 ? " (v" + shot.version + ")" : "") : "Not sent";
+  tag.className = "tag " + (status || "none");
+  tag.textContent = status ? STATUS_LABEL[status] : "Not sent";
   tag.hidden = !cur;
 
+  // Actions: only when the slide hasn't been sent yet, or the DM asked for changes
+  const canSend = !!cur && (!shot || status === "changes");
+  $("actions").hidden = !canSend;
   const btn = $("markBtn");
-  btn.disabled = !cur || S.busy || !S.canImage;
-  btn.textContent = !cur ? "Select a slide" : shot ? "Send updated version of slide " + cur.n : "Mark slide " + cur.n + " ready for review";
+  btn.disabled = !canSend || S.busy || !S.canImage;
+  btn.textContent = !cur ? "Select a slide" : shot ? "Send updated version" : "Mark slide " + cur.n + " ready for review";
 
   // Pins from the DM, drawn on the preview
   const tp = $("tpins"); tp.innerHTML = "";
@@ -294,23 +341,45 @@ function render() {
   fb.hidden = !shot;
   list.innerHTML = "";
   if (shot) {
-    $("feedbackVersion").textContent = "on v" + shot.version + (shot.reviewed_by ? ", reviewed by " + shot.reviewed_by : "");
-    let pinNo = 0;
-    if (!cs.length) {
-      const li = document.createElement("li"); li.className = "empty"; li.textContent = "No comments yet."; list.append(li);
+    const meta = $("feedbackMeta"); meta.innerHTML = "";
+    const ver = document.createElement("span"); ver.className = "ver"; ver.textContent = "v" + shot.version; meta.append(ver);
+    if (shot.reviewed_by) {
+      const dot = document.createElement("span"); dot.className = "dot";
+      const by = document.createElement("span"); by.textContent = "Reviewed by " + shot.reviewed_by;
+      meta.append(dot, by);
     }
+    let pinNo = 0;
+    if (!cs.length) { const li = document.createElement("li"); li.className = "empty"; li.textContent = "No comments yet."; list.append(li); }
     cs.forEach((c) => {
       const pinned = c.x !== null && c.y !== null;
       if (pinned) pinNo++;
-      const li = document.createElement("li");
-      li.className = "comment" + (c.resolved ? " resolved" : "");
+      const li = document.createElement("li"); li.className = "comment" + (c.resolved ? " resolved" : "");
       const n = document.createElement("span"); n.className = "pin-no" + (pinned ? "" : " general"); n.textContent = pinned ? pinNo : "•";
       const body = document.createElement("div");
       const p = document.createElement("p"); p.textContent = c.body;
-      const sm = document.createElement("small"); sm.textContent = c.author + ", " + ago(c.created_at) + (c.resolved ? ", resolved" : "");
+      const sm = document.createElement("small"); sm.textContent = ago(c.created_at) + (c.resolved ? ", resolved" : "");
       body.append(p, sm); li.append(n, body); list.append(li);
     });
   }
+
+  // Summary + list of sent slides
+  const sent = S.slides.filter((s) => S.latest[s.id]);
+  const approved = sent.filter((s) => S.latest[s.id].status === "approved").length;
+  const st = $("summaryText"); st.innerHTML = "";
+  const count = document.createElement("span"); count.className = "count"; count.textContent = sent.length + " of " + total;
+  st.append(count, document.createTextNode(" slides sent, " + approved + " approved"));
+  $("summary").hidden = !total;
+  const open = S.summaryOpen && sent.length > 0;
+  $("summaryToggle").setAttribute("aria-expanded", String(open));
+  $("summaryToggle").disabled = !sent.length;
+  const ul = $("slideList"); ul.hidden = !open; ul.innerHTML = "";
+  sent.forEach((s) => {
+    const li = document.createElement("li"); if (s.id === S.currentId) li.className = "current";
+    const b = document.createElement("button"); b.textContent = "Slide " + s.n;
+    b.setAttribute("aria-label", "Go to slide " + s.n);
+    b.onclick = () => selectSlide(s.id).then(refreshDeck);
+    li.append(b, makeTag(S.latest[s.id].status)); ul.append(li);
+  });
 }
 async function renderThumb() {
   const cur = currentSlide(), box = $("thumb"), token = ++S.thumbToken;
@@ -324,7 +393,7 @@ async function renderThumb() {
   } catch (e) { box.innerHTML = "<span>Preview unavailable</span>"; }
 }
 async function refreshDeck() {
-  try { await readDeck(); render(); renderThumb(); }
+  try { await readDeck(); render(); renderThumb(); refreshReviewsSoon(); }
   catch (e) { say($("msg"), "Couldn't read the presentation: " + e.message, "err"); }
 }
 
@@ -384,6 +453,8 @@ async function enterApp(user) {
   try { await loadReviews(); } catch (e) { say($("msg"), "Couldn't load review status: " + e.message, "err"); }
   render();
   subscribe();
+  setInterval(() => { if (!document.hidden) refreshReviewsSoon(); }, 20000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshReviewsSoon(); });
 }
 
 function showLogin() {
@@ -409,6 +480,9 @@ Office.onReady(async (info) => {
   $("signInBtn").onclick = signIn;
   $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
   $("markBtn").onclick = markReady;
+  try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
+  $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
+  $("appVersion").textContent = " · v" + APP_VERSION;
   $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); showLogin(); };
   $("projectName").addEventListener("change", (e) => {
     const v = e.target.value.trim();
