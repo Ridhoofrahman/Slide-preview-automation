@@ -189,7 +189,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "1.8";
+const APP_VERSION = "1.9";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -207,16 +207,17 @@ function fileTitle() {
 // Project = the order. Designers on the same order each work in their own copy of the full deck,
 // so the project name must match across copies: default to the order number in the file name.
 function defaultProject() {
-  const t = fileTitle(); const m = t.match(/(?:^|\D)(\d{5,7})(?!\d)/);
+  const t = fileTitle(); const m = t.match(/^\s*#?(\d{5,7})(?!\d)/); // 24Slides file names start with the order number
   return m ? "Order #" + m[1] : t;
 }
 const projectName = () => docStore.get("slideqa.project") || defaultProject();
 // Copies of the same file share the stored id, so each designer gets their own key on top of it.
-function fileKey() {
+function baseFileKey() {
   let k = docStore.get("slideqa.fileKey");
   if (!k) { k = crypto.randomUUID(); docStore.set("slideqa.fileKey", k); }
-  return S.user ? k + ":" + S.user.id.slice(0, 8) : k;
+  return k;
 }
+function fileKey() { return S.user ? baseFileKey() + ":" + S.user.id.slice(0, 8) : baseFileKey(); }
 const displayName = (u) => (u && u.user_metadata && u.user_metadata.name) || (u && u.email ? u.email.split("@")[0] : "");
 const currentSlide = () => S.slides.find((s) => s.id === S.currentId) || null;
 function say(el, text, kind) { el.textContent = text || ""; el.className = "msg" + (kind ? " " + kind : ""); }
@@ -281,7 +282,8 @@ async function selectSlide(id) {
 
 /* ---------- Supabase ---------- */
 async function loadReviews() {
-  const { data, error } = await S.sb.from("slide_shots").select("*").eq("file_key", fileKey()).order("version", { ascending: false });
+  // Mine = sent by this account from this file (including slides sent before per-designer keys existed)
+  const { data, error } = await S.sb.from("slide_shots").select("*").eq("designer_id", S.user.id).in("file_key", [fileKey(), baseFileKey()]).order("version", { ascending: false });
   if (error) throw error;
   S.latest = {};
   data.forEach((r) => { const cur = S.latest[r.slide_id]; if (!cur || r.version > cur.version) S.latest[r.slide_id] = r; });
@@ -293,7 +295,7 @@ async function loadReviews() {
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
   // Teammates working on the same order, in their own copies of the deck
-  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer").eq("project", projectName()).neq("file_key", fileKey());
+  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer").eq("project", projectName()).neq("designer_id", S.user.id);
   S.team = {};
   if (!team.error) team.data.forEach((r) => { const k = r.file_key + "|" + r.slide_id; if (!S.team[k] || r.version > S.team[k].version) S.team[k] = r; });
 }
