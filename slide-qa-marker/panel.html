@@ -108,6 +108,8 @@
   .slide-list button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--slide-link); font-size: 14px; line-height: 20px; }
   .slide-list button:hover { text-decoration: underline; text-underline-position: from-font; }
   .slide-list li.current button { font-weight: 500; }
+  .slide-list .row-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .slide-list .who { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .msg { margin: -8px 0 0; font-size: 13px; }
   .msg.ok { color: var(--tag-ok-fg); }
@@ -187,7 +189,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "1.7";
+const APP_VERSION = "1.8";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -202,11 +204,18 @@ function fileTitle() {
   const base = decodeURIComponent(url.split(/[\\/]/).pop() || "");
   return base.replace(/\.(pptx?|potx)$/i, "") || "Untitled presentation";
 }
-const projectName = () => docStore.get("slideqa.project") || fileTitle();
+// Project = the order. Designers on the same order each work in their own copy of the full deck,
+// so the project name must match across copies: default to the order number in the file name.
+function defaultProject() {
+  const t = fileTitle(); const m = t.match(/(?:^|\D)(\d{5,7})(?!\d)/);
+  return m ? "Order #" + m[1] : t;
+}
+const projectName = () => docStore.get("slideqa.project") || defaultProject();
+// Copies of the same file share the stored id, so each designer gets their own key on top of it.
 function fileKey() {
   let k = docStore.get("slideqa.fileKey");
   if (!k) { k = crypto.randomUUID(); docStore.set("slideqa.fileKey", k); }
-  return k;
+  return S.user ? k + ":" + S.user.id.slice(0, 8) : k;
 }
 const displayName = (u) => (u && u.user_metadata && u.user_metadata.name) || (u && u.email ? u.email.split("@")[0] : "");
 const currentSlide = () => S.slides.find((s) => s.id === S.currentId) || null;
@@ -283,6 +292,10 @@ async function loadReviews() {
     if (res.error) throw res.error;
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
+  // Teammates working on the same order, in their own copies of the deck
+  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer").eq("project", projectName()).neq("file_key", fileKey());
+  S.team = {};
+  if (!team.error) team.data.forEach((r) => { const k = r.file_key + "|" + r.slide_id; if (!S.team[k] || r.version > S.team[k].version) S.team[k] = r; });
 }
 let reviewsTimer = null, lastReviewLoad = 0;
 // Re-check statuses after slide changes and every 20s, in case a live update was missed.
@@ -370,23 +383,32 @@ function render() {
     fillVoiceSources(cs);
   }
 
-  // Summary + list of sent slides
-  const sent = S.slides.filter((s) => S.latest[s.id]);
-  const approved = sent.filter((s) => S.latest[s.id].status === "approved").length;
+  // Summary + list of sent slides: mine, plus teammates' slides on the same order
+  const rows = S.slides.filter((s) => S.latest[s.id]).map((s) => ({ n: s.n, status: S.latest[s.id].status, id: s.id, mine: true }));
+  Object.values(S.team || {}).forEach((r) => rows.push({ n: r.slide_number, status: r.status, designer: r.designer, mine: false }));
+  rows.sort((a, b) => a.n - b.n || (a.mine ? -1 : 1));
+  const byNumber = {}; rows.forEach((r) => { if (!byNumber[r.n] || r.mine) byNumber[r.n] = r; });
+  const sentCount = Object.keys(byNumber).length;
+  const approved = Object.values(byNumber).filter((r) => r.status === "approved").length;
+  const hasTeam = rows.some((r) => !r.mine);
   const st = $("summaryText"); st.innerHTML = "";
-  const count = document.createElement("span"); count.className = "count"; count.textContent = sent.length + " of " + total;
-  st.append(count, document.createTextNode(" slides sent, " + approved + " approved"));
+  const count = document.createElement("span"); count.className = "count"; count.textContent = sentCount + " of " + total;
+  st.append(count, document.createTextNode(" slides sent" + (hasTeam ? " by the team" : "") + ", " + approved + " approved"));
   $("summary").hidden = !total;
-  const open = S.summaryOpen && sent.length > 0;
+  const open = S.summaryOpen && rows.length > 0;
   $("summaryToggle").setAttribute("aria-expanded", String(open));
-  $("summaryToggle").disabled = !sent.length;
+  $("summaryToggle").disabled = !rows.length;
   const ul = $("slideList"); ul.hidden = !open; ul.innerHTML = "";
-  sent.forEach((s) => {
-    const li = document.createElement("li"); if (s.id === S.currentId) li.className = "current";
-    const b = document.createElement("button"); b.textContent = "Slide " + s.n;
-    b.setAttribute("aria-label", "Go to slide " + s.n);
-    b.onclick = () => selectSlide(s.id).then(refreshDeck);
-    li.append(b, makeTag(S.latest[s.id].status)); ul.append(li);
+  rows.forEach((r) => {
+    const li = document.createElement("li"); if (r.mine && r.id === S.currentId) li.className = "current";
+    const left = document.createElement("span"); left.className = "row-left";
+    const b = document.createElement("button"); b.textContent = "Slide " + r.n;
+    b.setAttribute("aria-label", "Go to slide " + r.n);
+    const target = r.mine ? r.id : (S.slides[r.n - 1] || {}).id;
+    b.onclick = () => { if (target) selectSlide(target).then(refreshDeck); };
+    left.append(b);
+    if (!r.mine) { const who = document.createElement("span"); who.className = "who"; who.textContent = r.designer; left.append(who); }
+    li.append(left, makeTag(r.status)); ul.append(li);
   });
 }
 // ---- voice notes from the DM

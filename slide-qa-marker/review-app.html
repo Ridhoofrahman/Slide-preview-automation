@@ -72,6 +72,11 @@
   .content { padding: 20px 24px 40px; min-width: 0; }
   .content-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
   .content-head p { margin: 0; color: var(--muted); }
+  .designer-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 16px; }
+  .chip { display: inline-flex; align-items: baseline; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: 13px; }
+  .chip small { color: var(--muted); font-size: 12px; }
+  .chip[aria-pressed="true"] { border-color: var(--brand); background: #E9EDF8; color: var(--brand); }
+  .chip[aria-pressed="true"] small { color: var(--brand); }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
   .slide-card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 0; cursor: pointer; text-align: left; overflow: hidden; display: flex; flex-direction: column; }
   .slide-card:hover { border-color: #B9C0CA; }
@@ -290,12 +295,14 @@ function buildIndex() {
   S.projects = {};
   Object.values(S.versions).forEach((a) => {
     const l = a[0];
-    const p = S.projects[l.project] = S.projects[l.project] || { name: l.project, slides: [], designers: new Set(), waiting: 0, lastAt: "" };
+    const pk = (l.project || "").trim().toLowerCase();
+    const p = S.projects[pk] = S.projects[pk] || { key: pk, name: (l.project || "").trim(), slides: [], designers: new Set(), waiting: 0, lastAt: "" };
     p.slides.push(l); p.designers.add(l.designer);
     if (l.status === "ready") p.waiting++;
     if (l.created_at > p.lastAt) p.lastAt = l.created_at;
   });
-  Object.values(S.projects).forEach((p) => p.slides.sort((a, b) => a.designer.localeCompare(b.designer) || a.slide_number - b.slide_number));
+  // Every designer works in a full copy of the deck, so slide numbers match the original: sort by them
+  Object.values(S.projects).forEach((p) => p.slides.sort((a, b) => a.slide_number - b.slide_number || a.designer.localeCompare(b.designer)));
 }
 async function ensureUrls(shots) {
   const now = Date.now();
@@ -323,14 +330,14 @@ async function renderBoard() {
   $("me").textContent = displayName(S.user);
 
   const projects = visibleProjects();
-  if (!projects.find((p) => p.name === S.project)) S.project = projects.length ? projects[0].name : null;
+  if (!projects.find((p) => p.key === S.project)) S.project = projects.length ? projects[0].key : null;
 
   const list = $("projects"); list.innerHTML = "";
   projects.forEach((p) => {
     const li = el("li"); const b = el("button");
-    if (p.name === S.project) b.setAttribute("aria-current", "true");
+    if (p.key === S.project) b.setAttribute("aria-current", "true");
     b.append(el("strong", "", p.name), el("span", "count" + (p.waiting ? "" : " zero"), p.waiting ? p.waiting : "0"), el("small", "", [...p.designers].join(", ") + ", " + ago(p.lastAt)));
-    b.onclick = () => { S.project = p.name; renderBoard(); };
+    b.onclick = () => { S.project = p.key; S.designerFilter = null; renderBoard(); };
     li.append(b); list.append(li);
   });
 
@@ -342,12 +349,26 @@ async function renderBoard() {
     c.append(e); return;
   }
   const p = S.projects[S.project];
-  const slides = p.slides.filter((s) => S.filter === "all" || s.status === "ready");
+  const multi = p.designers.size > 1;
+  if (S.designerFilter && !p.designers.has(S.designerFilter)) S.designerFilter = null;
+  const slides = p.slides.filter((s) => (S.filter === "all" || s.status === "ready") && (!S.designerFilter || s.designer === S.designerFilter));
   const head = el("div", "content-head");
   head.append(el("h2", "", p.name), el("p", "", p.waiting + " waiting, " + p.slides.filter((s) => s.status === "approved").length + " approved, " + p.slides.length + " sent"));
   c.append(head);
-
-  const multi = p.designers.size > 1;
+  if (multi) {
+    const bar = el("div", "designer-bar"); bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Filter by designer");
+    const chip = (label, value, meta) => {
+      const b = el("button", "chip"); b.setAttribute("aria-pressed", String((S.designerFilter || null) === value));
+      b.append(el("span", "", label)); if (meta) b.append(el("small", "", meta));
+      b.onclick = () => { S.designerFilter = value; renderBoard(); }; return b;
+    };
+    bar.append(chip("All designers", null));
+    [...p.designers].sort().forEach((d) => {
+      const mine = p.slides.filter((s) => s.designer === d);
+      bar.append(chip(d, d, mine.filter((s) => s.status === "approved").length + "/" + mine.length + " approved"));
+    });
+    c.append(bar);
+  }
   const grid = el("div", "cards");
   slides.forEach((s) => {
     const b = el("button", "slide-card");
