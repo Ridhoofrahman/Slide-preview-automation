@@ -164,6 +164,8 @@
   .comment p { margin: 0 0 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .comment .meta { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
   .comments .empty { color: var(--muted); font-size: 13px; }
+  .closed-note { margin: 0; border-top: 1px solid var(--line); padding: 14px 16px 18px; font-size: 13px; color: var(--muted); }
+  figure.slide.readonly { cursor: default; }
   .composer { border-top: 1px solid var(--line); padding: 12px 16px 16px; }
   .composer p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
   .composer textarea { resize: vertical; min-height: 64px; }
@@ -256,7 +258,8 @@
           <h3 id="commentCount">Comments</h3>
           <ol id="comments" class="comments"></ol>
         </div>
-        <div class="composer">
+        <p class="closed-note" id="closedNote" hidden>Comments are closed on older versions. <button id="toLatest2" class="link">Go to the latest version</button></p>
+        <div class="composer" id="composer">
           <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
           <div class="rec-preview" id="recPreview" hidden>
             <audio id="recAudio" controls preload="metadata"></audio>
@@ -437,6 +440,7 @@ async function renderReview() {
   S.shotId = shot.id;
   const vers = S.versions[S.slideKey];
   const latest = vers[0], isLatest = shot.id === latest.id;
+  S.readOnly = !isLatest;
 
   $("rvSlide").textContent = "Slide " + shot.slide_number + " of " + shot.total_slides;
   $("rvProject").textContent = shot.project;
@@ -464,6 +468,10 @@ async function renderReview() {
   if (img.src !== urlFor(shot)) img.src = urlFor(shot);
 
   renderComments(shot);
+  // Older versions are read-only so the DM always reviews the latest one
+  $("composer").hidden = !isLatest; $("closedNote").hidden = isLatest;
+  $("figure").classList.toggle("readonly", !isLatest);
+  if (!isLatest && S.draft) { S.draft = null; renderComments(shot); }
   renderDetails(shot, vers);
 }
 function renderComments(shot) {
@@ -499,7 +507,7 @@ function renderComments(shot) {
     if (c.audio_path) body.append(voiceEl(c));
     if (c.body) body.append(el("p", "", c.body));
     const meta = el("div", "meta"); meta.append(el("span", "", c.author + ", " + ago(c.created_at)));
-    const r = el("button", "link", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c);
+    const r = el("button", "link", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c); r.hidden = !!S.readOnly;
     meta.append(r); body.append(meta); li.append(n, body); list.append(li);
   });
   fillVoiceSources(cs);
@@ -764,6 +772,7 @@ async function enter(user) {
   $("prevBtn").onclick = () => step(-1);
   $("nextBtn").onclick = () => step(1);
   $("versionSelect").onchange = (e) => { S.shotId = e.target.value; S.draft = null; renderReview(); };
+  $("toLatest2").onclick = () => { S.shotId = null; S.draft = null; renderReview(); };
   $("toLatest").onclick = () => { S.shotId = null; S.draft = null; renderReview(); };
   $("approveBtn").onclick = () => decide("approved");
   $("changesBtn").onclick = () => decide("changes");
@@ -778,6 +787,7 @@ async function enter(user) {
 
   $("figure").addEventListener("click", (e) => {
     if (e.target.closest(".pin:not(.draft)")) return;
+    if (S.readOnly) return;
     const r = $("rvImg").getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
     if (x < 0 || x > 1 || y < 0 || y > 1) return;
