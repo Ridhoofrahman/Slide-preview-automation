@@ -189,9 +189,9 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.0";
+const APP_VERSION = "2.0.1";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
-const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
+const S = { notes: {}, noteFor: null, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
 
 /* ---------- helpers ---------- */
@@ -349,6 +349,9 @@ function render() {
   // Actions: hidden once the DM has approved the slide, or when a teammate owns it
   const canSend = !!cur && !teamShot && status !== "approved";
   $("actions").hidden = !canSend;
+  // Each slide keeps its own note draft
+  const curId = cur ? cur.id : null;
+  if (S.noteFor !== curId) { $("note").value = curId ? (S.notes[curId] || "") : ""; S.noteFor = curId; }
   const btn = $("markBtn");
   btn.disabled = !canSend || S.busy || !S.canImage;
   btn.textContent = !cur ? "Select a slide" : shot ? "Send updated version" : "Mark slide " + cur.n + " ready for review";
@@ -487,7 +490,7 @@ async function markReady() {
     }).select().single();
     if (ins.error) throw ins.error;
     S.latest[cur.id] = ins.data;
-    $("note").value = "";
+    $("note").value = ""; delete S.notes[cur.id];
     say($("msg"), version > 1 ? "Version " + version + " of slide " + cur.n + " is ready for review." : "Slide " + cur.n + " is ready for review.", "ok");
   } catch (e) {
     say($("msg"), "Slide " + cur.n + " wasn't sent: " + (e.message || e) + ". Check your connection and try again.", "err");
@@ -549,6 +552,7 @@ Office.onReady(async (info) => {
   $("signInBtn").onclick = signIn;
   $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
   $("markBtn").onclick = markReady;
+  $("note").addEventListener("input", () => { if (S.currentId) S.notes[S.currentId] = $("note").value; });
   try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
   $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
   $("appVersion").textContent = " · v" + APP_VERSION;
