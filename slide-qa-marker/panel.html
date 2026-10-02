@@ -189,7 +189,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "1.9";
+const APP_VERSION = "2.0";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -295,7 +295,7 @@ async function loadReviews() {
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
   // Teammates working on the same order, in their own copies of the deck
-  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer").eq("project", projectName()).neq("designer_id", S.user.id);
+  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer,created_at").eq("project", projectName()).neq("designer_id", S.user.id);
   S.team = {};
   if (!team.error) team.data.forEach((r) => { const k = r.file_key + "|" + r.slide_id; if (!S.team[k] || r.version > S.team[k].version) S.team[k] = r; });
 }
@@ -325,23 +325,29 @@ function makeTag(status) {
   t.textContent = status ? STATUS_LABEL[status] : "Not sent";
   return t;
 }
+// The most recent teammate submission for a slide number (teammates work in full copies of the deck)
+function teamShotFor(n) {
+  return Object.values(S.team || {}).filter((r) => r.slide_number === n)
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0] || null;
+}
 function render() {
   const cur = currentSlide();
   const shot = cur ? S.latest[cur.id] : null;
-  const status = shot ? shot.status : null;
+  const teamShot = cur && !shot ? teamShotFor(cur.n) : null; // someone else already sent this slide
+  const status = shot ? shot.status : teamShot ? teamShot.status : null;
   const total = S.slides.length;
 
   $("projectName").value = projectName();
   $("whoName").textContent = "Signed in as " + displayName(S.user) + ".";
 
-  $("slideLabel").textContent = cur ? "Slide " + cur.n + "/" + total : "No slide selected";
+  $("slideLabel").textContent = cur ? "Slide " + cur.n + "/" + total + (teamShot ? ", sent by " + teamShot.designer : "") : "No slide selected";
   const tag = $("curStatus");
   tag.className = "tag " + (status || "none");
   tag.textContent = status ? STATUS_LABEL[status] : "Not sent";
   tag.hidden = !cur;
 
-  // Actions: hidden only once the DM has approved the slide
-  const canSend = !!cur && status !== "approved";
+  // Actions: hidden once the DM has approved the slide, or when a teammate owns it
+  const canSend = !!cur && !teamShot && status !== "approved";
   $("actions").hidden = !canSend;
   const btn = $("markBtn");
   btn.disabled = !canSend || S.busy || !S.canImage;

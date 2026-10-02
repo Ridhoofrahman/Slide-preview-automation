@@ -78,6 +78,9 @@
   dialog.confirm h2 { font-size: 17px; margin: 0 0 8px; }
   dialog.confirm p { margin: 0 0 8px; color: var(--muted); }
   dialog.confirm .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+  .del-slide { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; color: var(--muted); }
+  .del-slide svg { width: 16px; height: 16px; }
+  .del-slide:hover { color: var(--fix); border-color: var(--fix); background: var(--fix-bg); }
   .danger { border: 0; border-radius: 8px; padding: 9px 14px; cursor: pointer; background: var(--fix); color: #fff; font-weight: 600; }
   .danger:disabled { opacity: .55; cursor: not-allowed; }
   .projects strong { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -225,6 +228,7 @@
       <button id="backBtn" class="ghost">Back to slides</button>
       <div class="rv-title"><strong id="rvSlide"></strong><span id="rvProject"></span></div>
       <label><span class="sr" hidden>Version</span><select id="versionSelect" aria-label="Version"></select></label>
+      <button id="deleteSlideBtn" class="ghost del-slide" title="Delete this slide so the designer can send it again"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Delete slide</span></button>
       <div class="navbtns">
         <button id="prevBtn" class="ghost" aria-label="Previous slide">‹</button>
         <button id="nextBtn" class="ghost" aria-label="Next slide">›</button>
@@ -660,12 +664,49 @@ function step(dir) {
 }
 
 /* ---------- delete a project ---------- */
-let deleteKey = null;
+let deleteKey = null, pendingDelete = null;
+// Remove rows (comments go with them) first, then their image and audio files
+async function removeShots(ids, imagePaths) {
+  let files = imagePaths.slice();
+  for (let i = 0; i < ids.length; i += 150) {
+    const c = await S.sb.from("shot_comments").select("audio_path").in("shot_id", ids.slice(i, i + 150)).not("audio_path", "is", null);
+    if (!c.error) files = files.concat(c.data.map((x) => x.audio_path));
+  }
+  for (let i = 0; i < ids.length; i += 150) {
+    const d = await S.sb.from("slide_shots").delete().in("id", ids.slice(i, i + 150)).select("id");
+    if (d.error) throw d.error;
+    if (!d.data.length && ids.length) throw new Error("not allowed. Run the delete permissions SQL in Supabase first");
+  }
+  for (let i = 0; i < files.length; i += 500) await S.sb.storage.from("slides").remove(files.slice(i, i + 500));
+}
+function askDeleteSlide() {
+  const vers = S.versions[S.slideKey]; if (!vers) return;
+  const l = vers[0]; pendingDelete = deleteSlide;
+  const comments = vers.reduce((n, v) => n + (S.comments[v.id] || []).length, 0);
+  $("delTitle").textContent = "Delete slide " + l.slide_number + " from " + l.designer + "?";
+  $("delBody").textContent = "Removes " + (vers.length === 1 ? "this version" : "all " + vers.length + " versions") + (comments ? " and " + comments + " comment" + (comments === 1 ? "" : "s") : "") + ". The slide goes back to \"Not sent\" in PowerPoint, so a designer can send it again.";
+  $("delConfirm").textContent = "Delete slide";
+  say($("delMsg"), ""); $("delConfirm").disabled = false;
+  $("deleteDialog").showModal(); $("delCancel").focus();
+}
+async function deleteSlide() {
+  const key = S.slideKey; const vers = S.versions[key]; if (!vers) return;
+  $("delConfirm").disabled = true; say($("delMsg"), "Deleting…");
+  try {
+    const list = projectSlides(); const i = list.findIndex((s) => keyOf(s) === key);
+    const next = list[i + 1] || list[i - 1] || null;
+    await removeShots(vers.map((v) => v.id), vers.map((v) => v.image_path));
+    $("deleteDialog").close();
+    await loadAll();
+    if (next && S.versions[keyOf(next)]) openReview(keyOf(next)); else closeReview();
+    renderBoard();
+  } catch (e) { say($("delMsg"), "Couldn't delete: " + (e.message || e) + ".", "err"); $("delConfirm").disabled = false; }
+}
 function askDeleteProject(key) {
   const p = S.projects[key]; if (!p) return;
-  deleteKey = key;
+  deleteKey = key; pendingDelete = deleteProject;
   const versions = S.shots.filter((s) => (s.project || "").trim().toLowerCase() === key).length;
-  $("delTitle").textContent = "Delete " + p.name + "?";
+  $("delTitle").textContent = "Delete " + p.name + "?"; $("delConfirm").textContent = "Delete project";
   $("delBody").textContent = p.slides.length + " slide" + (p.slides.length === 1 ? "" : "s") + " (" + versions + " version" + (versions === 1 ? "" : "s") + ") from " + [...p.designers].join(", ") + ", with all comments and voice notes.";
   say($("delMsg"), ""); $("delConfirm").disabled = false;
   $("deleteDialog").showModal(); $("delCancel").focus();
@@ -678,18 +719,7 @@ async function deleteProject() {
     const names = [...new Set(S.shots.filter((s) => (s.project || "").trim().toLowerCase() === key).map((s) => s.project))];
     const { data: rows, error } = await S.sb.from("slide_shots").select("id,image_path").in("project", names);
     if (error) throw error;
-    const ids = rows.map((r) => r.id);
-    let files = rows.map((r) => r.image_path);
-    for (let i = 0; i < ids.length; i += 150) {
-      const c = await S.sb.from("shot_comments").select("audio_path").in("shot_id", ids.slice(i, i + 150)).not("audio_path", "is", null);
-      if (!c.error) files = files.concat(c.data.map((x) => x.audio_path));
-    }
-    for (let i = 0; i < ids.length; i += 150) {
-      const d = await S.sb.from("slide_shots").delete().in("id", ids.slice(i, i + 150)).select("id");
-      if (d.error) throw d.error;
-      if (!d.data.length && ids.length) throw new Error("not allowed. Run the delete permissions SQL in Supabase first");
-    }
-    for (let i = 0; i < files.length; i += 500) await S.sb.storage.from("slides").remove(files.slice(i, i + 500));
+    await removeShots(rows.map((r) => r.id), rows.map((r) => r.image_path));
     $("deleteDialog").close(); deleteKey = null;
     if (S.project === key) S.project = null;
     await loadAll(); renderBoard();
@@ -740,7 +770,8 @@ async function enter(user) {
   $("sendComment").onclick = addComment;
   $("recBtn").onclick = toggleRecording;
   $("delCancel").onclick = () => { $("deleteDialog").close(); deleteKey = null; };
-  $("delConfirm").onclick = deleteProject;
+  $("delConfirm").onclick = () => pendingDelete && pendingDelete();
+  $("deleteSlideBtn").onclick = askDeleteSlide;
   $("recDiscard").onclick = () => discardRecording();
   $("removePin").onclick = () => { S.draft = null; renderComments(currentShot()); };
   $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) addComment(); });
@@ -756,7 +787,7 @@ async function enter(user) {
   });
 
   document.addEventListener("keydown", (e) => {
-    if ($("reviewView").hidden) return;
+    if ($("reviewView").hidden || $("deleteDialog").open) return;
     const typing = /^(TEXTAREA|INPUT|SELECT)$/.test(document.activeElement.tagName);
     if (e.key === "Escape") { if (S.draft) { S.draft = null; renderComments(currentShot()); } else if (!typing) closeReview(); }
     if (!typing && e.key === "ArrowLeft") step(-1);
