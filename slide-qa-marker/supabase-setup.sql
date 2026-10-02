@@ -69,3 +69,18 @@ alter table public.shot_comments add column if not exists audio_path text, add c
 create policy "team deletes shots"       on public.slide_shots   for delete to authenticated using (true);
 create policy "team deletes comments"    on public.shot_comments for delete to authenticated using (true);
 create policy "team deletes slide files" on storage.objects      for delete to authenticated using (bucket_id = 'slides');
+
+-- 9. Project status: "sent to customer" — added later
+create table if not exists public.project_status (
+  key        text primary key,          -- project name, trimmed and lower-cased
+  name       text not null,
+  sent_at    timestamptz,
+  sent_by    text,
+  updated_at timestamptz not null default now()
+);
+alter table public.project_status enable row level security;
+create policy "team reads project status"   on public.project_status for select to authenticated using (true);
+create policy "team adds project status"    on public.project_status for insert to authenticated with check (true);
+create policy "team updates project status" on public.project_status for update to authenticated using (true);
+create policy "team deletes project status" on public.project_status for delete to authenticated using (true);
+alter publication supabase_realtime add table public.project_status;

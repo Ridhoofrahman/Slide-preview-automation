@@ -89,6 +89,15 @@
   .count.zero { background: none; color: var(--muted); font-weight: 500; }
   .content { padding: 20px 24px 40px; min-width: 0; }
   .content-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .send-box { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .send-meta { color: var(--muted); font-size: 13px; }
+  .projects small.sub-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .sub-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sent-tag, .ready-tag { flex: none; font-size: 11px; line-height: 16px; font-weight: 600; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+  .sent-tag { background: #E9EDF8; color: var(--brand); }
+  .ready-tag { background: var(--ok-tint); color: var(--ok); }
+  .sent-tag.big { font-size: 12px; padding: 3px 9px; }
+  .retention { margin: 14px 10px 0; font-size: 12px; color: var(--muted); }
   .content-head p { margin: 0; color: var(--muted); }
   .designer-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 16px; }
   .chip { display: inline-flex; align-items: baseline; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: 13px; }
@@ -219,7 +228,7 @@
       <button id="signOutBtn" class="link">Sign out</button>
     </header>
     <div class="board">
-      <nav class="sidebar" aria-label="Projects"><ol id="projects" class="projects"></ol></nav>
+      <nav class="sidebar" aria-label="Projects"><ol id="projects" class="projects"></ol><p class="retention" id="retentionNote"></p></nav>
       <main class="content" id="content"></main>
     </div>
   </div>
@@ -281,7 +290,7 @@
 <dialog id="deleteDialog" class="confirm" aria-labelledby="delTitle">
   <h2 id="delTitle"></h2>
   <p id="delBody"></p>
-  <p>This removes it for everyone and can't be undone.</p>
+  <p id="delWarn">This removes it for everyone and can't be undone.</p>
   <p id="delMsg" class="msg" role="status" aria-live="polite"></p>
   <div class="row"><button id="delCancel" class="ghost">Cancel</button><button id="delConfirm" class="danger">Delete project</button></div>
 </dialog>
@@ -289,7 +298,7 @@
 <script>
 const cfg = window.SLIDE_REVIEW_CONFIG || {};
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Changes requested" };
-const S = { sb: null, user: null, shots: [], comments: {}, urls: {}, versions: {}, projects: {}, filter: "waiting", project: null, slideKey: null, shotId: null, draft: null, hot: null };
+const S = { projectStatus: {}, sb: null, user: null, shots: [], comments: {}, urls: {}, versions: {}, projects: {}, filter: "waiting", project: null, slideKey: null, shotId: null, draft: null, hot: null };
 const $ = (id) => document.getElementById(id);
 const keyOf = (s) => s.file_key + "|" + s.slide_id;
 const displayName = (u) => (u && u.user_metadata && u.user_metadata.name) || (u && u.email ? u.email.split("@")[0] : "");
@@ -304,8 +313,9 @@ function ago(iso) {
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 
 /* ---------- data ---------- */
+const RETENTION_DAYS = cfg.RETENTION_DAYS || 30; // projects are removed this long after their last activity
 async function loadAll() {
-  const since = new Date(Date.now() - (cfg.DAYS_TO_SHOW || 21) * 864e5).toISOString();
+  const since = new Date(Date.now() - Math.max(RETENTION_DAYS, cfg.DAYS_TO_SHOW || 0) * 864e5).toISOString();
   const { data, error } = await S.sb.from("slide_shots").select("*").gte("created_at", since).order("created_at", { ascending: false }).limit(3000);
   if (error) throw error;
   S.shots = data;
@@ -316,7 +326,44 @@ async function loadAll() {
     if (res.error) throw res.error;
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
+  const ps = await S.sb.from("project_status").select("*");
+  S.projectStatus = {};
+  if (!ps.error) ps.data.forEach((r) => { S.projectStatus[r.key] = r; });
   buildIndex();
+}
+// Everything a project needs to be sent: every slide of the deck sent and approved
+function projectProgress(p) {
+  const total = Math.max(0, ...p.slides.map((s) => s.total_slides || 0));
+  const byNum = {};
+  p.slides.forEach((s) => { const prev = byNum[s.slide_number]; byNum[s.slide_number] = prev && prev !== "approved" ? prev : s.status; });
+  const approvedNums = Object.values(byNum).filter((st) => st === "approved").length;
+  const allApproved = total > 0 && approvedNums >= total && Object.values(byNum).every((st) => st === "approved");
+  return { total, approvedNums, allApproved };
+}
+// Remove projects with no activity for RETENTION_DAYS (runs at most once a day per browser)
+async function cleanupOldProjects() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem("qa.cleanup") === today) return;
+    localStorage.setItem("qa.cleanup", today);
+  } catch (e) {}
+  const cutoff = new Date(Date.now() - RETENTION_DAYS * 864e5).toISOString();
+  const { data, error } = await S.sb.from("slide_shots").select("id,project,image_path").lt("created_at", cutoff).limit(1000);
+  if (error || !data.length) return;
+  const active = new Set(Object.keys(S.projects));
+  const stale = data.filter((r) => !active.has((r.project || "").trim().toLowerCase()));
+  if (!stale.length) return;
+  await removeShots(stale.map((r) => r.id), stale.map((r) => r.image_path));
+  const keys = [...new Set(stale.map((r) => (r.project || "").trim().toLowerCase()))];
+  await S.sb.from("project_status").delete().in("key", keys);
+}
+async function setSentToCustomer(key, sent) {
+  const p = S.projects[key]; if (!p) return;
+  const row = sent ? { key, name: p.name, sent_at: new Date().toISOString(), sent_by: displayName(S.user), updated_at: new Date().toISOString() }
+                   : { key, name: p.name, sent_at: null, sent_by: null, updated_at: new Date().toISOString() };
+  const { error } = await S.sb.from("project_status").upsert(row);
+  if (error) { alert("Couldn't update the project: " + error.message + "\n\nRun the project status SQL in Supabase first."); return; }
+  S.projectStatus[key] = row; renderBoard();
 }
 function buildIndex() {
   S.versions = {};
@@ -348,9 +395,9 @@ const pinnedNumbers = (cs) => { let n = 0; const m = {}; cs.forEach((c) => { if 
 
 /* ---------- board ---------- */
 function visibleProjects() {
+  const sent = (p) => !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
   return Object.values(S.projects)
-    .filter((p) => S.filter === "all" || p.waiting > 0)
-    .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || b.lastAt.localeCompare(a.lastAt));
+    .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || sent(a) - sent(b) || b.lastAt.localeCompare(a.lastAt));
 }
 async function renderBoard() {
   const totalWaiting = Object.values(S.projects).reduce((n, p) => n + p.waiting, 0);
@@ -358,6 +405,7 @@ async function renderBoard() {
   $("tabWaiting").setAttribute("aria-pressed", String(S.filter === "waiting"));
   $("tabAll").setAttribute("aria-pressed", String(S.filter === "all"));
   $("me").textContent = displayName(S.user);
+  $("retentionNote").textContent = "Projects are removed automatically " + RETENTION_DAYS + " days after their last activity.";
 
   const projects = visibleProjects();
   if (!projects.find((p) => p.key === S.project)) S.project = projects.length ? projects[0].key : null;
@@ -366,7 +414,12 @@ async function renderBoard() {
   projects.forEach((p) => {
     const li = el("li"); const b = el("button", "proj");
     if (p.key === S.project) b.setAttribute("aria-current", "true");
-    b.append(el("strong", "", p.name), el("span", "count" + (p.waiting ? "" : " zero"), p.waiting ? p.waiting : "0"), el("small", "", [...p.designers].join(", ") + ", " + ago(p.lastAt)));
+    const st = S.projectStatus[p.key];
+    const sub = el("small", "sub-row");
+    if (st && st.sent_at) sub.append(el("span", "sent-tag", "Sent to customer"));
+    else if (projectProgress(p).allApproved) sub.append(el("span", "ready-tag", "All approved"));
+    sub.append(el("span", "sub-text", [...p.designers].join(", ") + ", " + ago(p.lastAt)));
+    b.append(el("strong", "", p.name), el("span", "count" + (p.waiting ? "" : " zero"), p.waiting ? p.waiting : "0"), sub);
     b.onclick = () => { S.project = p.key; S.designerFilter = null; renderBoard(); };
     const del = el("button", "del"); del.setAttribute("aria-label", "Delete project " + p.name); del.title = "Delete project";
     del.innerHTML = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -387,6 +440,19 @@ async function renderBoard() {
   const slides = p.slides.filter((s) => (S.filter === "all" || s.status === "ready") && (!S.designerFilter || s.designer === S.designerFilter));
   const head = el("div", "content-head");
   head.append(el("h2", "", p.name), el("p", "", p.waiting + " waiting, " + p.slides.filter((s) => s.status === "approved").length + " approved, " + p.slides.length + " sent"));
+  // Send to customer: available once every slide of the deck is approved
+  const prog = projectProgress(p); const st = S.projectStatus[p.key];
+  const sendBox = el("div", "send-box");
+  if (st && st.sent_at) {
+    sendBox.append(el("span", "sent-tag big", "Sent to customer"), el("span", "send-meta", "by " + (st.sent_by || "DM") + ", " + ago(st.sent_at)));
+    const undo = el("button", "link", "Undo"); undo.onclick = () => setSentToCustomer(p.key, false); sendBox.append(undo);
+  } else {
+    const btn = el("button", "primary", "Send to customer"); btn.disabled = !prog.allApproved;
+    btn.onclick = () => askSendToCustomer(p.key);
+    if (!prog.allApproved) { btn.title = prog.approvedNums + " of " + prog.total + " slides approved"; sendBox.append(el("span", "send-meta", prog.approvedNums + " of " + prog.total + " slides approved")); }
+    sendBox.append(btn);
+  }
+  head.append(sendBox);
   c.append(head);
   if (multi) {
     const bar = el("div", "designer-bar"); bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Filter by designer");
@@ -416,6 +482,12 @@ async function renderBoard() {
     b.onclick = () => openReview(keyOf(s));
     grid.append(b);
   });
+  if (!slides.length) {
+    const e = el("div", "empty-state");
+    e.append(el("strong", "", S.filter === "waiting" ? "Nothing waiting for review here" : "No slides from this designer"),
+      document.createTextNode(S.filter === "waiting" ? "Every sent slide in this project has been reviewed. Switch to All slides to see them." : ""));
+    c.append(e);
+  }
   c.append(grid);
   try { await ensureUrls(slides); } catch (e) {}
   grid.querySelectorAll("img[data-path]").forEach((img) => { const u = (S.urls[img.dataset.path] || {}).url; if (u) img.src = u; });
@@ -687,9 +759,19 @@ async function removeShots(ids, imagePaths) {
   }
   for (let i = 0; i < files.length; i += 500) await S.sb.storage.from("slides").remove(files.slice(i, i + 500));
 }
+function askSendToCustomer(key) {
+  const p = S.projects[key]; if (!p) return;
+  pendingDelete = async () => { $("deleteDialog").close(); await setSentToCustomer(key, true); };
+  $("delTitle").textContent = "Mark " + p.name + " as sent to customer?";
+  $("delBody").textContent = "All " + projectProgress(p).total + " slides are approved. Designers and DMs will see this project as sent.";
+  $("delConfirm").textContent = "Mark as sent"; $("delWarn").hidden = true;
+  $("delConfirm").className = "primary";
+  say($("delMsg"), ""); $("delConfirm").disabled = false;
+  $("deleteDialog").showModal(); $("delCancel").focus();
+}
 function askDeleteSlide() {
   const vers = S.versions[S.slideKey]; if (!vers) return;
-  const l = vers[0]; pendingDelete = deleteSlide;
+  const l = vers[0]; pendingDelete = deleteSlide; $("delConfirm").className = "danger"; $("delWarn").hidden = false;
   const comments = vers.reduce((n, v) => n + (S.comments[v.id] || []).length, 0);
   $("delTitle").textContent = "Delete slide " + l.slide_number + " from " + l.designer + "?";
   $("delBody").textContent = "Removes " + (vers.length === 1 ? "this version" : "all " + vers.length + " versions") + (comments ? " and " + comments + " comment" + (comments === 1 ? "" : "s") : "") + ". The slide goes back to \"Not sent\" in PowerPoint, so a designer can send it again.";
@@ -712,7 +794,7 @@ async function deleteSlide() {
 }
 function askDeleteProject(key) {
   const p = S.projects[key]; if (!p) return;
-  deleteKey = key; pendingDelete = deleteProject;
+  deleteKey = key; pendingDelete = deleteProject; $("delConfirm").className = "danger"; $("delWarn").hidden = false;
   const versions = S.shots.filter((s) => (s.project || "").trim().toLowerCase() === key).length;
   $("delTitle").textContent = "Delete " + p.name + "?"; $("delConfirm").textContent = "Delete project";
   $("delBody").textContent = p.slides.length + " slide" + (p.slides.length === 1 ? "" : "s") + " (" + versions + " version" + (versions === 1 ? "" : "s") + ") from " + [...p.designers].join(", ") + ", with all comments and voice notes.";
@@ -728,6 +810,7 @@ async function deleteProject() {
     const { data: rows, error } = await S.sb.from("slide_shots").select("id,image_path").in("project", names);
     if (error) throw error;
     await removeShots(rows.map((r) => r.id), rows.map((r) => r.image_path));
+    await S.sb.from("project_status").delete().eq("key", key);
     $("deleteDialog").close(); deleteKey = null;
     if (S.project === key) S.project = null;
     await loadAll(); renderBoard();
@@ -756,7 +839,9 @@ async function enter(user) {
   S.sb.channel("review-board")
     .on("postgres_changes", { event: "*", schema: "public", table: "slide_shots" }, reload)
     .on("postgres_changes", { event: "*", schema: "public", table: "shot_comments" }, reload)
+    .on("postgres_changes", { event: "*", schema: "public", table: "project_status" }, reload)
     .subscribe();
+  cleanupOldProjects().then(() => reload()).catch(() => {});
 }
 
 (async function start() {
