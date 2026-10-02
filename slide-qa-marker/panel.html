@@ -14,25 +14,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* From Figma: QA Checkpoint task pane */
-    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --muted: #5A6575; --title: #000000; --body: #393939; --secondary: #808080;
-    --link: #1F3A93; --slide-link: #002671; --pin: #002671; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
-    --line: #DCE0E6; --line-soft: #E5E5E5;
-    --tag-none-bg: #F7F7F7; --tag-none-bd: #CACACA; --tag-none-fg: #393939;
-    --tag-wait-bg: #FDF5E6; --tag-wait-bd: #F4CC7F; --tag-wait-fg: #BC7B00;
-    --tag-fix-bg: #FAE9EB;  --tag-fix-bd: #E48F9A;  --tag-fix-fg: #CA2135;
-    --tag-ok-bg: #E6F8F2;   --tag-ok-bd: #7FD8BD;   --tag-ok-fg: #008F64;
+    /* From Figma: Slide Review / Panel v2.1 */
+    --canvas: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --title: #1F2430; --body: #3F4652; --muted: #5A6575; --secondary: #6B7280; --disabled: #8B93A1;
+    --link: #1F3A93; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
+    --outline: #E3E6EB; --line: #DCE0E6; --input: #8B93A1;
+    --grey-bg: #EEF0F3; --grey-bd: #CDD2DA;
+    --yellow-bg: #FDF5E6; --yellow-bd: #F4CC7F; --yellow-fg: #8D5D00;
+    --red-bg: #FAE9EB; --red-bd: #E48F9A; --red-fg: #CA2135;
+    --green-bg: #E6F8F2; --green-bd: #7FD8BD; --green-fg: #006B4B; --success: #33C297;
+    --pin-bd: #9FC3EE; --scrim: rgba(31, 36, 48, .5); --overlay: rgba(14, 20, 40, .7);
     --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 20px; }
-  main { padding: 16px 16px 32px; max-width: 520px; margin: 0 auto; }
+  html, body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 20px; }
+  main { max-width: 520px; margin: 0 auto; }
   button, input, textarea { font: inherit; color: inherit; }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   [hidden] { display: none !important; }
-  .stack { display: flex; flex-direction: column; gap: 20px; }
+  svg { display: block; }
 
-  /* Header */
+  .container { padding: 16px 16px 64px; display: flex; flex-direction: column; gap: 20px; }
   .head { display: flex; flex-direction: column; gap: 4px; }
   .project { width: 100%; height: 32px; border: 1px solid transparent; background: transparent; font-size: 20px; line-height: 32px; font-weight: 500; padding: 0 6px; margin-left: -7px; border-radius: 6px; color: var(--ink); text-overflow: ellipsis; }
   .project:hover { border-color: var(--line); }
@@ -43,89 +44,113 @@
   #reviewLinkWrap:empty { display: none; }
 
   /* Tag (Figma: Slide status) */
-  .tag { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 2px 10px; border-radius: 20px; border: 1px solid var(--tag-none-bd); background: var(--tag-none-bg); color: var(--tag-none-fg); font-size: 14px; line-height: 20px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
-  .tag.ready { background: var(--tag-wait-bg); border-color: var(--tag-wait-bd); color: var(--tag-wait-fg); }
-  .tag.changes { background: var(--tag-fix-bg); border-color: var(--tag-fix-bd); color: var(--tag-fix-fg); }
-  .tag.approved { background: var(--tag-ok-bg); border-color: var(--tag-ok-bd); color: var(--tag-ok-fg); }
+  .tag { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 4px 8px; border-radius: 20px; border: 1px solid var(--grey-bd); background: var(--grey-bg); color: var(--body); font-size: 12px; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .ready { background: var(--yellow-bg); border-color: var(--yellow-bd); color: var(--yellow-fg); }
+  .changes { background: var(--red-bg); border-color: var(--red-bd); color: var(--red-fg); }
+  .approved { background: var(--green-bg); border-color: var(--green-bd); color: var(--green-fg); }
 
   /* Slide */
-  .slide { display: flex; flex-direction: column; gap: 12px; }
+  .slide-part { display: flex; flex-direction: column; gap: 20px; }
+  .slide-content { display: flex; flex-direction: column; gap: 16px; }
+  .slide-content.tight { gap: 12px; }
+  .slide-header { display: flex; flex-direction: column; gap: 8px; }
   .meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
-  .slide-label { font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
+  .meta-label { font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #E9ECF0; }
   .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tpins { position: absolute; inset: 0; pointer-events: none; }
-  .tpin { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--pin); color: #fff; border: 2px solid #fff; font-size: 10px; font-weight: 500; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(24,32,43,.35); }
-  .tpin.resolved { background: #8C95A3; }
+  .tpin { position: absolute; transform: translate(-50%, -50%); width: 22px; height: 22px; border-radius: 11px; background: var(--primary); color: #fff; border: 1px solid var(--pin-bd); font-size: 12px; font-weight: 500; display: grid; place-items: center; }
+  .tpin.resolved { background: var(--secondary); border-color: var(--grey-bd); }
+  .sent-badge { position: absolute; right: 8px; bottom: 8px; background: var(--scrim); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border: .5px solid var(--grey-bd); border-radius: 4px; padding: 2px 6px; color: #fff; font-size: 10px; line-height: 16px; box-shadow: 0 1px 1.5px rgba(18,18,23,.1), 0 1px 1px rgba(18,18,23,.06); }
+  .thumb-refresh { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border: 1px solid var(--outline); border-radius: 6px; background: var(--surface); color: var(--body); display: grid; place-items: center; cursor: pointer; }
+  .thumb-refresh svg { width: 16px; height: 16px; }
+  .sent-overlay { position: absolute; inset: 0; background: var(--overlay); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #fff; font-size: 16px; line-height: 24px; font-weight: 500; animation: fade 2.6s ease forwards; }
+  .ok-icon { width: 24px; height: 24px; border-radius: 12px; background: var(--success); color: #fff; display: grid; place-items: center; }
+  .ok-icon svg { width: 14px; height: 14px; }
+  @keyframes fade { 0%, 75% { opacity: 1; } 100% { opacity: 0; } }
+  .sent-note { margin: 0; font-size: 14px; line-height: 20px; color: var(--secondary); overflow-wrap: anywhere; }
 
-  /* Field (Figma: Fields) */
-  .field { display: flex; flex-direction: column; gap: 8px; }
-  .field-label { font-size: 16px; line-height: 24px; color: var(--title); }
-  .field input, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--line-soft); border-radius: 8px; padding: 9px 8px; font-family: var(--font); font-size: 16px; line-height: 24px; color: var(--ink); }
-  .field textarea { height: 103px; resize: none; }
-  .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 1; }
-  .field input:focus, .field textarea:focus { border-color: var(--focus); outline: none; }
+  /* Notes */
+  .add-note { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--primary); font-size: 14px; line-height: 20px; font-weight: 500; }
+  .add-note svg { width: 20px; height: 20px; }
+  .undo-note { margin: 0; font-size: 12px; line-height: 16px; color: var(--muted); }
+  .undo-note button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--primary); font-size: 12px; text-decoration: underline; text-underline-position: from-font; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field-head { display: flex; align-items: center; gap: 4px; font-size: 14px; line-height: 20px; color: var(--title); }
+  .field-head span { flex: 1; }
+  .icon-x { width: 24px; height: 24px; border: 0; border-radius: 8px; background: none; display: grid; place-items: center; cursor: pointer; color: var(--red-fg); padding: 0; }
+  .icon-x svg { width: 16px; height: 16px; }
+  .field textarea, .field input { width: 100%; background: var(--surface); border: 1px solid var(--input); border-radius: 8px; padding: 9px 8px; font-family: var(--font); font-size: 14px; line-height: 20px; color: var(--body); }
+  .field textarea { height: 80px; min-height: 80px; resize: vertical; }
+  .field textarea::placeholder, .field input::placeholder { color: var(--secondary); opacity: 1; }
+  .field textarea:focus, .field input:focus { border-color: var(--focus); outline: none; }
 
-  /* Button (Figma: Button) */
-  .primary { width: 100%; height: 40px; border: 0; border-radius: 8px; padding: 8px 20px; cursor: pointer; background: var(--primary); color: #fff; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; }
+  /* Buttons (Figma: Button) */
+  .actions { display: flex; flex-direction: column; gap: 4px; }
+  .primary, .secondary, .cancel { width: 100%; height: 40px; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .primary { border: 0; background: var(--primary); color: #fff; }
   .primary:hover:not(:disabled) { background: var(--primary-hover); }
-  .primary:disabled { opacity: .5; cursor: not-allowed; }
-  .actions { display: flex; flex-direction: column; gap: 20px; }
+  .secondary { border: 1px solid var(--outline); background: var(--surface); color: var(--body); }
+  .secondary:hover { border-color: var(--grey-bd); }
+  .secondary svg { width: 20px; height: 20px; }
+  .cancel { border: 0; background: none; color: var(--red-fg); }
+  .primary:disabled, .cancel:disabled { opacity: .5; cursor: not-allowed; }
+  .msg { margin: 16px 0 0; font-size: 14px; line-height: 20px; }
+  .msg.err { color: var(--red-fg); background: var(--red-bg); padding: 8px 10px; border-radius: 8px; }
+  .msg:empty { display: none; }
+  .notice { background: var(--red-bg); color: var(--red-fg); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
 
   /* Feedback */
   .feedback { display: flex; flex-direction: column; gap: 8px; }
   .feedback-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .feedback-head h2 { font-size: 16px; line-height: 24px; font-weight: 500; margin: 0; }
-  .fb-meta { display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
+  .fb-meta, .c-meta { display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; flex-wrap: wrap; }
   .fb-meta .ver { font-weight: 500; }
-  .dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .7; }
+  .dot { width: 4px; height: 4px; border-radius: 2px; background: currentColor; opacity: .7; flex: none; }
   .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .comment { display: grid; grid-template-columns: 22px 1fr; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-  .comment.resolved { opacity: .55; }
-  .pin-no { width: 22px; height: 22px; border-radius: 50%; background: var(--pin); color: #fff; font-size: 12px; line-height: 16px; font-weight: 500; display: grid; place-items: center; }
+  .comment.resolved { border-color: var(--success); }
+  .pin-no { width: 22px; height: 22px; border-radius: 11px; background: var(--primary); color: #fff; font-size: 12px; line-height: 16px; font-weight: 500; display: grid; place-items: center; }
   .pin-no.general { background: #E3E6EB; color: var(--muted); }
-  .comment div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .comment.resolved .pin-no { background: var(--disabled); }
+  .comment > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .comment p { margin: 0; font-size: 14px; line-height: 20px; color: var(--body); white-space: pre-wrap; overflow-wrap: anywhere; }
-  .comment small { font-size: 12px; line-height: 16px; color: var(--secondary); }
+  .comment.resolved p, .comment.resolved .c-meta { color: var(--disabled); }
+  .c-meta { color: var(--secondary); }
+  .resolved-label { display: inline-flex; align-items: center; gap: 4px; }
+  .resolved-label svg { width: 12px; height: 12px; }
   .voice { display: flex; flex-direction: column; gap: 2px; }
   .voice audio { width: 100%; height: 36px; display: block; }
-  .voice small { display: flex; justify-content: space-between; }
+  .voice small { display: flex; justify-content: space-between; font-size: 12px; color: var(--secondary); }
   .voice a { color: var(--secondary); }
-  .empty { color: var(--muted); font-size: 14px; line-height: 20px; }
 
   /* Summary (Figma: Summary, Closed / Opened) */
-  .summary { display: flex; flex-direction: column; gap: 16px; }
-  .summary-toggle { display: flex; align-items: center; gap: 4px; width: 100%; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; color: var(--muted); font-size: 14px; line-height: 20px; }
-  .summary-toggle .count { color: var(--ink); }
-  .summary-toggle span.txt { flex: 1; }
-  .summary-toggle svg { width: 20px; height: 20px; flex: none; color: var(--slide-link); transition: transform .15s ease; }
+  .summary { display: flex; flex-direction: column; gap: 12px; }
+  .summary.after-primary { margin-top: 12px; }
+  .summary-toggle { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; border: 0; background: none; padding: 0; height: 20px; cursor: pointer; color: var(--secondary); font-size: 12px; line-height: 16px; }
+  .summary-toggle .count { color: var(--muted); }
+  .summary-toggle svg { width: 16px; height: 16px; color: var(--muted); transition: transform .15s ease; }
   .summary-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
-  .slide-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-  .slide-list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line-soft); }
-  .slide-list li:first-child { border-top: 0; padding-top: 0; }
-  .slide-list li:last-child { padding-bottom: 0; }
-  .slide-list button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--slide-link); font-size: 14px; line-height: 20px; }
-  .slide-list button:hover { text-decoration: underline; text-underline-position: from-font; }
-  .slide-list li.current button { font-weight: 500; }
-  .slide-list .row-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-  .slide-list .who { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .summary-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { position: relative; min-width: 24px; height: 26px; padding: 4px 8px; border-radius: 20px; border: 1px solid var(--grey-bd); background: var(--grey-bg); color: var(--body); font-size: 12px; line-height: 16px; cursor: pointer; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .chip.ready { background: var(--yellow-bg); border-color: var(--yellow-bd); color: var(--yellow-fg); }
+  .chip.changes { background: var(--red-bg); border-color: var(--red-bd); color: var(--red-fg); }
+  .chip.approved { background: var(--green-bg); border-color: var(--green-bd); color: var(--green-fg); }
+  .chip.current { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .chip .bang { position: absolute; top: -1px; right: -3px; width: 10px; height: 10px; border-radius: 5px; background: var(--red-fg); color: #fff; font-size: 8px; line-height: 10px; display: grid; place-items: center; }
 
-  .msg { margin: -8px 0 0; font-size: 13px; }
-  .msg.ok { color: var(--tag-ok-fg); }
-  .msg.err { color: var(--tag-fix-fg); background: var(--tag-fix-bg); padding: 8px 10px; border-radius: 8px; }
-  .msg:empty { display: none; }
-  .notice { background: var(--tag-fix-bg); color: var(--tag-fix-fg); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
   /* Footer pinned to the bottom of the panel */
-  .foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 10px 16px; background: var(--bg); border-top: 1px solid var(--line-soft); font-size: 12px; line-height: 16px; color: var(--muted); }
-  #appView { padding-bottom: 36px; }
+  .foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 8px 16px; background: var(--canvas); border-top: 1px solid var(--outline); font-size: 12px; line-height: 16px; color: var(--muted); }
   .foot .link { font-size: 12px; color: var(--muted); }
 
   /* Sign in */
+  .login { padding: 16px; display: flex; flex-direction: column; gap: 20px; }
   .login h1 { font-size: 20px; line-height: 32px; font-weight: 500; margin: 0; }
   .login .lead { color: var(--muted); margin: 4px 0 0; font-size: 13px; }
+  .login .field-label { font-size: 16px; line-height: 24px; color: var(--title); }
   .login .msg { margin: 0; }
-  @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } .sent-overlay { animation: none; } }
 </style>
 </head>
 <body>
@@ -133,12 +158,12 @@
   <div id="configError" class="notice" hidden>Supabase isn't set up yet. Fill in config.js (see the setup guide).</div>
 
   <!-- Sign in -->
-  <section id="loginView" class="stack login" hidden>
+  <section id="loginView" class="login" hidden>
     <div>
       <h1>Sign in to QA Checkpoint</h1>
       <p class="lead">Use the account your team lead created for you.</p>
     </div>
-    <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username"></label>
+    <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com"></label>
     <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password"></label>
     <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
     <button id="signInBtn" class="primary">Sign in</button>
@@ -146,42 +171,56 @@
   </section>
 
   <!-- Main -->
-  <section id="appView" class="stack" hidden>
-    <header class="head">
-      <input id="projectName" class="project" aria-label="Project name" spellcheck="false">
-      <span id="reviewLinkWrap"></span>
-    </header>
+  <section id="appView" hidden>
+    <div class="container">
+      <header class="head">
+        <input id="projectName" class="project" aria-label="Project name" spellcheck="false">
+        <span id="reviewLinkWrap"></span>
+      </header>
 
-    <div id="unsupported" class="notice" hidden>This PowerPoint version can't capture slide images. Update Microsoft 365 to send slides for review.</div>
+      <div id="unsupported" class="notice" hidden>This PowerPoint version can't capture slide images. Update Microsoft 365 to send slides for review.</div>
 
-    <section class="slide" aria-label="Selected slide">
-      <div class="meta">
-        <span class="slide-label" id="slideLabel">No slide selected</span>
-        <span class="tag none" id="curStatus" hidden>Not sent</span>
-      </div>
-      <div class="thumb"><div id="thumb" class="thumb-inner"><span>Select a slide</span></div><div id="tpins" class="tpins" aria-hidden="true"></div></div>
-    </section>
+      <section class="slide-part" aria-label="Selected slide">
+        <div class="slide-content">
+          <div class="slide-header">
+            <div class="meta">
+              <span class="meta-label" id="metaLabel">No slide selected</span>
+              <span class="tag none" id="curStatus" hidden>Not sent</span>
+            </div>
+            <div class="thumb">
+              <div id="thumb" class="thumb-inner"><span>Select a slide</span></div>
+              <div id="tpins" class="tpins" aria-hidden="true"></div>
+              <span id="sentBadge" class="sent-badge" hidden></span>
+              <button id="refreshBtn" class="thumb-refresh" hidden aria-label="Refresh preview" title="Refresh preview"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <div id="sentOverlay" class="sent-overlay" hidden role="status"><span class="ok-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="sentOverlayText"></span></div>
+            </div>
+          </div>
+          <p class="sent-note" id="sentNote" hidden></p>
+          <button class="add-note" id="addNoteBtn" aria-expanded="false" aria-controls="noteField"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Add note for DM</button>
+          <p class="undo-note" id="undoNote" hidden role="status">Note removed. <button type="button" id="undoNoteBtn">Undo (<span id="undoCount">5</span>)</button></p>
+          <div class="field" id="noteField" hidden>
+            <div class="field-head"><span>Note for DM</span><button type="button" class="icon-x" id="hideNoteBtn" aria-label="Remove note"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button></div>
+            <textarea id="note" aria-label="Note for DM" placeholder="e.g. Used the client's new icon set on this one"></textarea>
+          </div>
+        </div>
+        <div class="actions" id="actions">
+          <button id="updateBtn" class="secondary" hidden><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Send updated version</button>
+          <button id="markBtn" class="primary" disabled>Select a slide</button>
+          <button id="cancelUpdateBtn" class="cancel" hidden>Cancel</button>
+          <p id="msg" class="msg" role="status" aria-live="polite"></p>
+        </div>
+      </section>
 
-    <div class="actions" id="actions">
-      <label class="field"><span class="field-label">Leave note for DM</span>
-        <textarea id="note" placeholder="e.g. Used the client's new icon set on this one"></textarea>
-      </label>
-      <button id="markBtn" class="primary" disabled>Select a slide</button>
+      <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
+        <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><span class="fb-meta" id="feedbackMeta"></span></div>
+        <ol id="comments" class="comments"></ol>
+      </section>
+
+      <section class="summary" id="summary" hidden aria-label="Order progress">
+        <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="summaryGrid"><span id="summaryText"></span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="summary-grid" id="summaryGrid" hidden></div>
+      </section>
     </div>
-    <p id="msg" class="msg" role="status" aria-live="polite"></p>
-
-    <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
-      <div class="feedback-head"><h2 id="feedbackTitle">Feedback</h2><span class="fb-meta" id="feedbackMeta"></span></div>
-      <ol id="comments" class="comments"></ol>
-    </section>
-
-    <section class="summary" id="summary" aria-label="Deck progress">
-      <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="slideList">
-        <span class="txt" id="summaryText"></span>
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <ul class="slide-list" id="slideList" hidden></ul>
-    </section>
 
     <footer class="foot"><span id="whoName"></span> <button id="signOutBtn" class="link">Sign out</button><span id="appVersion"></span></footer>
   </section>
@@ -189,9 +228,9 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.0.1";
+const APP_VERSION = "2.1";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
-const S = { notes: {}, noteFor: null, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
+const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
 
 /* ---------- helpers ---------- */
@@ -295,7 +334,7 @@ async function loadReviews() {
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
   // Teammates working on the same order, in their own copies of the deck
-  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer,created_at").eq("project", projectName()).neq("designer_id", S.user.id);
+  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer,created_at,image_path").eq("project", projectName()).neq("designer_id", S.user.id);
   S.team = {};
   if (!team.error) team.data.forEach((r) => { const k = r.file_key + "|" + r.slide_id; if (!S.team[k] || r.version > S.team[k].version) S.team[k] = r; });
 }
@@ -319,10 +358,14 @@ function subscribe() {
 }
 
 /* ---------- rendering ---------- */
-function makeTag(status) {
+const ICON = {
+  plus: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  check: '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+function makeTag(status, label) {
   const t = document.createElement("span");
   t.className = "tag " + (status || "none");
-  t.textContent = status ? STATUS_LABEL[status] : "Not sent";
+  t.textContent = label || (status ? STATUS_LABEL[status] : "Not sent");
   return t;
 }
 // The most recent teammate submission for a slide number (teammates work in full copies of the deck)
@@ -330,96 +373,134 @@ function teamShotFor(n) {
   return Object.values(S.team || {}).filter((r) => r.slide_number === n)
     .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0] || null;
 }
+// What the panel is showing for the selected slide
+function viewFor(cur) {
+  if (!cur) return { mode: "none" };
+  const shot = S.latest[cur.id] || null;
+  const team = shot ? null : teamShotFor(cur.n);
+  if (team) return { mode: "teammate", team };
+  if (!shot) return { mode: "notsent" };
+  if (S.updating[cur.id] && shot.status !== "approved") return { mode: "update", shot };
+  return { mode: "locked", shot };
+}
 function render() {
   const cur = currentSlide();
-  const shot = cur ? S.latest[cur.id] : null;
-  const teamShot = cur && !shot ? teamShotFor(cur.n) : null; // someone else already sent this slide
-  const status = shot ? shot.status : teamShot ? teamShot.status : null;
-  const total = S.slides.length;
+  const v = viewFor(cur);
+  const shot = v.shot || null;
+  const status = shot ? shot.status : v.team ? v.team.status : null;
+  const me = displayName(S.user);
 
   $("projectName").value = projectName();
-  $("whoName").textContent = "Signed in as " + displayName(S.user) + ".";
+  $("whoName").textContent = "Signed in as " + me + ".";
 
-  $("slideLabel").textContent = cur ? "Slide " + cur.n + "/" + total + (teamShot ? ", sent by " + teamShot.designer : "") : "No slide selected";
-  const tag = $("curStatus");
-  tag.className = "tag " + (status || "none");
-  tag.textContent = status ? STATUS_LABEL[status] : "Not sent";
-  tag.hidden = !cur;
+  // Meta line: "Designer: Name, v1". While preparing a new version, the version is dropped.
+  let meta = "No slide selected";
+  if (v.mode === "teammate") meta = "Designer: " + v.team.designer + ", v" + v.team.version;
+  else if (v.mode === "notsent") meta = "Designer: " + me + ", v1";
+  else if (v.mode === "update") meta = "Designer: " + shot.designer;
+  else if (v.mode === "locked") meta = "Designer: " + shot.designer + ", v" + shot.version;
+  $("metaLabel").textContent = meta;
+  const tag = $("curStatus"); tag.className = "tag " + (status || "none"); tag.textContent = status ? STATUS_LABEL[status] : "Not sent"; tag.hidden = !cur;
 
-  // Actions: hidden once the DM has approved the slide, or when a teammate owns it
-  const canSend = !!cur && !teamShot && status !== "approved";
-  $("actions").hidden = !canSend;
-  // Each slide keeps its own note draft
-  const curId = cur ? cur.id : null;
-  if (S.noteFor !== curId) { $("note").value = curId ? (S.notes[curId] || "") : ""; S.noteFor = curId; }
-  const btn = $("markBtn");
-  btn.disabled = !canSend || S.busy || !S.canImage;
-  btn.textContent = !cur ? "Select a slide" : shot ? "Send updated version" : "Mark slide " + cur.n + " ready for review";
+  // Preview source changes (live slide vs sent snapshot) re-render the image
+  const thumbKey = (cur ? cur.id : "") + "|" + v.mode + "|" + (shot ? shot.image_path : v.team ? v.team.image_path : "");
+  if (thumbKey !== S.thumbKey) { S.thumbKey = thumbKey; renderThumb(); }
 
-  // Pins from the DM, drawn on the preview
+  // Preview extras
+  const locked = v.mode === "locked";
+  // Version badge only matters once there's more than one version
+  const showBadge = locked && shot.version > 1;
+  $("sentBadge").hidden = !showBadge;
+  if (showBadge) $("sentBadge").textContent = "v" + shot.version + ", sent " + ago(shot.created_at);
+  $("refreshBtn").hidden = v.mode !== "update";
+  const justSent = !!(cur && S.justSent[cur.id] && Date.now() - S.justSent[cur.id] < 2600);
+  $("sentOverlay").hidden = !justSent;
+  if (justSent) $("sentOverlayText").textContent = "Slide " + cur.n + " sent for review";
+
+  // Pins from the DM sit on the sent version only
   const tp = $("tpins"); tp.innerHTML = "";
   const cs = shot ? (S.comments[shot.id] || []) : [];
-  let k = 0;
-  cs.forEach((c) => {
-    if (c.x === null || c.y === null) return; k++;
+  if (locked) { let k = 0; cs.forEach((c) => { if (c.x === null || c.y === null) return; k++;
     const d = document.createElement("span"); d.className = "tpin" + (c.resolved ? " resolved" : "");
-    d.style.left = (c.x * 100) + "%"; d.style.top = (c.y * 100) + "%"; d.textContent = k; tp.append(d);
-  });
+    d.style.left = (c.x * 100) + "%"; d.style.top = (c.y * 100) + "%"; d.textContent = k; tp.append(d); }); }
 
-  // Feedback for the latest version of this slide
+  // Note that went out with the sent version
+  $("sentNote").hidden = !(locked && shot.note);
+  if (locked && shot.note) $("sentNote").textContent = "Note for DM : \u201C" + shot.note + "\u201D";
+
+  // Note draft, kept per slide (before the first send and while preparing a new version)
+  const curId = cur ? cur.id : null;
+  if (S.noteFor !== curId) { $("note").value = curId ? (S.notes[curId] || "") : ""; S.noteFor = curId; S.noteOpen = false; }
+  const notesHere = v.mode === "notsent" || v.mode === "update";
+  document.querySelector(".slide-content").classList.toggle("tight", v.mode === "update");
+  const undoHere = notesHere && !!(S.undo && S.undo.id === curId);
+  const noteOpen = notesHere && (S.noteOpen || !!$("note").value.trim());
+  $("noteField").hidden = !noteOpen;
+  $("undoNote").hidden = !undoHere;
+  if (undoHere) $("undoCount").textContent = Math.max(1, Math.ceil((S.undo.until - Date.now()) / 1000));
+  $("addNoteBtn").hidden = !notesHere || noteOpen || undoHere;
+  $("addNoteBtn").setAttribute("aria-expanded", String(noteOpen));
+
+  // Actions
+  const btn = $("markBtn"), upd = $("updateBtn"), cancel = $("cancelUpdateBtn");
+  const canPrimary = v.mode === "notsent" || v.mode === "update";
+  btn.hidden = !canPrimary;
+  btn.disabled = !canPrimary || S.busy || !S.canImage;
+  btn.textContent = v.mode === "update" ? "Send v" + (shot.version + 1) + " for review" : cur ? "Mark slide " + cur.n + " ready for review" : "Select a slide";
+  cancel.hidden = v.mode !== "update"; cancel.disabled = S.busy;
+  upd.hidden = !(locked && shot.status !== "approved");
+  $("actions").hidden = btn.hidden && upd.hidden && cancel.hidden && !$("msg").textContent;
+  $("summary").classList.toggle("after-primary", canPrimary);
+
+  // Feedback on the sent version
   const fb = $("feedback"), list = $("comments");
-  fb.hidden = !shot;
+  fb.hidden = !(locked && cs.length);
   list.innerHTML = "";
-  if (shot) {
-    const meta = $("feedbackMeta"); meta.innerHTML = "";
-    const ver = document.createElement("span"); ver.className = "ver"; ver.textContent = "v" + shot.version; meta.append(ver);
-    if (shot.reviewed_by) {
-      const dot = document.createElement("span"); dot.className = "dot";
-      const by = document.createElement("span"); by.textContent = "Reviewed by " + shot.reviewed_by;
-      meta.append(dot, by);
-    }
+  if (locked && cs.length) {
+    $("feedbackTitle").textContent = "Feedback (" + cs.length + ")";
+    const m = $("feedbackMeta"); m.innerHTML = "";
+    const ver = document.createElement("span"); ver.className = "ver"; ver.textContent = "v" + shot.version; m.append(ver);
+    if (shot.reviewed_by) { const dot = document.createElement("span"); dot.className = "dot"; const by = document.createElement("span"); by.textContent = "Reviewed by " + shot.reviewed_by; m.append(dot, by); }
     let pinNo = 0;
-    if (!cs.length) { const li = document.createElement("li"); li.className = "empty"; li.textContent = "No comments yet."; list.append(li); }
     cs.forEach((c) => {
-      const pinned = c.x !== null && c.y !== null;
-      if (pinned) pinNo++;
+      const pinned = c.x !== null && c.y !== null; if (pinned) pinNo++;
       const li = document.createElement("li"); li.className = "comment" + (c.resolved ? " resolved" : "");
       const n = document.createElement("span"); n.className = "pin-no" + (pinned ? "" : " general"); n.textContent = pinned ? pinNo : "•";
       const body = document.createElement("div");
       if (c.audio_path) body.append(voiceEl(c));
       if (c.body) { const p = document.createElement("p"); p.textContent = c.body; body.append(p); }
-      const sm = document.createElement("small"); sm.textContent = ago(c.created_at) + (c.resolved ? ", resolved" : "");
-      body.append(sm); li.append(n, body); list.append(li);
+      const metaRow = document.createElement("div"); metaRow.className = "c-meta";
+      const t = document.createElement("span"); t.textContent = ago(c.created_at); metaRow.append(t);
+      const dot = () => { const d = document.createElement("span"); d.className = "dot"; return d; };
+      if (c.resolved) { const r = document.createElement("span"); r.className = "resolved-label"; r.innerHTML = ICON.check; r.append("Resolved"); metaRow.append(dot(), r); }
+      body.append(metaRow); li.append(n, body); list.append(li);
     });
     fillVoiceSources(cs);
   }
 
-  // Summary + list of sent slides: mine, plus teammates' slides on the same order
-  const rows = S.slides.filter((s) => S.latest[s.id]).map((s) => ({ n: s.n, status: S.latest[s.id].status, id: s.id, mine: true }));
-  Object.values(S.team || {}).forEach((r) => rows.push({ n: r.slide_number, status: r.status, designer: r.designer, mine: false }));
-  rows.sort((a, b) => a.n - b.n || (a.mine ? -1 : 1));
-  const byNumber = {}; rows.forEach((r) => { if (!byNumber[r.n] || r.mine) byNumber[r.n] = r; });
-  const sentCount = Object.keys(byNumber).length;
-  const approved = Object.values(byNumber).filter((r) => r.status === "approved").length;
-  const hasTeam = rows.some((r) => !r.mine);
-  const st = $("summaryText"); st.innerHTML = "";
-  const count = document.createElement("span"); count.className = "count"; count.textContent = sentCount + " of " + total;
-  st.append(count, document.createTextNode(" slides sent" + (hasTeam ? " by the team" : "") + ", " + approved + " approved"));
-  $("summary").hidden = !total;
-  const open = S.summaryOpen && rows.length > 0;
+  // Summary: every sent slide in the order, mine and teammates'
+  const byNumber = {};
+  S.slides.forEach((s) => { if (S.latest[s.id]) byNumber[s.n] = { status: S.latest[s.id].status, id: s.id }; });
+  Object.values(S.team || {}).forEach((r) => { if (!(r.slide_number in byNumber)) byNumber[r.slide_number] = { status: r.status, designer: r.designer }; });
+  const nums = Object.keys(byNumber).map(Number).sort((a, b) => a - b);
+  const approved = nums.filter((n) => byNumber[n].status === "approved").length;
+  $("summary").hidden = !nums.length;
+  const stext = $("summaryText"); stext.innerHTML = "";
+  const cnt = document.createElement("span"); cnt.className = "count"; cnt.textContent = nums.length + " ";
+  stext.append(cnt, document.createTextNode("slides sent, " + approved + " approved"));
+  const open = S.summaryOpen && nums.length > 0;
   $("summaryToggle").setAttribute("aria-expanded", String(open));
-  $("summaryToggle").disabled = !rows.length;
-  const ul = $("slideList"); ul.hidden = !open; ul.innerHTML = "";
-  rows.forEach((r) => {
-    const li = document.createElement("li"); if (r.mine && r.id === S.currentId) li.className = "current";
-    const left = document.createElement("span"); left.className = "row-left";
-    const b = document.createElement("button"); b.textContent = "Slide " + r.n;
-    b.setAttribute("aria-label", "Go to slide " + r.n);
-    const target = r.mine ? r.id : (S.slides[r.n - 1] || {}).id;
+  const grid = $("summaryGrid"); grid.hidden = !open; grid.innerHTML = "";
+  nums.forEach((n) => {
+    const e = byNumber[n]; const b = document.createElement("button");
+    b.className = "chip " + e.status + (cur && cur.n === n ? " current" : "");
+    b.textContent = n;
+    const label = "Slide " + n + ": " + STATUS_LABEL[e.status] + (e.designer ? " (" + e.designer + ")" : "");
+    b.title = label; b.setAttribute("aria-label", label);
+    if (e.status === "changes") { const x = document.createElement("span"); x.className = "bang"; x.textContent = "!"; x.setAttribute("aria-hidden", "true"); b.append(x); }
+    const target = e.id || (S.slides[n - 1] || {}).id;
     b.onclick = () => { if (target) selectSlide(target).then(refreshDeck); };
-    left.append(b);
-    if (!r.mine) { const who = document.createElement("span"); who.className = "who"; who.textContent = r.designer; left.append(who); }
-    li.append(left, makeTag(r.status)); ul.append(li);
+    grid.append(b);
   });
 }
 // ---- voice notes from the DM
@@ -453,19 +534,33 @@ async function fillVoiceSources(cs) {
     link.href = u; link.hidden = false;
   });
 }
+async function signedUrl(path) {
+  if (SIGNED[path] && SIGNED[path].exp > Date.now() + 60000) return SIGNED[path].url;
+  const { data, error } = await S.sb.storage.from("slides").createSignedUrls([path], 3600);
+  if (error || !data[0] || !data[0].signedUrl) return null;
+  SIGNED[path] = { url: data[0].signedUrl, exp: Date.now() + 3600 * 1000 };
+  return SIGNED[path].url;
+}
+// Live slide while it hasn't been sent (or a new version is being prepared); the sent snapshot otherwise
 async function renderThumb() {
   const cur = currentSlide(), box = $("thumb"), token = ++S.thumbToken;
   if (!cur) { box.innerHTML = "<span>Select a slide</span>"; return; }
-  if (!S.canImage) { box.innerHTML = "<span>Slide " + cur.n + "</span>"; return; }
+  const v = viewFor(cur);
+  const snapshotPath = v.mode === "locked" ? v.shot.image_path : v.mode === "teammate" ? v.team.image_path : null;
   try {
-    const b64 = await slideImage(cur.id, THUMB_WIDTH);
+    let src = null;
+    if (snapshotPath) { const u = await signedUrl(snapshotPath); src = u; }
+    else if (S.canImage) { src = "data:image/png;base64," + await slideImage(cur.id, THUMB_WIDTH); }
     if (token !== S.thumbToken) return;
+    if (!src) { box.innerHTML = "<span>Slide " + cur.n + "</span>"; return; }
+    const existing = box.querySelector("img");
+    if (existing && existing.getAttribute("src") === src) return;
     box.innerHTML = ""; const img = new Image();
-    img.alt = "Preview of slide " + cur.n; img.src = "data:image/png;base64," + b64; box.append(img);
-  } catch (e) { box.innerHTML = "<span>Preview unavailable</span>"; }
+    img.alt = (snapshotPath ? "Sent version of slide " : "Slide ") + cur.n; img.src = src; box.append(img);
+  } catch (e) { if (token === S.thumbToken) box.innerHTML = "<span>Preview unavailable</span>"; }
 }
 async function refreshDeck() {
-  try { await readDeck(); render(); renderThumb(); refreshReviewsSoon(); }
+  try { await readDeck(); S.thumbKey = null; render(); refreshReviewsSoon(); }
   catch (e) { say($("msg"), "Couldn't read the presentation: " + e.message, "err"); }
 }
 
@@ -486,18 +581,19 @@ async function markReady() {
     if (up.error) throw up.error;
     const ins = await S.sb.from("slide_shots").insert({
       file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.n, total_slides: S.slides.length,
-      version: version, designer: displayName(S.user), note: $("note").value.trim() || null, image_path: path, details: details
+      version: version, designer: displayName(S.user), note: (!$("noteField").hidden && $("note").value.trim()) || null, image_path: path, details: details
     }).select().single();
     if (ins.error) throw ins.error;
     S.latest[cur.id] = ins.data;
-    $("note").value = ""; delete S.notes[cur.id];
-    say($("msg"), version > 1 ? "Version " + version + " of slide " + cur.n + " is ready for review." : "Slide " + cur.n + " is ready for review.", "ok");
+    $("note").value = ""; S.noteOpen = false; delete S.notes[cur.id];
+    S.updating[cur.id] = false; S.justSent[cur.id] = Date.now(); say($("msg"), "");
+    setTimeout(render, 2700);
   } catch (e) {
     say($("msg"), "Slide " + cur.n + " wasn't sent: " + (e.message || e) + ". Check your connection and try again.", "err");
   } finally {
     S.busy = false;
     try { await loadReviews(); } catch (e) {}
-    render();
+    render(); renderThumb();
   }
 }
 
@@ -526,6 +622,8 @@ async function enterApp(user) {
   render();
   subscribe();
   setInterval(() => { if (!document.hidden) refreshReviewsSoon(); }, 20000);
+  // Keep the live preview fresh while a new version is being prepared
+  setInterval(() => { const c = currentSlide(); if (!document.hidden && c && viewFor(c).mode === "update" && !S.busy) renderThumb(); }, 5000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshReviewsSoon(); });
 }
 
@@ -552,10 +650,29 @@ Office.onReady(async (info) => {
   $("signInBtn").onclick = signIn;
   $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
   $("markBtn").onclick = markReady;
+  $("addNoteBtn").onclick = () => { S.noteOpen = true; render(); $("note").focus(); };
   $("note").addEventListener("input", () => { if (S.currentId) S.notes[S.currentId] = $("note").value; });
+  $("hideNoteBtn").onclick = (e) => {
+    e.preventDefault();
+    const id = S.currentId, text = $("note").value;
+    $("note").value = ""; delete S.notes[id]; S.noteOpen = false;
+    clearInterval(S.undoTimer);
+    S.undo = text.trim() ? { id: id, text: text, until: Date.now() + 5000 } : null;
+    if (S.undo) S.undoTimer = setInterval(() => { if (!S.undo || Date.now() >= S.undo.until) { clearInterval(S.undoTimer); S.undo = null; } render(); }, 250);
+    render(); (S.undo ? $("undoNoteBtn") : $("addNoteBtn")).focus();
+  };
+  $("undoNoteBtn").onclick = () => {
+    if (!S.undo) return;
+    clearInterval(S.undoTimer);
+    S.notes[S.undo.id] = S.undo.text; if (S.undo.id === S.currentId) $("note").value = S.undo.text;
+    S.undo = null; S.noteOpen = true; render(); $("note").focus();
+  };
+  $("appVersion").textContent = " · v" + APP_VERSION;
+  $("updateBtn").onclick = () => { const c = currentSlide(); if (!c) return; S.updating[c.id] = true; say($("msg"), ""); render(); renderThumb(); };
+  $("cancelUpdateBtn").onclick = () => { const c = currentSlide(); if (!c) return; S.updating[c.id] = false; say($("msg"), ""); render(); renderThumb(); $("updateBtn").focus(); };
+  $("refreshBtn").onclick = () => renderThumb();
   try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
   $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
-  $("appVersion").textContent = " · v" + APP_VERSION;
   $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); showLogin(); };
   $("projectName").addEventListener("change", (e) => {
     const v = e.target.value.trim();
