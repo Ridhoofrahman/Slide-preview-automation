@@ -63,15 +63,16 @@
   .sidebar { border-right: 1px solid var(--line); padding: 14px 10px; background: var(--surface); }
   .projects { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
   .projects li { position: relative; }
-  .projects .proj { width: 100%; text-align: left; border: 0; background: none; padding: 10px 44px 10px 10px; border-radius: 8px; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
+  .projects .proj { width: 100%; text-align: left; border: 0; background: none; padding: 10px; border-radius: 8px; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; transition: padding-right .15s ease; }
+  .projects li:hover .proj, .projects li:focus-within .proj { padding-right: 44px; }
   .projects .proj:hover { background: var(--bg); }
   .projects .proj[aria-current="true"] { background: #E9EDF8; }
   .projects .del { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border: 0; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; opacity: 0; }
   .projects li:hover .del, .projects .del:focus-visible { opacity: 1; }
   .projects .del:hover { background: var(--fix-bg); color: var(--fix); }
   .projects .del svg { width: 16px; height: 16px; }
-  .projects li:hover .count, .projects li:focus-within .count { visibility: hidden; }
-  @media (hover: none) { .projects .del { opacity: 1; } .projects .count { visibility: hidden; } }
+  @media (hover: none) { .projects .del { opacity: 1; } .projects .proj { padding-right: 44px; } }
+  @media (prefers-reduced-motion: reduce) { .projects .proj { transition: none; } }
   dialog.confirm { border: 0; border-radius: 14px; padding: 22px; width: min(420px, calc(100vw - 32px)); box-shadow: 0 12px 40px rgba(24,32,43,.22); }
   dialog.confirm::backdrop { background: rgba(24,32,43,.35); }
   dialog.confirm h2 { font-size: 17px; margin: 0 0 8px; }
