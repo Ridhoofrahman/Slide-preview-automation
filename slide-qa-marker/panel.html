@@ -146,12 +146,20 @@
   .foot { padding: 8px 16px; font-size: 12px; line-height: 16px; color: var(--muted); }
   .foot .link { font-size: 12px; color: var(--muted); }
 
-  /* Sign in */
-  .login { padding: 16px; display: flex; flex-direction: column; gap: 20px; }
-  .login h1 { font-size: 20px; line-height: 32px; font-weight: 500; margin: 0; }
-  .login .lead { color: var(--muted); margin: 4px 0 0; font-size: 13px; }
+  /* Sign in (Figma: Task pane / Sign in) */
+  .login { padding: 32px 16px; display: flex; flex-direction: column; gap: 32px; }
+  .login-head { padding-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+  .logo { width: 56px; height: auto; cursor: pointer; overflow: visible; }
+  .login-title { display: flex; flex-direction: column; gap: 4px; }
+  .login h1 { font-size: 24px; line-height: 36px; font-weight: 500; margin: 0; color: var(--ink); }
+  .login .lead { color: var(--muted); margin: 0; font-size: 13px; line-height: 20px; }
+  .login-form { display: flex; flex-direction: column; gap: 24px; }
+  .login .field { gap: 8px; }
   .login .field-label { font-size: 16px; line-height: 24px; color: var(--title); }
+  .login .field input { height: 40px; padding: 8px; }
   .login .msg { margin: 0; }
+  @keyframes logo-drop { from { transform: translateY(-14px) scale(.96); opacity: 0; } }
+  .logo.anim .k-drop { transform-box: fill-box; transform-origin: center; animation: logo-drop .7s cubic-bezier(.16,1,.3,1) both; }
   @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } .sent-overlay { animation: none; } }
 </style>
 </head>
@@ -161,15 +169,30 @@
 
   <!-- Sign in -->
   <section id="loginView" class="login" hidden>
-    <div>
-      <h1>Sign in to Slideshot</h1>
-      <p class="lead">Use the account your team lead created for you.</p>
+    <div class="login-head">
+      <svg id="loginLogo" class="logo anim" viewBox="14 17 72 64" role="img" aria-label="Slideshot">
+        <defs>
+          <linearGradient id="ss-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7C8EF"/><stop offset="1" stop-color="#9DB3E7"/></linearGradient>
+          <linearGradient id="ss-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A8FE0"/><stop offset="1" stop-color="#4A71CC"/></linearGradient>
+          <linearGradient id="ss-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C63D6"/><stop offset="1" stop-color="#00308D"/></linearGradient>
+        </defs>
+        <g class="k-drop"><path d="M28.5 19.5 H71.5 Q77 19.5 76.3 25 L72 60 H28 L23.7 25 Q23 19.5 28.5 19.5 Z" fill="url(#ss-c3)"/></g>
+        <g class="k-drop" style="animation-delay:.12s"><path d="M24.5 25 H75.5 Q81 25 80.3 30.5 L76 66 H24 L19.7 30.5 Q19 25 24.5 25 Z" fill="url(#ss-c2)"/></g>
+        <g class="k-drop" style="animation-delay:.24s"><path d="M21 31 H79 Q85 31 84.1 37 L78.8 72.5 Q78 78 72.5 78 H27.5 Q22 78 21.2 72.5 L15.9 37 Q15 31 21 31 Z" fill="url(#ss-c1)"/>
+          <polyline id="logoDoodle" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" points="40,54 47,61 61,46"/></g>
+      </svg>
+      <div class="login-title">
+        <h1>Sign in to Slideshot</h1>
+        <p class="lead">Use the account your team lead created for you</p>
+      </div>
     </div>
-    <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com"></label>
-    <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password"></label>
-    <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
-    <button id="signInBtn" class="primary">Sign in</button>
-    <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+    <div class="login-form">
+      <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com"></label>
+      <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password"></label>
+      <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
+      <button id="signInBtn" class="primary">Sign in</button>
+      <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+    </div>
   </section>
 
   <!-- Main -->
@@ -232,7 +255,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.3";
+const APP_VERSION = "2.4";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -630,9 +653,48 @@ async function enterApp(user) {
   document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshReviewsSoon(); });
 }
 
+// Slideshot logo: cards stack in, a scribble is drawn, then it morphs into a check
+const LOGO = (() => {
+  const N = 200;
+  function resample(pts) {
+    const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    const L = d[d.length - 1], out = []; let j = 0;
+    for (let k = 0; k < N; k++) { const s = k / (N - 1) * L; while (j < d.length - 2 && d[j + 1] < s) j++; const f = (s - d[j]) / ((d[j + 1] - d[j]) || 1); out.push([pts[j][0] + (pts[j + 1][0] - pts[j][0]) * f, pts[j][1] + (pts[j + 1][1] - pts[j][1]) * f]); }
+    return out;
+  }
+  const dense = []; for (let i = 0; i <= 900; i++) { const t = i / 900, a = t * Math.PI * 2 * 4.5; dense.push([34 + 31 * t - 4.3 * Math.sin(a) + Math.sin(t * 23) * .6, 55.5 - 5.2 * Math.cos(a) - 2.5 * t + Math.cos(t * 17) * .7]); }
+  const scr = resample(dense), chk = resample([[40, 54], [47, 61], [61, 46]]);
+  const str = (a) => a.map((p) => p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" ");
+  const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  let run = 0;
+  function play() {
+    const svg = $("loginLogo"), el = $("logoDoodle"), id = ++run;
+    if (!svg || !el) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { svg.classList.remove("anim"); el.setAttribute("points", str(chk)); el.setAttribute("opacity", "1"); el.style.strokeDasharray = "none"; return; }
+    svg.classList.remove("anim"); void svg.getBoundingClientRect(); svg.classList.add("anim");
+    el.setAttribute("points", str(scr)); el.setAttribute("stroke-width", "3.6"); el.setAttribute("opacity", "0");
+    const L = el.getTotalLength(); el.style.strokeDasharray = L + " " + L; el.style.strokeDashoffset = L;
+    setTimeout(() => {
+      if (id !== run) return; el.setAttribute("opacity", "1"); const t0 = performance.now();
+      (function draw(now) {
+        if (id !== run) return; const t = Math.min((now - t0) / 900, 1); el.style.strokeDashoffset = L * (1 - ease(t));
+        if (t < 1) return requestAnimationFrame(draw);
+        el.style.strokeDasharray = "none"; el.style.strokeDashoffset = 0; const t1 = performance.now() + 150, D = 1100, S2 = .4;
+        (function morph(now) {
+          if (id !== run) return; const u = Math.max(0, Math.min((now - t1) / D, 1));
+          el.setAttribute("points", str(scr.map((s, j) => { const e = ease(Math.max(0, Math.min((u - j / (N - 1) * S2) / (1 - S2), 1))); return [s[0] + (chk[j][0] - s[0]) * e, s[1] + (chk[j][1] - s[1]) * e]; })));
+          el.setAttribute("stroke-width", (3.6 + 1.9 * ease(u)).toFixed(2));
+          if (u < 1) requestAnimationFrame(morph);
+        })(performance.now());
+      })(t0);
+    }, 800);
+  }
+  return { play };
+})();
 function showLogin() {
   S.user = null;
   $("appView").hidden = true; $("loginView").hidden = false;
+  LOGO.play();
   $("email").focus();
 }
 
@@ -651,6 +713,7 @@ Office.onReady(async (info) => {
   }
 
   $("signInBtn").onclick = signIn;
+  $("loginLogo").addEventListener("click", () => LOGO.play());
   $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
   $("markBtn").onclick = markReady;
   $("addNoteBtn").onclick = () => { S.noteOpen = true; render(); $("note").focus(); };
