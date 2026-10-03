@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QA Checkpoint</title>
+<title>Slideshot</title>
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -162,7 +162,7 @@
   <!-- Sign in -->
   <section id="loginView" class="login" hidden>
     <div>
-      <h1>Sign in to QA Checkpoint</h1>
+      <h1>Sign in to Slideshot</h1>
       <p class="lead">Use the account your team lead created for you.</p>
     </div>
     <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com"></label>
@@ -232,7 +232,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.2";
+const APP_VERSION = "2.3";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
