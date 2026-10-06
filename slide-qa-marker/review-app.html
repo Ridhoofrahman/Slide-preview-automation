@@ -51,7 +51,15 @@
   /* Login */
   /* Sign in (Figma: Review page / 1 · Sign in) */
   .signin { position: fixed; inset: 0; z-index: 30; background: #F6F7F9; display: grid; place-items: center; padding: 24px; overflow: auto; font-family: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif; color: #18202B; }
-  .signin-band { position: fixed; left: 0; right: 0; bottom: -64px; height: 222px; pointer-events: none; }
+  /* Bottom band: a fixed arrangement copied from the Figma frame (positions are from the page centre / bottom) */
+  .signin-band { position: fixed; left: 0; right: 0; bottom: 0; height: 240px; overflow: hidden; pointer-events: none; }
+  .band-slide { position: absolute; border-radius: 6px; }
+  .band-slide i { position: absolute; left: 11.6%; height: 7.5%; border-radius: 999px; }
+  .band-slide i:nth-child(1) { top: 18.6%; width: 30%; height: 10%; }
+  .band-slide i:nth-child(2) { top: 37%; width: 57%; }
+  .band-slide i:nth-child(3) { top: 52%; width: 33%; }
+  .band-slide b { position: absolute; right: 7%; bottom: 10.8%; width: 22%; aspect-ratio: 1; border-radius: 50%; background: #00308D; display: grid; place-items: center; }
+  .band-slide b svg { width: 56%; height: 56%; }
   .signin-card { position: relative; z-index: 1; width: 350px; max-width: 100%; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 1.5px rgba(18,18,23,.1), 0 1px 1px rgba(18,18,23,.06); }
   .signin-hero { height: 146px; }
   .signin-head { position: relative; margin-top: -43px; padding: 40px 20px 0; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,.72) 8%, #FFFFFF 38%); }
@@ -891,13 +899,26 @@ async function signIn() {
 // Flying-slides heroes run only while the sign-in screen is visible
 function showLogin() {
   $("loginView").hidden = false;
+  buildLoginBand();
   if (window.SlideshotHero && !S.heroes) {
-    // The band at the bottom is a still backdrop: draw one frame, then stop
-    const band = SlideshotHero.mount($("loginBand"), { theme: "pastel", height: 222, scale: 2.6, bg: "transparent" });
-    band.pause();
-    S.heroes = [SlideshotHero.mount($("loginHero"), { theme: "pastel", height: 146, bg: "#FFFFFF" }), band];
+    S.heroes = [SlideshotHero.mount($("loginHero"), { theme: "pastel", height: 146, bg: "#FFFFFF" })];
   }
   $("email").focus();
+}
+// [x from page centre, y of centre from page bottom, width, height, rotation°, fill, opacity, line colour, check badge]
+const LOGIN_BAND = [[-1205.4,33.9,198.2,122.3,11.2,"#DCE7FF",0.96,"#9DB5EE",1],[-1205.4,33.9,198.2,122.3,11.2,"#DCE7FF",0.96,"#9DB5EE",1],[-1719.3,6,162,92,0,"#E6E0FF",0.88,"#B3A6EC",0],[-2006.9,55,206.5,117.4,-12.3,"#E6E0FF",0.88,"#B3A6EC",0],[-900.8,44,171.5,97.5,-42.3,"#E6E0FF",0.88,"#B3A6EC",1],[-1603.7,19,142.7,96.2,14.9,"#FFE5D6",0.78,"#EDB296",0],[-1366.6,32.5,169,113.9,-12.2,"#FFE5D6",0.78,"#EDB296",0],[-1366.6,32.5,169,113.9,-12.2,"#FFE5D6",0.78,"#EDB296",0],[-612.2,61.4,239.1,161.1,9.6,"#FFE5D6",0.78,"#EDB296",0],[-1491.3,27,116,66,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1507.3,41.5,170,95,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1042.8,39.5,185,105,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1042.8,39.5,185,105,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1603.7,19,142.7,96.2,14.9,"#FFE5D6",0.78,"#EDB296",0],[-1884.7,33.9,198.2,122.3,11.2,"#DCE7FF",0.96,"#9DB5EE",1],[-763.1,17.8,200.4,112.4,-16.4,"#FBDDE8",0.8,"#E7A1BB",1],[-470.3,56,180,101.8,-8,"#D6F1E6",0.87,"#8FCDB4",0],[67.7,61,190,106.7,12,"#FFE5D6",0.78,"#EDB296",0],[-215.3,66,164,92.5,21,"#E6E0FF",0.88,"#B3A6EC",0],[-329.8,31,205,115.4,-17,"#FBDDE8",0.8,"#E7A1BB",1],[2109.2,46,223,125.2,-12,"#FFE5D6",0.78,"#EDB296",0],[-43.3,39,224,126.6,-4,"#D6F1E6",0.87,"#8FCDB4",1],[467.7,39,180,101.5,5,"#E6E0FF",0.88,"#B3A6EC",1],[191.7,25,168,94.6,-8.1,"#FBDDE8",0.8,"#E7A1BB",0],[615.7,63.7,201,113.6,-15,"#D6F1E6",0.87,"#8FCDB4",0],[355.7,53,212,119,-11,"#FFE5D6",0.78,"#EDB296",0],[880.2,52,195,110,-6,"#E6E0FF",0.88,"#B3A6EC",0],[767.7,29,226,127.2,14,"#FBDDE8",0.8,"#E7A1BB",1],[1004.2,21,173,97.1,19,"#FFE5D6",0.78,"#EDB296",0],[1279.2,40,183,103.5,0,"#D6F1E6",0.87,"#8FCDB4",0],[1546.2,36,163,91.9,-20,"#E6E0FF",0.88,"#B3A6EC",0],[1162.2,62,205,115.4,-11,"#FBDDE8",0.8,"#E7A1BB",0],[1831.2,28,207,117,-7,"#D6F1E6",0.87,"#8FCDB4",0],[1431.7,64,218,122.4,9,"#FFE5D6",0.78,"#EDB296",1],[1957.7,60,176,99.3,25,"#E6E0FF",0.88,"#B3A6EC",1],[1687.7,49,190,107,16,"#FBDDE8",0.8,"#E7A1BB",0]];
+function buildLoginBand() {
+  const band = $("loginBand"); if (band.childElementCount) return;
+  const check = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 8.4l2.6 2.6L12 5.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  LOGIN_BAND.forEach(([x, y, w, h, rot, fill, op, line, badge]) => {
+    const d = document.createElement("div"); d.className = "band-slide";
+    // Fade the card and its lines, but keep the check badge solid (as in Figma)
+    const rgba = (hex, a) => "rgba(" + [1, 3, 5].map((k) => parseInt(hex.slice(k, k + 2), 16)).join(",") + "," + a + ")";
+    d.style.cssText = "width:" + w + "px;height:" + h + "px;left:calc(50% + " + (x - w / 2) + "px);bottom:" + (y - h / 2) + "px;transform:rotate(" + rot + "deg);background:" + rgba(fill, op);
+    d.innerHTML = '<i></i><i></i><i></i>' + (badge ? "<b>" + check + "</b>" : "");
+    d.querySelectorAll("i").forEach((i) => { i.style.background = rgba(line, (0.75 * op).toFixed(2)); });
+    band.append(d);
+  });
 }
 function hideLogin() {
   $("loginView").hidden = true;
