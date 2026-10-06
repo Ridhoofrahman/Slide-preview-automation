@@ -18,7 +18,7 @@
     /* From Figma: Slide Review / Panel v2.1 */
     --canvas: #F6F7F9; --surface: #FFFFFF; --ink: #18202B; --title: #1F2430; --body: #3F4652; --muted: #5A6575; --secondary: #6B7280; --disabled: #8B93A1;
     --link: #1F3A93; --primary: #00308D; --primary-hover: #002770; --focus: #3D66F5;
-    --outline: #E3E6EB; --line: #DCE0E6; --input: #8B93A1;
+    --outline: #E3E6EB; --line: #DCE0E6; --input: #CDD2DA; /* Figma: color/outline/accent/grey */
     --grey-bg: #EEF0F3; --grey-bd: #CDD2DA;
     --yellow-bg: #FDF5E6; --yellow-bd: #F4CC7F; --yellow-fg: #8D5D00;
     --red-bg: #FAE9EB; --red-bd: #E48F9A; --red-fg: #CA2135;
@@ -156,8 +156,8 @@
   .login h1 { font-size: 24px; line-height: 36px; font-weight: 500; margin: 0; color: var(--ink); }
   .login-form { display: flex; flex-direction: column; gap: 24px; }
   .login .field { gap: 8px; }
-  .login .field-label { font-size: 16px; line-height: 24px; color: var(--title); }
-  .login .field input { height: 40px; padding: 8px; font-size: 16px; line-height: 24px; color: var(--title); }
+  .login .field-label { font-size: 14px; line-height: 20px; color: var(--title); }
+  .login .field input { height: 40px; padding: 8px; font-size: 14px; line-height: 20px; color: var(--body); }
   .login .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
   .login .field input[aria-invalid="true"] { border-color: #C0352B; }
   .field-error { font-size: 13px; line-height: 18px; color: #C0352B; }
@@ -256,7 +256,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.6";
+const APP_VERSION = "2.7";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
