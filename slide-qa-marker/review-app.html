@@ -9,7 +9,7 @@
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
 <script src="slideshot-hero.js"></script>
 <style>
   :root {
@@ -237,6 +237,118 @@
     figure.slide img { max-height: 60vh; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* ===== Review slide (Figma: 3 · Review slide) ===== */
+  .review { background: #F6F7F9; grid-template-rows: 56px 1fr; font-family: "Geist", "Segoe UI", system-ui, sans-serif; color: #1F2430; }
+  .rv-head { display: flex; align-items: center; gap: 12px; padding: 0 16px; background: #FFFFFF; border-bottom: 1px solid #E3E6EB; }
+  .rv-back { width: 28px; height: 28px; margin-left: -4px; border: 0; background: none; border-radius: 6px; color: #3F4652; display: grid; place-items: center; cursor: pointer; padding: 0; }
+  .rv-back:hover { background: #F6F7F9; }
+  .rv-back svg { width: 20px; height: 20px; }
+  .rv-name { flex: 1; min-width: 0; margin: 0 0 0 -2px; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rv-version select { height: 40px; border: 1px solid #E3E6EB; border-radius: 8px; padding: 0 32px 0 10px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' fill='none' stroke='%233F4652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center / 18px; appearance: none; font: 14px/20px inherit; font-family: inherit; color: #3F4652; cursor: pointer; }
+  .rv-delete { display: inline-flex; align-items: center; gap: 0; height: 40px; padding: 8px 12px; border: 0; border-radius: 8px; background: none; color: #CA2135; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .rv-delete span { padding: 0 8px; }
+  .rv-delete svg { width: 20px; height: 20px; }
+  .rv-delete:hover { background: #FAE9EB; }
+  .rv-main { display: grid; grid-template-columns: 1fr 272px; min-height: 0; }
+  .rv-work { display: flex; gap: 24px; padding: 20px 24px 20px 40px; min-width: 0; overflow: auto; }
+  .rv-rail { flex: none; width: 179px; align-self: flex-start; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 8px; background: #E3E6EB; border-radius: 12px; }
+  .rv-thumb { display: flex; gap: 4px; padding: 2px; border: 1.5px solid transparent; border-radius: 6px; background: none; cursor: pointer; text-align: left; }
+  .rv-thumb:hover { background: rgba(255,255,255,.55); }
+  .rv-thumb[aria-current="true"] { background: #F0F6FC; border-color: #9FC3EE; }
+  .rv-thumb .n { width: 20px; padding-top: 2px; text-align: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #6B7280; flex: none; }
+  .rv-thumb img, .rv-thumb .ph { width: 133px; aspect-ratio: 16 / 9; border-radius: 4px; object-fit: cover; background: #FFFFFF; display: block; }
+  .rv-center { flex: 1; min-width: 0; max-width: 960px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .rv-older { align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 8px; background: #EFEAFB; color: #4A3291; font-size: 13px; line-height: 20px; }
+  .rv-tag { display: inline-flex; padding: 4px 12px; border-radius: 20px; border: 1px solid; font-size: 16px; line-height: 24px; }
+  .rv-tag.ready { background: #FDF5E6; border-color: #F4CC7F; color: #8D5D00; }
+  .rv-tag.approved { background: #E6F8F2; border-color: #7FD8BD; color: #006B4B; }
+  .rv-tag.changes { background: #FAE9EB; border-color: #E48F9A; color: #CA2135; }
+  .review figure.slide { align-self: stretch; display: block; border-radius: 6px; overflow: visible; box-shadow: none; background: transparent; }
+  .review figure.slide img { width: 100%; max-height: none; border-radius: 6px; }
+  .review .pin { width: 22px; height: 22px; border-radius: 50%; rotate: 0deg; transform: translate(-50%, -50%); background: #00308D; border: 1px solid #FFFFFF; box-shadow: 0 1px 3px rgba(18,18,23,.3); }
+  .review .pin span { rotate: 0deg; font-size: 12px; font-weight: 500; }
+  .review .pin.resolved { background: #6B7280; }
+  .review .pin.hot { background: #3359A4; scale: 1.15; }
+  .review .pin.draft { background: #FFFFFF; border: 1.5px dashed #00308D; }
+  .rv-details { align-self: stretch; display: grid; grid-template-columns: minmax(0, 323fr) minmax(0, 398fr); gap: 20px; }
+  .rv-details h4 { margin: 0 0 6px; font-size: 12px; line-height: 16px; font-weight: 500; color: #18202B; display: flex; gap: 8px; align-items: center; }
+  .rv-details .rows { display: grid; }
+  .rv-details .row { display: grid; grid-template-columns: 120px 60px 1fr; gap: 8px; padding: 4px 0; font: 12px/16px "Geist Mono", ui-monospace, Menlo, monospace; color: #6B7280; }
+  .rv-details .row .small { color: #CA2135; font-weight: 600; }
+  .rv-details .row > span { min-width: 0; }
+  .rv-details .row .sample { display: block; font-family: "Geist", system-ui, sans-serif; color: #8B93A1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rv-details p { margin: 0; font-size: 12px; line-height: 16px; color: #6B7280; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .rv-details .warn { font-size: 11px; line-height: 16px; padding: 0 6px; border-radius: 10px; background: #FAE9EB; color: #CA2135; font-weight: 500; }
+  .rv-details .dnote { margin-top: 6px; color: #8B93A1; }
+  .rv-panel { background: #FFFFFF; border-left: 1px solid #E3E6EB; display: flex; flex-direction: column; min-height: 0; }
+  .rv-decision { padding: 16px; border-bottom: 1px solid #E3E6EB; display: flex; flex-direction: column; gap: 16px; }
+  .rv-sender { display: flex; flex-direction: column; gap: 4px; }
+  .rv-sender p { margin: 0; font-size: 12px; line-height: 16px; }
+  #rvBy { color: #18202B; font-weight: 500; }
+  #rvNote { color: #6B7280; overflow-wrap: anywhere; }
+  .rv-actions { display: flex; flex-direction: column; gap: 8px; }
+  .rv-approve, .rv-change { height: 40px; border-radius: 8px; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .rv-approve { border: 0; background: #008F64; color: #FFFFFF; }
+  .rv-approve:hover { background: #007553; }
+  .rv-change { border: 1px solid #E3E6EB; background: #FFFFFF; color: #CA2135; }
+  .rv-change:hover { border-color: #E48F9A; }
+  .rv-decided { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 20px; }
+  .rv-decided.approved { background: #E6F8F2; color: #006B4B; }
+  .rv-decided.changes { background: #FDF5E6; color: #8D5D00; }
+  .rv-cancel { border: 0; background: none; padding: 0 4px; font: 500 12px/20px inherit; font-family: inherit; color: #1F2430; cursor: pointer; }
+  .rv-cancel:hover { text-decoration: underline; }
+  .rv-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .rv-thread h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1F2430; }
+  .rv-comments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .rv-comments .empty { font-size: 12px; color: #6B7280; }
+  .rv-comment { display: flex; gap: 8px; padding: 10px; border: 1px solid #DCE0E6; border-radius: 10px; background: #FFFFFF; cursor: default; }
+  .rv-comment.hot { background: #EEF0F3; }
+  .rv-comment.active { border-color: #3359A4; background: #FFFFFF; }
+  .rv-comment.resolved { border-color: #33C297; }
+  .rv-comment .pinno { flex: none; width: 22px; height: 22px; border-radius: 11px; background: #00308D; color: #FFFFFF; font-size: 12px; font-weight: 500; display: grid; place-items: center; }
+  .rv-comment.resolved .pinno { background: #8B93A1; }
+  .rv-comment .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .rv-comment p { margin: 0; font-size: 14px; line-height: 20px; color: #3F4652; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .rv-comment.resolved p, .rv-comment.resolved .when { color: #8B93A1; }
+  .rv-comment .meta { display: flex; justify-content: space-between; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: #6B7280; }
+  .rv-comment .when { display: flex; align-items: center; gap: 4px; }
+  .rv-comment .dot { width: 4px; height: 4px; border-radius: 2px; background: currentColor; opacity: .7; }
+  .rv-comment .act { border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #00308D; cursor: pointer; }
+  .player { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 4px; border-radius: 999px; background: #F6F7F9; }
+  .player .pp { width: 20px; height: 20px; border: 0; padding: 0; background: none; color: #00308D; cursor: pointer; display: grid; place-items: center; flex: none; }
+  .player .pp svg { width: 18px; height: 18px; }
+  .player .t { margin-left: auto; font: 10px/16px "Geist Mono", ui-monospace, monospace; color: #6B7280; padding: 0 4px; }
+  .wave { display: inline-flex; align-items: center; gap: 2px; height: 12px; }
+  .wave i { width: 2px; border-radius: 2px; background: #6B7280; display: block; }
+  .wave.live i { animation: wave 1s ease-in-out infinite; }
+  @keyframes wave { 50% { transform: scaleY(.45); } }
+  .rv-closed { margin: 0; padding: 14px 16px 18px; border-top: 1px solid #DCE0E6; font-size: 12px; line-height: 18px; color: #6B7280; }
+  .rv-link { border: 0; background: none; padding: 0; font: 500 12px/18px inherit; font-family: inherit; color: #1F2430; cursor: pointer; text-decoration: underline; text-underline-position: from-font; }
+  .rv-older .rv-link { font-size: 13px; color: #4A3291; }
+  .rv-composer { padding: 12px 16px 16px; border-top: 1px solid #DCE0E6; display: flex; flex-direction: column; gap: 8px; }
+  .rv-composer > p { margin: 0; font-size: 12px; line-height: 16px; color: #8B93A1; }
+  .rv-msgbox { display: flex; flex-direction: column; gap: 8px; padding: 8px; border: 1px solid #CDD2DA; border-radius: 8px; background: #FFFFFF; }
+  .rv-msgbox:focus-within { border-color: #9FC3EE; }
+  .rv-msgbox textarea { border: 0; padding: 0; resize: none; min-height: 40px; font: 14px/20px inherit; font-family: inherit; color: #3F4652; outline: none; background: none; }
+  .rv-msgbox textarea::placeholder { color: #6B7280; }
+  .rv-recorded { display: flex; align-items: center; gap: 8px; }
+  .rv-recorded #recPlayer { flex: 1; min-width: 0; }
+  .rv-recorded .player .wave { flex: 1; overflow: hidden; }
+  .rv-msgbar { display: flex; align-items: center; gap: 8px; }
+  .rv-msgbar .spacer { flex: 1; }
+  .rv-live { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 999px; background: #F6F7F9; font: 10px/16px "Geist Mono", ui-monospace, monospace; color: #6B7280; }
+  .rv-icon, .rv-send { width: 24px; height: 24px; padding: 4px; border: 0; border-radius: 4px; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .rv-icon { background: none; color: #6B7280; }
+  .rv-icon:hover { background: #F6F7F9; color: #1F2430; }
+  .rv-icon.recording { color: #CA2135; padding: 0; }
+  .rv-icon svg, .rv-send svg { width: 16px; height: 16px; }
+  .rv-icon.recording svg { width: 22px; height: 22px; }
+  .rv-send { background: #00308D; color: #FFFFFF; }
+  .rv-send:disabled { opacity: .5; cursor: not-allowed; }
+  .review .msg:empty { display: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (max-width: 1100px) { .rv-rail { display: none; } .rv-work { padding-left: 24px; } }
 </style>
 </head>
 <body>
@@ -288,52 +400,49 @@
   </div>
 
   <!-- Review one slide -->
-  <div id="reviewView" class="review" hidden role="dialog" aria-modal="true" aria-labelledby="rvSlide">
-    <header class="rv-bar">
-      <button id="backBtn" class="ghost">Back to slides</button>
-      <div class="rv-title"><strong id="rvSlide"></strong><span id="rvProject"></span></div>
-      <label><span class="sr" hidden>Version</span><select id="versionSelect" aria-label="Version"></select></label>
-      <button id="deleteSlideBtn" class="ghost del-slide" title="Delete this slide so the designer can send it again"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Delete slide</span></button>
-      <div class="navbtns">
-        <button id="prevBtn" class="ghost" aria-label="Previous slide">‹</button>
-        <button id="nextBtn" class="ghost" aria-label="Next slide">›</button>
-      </div>
+  <div id="reviewView" class="review" hidden role="dialog" aria-modal="true" aria-labelledby="rvProject">
+    <header class="rv-head">
+      <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5L7 10l5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 id="rvProject" class="rv-name"></h2>
+      <label class="rv-version" id="versionWrap"><span class="sr">Version</span><select id="versionSelect" aria-label="Version"></select></label>
+      <button id="deleteSlideBtn" class="rv-delete" title="Delete this slide so the designer can send it again"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 6h12M8 6V4.5h4V6M6 6l.7 10h6.6L14 6M8.5 9v4.5M11.5 9v4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Delete slide</span></button>
     </header>
-    <div class="rv-body">
-      <div class="stage">
-        <div class="stage-inner">
-          <div id="olderBanner" class="older" hidden><span id="olderText"></span><button id="toLatest" class="link">View latest</button></div>
+    <div class="rv-main">
+      <div class="rv-work">
+        <nav class="rv-rail" id="rvRail" aria-label="Slides in this order"></nav>
+        <div class="rv-center">
+          <div id="olderBanner" class="rv-older" hidden><span id="olderText"></span><button id="toLatest" class="rv-link">View latest</button></div>
+          <span id="rvStatus" class="rv-tag"></span>
           <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
-          <div id="rvDetails" class="details" aria-label="Slide details"></div>
+          <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
         </div>
       </div>
-      <aside class="panel">
-        <div class="panel-top">
-          <p class="by" id="rvBy"></p>
-          <p class="note" id="rvNote" hidden></p>
-          <div class="decision">
-            <button id="approveBtn" class="approve" aria-pressed="false">Approve</button>
-            <button id="changesBtn" class="changes" aria-pressed="false">Request changes</button>
+      <aside class="rv-panel">
+        <div class="rv-decision">
+          <div class="rv-sender"><p id="rvBy"></p><p id="rvNote" hidden></p></div>
+          <div class="rv-actions" id="decisionBtns">
+            <button id="approveBtn" class="rv-approve">Approve slide</button>
+            <button id="changesBtn" class="rv-change">Request change</button>
           </div>
-          <p class="decision-state" id="decisionState"></p>
+          <div class="rv-decided" id="decided" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-cancel">Cancel</button></div>
         </div>
-        <div class="thread">
-          <h3 id="commentCount">Comments</h3>
-          <ol id="comments" class="comments"></ol>
+        <div class="rv-thread" id="thread">
+          <h3>Comments</h3>
+          <ol id="comments" class="rv-comments"></ol>
         </div>
-        <p class="closed-note" id="closedNote" hidden>Comments are closed on older versions. <button id="toLatest2" class="link">Go to the latest version</button></p>
-        <div class="composer" id="composer">
+        <p class="rv-closed" id="closedNote" hidden>Comments are closed on older versions.<br><button id="toLatest2" class="rv-link">Go to the latest version</button></p>
+        <div class="rv-composer" id="composer">
           <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
-          <div class="rec-preview" id="recPreview" hidden>
-            <audio id="recAudio" controls preload="metadata"></audio>
-            <div class="rec-row"><span id="recLen"></span><button id="recDiscard" class="link">Discard</button></div>
-          </div>
-          <textarea id="commentBody" aria-label="Comment" placeholder="Write a comment"></textarea>
-          <div class="row">
-            <button id="recBtn" class="ghost mic" title="Record a voice note, up to 2 minutes"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Record voice</span></button>
-            <span class="spacer"></span>
-            <button id="removePin" class="ghost" hidden>Remove pin</button>
-            <button id="sendComment" class="primary">Add comment</button>
+          <div class="rv-msgbox">
+            <div class="rv-recorded" id="recPreview" hidden><div id="recPlayer"></div><button id="recDiscard" class="rv-icon" aria-label="Discard recording" title="Discard recording"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div>
+            <textarea id="commentBody" aria-label="Message" placeholder="Send a message..." rows="2"></textarea>
+            <div class="rv-msgbar">
+              <button id="removePin" class="rv-link" hidden>Remove pin</button>
+              <span class="rv-live" id="recLive" hidden><span id="recClock">00:00/02:00</span><span class="wave live"></span></span>
+              <span class="spacer"></span>
+              <button id="recBtn" class="rv-icon" aria-label="Record a voice note, up to 2 minutes" title="Record a voice note (up to 2 min)"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+              <button id="sendComment" class="rv-send" aria-label="Send"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3.5M3.5 8L8 3.5 12.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
           </div>
           <p id="rvMsg" class="msg" role="status" aria-live="polite"></p>
         </div>
@@ -561,44 +670,64 @@ function currentShot() {
   const vers = S.versions[S.slideKey]; if (!vers) return null;
   return vers.find((v) => v.id === S.shotId) || vers[0];
 }
+const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change requested" };
 async function renderReview() {
   const shot = currentShot(); if (!shot) { closeReview(); return; }
   S.shotId = shot.id;
   const vers = S.versions[S.slideKey];
   const latest = vers[0], isLatest = shot.id === latest.id;
   S.readOnly = !isLatest;
+  // Comments are written once the DM asks for a change; earlier comments stay visible
+  S.canComment = isLatest && shot.status === "changes";
 
-  $("rvSlide").textContent = "Slide " + shot.slide_number + " of " + shot.total_slides;
   $("rvProject").textContent = shot.project;
   const sel = $("versionSelect"); sel.innerHTML = "";
-  vers.forEach((v) => { const o = el("option", "", "v" + v.version + ", " + ago(v.created_at)); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
-  sel.hidden = vers.length < 2;
+  vers.forEach((v) => { const o = el("option", "", "Version " + v.version); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
+  $("versionWrap").hidden = vers.length < 2;
   $("olderBanner").hidden = isLatest;
-  $("olderText").textContent = "You're viewing v" + shot.version + ". The latest is v" + latest.version + ".";
+  $("olderText").textContent = "You are viewing v" + shot.version + ". The latest is v" + latest.version + ".";
 
-  const list = projectSlides(); const i = list.findIndex((s) => keyOf(s) === S.slideKey);
-  $("prevBtn").disabled = i <= 0; $("nextBtn").disabled = i < 0 || i >= list.length - 1;
+  const tag = $("rvStatus"); tag.className = "rv-tag " + shot.status; tag.textContent = REVIEW_LABEL[shot.status] || shot.status;
+  tag.hidden = !isLatest;
 
-  $("rvBy").innerHTML = ""; $("rvBy").append("Sent by ", el("strong", "", shot.designer), ", " + ago(shot.created_at));
-  $("rvNote").hidden = !shot.note; $("rvNote").textContent = shot.note || "";
+  $("rvBy").textContent = "Sent by " + shot.designer + ", " + ago(shot.created_at);
+  $("rvNote").hidden = !shot.note; $("rvNote").textContent = shot.note ? "Note: \u201C" + shot.note + "\u201D" : "";
 
-  $("approveBtn").setAttribute("aria-pressed", String(shot.status === "approved"));
-  $("changesBtn").setAttribute("aria-pressed", String(shot.status === "changes"));
-  $("approveBtn").disabled = $("changesBtn").disabled = !isLatest;
-  $("decisionState").textContent = !isLatest ? "Decisions apply to the latest version." :
-    shot.reviewed_by ? STATUS_LABEL[shot.status] + " by " + shot.reviewed_by + ", " + ago(shot.reviewed_at) : "Not reviewed yet.";
+  // Decision: two buttons until the DM decides, then a summary with Cancel
+  const decided = isLatest && (shot.status === "approved" || shot.status === "changes");
+  $("decisionBtns").hidden = !isLatest || decided;
+  const box = $("decided"); box.hidden = !decided;
+  if (decided) {
+    box.className = "rv-decided " + shot.status;
+    $("decidedText").textContent = (shot.status === "approved" ? "Approved" : "Change requested") + (shot.reviewed_by ? " by " + shot.reviewed_by : "");
+  }
 
-  // image
+  renderRail();
   const img = $("rvImg"); img.alt = "Slide " + shot.slide_number + ", version " + shot.version;
   try { await ensureUrls([shot]); } catch (e) {}
   if (img.src !== urlFor(shot)) img.src = urlFor(shot);
 
+  if (!S.canComment && S.draft) S.draft = null;
   renderComments(shot);
-  // Older versions are read-only so the DM always reviews the latest one
-  $("composer").hidden = !isLatest; $("closedNote").hidden = isLatest;
-  $("figure").classList.toggle("readonly", !isLatest);
-  if (!isLatest && S.draft) { S.draft = null; renderComments(shot); }
+  $("composer").hidden = !S.canComment; $("closedNote").hidden = isLatest;
+  $("figure").classList.toggle("readonly", !S.canComment);
   renderDetails(shot, vers);
+}
+// Left rail: every slide sent in this order, newest version of each
+async function renderRail() {
+  const list = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
+  list.forEach((s) => {
+    const b = el("button", "rv-thumb"); b.type = "button";
+    if (keyOf(s) === S.slideKey) b.setAttribute("aria-current", "true");
+    b.setAttribute("aria-label", "Slide " + s.slide_number + (s.designer ? ", " + s.designer : ""));
+    b.append(el("span", "n", s.slide_number));
+    const im = new Image(); im.alt = ""; im.loading = "lazy"; im.dataset.path = s.image_path; b.append(im);
+    b.onclick = () => openReview(keyOf(s));
+    rail.append(b);
+  });
+  try { await ensureUrls(list); } catch (e) {}
+  rail.querySelectorAll("img").forEach((im, i) => { const u = urlFor(list[i]); if (u && im.src !== u) im.src = u; });
+  const cur = rail.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({ block: "nearest" });
 }
 function renderComments(shot) {
   const cs = S.comments[shot.id] || [];
@@ -610,7 +739,7 @@ function renderComments(shot) {
     p.style.left = (c.x * 100) + "%"; p.style.top = (c.y * 100) + "%";
     p.setAttribute("aria-label", "Comment " + nums[c.id]);
     p.append(el("span", "", nums[c.id]));
-    p.onclick = (e) => { e.stopPropagation(); S.hot = c.id; renderComments(shot); const t = document.querySelector('[data-cid="' + c.id + '"]'); if (t) t.scrollIntoView({ block: "nearest" }); };
+    p.onclick = (e) => { e.stopPropagation(); S.hot = c.id; S.active = c.id; renderComments(shot); const t = document.querySelector('[data-cid="' + c.id + '"]'); if (t) t.scrollIntoView({ block: "nearest" }); };
     pins.append(p);
   });
   if (S.draft) {
@@ -620,21 +749,22 @@ function renderComments(shot) {
   $("pinHint").textContent = S.draft ? "Pin " + (Object.keys(nums).length + 1) + " placed. Write what should change there." : "Click anywhere on the slide to pin a comment, or write a general comment.";
   $("removePin").hidden = !S.draft;
 
-  const open = cs.filter((c) => !c.resolved).length;
-  $("commentCount").textContent = cs.length ? cs.length + " comment" + (cs.length > 1 ? "s" : "") + (open !== cs.length ? ", " + open + " open" : "") : "Comments";
+  $("thread").hidden = !cs.length && !S.canComment;
   const list = $("comments"); list.innerHTML = "";
   if (!cs.length) { list.append(el("li", "empty", "No comments yet.")); }
   cs.forEach((c) => {
-    const li = el("li", "comment" + (c.resolved ? " resolved" : "") + (S.hot === c.id ? " hot" : "")); li.dataset.cid = c.id;
-    li.onmouseenter = () => { S.hot = c.id; renderPinsOnly(shot); };
-    li.onmouseleave = () => { S.hot = null; renderPinsOnly(shot); };
-    const n = el("span", "num" + (nums[c.id] ? "" : " general"), nums[c.id] || "•");
-    const body = el("div");
+    const li = el("li", "rv-comment" + (c.resolved ? " resolved" : "") + (S.hot === c.id ? " hot" : "") + (S.active === c.id ? " active" : "")); li.dataset.cid = c.id;
+    li.onmouseenter = () => { S.hot = c.id; renderPinsOnly(shot); li.classList.add("hot"); };
+    li.onmouseleave = () => { S.hot = null; renderPinsOnly(shot); li.classList.remove("hot"); };
+    if (nums[c.id]) li.append(el("span", "pinno", nums[c.id]));
+    const body = el("div", "body");
     if (c.audio_path) body.append(voiceEl(c));
     if (c.body) body.append(el("p", "", c.body));
-    const meta = el("div", "meta"); meta.append(el("span", "", c.author + ", " + ago(c.created_at)));
-    const r = el("button", "link", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c); r.hidden = !!S.readOnly;
-    meta.append(r); body.append(meta); li.append(n, body); list.append(li);
+    const meta = el("div", "meta"); const when = el("span", "when"); when.append(el("span", "", ago(c.created_at)));
+    if (c.resolved) { when.append(el("span", "dot"), el("span", "", "Resolved")); }
+    meta.append(when);
+    if (!S.readOnly) { const r = el("button", "act", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c); meta.append(r); }
+    body.append(meta); li.append(body); list.append(li);
   });
   fillVoiceSources(cs);
 }
@@ -671,27 +801,46 @@ function discardRecording(silent) {
   REC.blob = null; REC.url = null; REC.duration = 0;
   if (!silent) renderRecUI();
 }
+const WAVE = [6,12,6,12,12,8,12,12,12,8,12,12,12,8,12,12];
+const waveEl = (live) => { const w = el("span", "wave" + (live ? " live" : "")); WAVE.forEach((h, i) => { const b = document.createElement("i"); b.style.height = h + "px"; if (live) b.style.animationDelay = (i * 60) + "ms"; w.append(b); }); return w; };
+const mmss = (sec) => { const t = Math.max(0, Math.floor(sec)); return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"); };
+const PLAY = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.3 6.9l4.6 3.1-4.6 3.1z" fill="currentColor"/></svg>';
+const PAUSE = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.2 7v6M11.8 7v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const STOP = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="8" width="8" height="8" rx="1.5" fill="currentColor"/></svg>';
+const MICI = $("recBtn") ? $("recBtn").innerHTML : "";
+// Compact player: play/pause, waveform, "elapsed/total"
+function makePlayer(audio, total) {
+  const p = el("div", "player"); const btn = el("button", "pp"); btn.type = "button"; btn.innerHTML = PLAY; btn.setAttribute("aria-label", "Play voice note");
+  const t = el("span", "t", "00:00/" + mmss(total || 0));
+  const upd = () => { const d = isFinite(audio.duration) && audio.duration ? audio.duration : (total || 0); t.textContent = mmss(audio.currentTime) + "/" + mmss(d); };
+  btn.onclick = () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); };
+  audio.addEventListener("play", () => { btn.innerHTML = PAUSE; btn.setAttribute("aria-label", "Pause voice note"); });
+  audio.addEventListener("pause", () => { btn.innerHTML = PLAY; btn.setAttribute("aria-label", "Play voice note"); });
+  audio.addEventListener("timeupdate", upd); audio.addEventListener("loadedmetadata", upd);
+  audio.addEventListener("ended", () => { audio.currentTime = 0; upd(); });
+  p.append(btn, waveEl(false), t, audio); return p;
+}
 function renderRecUI() {
   const btn = $("recBtn"); const recording = !!(REC.rec && REC.rec.state === "recording");
   btn.classList.toggle("recording", recording);
-  btn.lastChild.textContent = recording ? "Stop " + fmtDur((Date.now() - REC.start) / 1000) + " / 2:00" : REC.blob ? "Record again" : "Record voice";
+  btn.innerHTML = recording ? STOP : MICI;
+  btn.setAttribute("aria-label", recording ? "Stop recording" : "Record a voice note, up to 2 minutes");
+  $("recLive").hidden = !recording;
+  if (recording) {
+    if (!$("recLive").querySelector(".wave i")) { const w = $("recLive").querySelector(".wave"); w.replaceWith(waveEl(true)); }
+    $("recClock").textContent = mmss((Date.now() - REC.start) / 1000) + "/" + mmss(MAX_REC);
+  }
   $("recPreview").hidden = !REC.blob || recording;
   if (REC.blob && !recording) {
     if (!REC.url) REC.url = URL.createObjectURL(REC.blob);
-    if ($("recAudio").src !== REC.url) $("recAudio").src = REC.url;
-    $("recLen").textContent = "Voice note, " + fmtDur(REC.duration);
+    const holder = $("recPlayer");
+    if (holder.dataset.url !== REC.url) { holder.dataset.url = REC.url; const a = document.createElement("audio"); a.preload = "metadata"; a.src = REC.url; holder.replaceChildren(makePlayer(a, REC.duration)); }
   }
-  $("commentBody").placeholder = REC.blob ? "Add a written note (optional)" : "Write a comment";
+  $("commentBody").placeholder = REC.blob ? "Add a written note (optional)" : "Send a message...";
 }
 function voiceEl(c) {
   let w = VOICE.get(c.id);
-  if (!w) {
-    w = el("div", "voice");
-    const a = document.createElement("audio"); a.controls = true; a.preload = "metadata";
-    const sm = el("small"); sm.append(el("span", "", "Voice note" + (c.audio_duration ? ", " + fmtDur(c.audio_duration) : "")));
-    const link = document.createElement("a"); link.textContent = "Open"; link.target = "_blank"; link.rel = "noopener"; link.hidden = true;
-    sm.append(link); w.append(a, sm); VOICE.set(c.id, w);
-  }
+  if (!w) { const a = document.createElement("audio"); a.preload = "metadata"; w = makePlayer(a, c.audio_duration); VOICE.set(c.id, w); }
   return w;
 }
 async function fillVoiceSources(cs) {
@@ -700,9 +849,8 @@ async function fillVoiceSources(cs) {
   try { await ensureUrls(withAudio.map((c) => ({ image_path: c.audio_path }))); } catch (e) { return; }
   withAudio.forEach((c) => {
     const w = VOICE.get(c.id); const u = (S.urls[c.audio_path] || {}).url; if (!w || !u) return;
-    const a = w.querySelector("audio"), link = w.querySelector("a");
+    const a = w.querySelector("audio");
     if (!a.getAttribute("src")) a.src = u;
-    link.href = u; link.hidden = false;
   });
 }
 const SMALL_PT = 10; // flag text smaller than this
@@ -710,41 +858,33 @@ const fmtPt = (n) => (Math.round(n * 2) / 2).toString();
 function renderDetails(shot, vers) {
   const box = $("rvDetails"); box.innerHTML = "";
   const d = shot.details;
-  if (!d) { box.append(el("p", "details-missing", "Font and speaker-note details weren't captured for this version.")); return; }
-  if (d.error) { box.append(el("p", "details-missing", "Details couldn't be read on the designer's computer: " + d.error + ".")); return; }
+  if (!d) { box.append(el("p", "", "Font and speaker-note details weren't captured for this version.")); return; }
+  if (d.error) { box.append(el("p", "", "Details couldn't be read on the designer's computer: " + d.error + ".")); return; }
 
   // Fonts
-  const fc = el("section", "dcard"); const fh = el("div", "dhead"); fh.append(el("h3", "", "Fonts"));
-  const families = new Set(d.fonts.map((f) => f.font));
-  const meta = [];
-  if (families.size) meta.push(families.size + (families.size > 1 ? " families" : " family"));
-  if (d.smallest !== null && d.smallest !== undefined) meta.push("smallest " + fmtPt(d.smallest) + "pt");
-  const small = d.smallest !== null && d.smallest < SMALL_PT;
-  fh.append(small ? el("span", "pill changes", "Text under " + SMALL_PT + "pt") : el("span", "dmeta", meta.join(", ")));
+  const fc = el("section");
+  const fh = el("h4", "", "Fonts");
+  const small = d.smallest !== null && d.smallest !== undefined && d.smallest < SMALL_PT;
+  if (small) fh.append(el("span", "warn", "Text under " + SMALL_PT + "pt"));
   fc.append(fh);
-  if (!d.fonts.length) fc.append(el("p", "dmeta", "No text on this slide."));
+  if (!d.fonts.length) fc.append(el("p", "", "No text on this slide."));
   else {
-    const t = el("table", "ftable"); const head = el("tr");
-    ["Font", "Size", "Used in"].forEach((h) => head.append(el("th", "", h)));
-    t.append(head);
+    const rows = el("div", "rows");
     d.fonts.forEach((f) => {
-      const tr = el("tr");
-      tr.append(el("td", "", f.font));
-      tr.append(el("td", "size" + (f.size < SMALL_PT ? " small" : ""), fmtPt(f.size) + "pt"));
-      const used = el("td"); used.append(document.createTextNode(f.roles.join(", ") + (f.count > 1 ? " (" + f.count + "×)" : "")));
-      if (f.sample) { const sm = el("small", "", "“" + f.sample + "”"); sm.title = f.sample; used.append(sm); }
-      tr.append(used); t.append(tr);
+      const r = el("div", "row");
+      r.append(el("span", "", f.font), el("span", f.size < SMALL_PT ? "small" : "", fmtPt(f.size) + "pt"));
+      const used = el("span", "", f.roles.join(", ") + (f.count > 1 ? " (" + f.count + "\u00D7)" : ""));
+      if (f.sample) { const sm = el("span", "sample", "\u201C" + f.sample + "\u201D"); sm.title = f.sample; used.append(sm); }
+      r.append(used); rows.append(r);
     });
-    fc.append(t);
+    fc.append(rows);
   }
-  if (small) fc.append(el("p", "dnote", meta.join(", ") + "."));
   if (d.shrunk && d.shrunk.length) fc.append(el("p", "dnote", "Autofit is shrinking text in: " + d.shrunk.join(", ") + ". Sizes shown are as displayed."));
   box.append(fc);
 
   // Speaker notes, shown as-is; the DM compares them with the client's original file
-  const nc = el("section", "dcard"); const nh = el("div", "dhead"); nh.append(el("h3", "", "Speaker notes"));
-  nc.append(nh);
-  nc.append(d.notes.present ? el("p", "notes-text", d.notes.text) : el("p", "dmeta", "This slide has no speaker notes."));
+  const nc = el("section"); nc.append(el("h4", "", "Speaker notes"));
+  nc.append(el("p", "", d.notes.present ? d.notes.text : "This slide has no speaker notes."));
   box.append(nc);
 }
 function renderPinsOnly(shot) {
@@ -949,13 +1089,13 @@ async function enter(user) {
   $("tabWaiting").onclick = () => { S.filter = "waiting"; renderBoard(); };
   $("tabAll").onclick = () => { S.filter = "all"; renderBoard(); };
   $("backBtn").onclick = closeReview;
-  $("prevBtn").onclick = () => step(-1);
-  $("nextBtn").onclick = () => step(1);
   $("versionSelect").onchange = (e) => { S.shotId = e.target.value; S.draft = null; renderReview(); };
   $("toLatest2").onclick = () => { S.shotId = null; S.draft = null; renderReview(); };
   $("toLatest").onclick = () => { S.shotId = null; S.draft = null; renderReview(); };
   $("approveBtn").onclick = () => decide("approved");
   $("changesBtn").onclick = () => decide("changes");
+  $("undoDecision").onclick = () => { const sh = currentShot(); if (sh) decide(sh.status); };
+  $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); addComment(); } });
   $("sendComment").onclick = addComment;
   $("recBtn").onclick = toggleRecording;
   $("delCancel").onclick = () => { $("deleteDialog").close(); deleteKey = null; };
@@ -967,7 +1107,7 @@ async function enter(user) {
 
   $("figure").addEventListener("click", (e) => {
     if (e.target.closest(".pin:not(.draft)")) return;
-    if (S.readOnly) return;
+    if (!S.canComment) return;
     const r = $("rvImg").getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
     if (x < 0 || x > 1 || y < 0 || y > 1) return;
