@@ -9,7 +9,8 @@
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="slideshot-hero.js"></script>
 <style>
   :root {
     --bg: #F6F7F9; --surface: #FFFFFF; --stage: #E4E7EC; --ink: #18202B; --muted: #5A6575; --line: #DCE0E6;
@@ -48,6 +49,33 @@
   .pill.changes { background: var(--fix-tint); color: var(--fix); }
 
   /* Login */
+  /* Sign in (Figma: Review page / 1 · Sign in) */
+  .signin { position: fixed; inset: 0; z-index: 30; background: #F6F7F9; display: grid; place-items: center; padding: 24px; overflow: auto; font-family: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif; color: #18202B; }
+  .signin-band { position: fixed; left: 0; right: 0; bottom: -64px; height: 222px; pointer-events: none; }
+  .signin-card { position: relative; z-index: 1; width: 350px; max-width: 100%; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 1.5px rgba(18,18,23,.1), 0 1px 1px rgba(18,18,23,.06); }
+  .signin-hero { height: 146px; }
+  .signin-head { position: relative; margin-top: -43px; padding: 40px 20px 0; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,.72) 8%, #FFFFFF 38%); }
+  .signin-head .logo { position: absolute; left: 19px; top: -16px; width: 55px; height: 47px; overflow: visible; }
+  .signin-head h1 { margin: 0; font-size: 24px; line-height: 36px; font-weight: 500; letter-spacing: 0; }
+  .signin-form { display: flex; flex-direction: column; gap: 20px; padding: 16px 20px 20px; }
+  .s-field { display: flex; flex-direction: column; gap: 8px; }
+  .s-label { font-size: 14px; line-height: 20px; color: #1F2430; }
+  .s-field input { height: 40px; padding: 8px; border: 1px solid #CDD2DA; border-radius: 8px; background: #FFFFFF; font: 14px/20px inherit; font-family: inherit; color: #3F4652; }
+  .s-field input::placeholder { color: #6B7280; opacity: 1; }
+  .s-field input:focus { outline: none; border-color: #3D66F5; box-shadow: 0 0 0 1px #3D66F5; }
+  .s-field input[aria-invalid="true"] { background: #FAE9EB; border-color: #D44D5D; color: #CA2135; box-shadow: none; }
+  .s-error { margin-top: -4px; font-size: 14px; line-height: 20px; color: #CA2135; }
+  .s-error:empty { display: none; }
+  .s-button { position: relative; height: 40px; border: 0; border-radius: 8px; background: #00308D; color: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .s-button:hover:not(:disabled) { background: #002770; }
+  .s-button:disabled { cursor: progress; }
+  .s-spinner { display: none; position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); border-top-color: #FFFFFF; animation: s-spin .8s linear infinite; }
+  .s-button.loading .s-btn-label { visibility: hidden; }
+  .s-button.loading .s-spinner { display: block; }
+  @keyframes s-spin { to { transform: rotate(360deg); } }
+  .s-msg { margin: -8px 0 0; font-size: 14px; line-height: 20px; color: #CA2135; }
+  .s-msg:empty { display: none; }
+  @media (prefers-reduced-motion: reduce) { .s-spinner { animation-duration: 2s; } }
   .login { max-width: 360px; margin: 12vh auto; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
   .login p { color: var(--muted); margin: 6px 0 18px; }
   .login .primary { width: 100%; }
@@ -207,13 +235,31 @@
   <div id="configError" class="login" hidden><h1>Setup needed</h1><p>Fill in config.js with your Supabase details (see the setup guide).</p></div>
 
   <!-- Sign in -->
-  <section id="loginView" class="login" hidden>
-    <h1>Slideshot</h1>
-    <p>Sign in with your team account to review slides.</p>
-    <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username"></label>
-    <label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password"></label>
-    <button id="signInBtn" class="primary">Sign in</button>
-    <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+  <section id="loginView" class="signin" hidden>
+    <div class="signin-band" id="loginBand" aria-hidden="true"></div>
+    <div class="signin-card">
+      <div class="signin-hero" id="loginHero" aria-hidden="true"></div>
+      <div class="signin-head">
+        <svg class="logo" aria-hidden="true" viewBox="14 17 72 64" >
+        <defs>
+          <linearGradient id="ss-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7C8EF"/><stop offset="1" stop-color="#9DB3E7"/></linearGradient>
+          <linearGradient id="ss-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A8FE0"/><stop offset="1" stop-color="#4A71CC"/></linearGradient>
+          <linearGradient id="ss-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C63D6"/><stop offset="1" stop-color="#00308D"/></linearGradient>
+        </defs>
+        <g><path d="M28.5 19.5 H71.5 Q77 19.5 76.3 25 L72 60 H28 L23.7 25 Q23 19.5 28.5 19.5 Z" fill="url(#ss-c3)"/></g>
+        <g><path d="M24.5 25 H75.5 Q81 25 80.3 30.5 L76 66 H24 L19.7 30.5 Q19 25 24.5 25 Z" fill="url(#ss-c2)"/></g>
+        <g><path d="M21 31 H79 Q85 31 84.1 37 L78.8 72.5 Q78 78 72.5 78 H27.5 Q22 78 21.2 72.5 L15.9 37 Q15 31 21 31 Z" fill="url(#ss-c1)"/>
+          <polyline fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" points="40,54 47,61 61,46"/></g>
+      </svg>
+        <h1>Sign in to Slideshot</h1>
+      </div>
+      <form class="signin-form" id="loginForm" novalidate>
+        <label class="s-field"><span class="s-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="s-error" id="emailError" aria-live="polite"></span></label>
+        <label class="s-field"><span class="s-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="s-error" id="passwordError" aria-live="polite"></span></label>
+        <button id="signInBtn" class="s-button" type="submit"><span class="s-btn-label">Sign in</span><span class="s-spinner" aria-hidden="true"></span></button>
+        <p id="loginMsg" class="s-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
   </section>
 
   <!-- Board -->
@@ -820,18 +866,46 @@ async function deleteProject() {
 }
 
 /* ---------- auth + start ---------- */
+function setFieldError(id, msg) {
+  $(id + "Error").textContent = msg || "";
+  $(id).setAttribute("aria-invalid", msg ? "true" : "false");
+}
 async function signIn() {
   const email = $("email").value.trim(), password = $("password").value;
-  if (!email || !password) { say($("loginMsg"), "Enter your email and password.", "err"); return; }
-  $("signInBtn").disabled = true; say($("loginMsg"), "Signing in…");
+  setFieldError("email", ""); setFieldError("password", ""); $("loginMsg").textContent = "";
+  let ok = true;
+  if (!email) { setFieldError("email", "Enter your email"); ok = false; }
+  else if (!/^\S+@\S+\.\S+$/.test(email)) { setFieldError("email", "Please enter a valid email address"); ok = false; }
+  if (!password) { setFieldError("password", "Enter your password"); ok = false; }
+  if (!ok) return;
+  const btn = $("signInBtn"); btn.disabled = true; btn.classList.add("loading"); btn.setAttribute("aria-label", "Signing in");
   const { data, error } = await S.sb.auth.signInWithPassword({ email: email, password: password });
-  $("signInBtn").disabled = false;
-  if (error) { say($("loginMsg"), "Sign-in failed: " + error.message, "err"); return; }
-  say($("loginMsg"), ""); enter(data.user);
+  btn.disabled = false; btn.classList.remove("loading"); btn.removeAttribute("aria-label");
+  if (error) {
+    if (/invalid login credentials/i.test(error.message)) setFieldError("password", "Incorrect password. Please try again.");
+    else $("loginMsg").textContent = "Couldn't sign in: " + error.message;
+    return;
+  }
+  enter(data.user);
+}
+// Flying-slides heroes run only while the sign-in screen is visible
+function showLogin() {
+  $("loginView").hidden = false;
+  if (window.SlideshotHero && !S.heroes) {
+    // The band at the bottom is a still backdrop: draw one frame, then stop
+    const band = SlideshotHero.mount($("loginBand"), { theme: "pastel", height: 222, scale: 2.6, bg: "transparent" });
+    band.pause();
+    S.heroes = [SlideshotHero.mount($("loginHero"), { theme: "pastel", height: 146, bg: "#FFFFFF" }), band];
+  }
+  $("email").focus();
+}
+function hideLogin() {
+  $("loginView").hidden = true;
+  if (S.heroes) { S.heroes.forEach((h) => h.destroy()); S.heroes = null; }
 }
 async function enter(user) {
   S.user = user;
-  $("loginView").hidden = true; $("boardView").hidden = false;
+  hideLogin(); $("boardView").hidden = false;
   $("content").innerHTML = '<p class="empty-state">Loading slides…</p>';
   try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
   renderBoard();
@@ -848,8 +922,8 @@ async function enter(user) {
   if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { $("configError").hidden = false; return; }
   S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
-  $("signInBtn").onclick = signIn;
-  $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
+  $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
+  ["email", "password"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); location.reload(); };
   $("tabWaiting").onclick = () => { S.filter = "waiting"; renderBoard(); };
   $("tabAll").onclick = () => { S.filter = "all"; renderBoard(); };
@@ -890,7 +964,7 @@ async function enter(user) {
   });
 
   const { data } = await S.sb.auth.getSession();
-  if (data.session) enter(data.session.user); else { $("loginView").hidden = false; $("email").focus(); }
+  if (data.session) enter(data.session.user); else showLogin();
 })();
 </script>
 </body>

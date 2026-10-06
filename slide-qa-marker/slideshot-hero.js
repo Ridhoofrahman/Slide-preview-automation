@@ -6,7 +6,8 @@
  *   // after sign-in succeeds:
  *   hero.destroy();
  *
- * Options: theme 'blue' | 'light' (white slides) | 'pastel' (default 'pastel'), height px (default 160), fps (default 30)
+ * Options: theme 'blue' | 'light' (white slides) | 'pastel' (default 'pastel'), height px (default 160), fps (default 30),
+ *          bg (any CSS color, or 'transparent'; default: the theme background), scale (slide size multiplier, default 1)
  * API: setTheme(theme), pause(), resume(), destroy()
  */
 (function (root) {
@@ -44,7 +45,9 @@
     opts = opts || {};
     function pick(t) { return t === 'light' || t === 'blue' ? t : 'pastel'; }
     var theme = pick(opts.theme);
-    var H = opts.height || 160;
+    var K = opts.scale || 1;          // scale > 1 draws bigger, slower-looking slides
+    var CH = opts.height || 160;      // height on the page, in CSS px
+    var H = CH / K;                   // height in drawing units
     var frameMs = 1000 / (opts.fps || 30);
 
     var canvas = document.createElement('canvas');
@@ -52,7 +55,7 @@
     canvas.setAttribute('aria-label', 'Slides flying across');
     canvas.style.display = 'block';
     canvas.style.width = '100%';
-    canvas.style.height = H + 'px';
+    canvas.style.height = CH + 'px';
     container.appendChild(canvas);
     var ctx = canvas.getContext('2d');
 
@@ -190,10 +193,14 @@
     }
 
     function draw() {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var bg = ctx.createLinearGradient(0, 0, W, H), c = C[theme].bg;
-      bg.addColorStop(0, c[0]); bg.addColorStop(1, c[1]);
-      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      ctx.setTransform(dpr * K, 0, 0, dpr * K, 0, 0);
+      if (opts.bg === 'transparent') ctx.clearRect(0, 0, W, H);
+      else if (opts.bg) { ctx.fillStyle = opts.bg; ctx.fillRect(0, 0, W, H); }
+      else {
+        var bg = ctx.createLinearGradient(0, 0, W, H), c = C[theme].bg;
+        bg.addColorStop(0, c[0]); bg.addColorStop(1, c[1]);
+        ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      }
       for (var i = 0; i < S.length; i++) if (!S[i].wait) drawSlide(S[i]);
     }
 
@@ -214,12 +221,13 @@
     function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
 
     function resize() {
-      var nw = Math.round(container.clientWidth);
-      if (!nw) return;
+      var cw = Math.round(container.clientWidth);
+      if (!cw) return;
+      var nw = cw / K;
       dpr = Math.min(2, window.devicePixelRatio || 1);
-      var rebuild = Math.abs(nw - W) > 24 || !S.length;
+      var rebuild = Math.abs(nw - W) > 24 / K || !S.length;
       W = nw;
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      canvas.width = Math.round(cw * dpr); canvas.height = Math.round(CH * dpr);
       if (rebuild) build();
       draw();
     }
