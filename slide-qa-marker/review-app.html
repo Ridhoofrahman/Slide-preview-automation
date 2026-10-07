@@ -387,7 +387,7 @@
   .review .rv-sender { gap: 8px; padding-bottom: 0; border-bottom: 0; }
   .rv-headrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; }
   .rv-headcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  #rvSlideNo { font-size: 14px; line-height: 20px; font-weight: 500; color: #6B7280; }
+  #rvSlideNo { font-size: 14px; line-height: 20px; font-weight: 400; color: #6B7280; }
   #rvBy { font-size: 14px; line-height: 20px; font-weight: 500; color: #18202B; }
   #rvNote { font-size: 14px; line-height: 20px; color: #6B7280; }
   .rv-headrow .rv-tag { flex: none; font-size: 12px; line-height: 16px; padding: 3px 8px; }
@@ -399,6 +399,11 @@
   .rv-closed { padding: 14px 16px 18px; font-size: 12px; line-height: 16px; }
   .rv-latest { margin-top: 2px; border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #1F3A93; cursor: pointer; }
   .rv-latest:hover { text-decoration: underline; }
+
+  /* Slide strip stays put; only the slide and its details scroll */
+  .review .rv-work { overflow: hidden; padding-bottom: 0; }
+  .rv-scrollarea { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding-bottom: 24px; }
+  .rv-scrollarea > * { flex: none; }
 </style>
 </head>
 <body>
@@ -464,10 +469,12 @@
           <nav class="rv-rail" id="rvRail" aria-label="Slides in this order"></nav>
           <button class="rv-scroll" id="railNext" aria-label="Scroll slides right"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
-        <div id="olderBanner" class="rv-banner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-bannerbtn">View latest</button></div>
-        <div id="decidedBanner" class="rv-banner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-bannerbtn">Cancel</button></div>
-        <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
-        <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
+        <div class="rv-scrollarea" id="rvScroll">
+          <div id="olderBanner" class="rv-banner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-bannerbtn">View latest</button></div>
+          <div id="decidedBanner" class="rv-banner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-bannerbtn">Cancel</button></div>
+          <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
+          <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
+        </div>
       </div>
       <aside class="rv-panel">
         <div class="rv-decision" id="decisionBox">
@@ -758,6 +765,7 @@ async function renderReview() {
   }
 
   renderRail();
+  if (S.lastScrollKey !== S.slideKey) { $("rvScroll").scrollTop = 0; S.lastScrollKey = S.slideKey; }
   const img = $("rvImg"); img.alt = "Slide " + shot.slide_number + ", version " + shot.version;
   try { await ensureUrls([shot]); } catch (e) {}
   if (img.src !== urlFor(shot)) img.src = urlFor(shot);
