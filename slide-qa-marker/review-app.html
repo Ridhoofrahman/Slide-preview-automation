@@ -380,6 +380,25 @@
   .rv-sender p { font-size: 14px; line-height: 20px; }
   .rv-actions { padding-bottom: 16px; }
   .rv-comment.resolved { background: #EEFAF6; border-color: #33C297; }
+
+  /* ===== Review panel (Figma: Review panel component, 6 states) ===== */
+  .review .rv-decision { padding: 16px; gap: 16px; border-bottom: 0; }
+  .review .rv-decision.ruled { border-bottom: 1px solid #E3E6EB; }
+  .review .rv-sender { gap: 8px; padding-bottom: 0; border-bottom: 0; }
+  .rv-headrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; }
+  .rv-headcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  #rvSlideNo { font-size: 14px; line-height: 20px; font-weight: 500; color: #6B7280; }
+  #rvBy { font-size: 14px; line-height: 20px; font-weight: 500; color: #18202B; }
+  #rvNote { font-size: 14px; line-height: 20px; color: #6B7280; }
+  .rv-headrow .rv-tag { flex: none; font-size: 12px; line-height: 16px; padding: 3px 8px; }
+  .review .rv-actions { padding-bottom: 0; }
+  .rv-live { flex: 1; min-width: 0; }
+  .rv-live #recClock { flex: 1; }
+  .rv-live:not([hidden]) ~ .spacer { display: none; }
+  .rv-icon.recording { color: #CA2135; }
+  .rv-closed { padding: 14px 16px 18px; font-size: 12px; line-height: 16px; }
+  .rv-latest { margin-top: 2px; border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #1F3A93; cursor: pointer; }
+  .rv-latest:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -451,9 +470,11 @@
         <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
       </div>
       <aside class="rv-panel">
-        <div class="rv-decision">
-          <div class="rv-slidehead"><span id="rvSlideNo"></span><span id="rvStatus" class="rv-tag"></span></div>
-          <div class="rv-sender"><p id="rvBy"></p><p id="rvNote" hidden></p></div>
+        <div class="rv-decision" id="decisionBox">
+          <div class="rv-sender">
+            <div class="rv-headrow"><div class="rv-headcol"><span id="rvSlideNo"></span><p id="rvBy"></p></div><span id="rvStatus" class="rv-tag"></span></div>
+            <p id="rvNote" hidden></p>
+          </div>
           <div class="rv-actions" id="decisionBtns">
             <button id="approveBtn" class="rv-approve">Approve slide</button>
             <button id="changesBtn" class="rv-change">Request change</button>
@@ -463,7 +484,7 @@
           <h3>Comments</h3>
           <ol id="comments" class="rv-comments"></ol>
         </div>
-        <p class="rv-closed" id="closedNote" hidden>Comments are closed on older versions.<br><button id="toLatest2" class="rv-link">Go to the latest version</button></p>
+        <p class="rv-closed" id="closedNote" hidden>Comments are closed on older versions.<br><button id="toLatest2" class="rv-latest">Go to the latest version</button></p>
         <div class="rv-composer" id="composer">
           <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
           <div class="rv-msgbox">
@@ -703,7 +724,7 @@ function currentShot() {
   const vers = S.versions[S.slideKey]; if (!vers) return null;
   return vers.find((v) => v.id === S.shotId) || vers[0];
 }
-const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change requested" };
+const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Request change" };
 async function renderReview() {
   const shot = currentShot(); if (!shot) { closeReview(); return; }
   S.shotId = shot.id;
@@ -722,7 +743,7 @@ async function renderReview() {
 
   $("rvSlideNo").textContent = "Slide " + shot.slide_number;
   const tag = $("rvStatus"); tag.className = "rv-tag " + shot.status; tag.textContent = REVIEW_LABEL[shot.status] || shot.status;
-  tag.hidden = !isLatest;
+  tag.hidden = false;
 
   $("rvBy").textContent = "Sent by " + shot.designer + ", " + ago(shot.created_at);
   $("rvNote").hidden = !shot.note; $("rvNote").textContent = shot.note ? "Note: \u201C" + shot.note + "\u201D" : "";
@@ -744,6 +765,8 @@ async function renderReview() {
   if (!S.canComment && S.draft) S.draft = null;
   renderComments(shot);
   $("composer").hidden = !S.canComment; $("closedNote").hidden = isLatest;
+  // A rule under the slide info only when something follows it (comments or the closed note)
+  $("decisionBox").classList.toggle("ruled", !$("thread").hidden || !$("closedNote").hidden);
   $("figure").classList.toggle("readonly", !S.canComment);
   renderDetails(shot, vers);
 }
@@ -847,7 +870,7 @@ const waveEl = (live) => { const w = el("span", "wave" + (live ? " live" : ""));
 const mmss = (sec) => { const t = Math.max(0, Math.floor(sec)); return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"); };
 const PLAY = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.3 6.9l4.6 3.1-4.6 3.1z" fill="currentColor"/></svg>';
 const PAUSE = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.2 7v6M11.8 7v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-const STOP = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="8" width="8" height="8" rx="1.5" fill="currentColor"/></svg>';
+const STOP = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="currentColor" fill-opacity=".22"/><rect x="7.5" y="7.5" width="9" height="9" rx="1.5" fill="currentColor"/></svg>';
 const MICI = $("recBtn") ? $("recBtn").innerHTML : "";
 // Compact player: play/pause, waveform, "elapsed/total"
 function makePlayer(audio, total) {
