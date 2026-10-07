@@ -431,6 +431,91 @@
   .review.zoomed .rv-work { overflow-x: auto; }
   .review.zoomed figure.slide { align-self: flex-start; max-width: none; }
   .review.zoomed figure.slide img { width: 100%; max-height: none; }
+
+  /* ===== Board (Figma: 2 · Board) ===== */
+  .bd { min-height: 100vh; background: #F6F7F9; font-family: "Geist", "Segoe UI", system-ui, sans-serif; color: #1F2430; }
+  .bd-top { position: sticky; top: 0; z-index: 4; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(18,18,23,.06); }
+  .bd-brand { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 500; color: #18202B; }
+  .bd-logo { width: 29px; height: 25px; }
+  .bd-user { display: flex; align-items: center; gap: 2px; }
+  .bd-user #me { padding: 6px 8px; font-size: 14px; line-height: 20px; color: #5A6575; }
+  .bd-dot { width: 4px; height: 4px; border-radius: 2px; background: #CDD7E5; }
+  .bd-signout { border: 0; background: none; padding: 6px 12px; border-radius: 6px; font: 500 14px/20px inherit; font-family: inherit; color: #00308D; cursor: pointer; }
+  .bd-signout:hover { background: #F0F6FC; }
+  .bd-body { display: grid; grid-template-columns: minmax(0, 1fr) 313px; gap: 40px; padding: 32px clamp(24px, 6.7vw, 86px); max-width: 1440px; margin: 0 auto; }
+  .bd-main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+  .bd-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .bd-date { margin: 0 0 2px; font-size: 12px; line-height: 16px; color: #6B7280; }
+  .bd-head h2 { margin: 0 0 2px; font-size: 20px; line-height: 32px; font-weight: 700; color: #1F2430; }
+  .bd-sub { margin: 0; font-size: 14px; line-height: 20px; color: #3F4652; }
+  .bd-sort { flex: none; display: flex; align-items: center; gap: 4px; height: 40px; padding: 0 8px 0 10px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; font-size: 14px; color: #6B7280; }
+  .bd-sort select { border: 0; background: transparent; font: 14px/20px inherit; font-family: inherit; color: #1F2430; cursor: pointer; padding-right: 4px; }
+  .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+  .bd-card { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 16px 12px; background: #FFFFFF; border: 1px solid #E3E6EB; border-radius: 8px; cursor: pointer; outline: none; transition: box-shadow .15s ease, border-color .15s ease; }
+  .bd-card:hover, .bd-card:focus-visible { border-color: #CDD2DA; box-shadow: 0 2px 4px rgba(18,18,23,.06), 0 8px 20px rgba(18,18,23,.06); }
+  .bd-thumbs { position: relative; width: 124px; height: 68px; margin: 1px 0 0 1px; }
+  .bd-thumbs img, .bd-thumbs .ph { position: absolute; left: 0; top: 8px; width: 111px; height: 60px; object-fit: cover; border-radius: 2px; background: #EEF0F3; box-shadow: 0 1px 2px rgba(18,18,23,.12), 0 1px 3px rgba(18,18,23,.08); }
+  .bd-thumbs .back { left: 3px; top: 4px; transform: rotate(4deg); }
+  .bd-thumbs .front { left: 0; }
+  .bd-ring { position: absolute; left: 95px; top: -8px; width: 30px; height: 30px; }
+  .bd-ring svg { position: absolute; inset: 0; width: 30px; height: 30px; }
+  .bd-ring .n { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #1F2430; }
+  .bd-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .bd-info h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1F2430; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bd-who { margin: 0; font-size: 14px; line-height: 20px; color: #3F4652; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bd-when { margin: 0; display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: #6B7280; flex-wrap: wrap; }
+  .bd-when svg { width: 12px; height: 12px; }
+  .bd-tag { margin-left: 4px; padding: 0 6px; border-radius: 10px; font-size: 11px; line-height: 16px; font-weight: 500; }
+  .bd-tag.ok { background: #E6F8F2; color: #006B4B; }
+  .bd-tag.sent { background: #F0F6FC; color: #00308D; }
+  .bd-more { position: absolute; right: 8px; top: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #6B7280; font-size: 18px; line-height: 1; cursor: pointer; opacity: 0; }
+  .bd-card:hover .bd-more, .bd-card:focus-within .bd-more { opacity: 1; }
+  .bd-more:hover { background: #F6F7F9; color: #1F2430; }
+  @media (hover: none) { .bd-more { opacity: 1; } }
+  .bd-menu { position: absolute; right: 8px; top: 40px; z-index: 6; min-width: 220px; padding: 4px; background: #FFFFFF; border: 1px solid #E3E6EB; border-radius: 8px; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
+  .bd-menuitem { text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 6px; font: 14px/20px inherit; font-family: inherit; color: #1F2430; cursor: pointer; }
+  .bd-menuitem:hover:not(:disabled) { background: #F6F7F9; }
+  .bd-menuitem:disabled { color: #8B93A1; cursor: not-allowed; }
+  .bd-menuitem.danger { color: #CA2135; font-weight: 400; background: none; }
+  .bd.solo .bd-activity { display: none; }
+  .bd.solo .bd-body { grid-template-columns: 1fr; }
+  .bd-retention { margin: 4px 0 0; font-size: 12px; color: #8B93A1; }
+  .bd-state { min-height: calc(100vh - 56px - 64px - 40px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; }
+  .bd-state strong { margin-top: 12px; font-size: 14px; line-height: 20px; font-weight: 500; color: #1F2430; }
+  .bd-state p { margin: 0; font-size: 12px; line-height: 16px; color: #6B7280; }
+  .bd-illo { position: relative; width: 112px; height: 72px; }
+  .bd-illo .c { position: absolute; width: 104px; height: 60px; border-radius: 4px; }
+  .bd-illo .c1 { left: 6px; top: 2px; background: #D6F1E6; transform: rotate(4deg); }
+  .bd-illo .c2 { left: 2px; top: 6px; background: #FBDDE8; transform: rotate(-3deg); }
+  .bd-illo .c3 { left: 4px; top: 8px; background: #FFE5D6; padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+  .bd-illo .c3 i { display: block; height: 4px; border-radius: 2px; background: #EDB296; width: 46%; }
+  .bd-illo .c3 i + i { width: 72%; } .bd-illo .c3 i + i + i { width: 40%; }
+  .bd-illo.grey .c1, .bd-illo.grey .c2 { display: none; }
+  .bd-illo.grey .c3 { background: #E3E6EB; } .bd-illo.grey .c3 i { background: #CDD2DA; }
+  .bd-state.loading .bd-illo .c3 { animation: bd-bob 1.4s ease-in-out infinite; }
+  @keyframes bd-bob { 50% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .bd-state.loading .bd-illo .c3 { animation: none; } }
+  .bd-activity { padding-top: 40px; min-width: 0; }
+  .bd-activity h2 { margin: 0 0 20px; font-size: 16px; line-height: 24px; font-weight: 700; color: #1F2430; }
+  .bd-day { margin: 0 0 20px; font-size: 12px; line-height: 16px; font-weight: 400; color: #6B7280; }
+  .bd-acts { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 20px; }
+  .bd-act { display: flex; gap: 12px; border-radius: 6px; }
+  .bd-act.go { cursor: pointer; }
+  .bd-act.go:hover .line strong:last-of-type { text-decoration: underline; text-underline-position: from-font; }
+  .bd-act .ic { flex: none; width: 20px; height: 20px; border-radius: 14px; border: 1px solid #9FC3EE; background: #F0F6FC; color: #00308D; font-size: 11px; line-height: 18px; text-align: center; font-weight: 600; }
+  .bd-act.k-approved .ic { background: #E6F8F2; border-color: #7FD8BD; color: #006B4B; }
+  .bd-act.k-changes .ic { background: #FAE9EB; border-color: #E48F9A; color: #CA2135; }
+  .bd-act.k-comment .ic, .bd-act.k-voice .ic { background: #EFEDF8; border-color: #ACA4D9; color: #473C90; }
+  .bd-act.k-customer .ic { background: #FDF5E6; border-color: #F4CC7F; color: #8D5D00; }
+  .bd-act .tx { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .bd-act .line { margin: 0; font-size: 12px; line-height: 20px; color: #3F4652; overflow-wrap: anywhere; }
+  .bd-act .line strong { font-weight: 600; color: #1F2430; }
+  .bd-act .quote { margin: 0; font-size: 14px; line-height: 20px; color: #6B7280; overflow-wrap: anywhere; }
+  .bd-act .pill { align-self: flex-start; padding: 4px 10px; border-radius: 999px; background: #EEF0F3; font-size: 12px; line-height: 16px; font-weight: 500; color: #3F4652; }
+  .bd-act .meta { margin: 0; justify-content: flex-start; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 12px; line-height: 16px; color: #6B7280; }
+  .bd-act .meta .dot { width: 4px; height: 4px; border-radius: 2px; background: #CDD7E5; }
+  .bd-actempty { font-size: 12px; color: #6B7280; }
+  @media (max-width: 960px) { .bd-body { grid-template-columns: 1fr; } .bd-activity { padding-top: 0; } }
 </style>
 </head>
 <body>
@@ -465,19 +550,24 @@
   </section>
 
   <!-- Board -->
-  <div id="boardView" hidden>
-    <header class="topbar">
-      <h1>Slideshot</h1>
-      <div class="tabs" role="group" aria-label="Show">
-        <button id="tabWaiting" aria-pressed="true">Waiting for review</button>
-        <button id="tabAll" aria-pressed="false">All slides</button>
-      </div>
-      <span class="me" id="me"></span>
-      <button id="signOutBtn" class="link">Sign out</button>
+  <div id="boardView" class="bd" hidden>
+    <header class="bd-top">
+      <div class="bd-brand"><svg class="bd-logo" aria-hidden="true" viewBox="14 17 72 64" >
+        <defs>
+          <linearGradient id="bd-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7C8EF"/><stop offset="1" stop-color="#9DB3E7"/></linearGradient>
+          <linearGradient id="bd-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A8FE0"/><stop offset="1" stop-color="#4A71CC"/></linearGradient>
+          <linearGradient id="bd-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C63D6"/><stop offset="1" stop-color="#00308D"/></linearGradient>
+        </defs>
+        <g><path d="M28.5 19.5 H71.5 Q77 19.5 76.3 25 L72 60 H28 L23.7 25 Q23 19.5 28.5 19.5 Z" fill="url(#bd-c3)"/></g>
+        <g><path d="M24.5 25 H75.5 Q81 25 80.3 30.5 L76 66 H24 L19.7 30.5 Q19 25 24.5 25 Z" fill="url(#bd-c2)"/></g>
+        <g><path d="M21 31 H79 Q85 31 84.1 37 L78.8 72.5 Q78 78 72.5 78 H27.5 Q22 78 21.2 72.5 L15.9 37 Q15 31 21 31 Z" fill="url(#bd-c1)"/>
+          <polyline fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" points="40,54 47,61 61,46"/></g>
+      </svg><span>Slideshot</span></div>
+      <div class="bd-user"><span id="me"></span><span class="bd-dot" aria-hidden="true"></span><button id="signOutBtn" class="bd-signout">Sign out</button></div>
     </header>
-    <div class="board">
-      <nav class="sidebar" aria-label="Projects"><ol id="projects" class="projects"></ol><p class="retention" id="retentionNote"></p></nav>
-      <main class="content" id="content"></main>
+    <div class="bd-body">
+      <main class="bd-main" id="content"></main>
+      <aside class="bd-activity" aria-labelledby="actTitle"><h2 id="actTitle">Activity</h2><div id="activity"></div></aside>
     </div>
   </div>
 
@@ -658,101 +748,149 @@ function visibleProjects() {
   return Object.values(S.projects)
     .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || sent(a) - sent(b) || b.lastAt.localeCompare(a.lastAt));
 }
-async function renderBoard() {
-  const totalWaiting = Object.values(S.projects).reduce((n, p) => n + p.waiting, 0);
-  $("tabWaiting").textContent = "Waiting for review" + (totalWaiting ? " (" + totalWaiting + ")" : "");
-  $("tabWaiting").setAttribute("aria-pressed", String(S.filter === "waiting"));
-  $("tabAll").setAttribute("aria-pressed", String(S.filter === "all"));
-  $("me").textContent = displayName(S.user);
-  $("retentionNote").textContent = "Projects are removed automatically " + RETENTION_DAYS + " days after their last activity.";
-
-  const projects = visibleProjects();
-  if (!projects.find((p) => p.key === S.project)) S.project = projects.length ? projects[0].key : null;
-
-  const list = $("projects"); list.innerHTML = "";
-  projects.forEach((p) => {
-    const li = el("li"); const b = el("button", "proj");
-    if (p.key === S.project) b.setAttribute("aria-current", "true");
-    const st = S.projectStatus[p.key];
-    const sub = el("small", "sub-row");
-    if (st && st.sent_at) sub.append(el("span", "sent-tag", "Sent to customer"));
-    else if (projectProgress(p).allApproved) sub.append(el("span", "ready-tag", "All approved"));
-    sub.append(el("span", "sub-text", [...p.designers].join(", ") + ", " + ago(p.lastAt)));
-    b.append(el("strong", "", p.name), el("span", "count" + (p.waiting ? "" : " zero"), p.waiting ? p.waiting : "0"), sub);
-    b.onclick = () => { S.project = p.key; S.designerFilter = null; renderBoard(); };
-    const del = el("button", "del"); del.setAttribute("aria-label", "Delete project " + p.name); del.title = "Delete project";
-    del.innerHTML = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    del.onclick = (e) => { e.stopPropagation(); askDeleteProject(p.key); };
-    li.append(b, del); list.append(li);
-  });
-
-  const c = $("content"); c.innerHTML = "";
-  if (!S.project) {
-    const e = el("div", "empty-state");
-    e.append(el("strong", "", S.filter === "waiting" ? "Nothing waiting for review" : "No slides yet"),
-      document.createTextNode(S.filter === "waiting" ? "New slides appear here as soon as a designer marks them ready." : "Slides show up here once designers mark them ready in PowerPoint."));
-    c.append(e); return;
-  }
-  const p = S.projects[S.project];
-  const multi = p.designers.size > 1;
-  if (S.designerFilter && !p.designers.has(S.designerFilter)) S.designerFilter = null;
-  const slides = p.slides.filter((s) => (S.filter === "all" || s.status === "ready") && (!S.designerFilter || s.designer === S.designerFilter));
-  const head = el("div", "content-head");
-  head.append(el("h2", "", p.name), el("p", "", p.waiting + " waiting, " + p.slides.filter((s) => s.status === "approved").length + " approved, " + p.slides.length + " sent"));
-  // Send to customer: available once every slide of the deck is approved
-  const prog = projectProgress(p); const st = S.projectStatus[p.key];
-  const sendBox = el("div", "send-box");
-  if (st && st.sent_at) {
-    sendBox.append(el("span", "sent-tag big", "Sent to customer"), el("span", "send-meta", "by " + (st.sent_by || "DM") + ", " + ago(st.sent_at)));
-    const undo = el("button", "link", "Undo"); undo.onclick = () => setSentToCustomer(p.key, false); sendBox.append(undo);
-  } else {
-    const btn = el("button", "primary", "Send to customer"); btn.disabled = !prog.allApproved;
-    btn.onclick = () => askSendToCustomer(p.key);
-    if (!prog.allApproved) { btn.title = prog.approvedNums + " of " + prog.total + " slides approved"; sendBox.append(el("span", "send-meta", prog.approvedNums + " of " + prog.total + " slides approved")); }
-    sendBox.append(btn);
-  }
-  head.append(sendBox);
-  c.append(head);
-  if (multi) {
-    const bar = el("div", "designer-bar"); bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Filter by designer");
-    const chip = (label, value, meta) => {
-      const b = el("button", "chip"); b.setAttribute("aria-pressed", String((S.designerFilter || null) === value));
-      b.append(el("span", "", label)); if (meta) b.append(el("small", "", meta));
-      b.onclick = () => { S.designerFilter = value; renderBoard(); }; return b;
-    };
-    bar.append(chip("All designers", null));
-    [...p.designers].sort().forEach((d) => {
-      const mine = p.slides.filter((s) => s.designer === d);
-      bar.append(chip(d, d, mine.filter((s) => s.status === "approved").length + "/" + mine.length + " approved"));
-    });
-    c.append(bar);
-  }
-  const grid = el("div", "cards");
-  slides.forEach((s) => {
-    const b = el("button", "slide-card");
-    const box = el("span", "img"); const img = new Image(); img.alt = "Slide " + s.slide_number; img.loading = "lazy"; img.dataset.path = s.image_path;
-    box.append(img);
-    const info = el("span", "info");
-    const cs = S.comments[s.id] || [];
-    const open = cs.filter((x) => !x.resolved).length;
-    info.append(el("strong", "", "Slide " + s.slide_number + (multi ? ", " + s.designer : "")), el("span", "pill " + s.status, STATUS_LABEL[s.status]),
-      el("small", "", (multi ? "" : s.designer + ", ") + ago(s.created_at) + (s.version > 1 ? ", v" + s.version : "") + (open ? ", " + open + " open comment" + (open > 1 ? "s" : "") : "")));
-    b.append(box, info);
-    b.onclick = () => openReview(keyOf(s));
-    grid.append(b);
-  });
-  if (!slides.length) {
-    const e = el("div", "empty-state");
-    e.append(el("strong", "", S.filter === "waiting" ? "Nothing waiting for review here" : "No slides from this designer"),
-      document.createTextNode(S.filter === "waiting" ? "Every sent slide in this project has been reviewed. Switch to All slides to see them." : ""));
-    c.append(e);
-  }
-  c.append(grid);
-  try { await ensureUrls(slides); } catch (e) {}
-  grid.querySelectorAll("img[data-path]").forEach((img) => { const u = (S.urls[img.dataset.path] || {}).url; if (u) img.src = u; });
+const BOARD = { sort: "waiting" };
+try { BOARD.sort = localStorage.getItem("qa.sort") || "waiting"; } catch (e) {}
+const SORTS = { waiting: "Longest waiting", most: "Most waiting", recent: "Recently updated", name: "Name" };
+const CLOCK = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.6" stroke="currentColor" stroke-width="1.1"/><path d="M6 3.6V6l1.6 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>';
+const firstName = (n) => (n || "").split(/\s+/)[0] || "";
+function greeting() { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
+function stackIllo(grey) {
+  const d = el("div", "bd-illo" + (grey ? " grey" : ""));
+  d.innerHTML = '<span class="c c1"></span><span class="c c2"></span><span class="c c3"><i></i><i></i><i></i></span>';
+  return d;
 }
-
-/* ---------- review ---------- */
+function ring(p) {
+  const prog = projectProgress(p); const total = Math.max(prog.total, p.slides.length) || 1;
+  const frac = Math.min(1, prog.approvedNums / total); const C = 2 * Math.PI * 13;
+  const done = p.waiting === 0 && prog.allApproved;
+  const w = el("span", "bd-ring"); w.title = p.waiting + " waiting, " + prog.approvedNums + " of " + total + " approved";
+  w.innerHTML = '<svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="#fff" stroke="#E3E6EB" stroke-width="2"/>' +
+    (frac > 0 ? '<circle cx="15" cy="15" r="13" fill="none" stroke="#33C297" stroke-width="2" stroke-linecap="round" stroke-dasharray="' + (C * frac).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 15 15)"/>' : "") + '</svg>';
+  w.append(el("span", "n", done ? "\u2713" : String(p.waiting)));
+  return w;
+}
+function openProject(p) {
+  S.project = p.key;
+  const first = p.slides.find((x) => x.status === "ready") || p.slides.find((x) => x.status === "changes") || p.slides[0];
+  if (first) openReview(keyOf(first));
+}
+function cardMenu(p, anchor) {
+  document.querySelectorAll(".bd-menu").forEach((m) => m.remove());
+  const m = el("div", "bd-menu"); m.setAttribute("role", "menu");
+  const st = S.projectStatus[p.key]; const prog = projectProgress(p);
+  const item = (label, fn, opts = {}) => { const b = el("button", "bd-menuitem" + (opts.danger ? " danger" : ""), label); b.setAttribute("role", "menuitem"); b.disabled = !!opts.disabled; if (opts.title) b.title = opts.title; b.onclick = (e) => { e.stopPropagation(); m.remove(); fn(); }; m.append(b); };
+  if (st && st.sent_at) item("Undo \u201Csent to customer\u201D", () => setSentToCustomer(p.key, false));
+  else item("Mark as sent to customer", () => askSendToCustomer(p.key), { disabled: !prog.allApproved, title: prog.allApproved ? "" : prog.approvedNums + " of " + prog.total + " slides approved" });
+  item("Delete order", () => askDeleteProject(p.key), { danger: true });
+  anchor.parentElement.append(m);
+  setTimeout(() => document.addEventListener("click", function off(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener("click", off); } }), 0);
+}
+function orderCard(p) {
+  const c = el("article", "bd-card"); c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", "Open " + p.name);
+  const front = p.slides.find((x) => x.status === "ready") || p.slides[0]; const back = p.slides.find((x) => x !== front);
+  const th = el("div", "bd-thumbs");
+  if (back) { const b = new Image(); b.className = "back"; b.alt = ""; b.dataset.k = keyOf(back); th.append(b); } else th.append(el("span", "back ph"));
+  const f = new Image(); f.className = "front"; f.alt = ""; f.dataset.k = keyOf(front); th.append(f);
+  th.append(ring(p)); c.append(th);
+  const info = el("div", "bd-info");
+  const t = el("h3", "", p.name); t.title = p.name; info.append(t);
+  info.append(el("p", "bd-who", [...p.designers].join(", ")));
+  const when = el("p", "bd-when"); when.innerHTML = CLOCK; when.append(document.createTextNode(ago(p.lastAt)));
+  const st = S.projectStatus[p.key];
+  if (st && st.sent_at) when.append(el("span", "bd-tag sent", "Sent to customer"));
+  else if (projectProgress(p).allApproved) when.append(el("span", "bd-tag ok", "All approved"));
+  info.append(when); c.append(info);
+  const more = el("button", "bd-more"); more.setAttribute("aria-label", "More actions for " + p.name); more.textContent = "\u22EF";
+  more.onclick = (e) => { e.stopPropagation(); cardMenu(p, more); };
+  c.append(more);
+  c.onclick = () => openProject(p);
+  c.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openProject(p); } };
+  return c;
+}
+function sortedProjects() {
+  const list = Object.values(S.projects);
+  const oldestWaiting = (p) => p.slides.filter((x) => x.status === "ready").reduce((m, x) => (!m || x.created_at < m ? x.created_at : m), "");
+  const sent = (p) => !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
+  const by = {
+    waiting: (a, b) => (b.waiting > 0) - (a.waiting > 0) || (oldestWaiting(a) || "~").localeCompare(oldestWaiting(b) || "~") || sent(a) - sent(b) || b.lastAt.localeCompare(a.lastAt),
+    most: (a, b) => b.waiting - a.waiting || b.lastAt.localeCompare(a.lastAt),
+    recent: (a, b) => b.lastAt.localeCompare(a.lastAt),
+    name: (a, b) => a.name.localeCompare(b.name)
+  }[BOARD.sort] || ((a, b) => 0);
+  return list.sort(by);
+}
+async function renderBoard() {
+  const me = displayName(S.user);
+  $("me").textContent = me;
+  const c = $("content"); c.innerHTML = "";
+  const projects = sortedProjects();
+  $("boardView").classList.toggle("solo", !projects.length);
+  if (!projects.length) {
+    const e = el("div", "bd-state"); e.append(stackIllo(true), el("strong", "", "No slides yet"), el("p", "", "Ready-to-review slides will appear here"));
+    c.append(e); renderActivity(); return;
+  }
+  const waiting = projects.reduce((n, p) => n + p.waiting, 0), orders = projects.filter((p) => p.waiting > 0).length;
+  const head = el("div", "bd-head"); const hl = el("div");
+  const now = new Date();
+  hl.append(el("p", "bd-date", now.toLocaleDateString("en-GB", { weekday: "long" }) + ", " + now.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })));
+  hl.append(el("h2", "", greeting() + ", " + firstName(me)));
+  hl.append(el("p", "bd-sub", waiting ? waiting + " slide" + (waiting > 1 ? "s are" : " is") + " waiting for your review across " + orders + " order" + (orders > 1 ? "s" : "") : "Nothing is waiting for your review right now."));
+  const sortWrap = el("label", "bd-sort"); sortWrap.append(el("span", "", "Sort :"));
+  const sel = document.createElement("select"); sel.setAttribute("aria-label", "Sort orders");
+  Object.entries(SORTS).forEach(([k, v]) => { const o = el("option", "", v); o.value = k; if (k === BOARD.sort) o.selected = true; sel.append(o); });
+  sel.onchange = () => { BOARD.sort = sel.value; try { localStorage.setItem("qa.sort", sel.value); } catch (e) {} renderBoard(); };
+  sortWrap.append(sel); head.append(hl, sortWrap); c.append(head);
+  const grid = el("div", "bd-grid"); projects.forEach((p) => grid.append(orderCard(p))); c.append(grid);
+  c.append(el("p", "bd-retention", "Orders are removed automatically " + RETENTION_DAYS + " days after their last activity."));
+  renderActivity();
+  // thumbnails
+  const shots = []; grid.querySelectorAll("img[data-k]").forEach((im) => { const v = S.versions[im.dataset.k]; if (v) shots.push(v[0]); });
+  try { await ensureUrls(shots); } catch (e) {}
+  grid.querySelectorAll("img[data-k]").forEach((im) => { const v = S.versions[im.dataset.k]; if (v) { const u = urlFor(v[0]); if (u) im.src = u; } });
+}
+// ---- Activity feed, built from what's already loaded
+function renderActivity() {
+  const box = $("activity"); box.innerHTML = "";
+  const me = displayName(S.user); const who = (n) => (n && n === me ? "You" : n || "Someone");
+  const ev = [];
+  const byId = {}; S.shots.forEach((x) => { byId[x.id] = x; });
+  S.shots.forEach((x) => {
+    ev.push({ t: x.created_at, kind: "sent", shot: x, text: [[x.designer, 1], [" sent " + (x.version > 1 ? "v" + x.version + " of slide " : "slide ") + x.slide_number + " of ", 0], [x.project, 1], [x.note ? ", with note:" : "", 0]], quote: x.note });
+    if (x.reviewed_at && (x.status === "approved" || x.status === "changes"))
+      ev.push({ t: x.reviewed_at, kind: x.status, shot: x, text: [[who(x.reviewed_by), 1], [x.status === "approved" ? " approved slide " : " requested changes on slide ", 0], [x.slide_number + " of ", 0], [x.project, 1]] });
+  });
+  Object.entries(S.comments).forEach(([sid, cs]) => {
+    const x = byId[sid]; if (!x) return; const nums = pinnedNumbers(cs);
+    cs.forEach((cm) => ev.push({ t: cm.created_at, kind: cm.audio_path ? "voice" : "comment", shot: x, pin: nums[cm.id], dur: cm.audio_duration,
+      text: [[who(cm.author), 1], [cm.audio_path ? " left a voice note on slide " : " commented on slide ", 0], [x.slide_number + " of ", 0], [x.project, 1]], quote: cm.body }));
+  });
+  Object.values(S.projectStatus).forEach((st) => { if (st.sent_at) ev.push({ t: st.sent_at, kind: "customer", key: st.key, text: [[st.name, 1], [" was marked as sent to customer by ", 0], [who(st.sent_by), 1]] }); });
+  ev.sort((a, b) => String(b.t).localeCompare(String(a.t)));
+  if (!ev.length) { box.append(el("p", "bd-actempty", "Activity from designers and DMs shows up here.")); return; }
+  const day = (iso) => { const d = new Date(iso); const t = new Date(); const y = new Date(); y.setDate(t.getDate() - 1);
+    return d.toDateString() === t.toDateString() ? "Today" : d.toDateString() === y.toDateString() ? "Yesterday" : d.toLocaleDateString("en-GB", { day: "numeric", month: "long" }); };
+  const ICONS = { sent: "\u2191", approved: "\u2713", changes: "!", comment: "\u201C", voice: "\u266A", customer: "\u2605" };
+  let last = null, group = null;
+  ev.slice(0, 40).forEach((e) => {
+    const d = day(e.t);
+    if (d !== last) { last = d; box.append(el("h3", "bd-day", d)); group = el("ol", "bd-acts"); box.append(group); }
+    const li = el("li", "bd-act k-" + e.kind);
+    li.append(el("span", "ic", ICONS[e.kind]));
+    const body = el("div", "tx"); const line = el("p", "line");
+    e.text.forEach(([str, bold]) => { if (!str) return; line.append(bold ? el("strong", "", str) : document.createTextNode(str)); });
+    body.append(line);
+    if (e.kind === "voice") body.append(el("span", "pill", "\u25B6  Voice note" + (e.dur ? " \u00B7 " + fmtDur(e.dur) : "")));
+    else if (e.quote) body.append(el("p", "quote", "\u201C" + e.quote + "\u201D"));
+    const meta = el("p", "meta"); const parts = [];
+    const order = e.shot ? (e.shot.project.match(/\d{5,7}/) || [])[0] : null; if (order) parts.push("Order #" + order);
+    if (e.pin) parts.push("Pin " + e.pin);
+    parts.push(ago(e.t));
+    parts.forEach((ptxt, i) => { if (i) meta.append(el("span", "dot")); meta.append(el("span", "", ptxt)); });
+    body.append(meta); li.append(body);
+    if (e.shot) { li.classList.add("go"); li.tabIndex = 0; li.onclick = () => { S.project = (e.shot.project || "").trim().toLowerCase(); openReview(keyOf(e.shot)); }; li.onkeydown = (k) => { if (k.key === "Enter") li.click(); }; }
+    group.append(li);
+  });
+}
 function projectSlides() { const p = S.projects[S.project]; return p ? p.slides : []; }
 function openReview(slideKey, shotId) {
   S.slideKey = slideKey; S.shotId = shotId || null; S.draft = null; S.hot = null;
@@ -1209,7 +1347,7 @@ function hideLogin() {
 async function enter(user) {
   S.user = user;
   hideLogin(); $("boardView").hidden = false;
-  $("content").innerHTML = '<p class="empty-state">Loading slides…</p>';
+  $("content").innerHTML = ""; $("boardView").classList.add("solo"); { const e = el("div", "bd-state loading"); e.append(stackIllo(false), el("strong", "", "Loading slides…")); $("content").append(e); }
   try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
   renderBoard();
   const reload = debounce(async () => { try { await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview(); } catch (e) {} }, 500);
@@ -1228,8 +1366,6 @@ async function enter(user) {
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
   ["email", "password"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); location.reload(); };
-  $("tabWaiting").onclick = () => { S.filter = "waiting"; renderBoard(); };
-  $("tabAll").onclick = () => { S.filter = "all"; renderBoard(); };
   $("backBtn").onclick = closeReview;
   $("versionSelect").onchange = (e) => { S.shotId = e.target.value; S.draft = null; renderReview(); };
   $("toLatest2").onclick = () => { S.shotId = null; S.draft = null; renderReview(); };
