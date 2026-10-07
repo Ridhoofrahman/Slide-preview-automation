@@ -349,6 +349,37 @@
   .review .msg:empty { display: none; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   @media (max-width: 1100px) { .rv-rail { display: none; } .rv-work { padding-left: 24px; } }
+
+  /* ===== Review slide v2 (slide strip on top, wider panel) ===== */
+  .rv-main { grid-template-columns: minmax(0, 1fr) 337px; }
+  .rv-work { flex-direction: column; gap: 20px; padding: 24px 24px 24px 40px; }
+  .rv-strip { flex: none; display: flex; align-items: stretch; background: #E3E6EB; border-radius: 12px; padding: 1px 4px; }
+  .rv-scroll { flex: none; width: 16px; border: 0; padding: 0; background: none; border-radius: 4px; color: #3F4652; cursor: pointer; display: grid; place-items: center; }
+  .rv-scroll svg { width: 16px; height: 16px; }
+  .rv-scroll:disabled { opacity: .3; cursor: default; }
+  .review .rv-rail { flex: 1; width: auto; max-height: none; align-self: auto; flex-direction: row; align-items: center; gap: 4px; padding: 8px; overflow-x: auto; overflow-y: hidden; border-radius: 12px; scrollbar-width: none; scroll-behavior: smooth; }
+  .review .rv-rail::-webkit-scrollbar { display: none; }
+  .rv-thumb { flex: none; }
+  .rv-banner { flex: none; display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; }
+  .rv-banner > span { flex: 1; }
+  .rv-banner.approved { background: #E6F8F2; color: #006B4B; }
+  .rv-banner.changes { background: #FAE9EB; color: #CA2135; }
+  .rv-banner.older { background: #EFEAFB; color: #4A3291; }
+  .rv-bannerbtn { border: 0; background: none; padding: 0 4px; font: 500 12px/20px inherit; font-family: inherit; color: inherit; cursor: pointer; }
+  .rv-bannerbtn:hover { text-decoration: underline; }
+  .review figure.slide { flex: none; }
+  .rv-details { grid-template-columns: 200px minmax(0, 370px); gap: 40px; justify-content: start; }
+  .rv-details .rows { gap: 4px; }
+  .rv-details .row { border-bottom: 1px solid #E3E6EB; padding: 4px 0 8px; }
+  .rv-details .row:last-child { border-bottom: 0; }
+  .rv-decision { padding: 16px 16px 0; gap: 16px; border-bottom: 0; }
+  .rv-slidehead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #E3E6EB; }
+  #rvSlideNo { font-size: 14px; line-height: 20px; font-weight: 500; color: #6B7280; }
+  .rv-slidehead .rv-tag { font-size: 12px; line-height: 16px; padding: 3px 8px; }
+  .rv-sender { gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #E3E6EB; }
+  .rv-sender p { font-size: 14px; line-height: 20px; }
+  .rv-actions { padding-bottom: 16px; }
+  .rv-comment.resolved { background: #EEFAF6; border-color: #33C297; }
 </style>
 </head>
 <body>
@@ -409,22 +440,24 @@
     </header>
     <div class="rv-main">
       <div class="rv-work">
-        <nav class="rv-rail" id="rvRail" aria-label="Slides in this order"></nav>
-        <div class="rv-center">
-          <div id="olderBanner" class="rv-older" hidden><span id="olderText"></span><button id="toLatest" class="rv-link">View latest</button></div>
-          <span id="rvStatus" class="rv-tag"></span>
-          <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
-          <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
+        <div class="rv-strip">
+          <button class="rv-scroll" id="railPrev" aria-label="Scroll slides left"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <nav class="rv-rail" id="rvRail" aria-label="Slides in this order"></nav>
+          <button class="rv-scroll" id="railNext" aria-label="Scroll slides right"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
+        <div id="olderBanner" class="rv-banner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-bannerbtn">View latest</button></div>
+        <div id="decidedBanner" class="rv-banner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-bannerbtn">Cancel</button></div>
+        <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
+        <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
       </div>
       <aside class="rv-panel">
         <div class="rv-decision">
+          <div class="rv-slidehead"><span id="rvSlideNo"></span><span id="rvStatus" class="rv-tag"></span></div>
           <div class="rv-sender"><p id="rvBy"></p><p id="rvNote" hidden></p></div>
           <div class="rv-actions" id="decisionBtns">
             <button id="approveBtn" class="rv-approve">Approve slide</button>
             <button id="changesBtn" class="rv-change">Request change</button>
           </div>
-          <div class="rv-decided" id="decided" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-cancel">Cancel</button></div>
         </div>
         <div class="rv-thread" id="thread">
           <h3>Comments</h3>
@@ -687,6 +720,7 @@ async function renderReview() {
   $("olderBanner").hidden = isLatest;
   $("olderText").textContent = "You are viewing v" + shot.version + ". The latest is v" + latest.version + ".";
 
+  $("rvSlideNo").textContent = "Slide " + shot.slide_number;
   const tag = $("rvStatus"); tag.className = "rv-tag " + shot.status; tag.textContent = REVIEW_LABEL[shot.status] || shot.status;
   tag.hidden = !isLatest;
 
@@ -696,10 +730,10 @@ async function renderReview() {
   // Decision: two buttons until the DM decides, then a summary with Cancel
   const decided = isLatest && (shot.status === "approved" || shot.status === "changes");
   $("decisionBtns").hidden = !isLatest || decided;
-  const box = $("decided"); box.hidden = !decided;
+  const box = $("decidedBanner"); box.hidden = !decided;
   if (decided) {
-    box.className = "rv-decided " + shot.status;
-    $("decidedText").textContent = (shot.status === "approved" ? "Approved" : "Change requested") + (shot.reviewed_by ? " by " + shot.reviewed_by : "");
+    box.className = "rv-banner " + shot.status;
+    $("decidedText").textContent = (shot.status === "approved" ? "Slide " + shot.slide_number + " approved" : "Change requested") + (shot.reviewed_by ? " by " + shot.reviewed_by : "");
   }
 
   renderRail();
@@ -727,7 +761,13 @@ async function renderRail() {
   });
   try { await ensureUrls(list); } catch (e) {}
   rail.querySelectorAll("img").forEach((im, i) => { const u = urlFor(list[i]); if (u && im.src !== u) im.src = u; });
-  const cur = rail.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({ block: "nearest" });
+  const cur = rail.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+  updateRailArrows();
+}
+function updateRailArrows() {
+  const r = $("rvRail");
+  $("railPrev").disabled = r.scrollLeft <= 2;
+  $("railNext").disabled = r.scrollLeft + r.clientWidth >= r.scrollWidth - 2;
 }
 function renderComments(shot) {
   const cs = S.comments[shot.id] || [];
@@ -751,8 +791,9 @@ function renderComments(shot) {
 
   $("thread").hidden = !cs.length && !S.canComment;
   const list = $("comments"); list.innerHTML = "";
-  if (!cs.length) { list.append(el("li", "empty", "No comments yet.")); }
-  cs.forEach((c) => {
+  if (!cs.length) { list.append(el("li", "empty", "Comments will appear here")); }
+  // Open comments first, resolved ones at the bottom (pin numbers keep their order)
+  cs.slice().sort((a, b) => (a.resolved ? 1 : 0) - (b.resolved ? 1 : 0)).forEach((c) => {
     const li = el("li", "rv-comment" + (c.resolved ? " resolved" : "") + (S.hot === c.id ? " hot" : "") + (S.active === c.id ? " active" : "")); li.dataset.cid = c.id;
     li.onmouseenter = () => { S.hot = c.id; renderPinsOnly(shot); li.classList.add("hot"); };
     li.onmouseleave = () => { S.hot = null; renderPinsOnly(shot); li.classList.remove("hot"); };
@@ -861,6 +902,10 @@ function renderDetails(shot, vers) {
   if (!d) { box.append(el("p", "", "Font and speaker-note details weren't captured for this version.")); return; }
   if (d.error) { box.append(el("p", "", "Details couldn't be read on the designer's computer: " + d.error + ".")); return; }
 
+  // Speaker notes, shown as-is; the DM compares them with the client's original file
+  const nc = el("section"); nc.append(el("h4", "", "Speaker notes"));
+  nc.append(el("p", "", d.notes.present ? d.notes.text : "This slide has no speaker notes."));
+  box.append(nc);
   // Fonts
   const fc = el("section");
   const fh = el("h4", "", "Fonts");
@@ -882,10 +927,6 @@ function renderDetails(shot, vers) {
   if (d.shrunk && d.shrunk.length) fc.append(el("p", "dnote", "Autofit is shrinking text in: " + d.shrunk.join(", ") + ". Sizes shown are as displayed."));
   box.append(fc);
 
-  // Speaker notes, shown as-is; the DM compares them with the client's original file
-  const nc = el("section"); nc.append(el("h4", "", "Speaker notes"));
-  nc.append(el("p", "", d.notes.present ? d.notes.text : "This slide has no speaker notes."));
-  box.append(nc);
 }
 function renderPinsOnly(shot) {
   const cs = S.comments[shot.id] || []; const nums = pinnedNumbers(cs);
@@ -1095,6 +1136,11 @@ async function enter(user) {
   $("approveBtn").onclick = () => decide("approved");
   $("changesBtn").onclick = () => decide("changes");
   $("undoDecision").onclick = () => { const sh = currentShot(); if (sh) decide(sh.status); };
+  // Slide strip: arrows scroll about three thumbnails at a time
+  $("railPrev").onclick = () => { $("rvRail").scrollBy({ left: -3 * 165 }); };
+  $("railNext").onclick = () => { $("rvRail").scrollBy({ left: 3 * 165 }); };
+  $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
+  window.addEventListener("resize", () => { if (!$("reviewView").hidden) updateRailArrows(); });
   $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); addComment(); } });
   $("sendComment").onclick = addComment;
   $("recBtn").onclick = toggleRecording;
