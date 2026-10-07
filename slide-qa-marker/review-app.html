@@ -407,6 +407,30 @@
   .rv-stripwrap.stuck .rv-strip { box-shadow: 0 1px 2px rgba(18,18,23,.06), 0 6px 16px rgba(18,18,23,.10); }
   .rv-scrollarea { display: flex; flex-direction: column; gap: 20px; }
   .rv-scrollarea > * { flex: none; }
+
+  /* View tools: slide list toggle and zoom */
+  .rv-tools { display: flex; align-items: center; gap: 8px; }
+  .rv-tool { height: 32px; min-width: 32px; padding: 0 8px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #3F4652; font: 500 13px/20px inherit; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .rv-tool:hover { background: #F6F7F9; }
+  .rv-tool:disabled { opacity: .4; cursor: default; background: #FFFFFF; }
+  .rv-tool svg { width: 18px; height: 18px; }
+  .rv-striptoggle[aria-pressed="true"] { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; }
+  .rv-zoom { display: inline-flex; }
+  .rv-zoom .rv-tool { border-radius: 0; margin-left: -1px; font-size: 16px; }
+  .rv-zoom .rv-tool:first-child { border-radius: 8px 0 0 8px; margin-left: 0; }
+  .rv-zoom .rv-tool:last-child { border-radius: 0 8px 8px 0; }
+  .rv-zoom .rv-zoomlevel { min-width: 56px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  /* Smaller strip */
+  .review .rv-thumb img, .review .rv-thumb .ph { width: 104px; }
+  .review .rv-rail { padding: 6px; }
+  .review.no-strip .rv-stripwrap { display: none; }
+  .review.no-strip .rv-scrollarea { padding-top: 24px; }
+  /* Fit: whole slide visible; zoom: wider than the column, scroll to pan */
+  .review figure.slide { align-self: center; width: fit-content; max-width: 100%; }
+  .review.fit figure.slide img { width: auto; max-width: 100%; max-height: var(--fit-h, 60vh); }
+  .review.zoomed .rv-work { overflow-x: auto; }
+  .review.zoomed figure.slide { align-self: flex-start; max-width: none; }
+  .review.zoomed figure.slide img { width: 100%; max-height: none; }
 </style>
 </head>
 <body>
@@ -462,6 +486,14 @@
     <header class="rv-head">
       <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5L7 10l5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <h2 id="rvProject" class="rv-name"></h2>
+      <div class="rv-tools" role="group" aria-label="View">
+        <button id="stripToggle" class="rv-tool rv-striptoggle" aria-pressed="true" title="Hide the slide list"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 8h15" stroke="currentColor" stroke-width="1.4"/><path d="M6 6h0M9 6h0M12 6h0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Slides</span></button>
+        <div class="rv-zoom" role="group" aria-label="Zoom">
+          <button id="zoomOut" class="rv-tool" aria-label="Zoom out" title="Zoom out">−</button>
+          <button id="zoomLevel" class="rv-tool rv-zoomlevel" title="Fit the slide to the window">Fit</button>
+          <button id="zoomIn" class="rv-tool" aria-label="Zoom in" title="Zoom in">+</button>
+        </div>
+      </div>
       <label class="rv-version" id="versionWrap"><span class="sr">Version</span><select id="versionSelect" aria-label="Version"></select></label>
       <button id="deleteSlideBtn" class="rv-delete" title="Delete this slide so the designer can send it again"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 6h12M8 6V4.5h4V6M6 6l.7 10h6.6L14 6M8.5 9v4.5M11.5 9v4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Delete slide</span></button>
     </header>
@@ -734,6 +766,40 @@ function currentShot() {
   const vers = S.versions[S.slideKey]; if (!vers) return null;
   return vers.find((v) => v.id === S.shotId) || vers[0];
 }
+
+// ---- view: slide list toggle + zoom (Fit, 100%, 125%, 150%, 200%, 300%)
+const ZOOMS = [1, 1.25, 1.5, 2, 3];
+const VIEW = { zoom: "fit", strip: true };
+try { const v = JSON.parse(localStorage.getItem("qa.view") || "{}"); if (v.zoom) VIEW.zoom = v.zoom; if (v.strip === false) VIEW.strip = false; } catch (e) {}
+function saveView() { try { localStorage.setItem("qa.view", JSON.stringify(VIEW)); } catch (e) {} }
+function applyView() {
+  const rv = $("reviewView"), work = $("rvWork"), fig = $("figure");
+  rv.classList.toggle("no-strip", !VIEW.strip);
+  $("stripToggle").setAttribute("aria-pressed", String(VIEW.strip));
+  $("stripToggle").title = VIEW.strip ? "Hide the slide list" : "Show the slide list";
+  const fit = VIEW.zoom === "fit";
+  rv.classList.toggle("fit", fit); rv.classList.toggle("zoomed", !fit);
+  $("zoomLevel").textContent = fit ? "Fit" : Math.round(VIEW.zoom * 100) + "%";
+  $("zoomOut").disabled = fit;
+  $("zoomIn").disabled = !fit && VIEW.zoom >= ZOOMS[ZOOMS.length - 1];
+  if (fit) {
+    fig.style.width = "";
+    // Height left for the slide: the visible scroll area minus the strip, any banners and the gaps
+    const sw = $("rvStripWrap"), strip = VIEW.strip ? sw.offsetHeight : 24;
+    let banners = 0; ["olderBanner", "decidedBanner"].forEach((id) => { const b = $(id); if (!b.hidden) banners += b.offsetHeight + 20; });
+    const h = work.clientHeight - strip - 20 - banners - 24;
+    rv.style.setProperty("--fit-h", Math.max(200, h) + "px");
+  } else {
+    const col = $("rvScroll").clientWidth;
+    fig.style.width = Math.round(col * VIEW.zoom) + "px";
+  }
+}
+function setZoom(z) { VIEW.zoom = z; saveView(); applyView(); }
+function zoomStep(dir) {
+  if (VIEW.zoom === "fit") { if (dir > 0) setZoom(1); return; }
+  const i = ZOOMS.indexOf(VIEW.zoom);
+  if (dir < 0) setZoom(i <= 0 ? "fit" : ZOOMS[i - 1]); else if (i < ZOOMS.length - 1) setZoom(ZOOMS[i + 1]);
+}
 const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Request change" };
 async function renderReview() {
   const shot = currentShot(); if (!shot) { closeReview(); return; }
@@ -780,6 +846,7 @@ async function renderReview() {
   $("decisionBox").classList.toggle("ruled", !$("thread").hidden || !$("closedNote").hidden);
   $("figure").classList.toggle("readonly", !S.canComment);
   renderDetails(shot, vers);
+  applyView();
 }
 // Left rail: every slide sent in this order, newest version of each
 async function renderRail() {
@@ -1174,10 +1241,15 @@ async function enter(user) {
   $("railPrev").onclick = () => { $("rvRail").scrollBy({ left: -3 * 165 }); };
   $("railNext").onclick = () => { $("rvRail").scrollBy({ left: 3 * 165 }); };
   $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
+  $("stripToggle").onclick = () => { VIEW.strip = !VIEW.strip; saveView(); applyView(); if (VIEW.strip) updateRailArrows(); };
+  $("zoomIn").onclick = () => zoomStep(1);
+  $("zoomOut").onclick = () => zoomStep(-1);
+  $("zoomLevel").onclick = () => setZoom("fit");
+  $("rvImg").addEventListener("load", () => { if (!$("reviewView").hidden) applyView(); });
+  window.addEventListener("resize", () => { if (!$("reviewView").hidden) applyView(); });
   // Shadow under the floating strip only once the slide is scrolling beneath it
   $("rvWork").addEventListener("scroll", () => $("rvStripWrap").classList.toggle("stuck", $("rvWork").scrollTop > 2), { passive: true });
   window.addEventListener("resize", () => { if (!$("reviewView").hidden) updateRailArrows(); });
-  $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); addComment(); } });
   $("sendComment").onclick = addComment;
   $("recBtn").onclick = toggleRecording;
   $("delCancel").onclick = () => { $("deleteDialog").close(); deleteKey = null; };
