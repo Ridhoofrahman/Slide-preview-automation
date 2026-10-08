@@ -555,6 +555,11 @@
   .rv-scrollarea .rv-banner { align-items: center; min-height: 40px; padding: 10px 12px; margin-bottom: -4px; }
   .rv-scrollarea .rv-banner + .rv-banner { margin-top: 0; }
   .review figure.slide { position: relative; z-index: 1; }
+
+  /* Button: Primary / s (Figma) */
+  .rv-primary { height: 32px; padding: 6px 12px; border: 0; border-radius: 8px; background: #00308D; color: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .rv-primary:hover { background: #002671; }
+  .rv-primary:disabled { background: #EEF0F3; color: #8B93A1; cursor: default; }
 </style>
 </head>
 <body>
@@ -615,6 +620,7 @@
     <header class="rv-head">
       <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6.91793 10.2848C6.73032 10.124 6.73032 9.85595 6.91793 9.69514L12.4925 4.1206C12.6533 3.9598 12.9213 3.9598 13.0821 4.1206C13.2697 4.28141 13.2697 4.54941 13.0821 4.71022L7.82915 9.98995L13.0821 15.2697C13.2697 15.4305 13.2697 15.6985 13.0821 15.8593C12.9213 16.0469 12.6533 16.0469 12.4925 15.8593L6.91793 10.2848Z" fill="currentColor"/></svg></button>
       <div class="rv-titlewrap"><h2 id="rvProject" class="rv-name"></h2><span class="rv-divider" aria-hidden="true"></span><span class="rv-progress" id="rvProgress"></span></div>
+      <button id="rvSendCustomer" class="rv-primary" hidden>Send to customer</button>
       <div class="rv-tools" role="group" aria-label="View">
         <button id="stripToggle" class="rv-toggle" aria-pressed="true" aria-label="Slide list" title="Hide the slide list"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.59998 6.29334H14.4M3.30664 2.88H12.6933C13.6359 2.88 14.4 3.64411 14.4 4.58667V11.4133C14.4 12.3559 13.6359 13.12 12.6933 13.12H3.30664C2.36408 13.12 1.59998 12.3559 1.59998 11.4133V4.58667C1.59998 3.64411 2.36408 2.88 3.30664 2.88Z" stroke="currentColor"/></svg></button>
         <div class="rv-zoom" role="group" aria-label="Zoom">
@@ -753,6 +759,7 @@ async function setSentToCustomer(key, sent) {
   const { error } = await S.sb.from("project_status").upsert(row);
   if (error) { alert("Couldn't update the project: " + error.message + "\n\nRun the project status SQL in Supabase first."); return; }
   S.projectStatus[key] = row; renderBoard();
+  if (!$("reviewView").hidden) renderReview();
 }
 function buildIndex() {
   S.versions = {};
@@ -809,7 +816,8 @@ function ringSvg(frac, sent) {
   return '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect x="1" y="1" width="28" height="28" rx="14" fill="white"/><rect x="1" y="1" width="28" height="28" rx="14" stroke="#E3E6EB" stroke-width="2"/>' + arc + '</svg>';
 }
 function projectRingState(p) {
-  const prog = projectProgress(p); const total = Math.max(prog.total, p.slides.length) || 1;
+  // Same count as the header: distinct slides sent for review (two people's copies of a slide count once)
+  const prog = projectProgress(p); const total = prog.total || 1;
   const sent = !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
   return { prog, total, frac: Math.min(1, prog.approvedNums / total), sent };
 }
@@ -817,7 +825,8 @@ function ring(p) {
   const r = projectRingState(p);
   const w = el("span", "bd-ring"); w.title = p.waiting + " waiting, " + r.prog.approvedNums + " of " + r.total + " approved" + (r.sent ? ", sent to customer" : "");
   w.innerHTML = ringSvg(r.frac, r.sent);
-  if (!r.sent) w.append(el("span", "n", String(p.waiting)));
+  // The number is the approved count, so it always matches the ring: 0 = grey, some = partial green, all = full circle
+  if (!r.sent) w.append(el("span", "n", String(r.prog.approvedNums)));
   return w;
 }
 function openProject(p) {
@@ -1001,6 +1010,10 @@ async function renderReview() {
 
   $("rvProject").textContent = shot.project;
   const proj = S.projects[(shot.project || "").trim().toLowerCase()];
+  // Send to customer: only once every sent slide is approved and the order isn't marked as sent yet
+  const canSend = !!proj && projectProgress(proj).allApproved && !(S.projectStatus[proj.key] && S.projectStatus[proj.key].sent_at);
+  $("rvSendCustomer").hidden = !canSend;
+  if (proj) $("rvSendCustomer").dataset.key = proj.key;
   if (proj) {
     const r = projectRingState(proj); const pr = $("rvProgress");
     pr.innerHTML = '<span class="ic">' + ringSvg(r.frac, r.sent) + "</span>";
@@ -1434,6 +1447,7 @@ async function enter(user) {
   $("railPrev").onclick = () => { $("rvRail").scrollBy({ left: -3 * 165 }); };
   $("railNext").onclick = () => { $("rvRail").scrollBy({ left: 3 * 165 }); };
   $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
+  $("rvSendCustomer").onclick = () => { const k = $("rvSendCustomer").dataset.key; if (k) askSendToCustomer(k); };
   $("stripToggle").onclick = () => { VIEW.strip = !VIEW.strip; saveView(); applyView(); if (VIEW.strip) updateRailArrows(); };
   $("zoomIn").onclick = () => zoomStep(1);
   $("zoomOut").onclick = () => zoomStep(-1);
