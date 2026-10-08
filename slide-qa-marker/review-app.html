@@ -516,6 +516,44 @@
   .bd-act .meta .dot { width: 4px; height: 4px; border-radius: 2px; background: #CDD7E5; }
   .bd-actempty { font-size: 12px; color: #6B7280; }
   @media (max-width: 960px) { .bd-body { grid-template-columns: 1fr; } .bd-activity { padding-top: 0; } }
+
+  /* ===== Header controls (Figma components: Toggle button, Zoom control button, Button Icon / Ghost destructive) ===== */
+  .rv-back { color: #3F4652; }
+  .rv-toggle { width: 32px; height: 32px; padding: 6px 8px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #3F4652; display: grid; place-items: center; cursor: pointer; }
+  .rv-toggle svg { width: 16px; height: 16px; }
+  .rv-toggle:hover { background: #EEF0F3; }
+  .rv-toggle[aria-pressed="true"] { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; }
+  .rv-tools { gap: 12px; }
+  .rv-zoom .rv-tool { height: 32px; background: #FFFFFF; border-color: #E3E6EB; color: #3F4652; }
+  .rv-zoom .rv-tool:hover:not(:disabled) { background: #EEF0F3; }
+  .rv-zoom .rv-tool:active:not(:disabled) { background: #E3E6EB; }
+  .rv-zoom .rv-tool:disabled { opacity: .4; background: #FFFFFF; }
+  .rv-zoom .rv-zoomlevel { font-size: 13px; }
+  .review .rv-version select { height: 32px; }
+  .rv-delete-ic { width: 32px; height: 32px; padding: 4px; border: 0.8px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #CA2135; display: grid; place-items: center; cursor: pointer; }
+  .rv-delete-ic svg { width: 20px; height: 20px; }
+  .rv-delete-ic:hover, .rv-delete-ic:focus-visible { background: #FAE9EB; border-color: transparent; }
+  /* ===== Banner (Figma component: Banner — Success / Error / Information) ===== */
+  .rv-banner { align-items: flex-start; min-height: 52px; padding: 10px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; gap: 0; }
+  .rv-banner.approved { background: #E6F8F2; color: #006B4B; }
+  .rv-banner.changes { background: #FAE9EB; color: #CA2135; }
+  .rv-banner.older { background: #EFEDF8; color: #473C90; }
+  .rv-bannerbtn { height: 20px; padding: 0 4px; border-radius: 6px; font: 500 12px/20px inherit; font-family: inherit; color: inherit; background: none; }
+  .rv-bannerbtn:hover { text-decoration: none; background: rgba(255,255,255,.55); }
+
+  /* ===== Review: white work area, banner tucked under the slide, header progress ===== */
+  .review .rv-main, .review .rv-work { background: #FFFFFF; }
+  .rv-stripwrap { background: linear-gradient(#FFFFFF 24px, transparent 24px); }
+  .rv-titlewrap { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+  .rv-titlewrap .rv-name { flex: 0 1 auto; }
+  .rv-divider { flex: none; width: 1px; height: 16px; background: #E3E6EB; margin: 0 4px 0 0; }
+  .rv-progress { flex: none; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6B7280; white-space: nowrap; }
+  .rv-progress .ic { width: 16px; height: 16px; display: inline-flex; }
+  .rv-progress .ic svg { width: 16px; height: 16px; }
+  /* Banner sits 12px under the slide: the slide overlaps its bottom edge */
+  .rv-scrollarea .rv-banner { margin-bottom: -32px; position: relative; z-index: 0; }
+  .rv-scrollarea .rv-banner + .rv-banner { margin-top: 0; }
+  .review figure.slide { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -574,10 +612,10 @@
   <!-- Review one slide -->
   <div id="reviewView" class="review" hidden role="dialog" aria-modal="true" aria-labelledby="rvProject">
     <header class="rv-head">
-      <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5L7 10l5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <h2 id="rvProject" class="rv-name"></h2>
+      <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6.91793 10.2848C6.73032 10.124 6.73032 9.85595 6.91793 9.69514L12.4925 4.1206C12.6533 3.9598 12.9213 3.9598 13.0821 4.1206C13.2697 4.28141 13.2697 4.54941 13.0821 4.71022L7.82915 9.98995L13.0821 15.2697C13.2697 15.4305 13.2697 15.6985 13.0821 15.8593C12.9213 16.0469 12.6533 16.0469 12.4925 15.8593L6.91793 10.2848Z" fill="currentColor"/></svg></button>
+      <div class="rv-titlewrap"><h2 id="rvProject" class="rv-name"></h2><span class="rv-divider" aria-hidden="true"></span><span class="rv-progress" id="rvProgress"></span></div>
       <div class="rv-tools" role="group" aria-label="View">
-        <button id="stripToggle" class="rv-tool rv-striptoggle" aria-pressed="true" title="Hide the slide list"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 8h15" stroke="currentColor" stroke-width="1.4"/><path d="M6 6h0M9 6h0M12 6h0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Slides</span></button>
+        <button id="stripToggle" class="rv-toggle" aria-pressed="true" aria-label="Slide list" title="Hide the slide list"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.59998 6.29334H14.4M3.30664 2.88H12.6933C13.6359 2.88 14.4 3.64411 14.4 4.58667V11.4133C14.4 12.3559 13.6359 13.12 12.6933 13.12H3.30664C2.36408 13.12 1.59998 12.3559 1.59998 11.4133V4.58667C1.59998 3.64411 2.36408 2.88 3.30664 2.88Z" stroke="currentColor"/></svg></button>
         <div class="rv-zoom" role="group" aria-label="Zoom">
           <button id="zoomOut" class="rv-tool" aria-label="Zoom out" title="Zoom out">−</button>
           <button id="zoomLevel" class="rv-tool rv-zoomlevel" title="Fit the slide to the window">Fit</button>
@@ -585,7 +623,7 @@
         </div>
       </div>
       <label class="rv-version" id="versionWrap"><span class="sr">Version</span><select id="versionSelect" aria-label="Version"></select></label>
-      <button id="deleteSlideBtn" class="rv-delete" title="Delete this slide so the designer can send it again"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 6h12M8 6V4.5h4V6M6 6l.7 10h6.6L14 6M8.5 9v4.5M11.5 9v4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Delete slide</span></button>
+      <button id="deleteSlideBtn" class="rv-delete-ic" aria-label="Delete slide" title="Delete slide (the designer can send it again)"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8.09095 3.30303L7.75761 4.42424H12.2728L11.9394 3.30303C11.8788 3.12121 11.6667 2.9697 11.4546 2.9697H8.54549C8.33337 2.9697 8.15155 3.12121 8.09095 3.30303ZM6.72731 4.42424L7.15155 3.0303C7.33337 2.42424 7.90913 2 8.54549 2H11.4546C12.0909 2 12.6667 2.42424 12.8485 3.0303L13.2728 4.42424H16.3031C16.5758 4.42424 16.7879 4.63636 16.7879 4.90909C16.7879 5.18182 16.5758 5.39394 16.3031 5.39394H3.69701C3.42428 5.39394 3.21216 5.18182 3.21216 4.90909C3.21216 4.63636 3.42428 4.42424 3.69701 4.42424H6.72731ZM4.18186 6.84848H5.15155V16.0606C5.15155 16.6061 5.57579 17.0303 6.12125 17.0303H13.8788C14.4243 17.0303 14.8485 16.6061 14.8485 16.0606V6.84848H15.8182V16.0606C15.8182 17.1212 14.9394 18 13.8788 18H6.12125C5.06064 18 4.18186 17.1212 4.18186 16.0606V6.84848ZM7.57579 8.78788V14.6061C7.57579 14.8788 7.36367 15.0909 7.09095 15.0909C6.81822 15.0909 6.6061 14.8788 6.6061 14.6061V8.78788C6.6061 8.51515 6.81822 8.30303 7.09095 8.30303C7.36367 8.30303 7.57579 8.51515 7.57579 8.78788ZM10.4849 8.78788V14.6061C10.4849 14.8788 10.2728 15.0909 10 15.0909C9.72731 15.0909 9.51519 14.8788 9.51519 14.6061V8.78788C9.51519 8.51515 9.72731 8.30303 10 8.30303C10.2728 8.30303 10.4849 8.51515 10.4849 8.78788ZM13.394 8.78788V14.6061C13.394 14.8788 13.1819 15.0909 12.9091 15.0909C12.6364 15.0909 12.4243 14.8788 12.4243 14.6061V8.78788C12.4243 8.51515 12.6364 8.30303 12.9091 8.30303C13.1819 8.30303 13.394 8.51515 13.394 8.78788Z" fill="currentColor"/></svg></button>
     </header>
     <div class="rv-main">
       <div class="rv-work" id="rvWork">
@@ -759,14 +797,25 @@ function stackIllo(grey) {
   d.innerHTML = '<span class="c c1"></span><span class="c c2"></span><span class="c c3"><i></i><i></i><i></i></span>';
   return d;
 }
-function ring(p) {
+// Progress ring (Figma component: states 0 / Some approved / All approved / Sent to customer)
+const SENT_RING = '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M0 15C0 6.71573 6.71573 0 15 0C23.2843 0 30 6.71573 30 15C30 23.2843 23.2843 30 15 30C6.71573 30 0 23.2843 0 15Z" fill="#008F64"/><path d="M20.5994 10.3525C20.9792 10.6125 21.0642 11.1125 20.788 11.47L13.988 20.27C13.8419 20.46 13.6161 20.5775 13.3664 20.5975C13.1167 20.6175 12.875 20.53 12.6997 20.365L9.29968 17.165C8.96765 16.8525 8.96765 16.345 9.29968 16.0325C9.63171 15.72 10.1709 15.72 10.503 16.0325L13.1991 18.57L19.4147 10.5275C19.6909 10.17 20.2222 10.09 20.602 10.35L20.5994 10.3525Z" fill="white"/></svg>';
+function ringSvg(frac, sent) {
+  if (sent) return SENT_RING;
+  const C = 2 * Math.PI * 13.5;
+  const arc = frac >= 1 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#33C297" stroke-width="3"/>'
+    : frac > 0 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#33C297" stroke-width="3" stroke-linecap="round" stroke-dasharray="' + (C * frac).toFixed(2) + ' ' + C.toFixed(2) + '" transform="rotate(-90 15 15)"/>' : "";
+  return '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect x="1" y="1" width="28" height="28" rx="14" fill="white"/><rect x="1" y="1" width="28" height="28" rx="14" stroke="#E3E6EB" stroke-width="2"/>' + arc + '</svg>';
+}
+function projectRingState(p) {
   const prog = projectProgress(p); const total = Math.max(prog.total, p.slides.length) || 1;
-  const frac = Math.min(1, prog.approvedNums / total); const C = 2 * Math.PI * 13;
-  const done = p.waiting === 0 && prog.allApproved;
-  const w = el("span", "bd-ring"); w.title = p.waiting + " waiting, " + prog.approvedNums + " of " + total + " approved";
-  w.innerHTML = '<svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13" fill="#fff" stroke="#E3E6EB" stroke-width="2"/>' +
-    (frac > 0 ? '<circle cx="15" cy="15" r="13" fill="none" stroke="#33C297" stroke-width="2" stroke-linecap="round" stroke-dasharray="' + (C * frac).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 15 15)"/>' : "") + '</svg>';
-  w.append(el("span", "n", done ? "\u2713" : String(p.waiting)));
+  const sent = !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
+  return { prog, total, frac: Math.min(1, prog.approvedNums / total), sent };
+}
+function ring(p) {
+  const r = projectRingState(p);
+  const w = el("span", "bd-ring"); w.title = p.waiting + " waiting, " + r.prog.approvedNums + " of " + r.total + " approved" + (r.sent ? ", sent to customer" : "");
+  w.innerHTML = ringSvg(r.frac, r.sent);
+  if (!r.sent) w.append(el("span", "n", String(p.waiting)));
   return w;
 }
 function openProject(p) {
@@ -897,7 +946,7 @@ function openReview(slideKey, shotId) {
   $("commentBody").value = ""; say($("rvMsg"), "");
   $("reviewView").hidden = false;
   renderReview();
-  $("backBtn").focus();
+  $("backBtn").focus({ focusVisible: false });
 }
 function closeReview() { $("reviewView").hidden = true; S.slideKey = null; renderBoard(); }
 function currentShot() {
@@ -905,11 +954,12 @@ function currentShot() {
   return vers.find((v) => v.id === S.shotId) || vers[0];
 }
 
-// ---- view: slide list toggle + zoom (Fit, 100%, 125%, 150%, 200%, 300%)
-const ZOOMS = [1, 1.25, 1.5, 2, 3];
+// ---- view: slide list toggle + zoom (Fit, or 25% to 400% of the column width)
+const ZOOMS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
 const VIEW = { zoom: "fit", strip: true };
-try { const v = JSON.parse(localStorage.getItem("qa.view") || "{}"); if (v.zoom) VIEW.zoom = v.zoom; if (v.strip === false) VIEW.strip = false; } catch (e) {}
+try { const v = JSON.parse(localStorage.getItem("qa.view") || "{}"); if (v.zoom === "fit" || ZOOMS.includes(v.zoom)) VIEW.zoom = v.zoom; if (v.strip === false) VIEW.strip = false; } catch (e) {}
 function saveView() { try { localStorage.setItem("qa.view", JSON.stringify(VIEW)); } catch (e) {} }
+function fitScale() { const col = $("rvScroll").clientWidth || 1; const w = $("rvImg").getBoundingClientRect().width; return w ? w / col : 1; }
 function applyView() {
   const rv = $("reviewView"), work = $("rvWork"), fig = $("figure");
   rv.classList.toggle("no-strip", !VIEW.strip);
@@ -918,13 +968,12 @@ function applyView() {
   const fit = VIEW.zoom === "fit";
   rv.classList.toggle("fit", fit); rv.classList.toggle("zoomed", !fit);
   $("zoomLevel").textContent = fit ? "Fit" : Math.round(VIEW.zoom * 100) + "%";
-  $("zoomOut").disabled = fit;
+  $("zoomOut").disabled = !fit && VIEW.zoom <= ZOOMS[0];
   $("zoomIn").disabled = !fit && VIEW.zoom >= ZOOMS[ZOOMS.length - 1];
   if (fit) {
     fig.style.width = "";
-    // Height left for the slide: the visible scroll area minus the strip, any banners and the gaps
     const sw = $("rvStripWrap"), strip = VIEW.strip ? sw.offsetHeight : 24;
-    let banners = 0; ["olderBanner", "decidedBanner"].forEach((id) => { const b = $(id); if (!b.hidden) banners += b.offsetHeight + 20; });
+    let banners = 0; ["olderBanner", "decidedBanner"].forEach((id) => { const b = $(id); if (!b.hidden) banners += b.offsetHeight + 20 - 32; });
     const h = work.clientHeight - strip - 20 - banners - 24;
     rv.style.setProperty("--fit-h", Math.max(200, h) + "px");
   } else {
@@ -934,9 +983,9 @@ function applyView() {
 }
 function setZoom(z) { VIEW.zoom = z; saveView(); applyView(); }
 function zoomStep(dir) {
-  if (VIEW.zoom === "fit") { if (dir > 0) setZoom(1); return; }
-  const i = ZOOMS.indexOf(VIEW.zoom);
-  if (dir < 0) setZoom(i <= 0 ? "fit" : ZOOMS[i - 1]); else if (i < ZOOMS.length - 1) setZoom(ZOOMS[i + 1]);
+  const cur = VIEW.zoom === "fit" ? fitScale() : VIEW.zoom;
+  const next = dir > 0 ? ZOOMS.find((z) => z > cur + 0.001) : [...ZOOMS].reverse().find((z) => z < cur - 0.001);
+  if (next) setZoom(next);
 }
 const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Request change" };
 async function renderReview() {
@@ -949,6 +998,12 @@ async function renderReview() {
   S.canComment = isLatest && shot.status === "changes";
 
   $("rvProject").textContent = shot.project;
+  const proj = S.projects[(shot.project || "").trim().toLowerCase()];
+  if (proj) {
+    const r = projectRingState(proj); const pr = $("rvProgress");
+    pr.innerHTML = '<span class="ic">' + ringSvg(r.frac, r.sent) + "</span>";
+    pr.append(document.createTextNode(r.sent ? "Sent to customer" : r.prog.approvedNums + "/" + r.total + " slides approved"));
+  }
   const sel = $("versionSelect"); sel.innerHTML = "";
   vers.forEach((v) => { const o = el("option", "", "Version " + v.version); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
   $("versionWrap").hidden = vers.length < 2;
