@@ -551,7 +551,8 @@
   .rv-progress .ic { width: 16px; height: 16px; display: inline-flex; }
   .rv-progress .ic svg { width: 16px; height: 16px; }
   /* Banner sits 12px under the slide: the slide overlaps its bottom edge */
-  .rv-scrollarea .rv-banner { margin-bottom: -32px; position: relative; z-index: 0; }
+  /* Banner: default 40px, 16px above the slide */
+  .rv-scrollarea .rv-banner { align-items: center; min-height: 40px; padding: 10px 12px; margin-bottom: -4px; }
   .rv-scrollarea .rv-banner + .rv-banner { margin-top: 0; }
   .review figure.slide { position: relative; z-index: 1; }
 </style>
@@ -720,10 +721,11 @@ async function loadAll() {
 }
 // Everything a project needs to be sent: every slide of the deck sent and approved
 function projectProgress(p) {
-  const total = Math.max(0, ...p.slides.map((s) => s.total_slides || 0));
   const byNum = {};
   p.slides.forEach((s) => { const prev = byNum[s.slide_number]; byNum[s.slide_number] = prev && prev !== "approved" ? prev : s.status; });
   const approvedNums = Object.values(byNum).filter((st) => st === "approved").length;
+  // Progress counts only the slides that were sent for review, not every slide in the PowerPoint file
+  const total = Object.keys(byNum).length;
   const allApproved = total > 0 && approvedNums >= total && Object.values(byNum).every((st) => st === "approved");
   return { total, approvedNums, allApproved };
 }
@@ -973,7 +975,7 @@ function applyView() {
   if (fit) {
     fig.style.width = "";
     const sw = $("rvStripWrap"), strip = VIEW.strip ? sw.offsetHeight : 24;
-    let banners = 0; ["olderBanner", "decidedBanner"].forEach((id) => { const b = $(id); if (!b.hidden) banners += b.offsetHeight + 20 - 32; });
+    let banners = 0; ["olderBanner", "decidedBanner"].forEach((id) => { const b = $(id); if (!b.hidden) banners += b.offsetHeight + 16; });
     const h = work.clientHeight - strip - 20 - banners - 24;
     rv.style.setProperty("--fit-h", Math.max(200, h) + "px");
   } else {
