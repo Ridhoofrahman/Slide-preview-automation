@@ -560,6 +560,38 @@
   .rv-primary { height: 32px; padding: 6px 12px; border: 0; border-radius: 8px; background: #00308D; color: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
   .rv-primary:hover { background: #002671; }
   .rv-primary:disabled { background: #EEF0F3; color: #8B93A1; cursor: default; }
+
+  /* ===== Loading (Figma: Cards · Stacking motion, 2258.699ms loop) ===== */
+  .bd-state.loading { gap: 0; }
+  .bd-state.loading strong { margin-top: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #3F4652; }
+  .ld { position: relative; width: 379px; height: 145px; flex: none; }
+  .ld .s { position: absolute; left: 129.9px; width: 119px; height: 67px; border-radius: 6px; }
+  .ld .s i { position: absolute; left: 11.3px; display: block; }
+  .ld .s i:nth-child(1) { top: 12.4px; width: 50px; height: 6.7px; border-radius: 2.1px; }
+  .ld .s i:nth-child(2) { top: 24.7px; width: 74.4px; height: 4.7px; border-radius: 1.5px; }
+  .ld .s i:nth-child(3) { top: 35px; width: 42.8px; height: 4.7px; border-radius: 1.5px; }
+  .ld .mint { top: 32.9px; background: #D6F1E6; rotate: -7deg; }
+  .ld .mint i { background: rgba(143,205,180,.65); }
+  .ld .pink { top: 37px; background: #FBDDE8; border-radius: 5.1px; rotate: 4deg; }
+  .ld .pink i { background: rgba(231,161,187,.6); }
+  .ld .lav { top: 41px; background: #E6E0FF; rotate: -4deg; }
+  .ld .lav i { background: rgba(179,166,236,.66); }
+  .ld .peach { top: 44.9px; background: #FFE5D6; }
+  .ld .peach i { background: rgba(237,178,150,.585); }
+  .ld .pink, .ld .lav, .ld .peach { animation-duration: 2.258699s; animation-iteration-count: infinite; animation-timing-function: linear; }
+  .ld .pink { animation-name: ld-pink-o, ld-pink-r, ld-pink-t; }
+  .ld .lav { animation-name: ld-lav-o, ld-lav-r, ld-lav-t; }
+  .ld .peach { animation-name: ld-peach-o, ld-peach-r, ld-peach-t; }
+  @keyframes ld-pink-o { 0% { opacity: 0; } 6.641% { animation-timing-function: ease-out; opacity: 0; } 11.954% { opacity: 1; } 100% { opacity: 1; } }
+  @keyframes ld-pink-r { 0% { rotate: 18deg; } 6.641% { animation-timing-function: ease-in-out; rotate: 18deg; } 18.152% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); rotate: 0deg; } 35.419% { rotate: 4deg; } 100% { rotate: 4deg; } }
+  @keyframes ld-pink-t { 0% { translate: 95px 0px; } 6.641% { animation-timing-function: ease-in-out; translate: 95px 0px; } 18.152% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); translate: 38px -10px; } 35.419% { translate: 0px 0px; } 100% { translate: 0px 0px; } }
+  @keyframes ld-lav-o { 0% { opacity: 0; } 28.778% { animation-timing-function: ease-out; opacity: 0; } 34.09% { opacity: 1; } 100% { opacity: 1; } }
+  @keyframes ld-lav-r { 0% { rotate: -18deg; } 28.778% { animation-timing-function: ease-in-out; rotate: -18deg; } 40.289% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); rotate: 0deg; } 57.555% { rotate: -4deg; } 100% { rotate: -4deg; } }
+  @keyframes ld-lav-t { 0% { translate: -95px 0px; } 28.778% { animation-timing-function: ease-in-out; translate: -95px 0px; } 40.289% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); translate: -38px -10px; } 57.555% { translate: 0px 0px; } 100% { translate: 0px 0px; } }
+  @keyframes ld-peach-o { 0% { opacity: 0; } 50.914% { animation-timing-function: ease-out; opacity: 0; } 56.227% { opacity: 1; } 100% { opacity: 1; } }
+  @keyframes ld-peach-r { 0% { rotate: 14deg; } 50.914% { animation-timing-function: ease-in-out; rotate: 14deg; } 62.425% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); rotate: -4deg; } 79.692% { rotate: 0deg; } 100% { rotate: 0deg; } }
+  @keyframes ld-peach-t { 0% { translate: 95px 0px; } 50.914% { animation-timing-function: ease-in-out; translate: 95px 0px; } 62.425% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); translate: 38px -10px; } 79.692% { translate: 0px 0px; } 100% { translate: 0px 0px; } }
+  @media (prefers-reduced-motion: reduce) { .ld .s { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -801,6 +833,12 @@ const SORTS = { waiting: "Longest waiting", most: "Most waiting", recent: "Recen
 const CLOCK = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.6" stroke="currentColor" stroke-width="1.1"/><path d="M6 3.6V6l1.6 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>';
 const firstName = (n) => (n || "").split(/\s+/)[0] || "";
 function greeting() { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
+// Loading: "Cards · Stacking motion" (Figma) — mint stays, pink / lavender / peach fly in and settle, loop 2.2587s
+function loadingIllo() {
+  const d = el("div", "ld"); d.setAttribute("aria-hidden", "true");
+  ["mint", "pink", "lav", "peach"].forEach((k) => { const c = el("span", "s " + k); c.innerHTML = "<i></i><i></i><i></i>"; d.append(c); });
+  return d;
+}
 function stackIllo(grey) {
   const d = el("div", "bd-illo" + (grey ? " grey" : ""));
   d.innerHTML = '<span class="c c1"></span><span class="c c2"></span><span class="c c3"><i></i><i></i><i></i></span>';
@@ -1417,7 +1455,7 @@ function hideLogin() {
 async function enter(user) {
   S.user = user;
   hideLogin(); $("boardView").hidden = false;
-  $("content").innerHTML = ""; $("boardView").classList.add("solo"); { const e = el("div", "bd-state loading"); e.append(stackIllo(false), el("strong", "", "Loading slides…")); $("content").append(e); }
+  $("content").innerHTML = ""; $("boardView").classList.add("solo"); { const e = el("div", "bd-state loading"); e.append(loadingIllo(), el("strong", "", "Loading slides…")); $("content").append(e); }
   try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
   renderBoard();
   const reload = debounce(async () => { try { await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview(); } catch (e) {} }, 500);
