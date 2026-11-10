@@ -84,3 +84,6 @@ create policy "team adds project status"    on public.project_status for insert 
 create policy "team updates project status" on public.project_status for update to authenticated using (true);
 create policy "team deletes project status" on public.project_status for delete to authenticated using (true);
 alter publication supabase_realtime add table public.project_status;
+
+-- 9. Teams (simple): designers and DMs pick their team at sign-in; each slide records the sender's team
+alter table public.slide_shots add column if not exists team text;

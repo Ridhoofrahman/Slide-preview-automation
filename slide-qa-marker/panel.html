@@ -164,6 +164,13 @@
   .field-error:empty { display: none; }
   .login .msg { margin: 0; }
   @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } .sent-overlay { animation: none; } }
+
+  /* Team dropdown */
+  .field select { width: 100%; height: 40px; padding: 8px 32px 8px 8px; border: 1px solid var(--input); border-radius: 8px; font-family: var(--font); font-size: 14px; line-height: 20px; color: var(--body);
+    background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' fill='none' stroke='%233F4652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center / 18px; appearance: none; cursor: pointer; }
+  .field select:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); outline: none; }
+  .field select[aria-invalid="true"] { border-color: #C0352B; }
+  .field select:invalid, .field select option[value=""] { color: var(--secondary); }
 </style>
 </head>
 <body>
@@ -189,6 +196,7 @@
       <form class="login-form" id="loginForm" novalidate>
         <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="field-error" id="emailError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="field-error" id="passwordError" aria-live="polite"></span></label>
+        <label class="field"><span class="field-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="field-error" id="teamInputError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
         <button id="signInBtn" class="primary" type="submit">Sign in</button>
         <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
@@ -256,7 +264,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.7";
+const APP_VERSION = "2.8";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -608,7 +616,7 @@ async function markReady() {
     if (up.error) throw up.error;
     const ins = await S.sb.from("slide_shots").insert({
       file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.n, total_slides: S.slides.length,
-      version: version, designer: displayName(S.user), note: (!$("noteField").hidden && $("note").value.trim()) || null, image_path: path, details: details
+      version: version, designer: displayName(S.user), team: (S.user.user_metadata || {}).team || null, note: (!$("noteField").hidden && $("note").value.trim()) || null, image_path: path, details: details
     }).select().single();
     if (ins.error) throw ins.error;
     S.latest[cur.id] = ins.data;
@@ -630,7 +638,7 @@ function setFieldError(id, msg) {
 }
 async function signIn() {
   const email = $("email").value.trim(), password = $("password").value, name = $("nameInput").value.trim();
-  setFieldError("email", ""); setFieldError("password", ""); say($("loginMsg"), "");
+  setFieldError("email", ""); setFieldError("password", ""); setFieldError("teamInput", ""); say($("loginMsg"), "");
   let ok = true;
   if (!email) { setFieldError("email", "Enter your email"); ok = false; }
   else if (!/^\S+@\S+\.\S+$/.test(email)) { setFieldError("email", "Enter a valid email"); ok = false; }
@@ -645,7 +653,14 @@ async function signIn() {
     return;
   }
   let user = data.user;
-  if (name) { const upd = await S.sb.auth.updateUser({ data: { name: name } }); if (!upd.error) user = upd.data.user; }
+  // Team: chosen here the first time (or to switch), then remembered on the account
+  const meta = user.user_metadata || {}, chosen = $("teamInput").value;
+  if (!chosen && !meta.team) { await S.sb.auth.signOut(); setFieldError("teamInput", "Choose your team. It's only needed the first time."); return; }
+  const changes = {}; if (name) changes.name = name; if (chosen && chosen !== meta.team) changes.team = chosen;
+  if (Object.keys(changes).length) {
+    const upd = await S.sb.auth.updateUser({ data: changes });
+    user = !upd.error && upd.data && upd.data.user ? upd.data.user : Object.assign({}, user, { user_metadata: Object.assign({}, meta, changes) });
+  }
   say($("loginMsg"), "");
   enterApp(user);
 }
@@ -691,7 +706,7 @@ Office.onReady(async (info) => {
   }
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
-  ["email", "password"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
+  ["email", "password", "teamInput"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("markBtn").onclick = markReady;
   $("addNoteBtn").onclick = () => { S.noteOpen = true; render(); $("note").focus(); };
   $("note").addEventListener("input", () => { if (S.currentId) S.notes[S.currentId] = $("note").value; });
@@ -728,7 +743,8 @@ Office.onReady(async (info) => {
   });
 
   const { data } = await S.sb.auth.getSession();
-  if (data.session) enterApp(data.session.user); else showLogin();
+  if (data.session && (data.session.user.user_metadata || {}).team) enterApp(data.session.user);
+  else { if (data.session) { await S.sb.auth.signOut(); } showLogin(); if (data.session) say($("loginMsg"), "Sign in again and choose your team."); }
 });
 </script>
 </body>
