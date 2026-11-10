@@ -693,6 +693,22 @@
   @keyframes rv-write { 0% { transform: scaleX(0); opacity: 0; } 25% { transform: scaleX(1); opacity: 1; } 75% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
   @keyframes rv-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
   @media (prefers-reduced-motion: reduce) { .rv-emptycard, .rv-emptycard i { animation: none; } }
+
+  /* Empty order: centred in the space under the strip */
+  .review.empty .rv-scrollarea { flex: 1; min-height: 0; }
+  .review.empty .rv-empty { flex: 1; min-height: 0; padding: 0; gap: 0; }
+  .review.empty .rv-empty p { margin-top: 28px; }
+  /* Slide being put together (from "Slide review – empty state animation") */
+  .rv-emptyslide { --lavender: #E6E3FB; --blue: #DAE8F8; --mint: #D3F1E6; --peach: #FAE1D7; --pink: #F9E0E9; --butter: #FCE8C3;
+    position: relative; width: 176px; height: 100px; border-radius: 8px; background: #F7F7F9; border: 1px dashed #E4E4E9; flex: none; }
+  .rv-emptyslide .s { position: absolute; opacity: 0; animation: rv-build 5s cubic-bezier(.34, 1.45, .64, 1) infinite; }
+  @keyframes rv-build {
+    0%, 6% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(.5); }
+    16% { opacity: 1; }
+    34%, 78% { opacity: 1; transform: none; }
+    92%, 100% { opacity: 0; transform: translate(calc(var(--x) * -.6), calc(var(--y) * -.6)) rotate(calc(var(--r) * -1)) scale(.6); }
+  }
+  @media (prefers-reduced-motion: reduce) { .rv-emptyslide .s { animation: none; opacity: 1; } }
 </style>
 </head>
 <body>
@@ -787,7 +803,7 @@
           <div id="olderBanner" class="rv-banner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-bannerbtn">View latest</button></div>
           <div id="decidedBanner" class="rv-banner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-bannerbtn">Cancel</button></div>
           <div class="rv-empty" id="rvEmpty" hidden>
-            <div class="rv-emptycard" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="rv-emptyslide" aria-hidden="true"><div class="s" style="left:14px;top:14px;width:70px;height:10px;border-radius:5px;background:var(--lavender);--x:-60px;--y:-40px;--r:-25deg;animation-delay:0s"></div><div class="s" style="left:14px;top:32px;width:56px;height:6px;border-radius:3px;background:var(--blue);--x:-70px;--y:20px;--r:20deg;animation-delay:.12s"></div><div class="s" style="left:14px;top:44px;width:64px;height:6px;border-radius:3px;background:var(--blue);--x:-50px;--y:55px;--r:-15deg;animation-delay:.22s"></div><div class="s" style="left:14px;top:56px;width:40px;height:6px;border-radius:3px;background:var(--blue);--x:-30px;--y:70px;--r:30deg;animation-delay:.32s"></div><div class="s" style="left:98px;top:14px;width:64px;height:50px;border-radius:6px;background:var(--mint);--x:70px;--y:-45px;--r:18deg;animation-delay:.08s"></div><div class="s" style="left:136px;top:24px;width:16px;height:16px;border-radius:50%;background:var(--peach);--x:80px;--y:-10px;--r:0deg;animation-delay:.42s"></div><div class="s" style="left:14px;top:76px;width:22px;height:12px;border-radius:6px;background:var(--pink);--x:-40px;--y:60px;--r:-30deg;animation-delay:.5s"></div><div class="s" style="left:98px;top:72px;width:64px;height:16px;border-radius:4px;background:var(--butter);--x:60px;--y:60px;--r:22deg;animation-delay:.18s"></div></div>
             <p>The designers are busy putting together slides right now…</p>
           </div>
           <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
@@ -942,9 +958,11 @@ function buildIndex() {
   });
   // Teams: keep orders my team works on (tag team = several teams on one order); slides from before teams existed show for everyone
   Object.keys(S.projects).forEach((k) => {
-    const p = S.projects[k], teams = new Set(p.slides.map((x) => x.team).filter(Boolean));
+    const p = S.projects[k], split = (S.assignments || {})[k] || [];
+    const teams = new Set(p.slides.map((x) => x.team).concat(split.map((a) => a.assignee_team)).filter(Boolean));
     p.teams = teams;
-    if (S.myTeam && teams.size && !teams.has(S.myTeam)) delete S.projects[k];
+    const splitMine = split.some((a) => a.created_team === S.myTeam || a.assignee_team === S.myTeam);
+    if (S.myTeam && teams.size && !teams.has(S.myTeam) && !splitMine) delete S.projects[k];
   });
   Object.entries(S.assignments || {}).forEach(([k, rows]) => {
     if (S.projects[k]) return;
@@ -1028,7 +1046,7 @@ function cardMenu(p, anchor) {
   if (st && st.sent_at) item("Undo \u201Csent to customer\u201D", () => setSentToCustomer(p.key, false));
   else item("Mark as sent to customer", () => askSendToCustomer(p.key), { disabled: !prog.allApproved, title: prog.allApproved ? "" : prog.approvedNums + " of " + prog.total + " slides approved" });
   item("Assign slides", () => openAssign(p.key));
-  if (p.slides.length) item("Delete order", () => askDeleteProject(p.key), { danger: true });
+  item("Delete order", () => askDeleteProject(p.key), { danger: true });
   anchor.parentElement.append(m);
   setTimeout(() => document.addEventListener("click", function off(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener("click", off); } }), 0);
 }
@@ -1674,7 +1692,9 @@ function askDeleteProject(key) {
   deleteKey = key; pendingDelete = deleteProject; $("delConfirm").className = "danger"; $("delWarn").hidden = false;
   const versions = S.shots.filter((s) => (s.project || "").trim().toLowerCase() === key).length;
   $("delTitle").textContent = "Delete " + p.name + "?"; $("delConfirm").textContent = "Delete project";
-  $("delBody").textContent = p.slides.length + " slide" + (p.slides.length === 1 ? "" : "s") + " (" + versions + " version" + (versions === 1 ? "" : "s") + ") from " + [...p.designers].join(", ") + ", with all comments and voice notes.";
+  $("delBody").textContent = p.slides.length
+    ? p.slides.length + " slide" + (p.slides.length === 1 ? "" : "s") + " (" + versions + " version" + (versions === 1 ? "" : "s") + ") from " + [...p.designers].join(", ") + ", with all comments, voice notes and the slide distribution."
+    : "The slide distribution for " + [...p.designers].join(", ") + ". No slides were sent yet.";
   say($("delMsg"), ""); $("delConfirm").disabled = false;
   $("deleteDialog").showModal(); $("delCancel").focus();
 }
@@ -1684,11 +1704,14 @@ async function deleteProject() {
   try {
     // All spellings of this project name, including versions older than the board shows
     const names = [...new Set(S.shots.filter((s) => (s.project || "").trim().toLowerCase() === key).map((s) => s.project))];
-    const { data: all, error } = await S.sb.from("slide_shots").select("id,image_path,team").in("project", names);
-    const rows = (all || []).filter((r) => canReview(r));
-    if (error) throw error;
-    await removeShots(rows.map((r) => r.id), rows.map((r) => r.image_path));
+    if (names.length) {
+      const { data: all, error } = await S.sb.from("slide_shots").select("id,image_path,team").in("project", names);
+      if (error) throw error;
+      const rows = (all || []).filter((r) => canReview(r));
+      await removeShots(rows.map((r) => r.id), rows.map((r) => r.image_path));
+    }
     await S.sb.from("project_status").delete().eq("key", key);
+    await S.sb.from("slide_assignments").delete().eq("order_key", key);
     $("deleteDialog").close(); deleteKey = null;
     if (S.project === key) S.project = null;
     await loadAll(); renderBoard();
@@ -1791,7 +1814,18 @@ function hideLogin() {
   $("loginView").hidden = true;
   if (S.heroes) { S.heroes.forEach((h) => h.destroy()); S.heroes = null; }
 }
+// Only design managers use this page (designers work in the PowerPoint add-in)
+async function isDesignManager(user) {
+  const { data, error } = await S.sb.from("design_managers").select("user_id").eq("user_id", user.id).maybeSingle();
+  if (error) return true;   // table not set up yet: don't lock anyone out
+  return !!data;
+}
 async function enter(user) {
+  if (!(await isDesignManager(user))) {
+    await S.sb.auth.signOut(); showLogin();
+    $("loginMsg").textContent = "This page is for design managers. Designers send slides from the Slideshot add-in in PowerPoint.";
+    return;
+  }
   S.user = user;
   S.myTeam = (user.user_metadata || {}).team || null;
   try { S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: S.myTeam, updated_at: new Date().toISOString() }, { onConflict: "user_id" }).then(() => {}, () => {}); } catch (e) {}
