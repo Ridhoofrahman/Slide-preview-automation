@@ -709,6 +709,8 @@
     92%, 100% { opacity: 0; transform: translate(calc(var(--x) * -.6), calc(var(--y) * -.6)) rotate(calc(var(--r) * -1)) scale(.6); }
   }
   @media (prefers-reduced-motion: reduce) { .rv-emptyslide .s { animation: none; opacity: 1; } }
+
+  .bd-state .bd-start { margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -1096,6 +1098,8 @@ async function renderBoard() {
   $("boardView").classList.toggle("solo", !projects.length);
   if (!projects.length) {
     const e = el("div", "bd-state"); e.append(stackIllo(true), el("strong", "", "No slides yet"), el("p", "", "Ready-to-review slides will appear here"));
+    // Figma: Board / No projects yet — start by distributing a project
+    const go = el("button", "rv-primary bd-start", "Distribute project"); go.type = "button"; go.onclick = () => openAssign(null); e.append(go);
     c.append(e); renderActivity(); return;
   }
   const waiting = projects.reduce((n, p) => n + p.waiting, 0), orders = projects.filter((p) => p.waiting > 0).length;
