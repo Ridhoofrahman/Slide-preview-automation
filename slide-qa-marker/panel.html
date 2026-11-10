@@ -192,6 +192,15 @@
   .assign-tag.mine { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; color: #006B4B; }
   .assign-tag.mine svg { width: 16px; height: 16px; flex: none; }
   #reviewLinkWrap { display: none; }
+
+  /* Same order number used by another deck (Banner / Warning) */
+  .not-mine.warn { background: #FDF5E6; border-color: #F4CC7F; }
+  .not-mine.warn strong { color: #8D5D00; }
+  .not-mine.warn p { color: #6B4A00; }
+
+  /* Order ID already used by another deck (Figma: Error message) */
+  .id-error { margin: 4px 0 0; padding: 8px 10px; border-radius: 8px; background: #FAE9EB; color: #CA2135; font-size: 14px; line-height: 20px; font-weight: 400; }
+  .id-error strong { font-weight: 500; }
 </style>
 </head>
 <body>
@@ -231,6 +240,7 @@
       <header class="head">
         <input id="projectName" class="project" aria-label="Project name" spellcheck="false">
         <span id="reviewLinkWrap"></span>
+        <p class="id-error" id="idError" role="alert" hidden><strong>Order ID has already been used.</strong> Another deck is using this ID. Please verify and try a different one.</p>
       </header>
 
       <div id="unsupported" class="notice" hidden>This PowerPoint version can't capture slide images. Update Microsoft 365 to send slides for review.</div>
@@ -252,7 +262,7 @@
             </div>
           </div>
           <p class="sent-note" id="sentNote" hidden></p>
-          <div class="not-mine" id="notMine" hidden role="status"><strong>Not your slide</strong><p id="notMineText"></p></div>
+          <div class="not-mine warn" id="notMine" hidden role="status"><strong id="notMineTitle"></strong><p id="notMineText"></p></div>
           <button class="add-note" id="addNoteBtn" aria-expanded="false" aria-controls="noteField"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Add note for DM</button>
           <p class="undo-note" id="undoNote" hidden role="status">Note removed. <button type="button" id="undoNoteBtn">Undo (<span id="undoCount">5</span>)</button></p>
           <div class="field" id="noteField" hidden>
@@ -288,7 +298,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.12";
+const APP_VERSION = "2.13";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -388,6 +398,10 @@ async function loadAssignments() {
   const id = orderKey(), keys = [...new Set([id, "order #" + id, (projectName() || "").trim().toLowerCase()])];
   const { data, error } = await S.sb.from("slide_assignments").select("*").in("order_key", keys);
   if (error) { S.assignLoaded = false; return; }
+  // Slides already sent under this order number, to spot a different deck using the same number
+  const names = [...new Set([projectName(), "Order #" + id, id])];
+  const sent = await S.sb.from("slide_shots").select("file_key,slide_id").in("project", names).limit(1000);
+  S.orderShots = sent.error ? [] : sent.data;
   S.assignLoaded = true;
   S.assign = {}; S.mySlides = [];
   data.forEach((a) => (a.slides || []).forEach((n) => {
@@ -554,7 +568,16 @@ function render() {
   // Once the DM has distributed the order, only your own slides can be sent
   const split = !!S.assignLoaded;
   const blocked = !!cur && split && !(as && as.assignee_id === S.user.id) && (v.mode === "notsent" || v.mode === "update" || (locked && shot.status !== "approved"));
+  // Different deck, same order number: copies of one deck keep PowerPoint's slide ids, a separate deck doesn't
+  const myBase = baseFileKey(), myIds = new Set(S.slides.map((x) => x.id));
+  const others = (S.orderShots || []).filter((r) => (r.file_key || "").split(":")[0] !== myBase);
+  const clash = !!cur && others.length > 0 && !others.some((r) => myIds.has(r.slide_id));
   $("notMine").hidden = true;
+  $("idError").hidden = !clash;   // Figma: Add in — "Order ID has already been used"
+  if (clash) {
+    btn.hidden = true; upd.hidden = true; cancel.hidden = true;
+    $("addNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
+  }
   if (blocked) {
     btn.hidden = true; upd.hidden = true; cancel.hidden = true;
     $("addNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;

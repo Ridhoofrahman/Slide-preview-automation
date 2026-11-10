@@ -1404,7 +1404,7 @@ function renderFilter(all) {
     box.append(b);
   };
   const p = S.projects[S.project];
-  if (rows.length && p && p.teams && p.teams.size > 1) {   // designer chips only for tag-team orders
+  if (rows.length >= 2) {   // designer chips once two or more people work on the order
     chip("all", "All slides");
     rows.forEach((a) => {
       const sent = a.slides.filter((n) => all.some((x) => x.slide_number === n)).length;
