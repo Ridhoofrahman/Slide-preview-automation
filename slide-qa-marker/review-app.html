@@ -592,6 +592,13 @@
   @keyframes ld-peach-r { 0% { rotate: 14deg; } 50.914% { animation-timing-function: ease-in-out; rotate: 14deg; } 62.425% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); rotate: -4deg; } 79.692% { rotate: 0deg; } 100% { rotate: 0deg; } }
   @keyframes ld-peach-t { 0% { translate: 95px 0px; } 50.914% { animation-timing-function: ease-in-out; translate: 95px 0px; } 62.425% { animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); translate: 38px -10px; } 79.692% { translate: 0px 0px; } 100% { translate: 0px 0px; } }
   @media (prefers-reduced-motion: reduce) { .ld .s { animation: none !important; } }
+
+  /* Name step + editable name in the board header */
+  .s-lead { margin: -8px 0 0; font-size: 14px; line-height: 20px; color: #6B7280; }
+  .s-cancel { height: 32px; border: 0; background: none; font: 500 14px/20px inherit; font-family: inherit; color: #3F4652; cursor: pointer; border-radius: 8px; margin-top: -8px; }
+  .s-cancel:hover { background: #F6F7F9; }
+  .bd-user .bd-me { border: 0; background: none; padding: 6px 8px; border-radius: 6px; font: 14px/20px inherit; font-family: inherit; color: #5A6575; cursor: pointer; }
+  .bd-user .bd-me:hover { background: #F6F7F9; color: #1F2430; }
 </style>
 </head>
 <body>
@@ -614,13 +621,22 @@
         <g><path d="M21 31 H79 Q85 31 84.1 37 L78.8 72.5 Q78 78 72.5 78 H27.5 Q22 78 21.2 72.5 L15.9 37 Q15 31 21 31 Z" fill="url(#ss-c1)"/>
           <polyline fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" points="40,54 47,61 61,46"/></g>
       </svg>
-        <h1>Sign in to Slideshot</h1>
+        <h1 id="signinTitle">Sign in to Slideshot</h1>
       </div>
       <form class="signin-form" id="loginForm" novalidate>
         <label class="s-field"><span class="s-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="s-error" id="emailError" aria-live="polite"></span></label>
         <label class="s-field"><span class="s-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="s-error" id="passwordError" aria-live="polite"></span></label>
+        <label class="s-field"><span class="s-label">Your name, as designers will see it</span><input id="nameInput" autocomplete="name" maxlength="60" placeholder="Only needed the first time" aria-describedby="nameInputError"><span class="s-error" id="nameInputError" aria-live="polite"></span></label>
         <button id="signInBtn" class="s-button" type="submit"><span class="s-btn-label">Sign in</span><span class="s-spinner" aria-hidden="true"></span></button>
         <p id="loginMsg" class="s-msg" role="status" aria-live="polite"></p>
+      </form>
+      <!-- One-time step: DMs without a display name pick one (also used to change it later) -->
+      <form class="signin-form" id="nameForm" novalidate hidden>
+        <p class="s-lead">Designers will see this name on your approvals, comments and voice notes.</p>
+        <label class="s-field"><span class="s-label">Your name</span><input id="dmName" autocomplete="name" maxlength="60" placeholder="e.g. Ridho Fadhlurrahman" aria-describedby="dmNameError"><span class="s-error" id="dmNameError" aria-live="polite"></span></label>
+        <button id="nameBtn" class="s-button" type="submit"><span class="s-btn-label">Continue</span><span class="s-spinner" aria-hidden="true"></span></button>
+        <button id="nameCancel" class="s-cancel" type="button" hidden>Cancel</button>
+        <p id="nameMsg" class="s-msg" role="status" aria-live="polite"></p>
       </form>
     </div>
   </section>
@@ -639,7 +655,7 @@
         <g><path d="M21 31 H79 Q85 31 84.1 37 L78.8 72.5 Q78 78 72.5 78 H27.5 Q22 78 21.2 72.5 L15.9 37 Q15 31 21 31 Z" fill="url(#bd-c1)"/>
           <polyline fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" points="40,54 47,61 61,46"/></g>
       </svg><span>Slideshot</span></div>
-      <div class="bd-user"><span id="me"></span><span class="bd-dot" aria-hidden="true"></span><button id="signOutBtn" class="bd-signout">Sign out</button></div>
+      <div class="bd-user"><button id="me" class="bd-me" title="Change your name"></button><span class="bd-dot" aria-hidden="true"></span><button id="signOutBtn" class="bd-signout">Sign out</button></div>
     </header>
     <div class="bd-body">
       <main class="bd-main" id="content"></main>
@@ -1407,8 +1423,8 @@ function setFieldError(id, msg) {
   $(id).setAttribute("aria-invalid", msg ? "true" : "false");
 }
 async function signIn() {
-  const email = $("email").value.trim(), password = $("password").value;
-  setFieldError("email", ""); setFieldError("password", ""); $("loginMsg").textContent = "";
+  const email = $("email").value.trim(), password = $("password").value, name = $("nameInput").value.replace(/\s+/g, " ").trim();
+  setFieldError("email", ""); setFieldError("password", ""); setFieldError("nameInput", ""); $("loginMsg").textContent = "";
   let ok = true;
   if (!email) { setFieldError("email", "Enter your email"); ok = false; }
   else if (!/^\S+@\S+\.\S+$/.test(email)) { setFieldError("email", "Please enter a valid email address"); ok = false; }
@@ -1422,11 +1438,20 @@ async function signIn() {
     else $("loginMsg").textContent = "Couldn't sign in: " + error.message;
     return;
   }
-  enter(data.user);
+  let user = data.user;
+  // Same as the designer panel: the name is only needed the first time
+  if (needsName(user)) {
+    if (!name) { await S.sb.auth.signOut(); setFieldError("nameInput", "Enter your name. It's only needed the first time you sign in."); $("nameInput").focus(); return; }
+    const upd = await S.sb.auth.updateUser({ data: { name: name } });
+    if (!upd.error && upd.data && upd.data.user) user = upd.data.user;
+    else user = Object.assign({}, user, { user_metadata: Object.assign({}, user.user_metadata, { name: name }) });
+  }
+  enter(user);
 }
 // Flying-slides heroes run only while the sign-in screen is visible
 function showLogin() {
   $("loginView").hidden = false;
+  if (!S.pendingUser) resetSigninCard();
   buildLoginBand();
   if (window.SlideshotHero && !S.heroes) {
     S.heroes = [SlideshotHero.mount($("loginHero"), { theme: "pastel", height: 146, bg: "#FFFFFF" })];
@@ -1447,6 +1472,36 @@ function buildLoginBand() {
     d.querySelectorAll("i").forEach((i) => { i.style.background = rgba(line, (0.75 * op).toFixed(2)); });
     band.append(d);
   });
+}
+// ---- DM display name
+const needsName = (u) => !(u && u.user_metadata && String(u.user_metadata.name || "").trim());
+function resetSigninCard() {
+  $("loginForm").hidden = false; $("nameForm").hidden = true; $("signinTitle").textContent = "Sign in to Slideshot";
+}
+function showNameStep(user, editing) {
+  S.pendingUser = user;
+  showLogin();
+  $("loginForm").hidden = true; $("nameForm").hidden = false;
+  $("signinTitle").textContent = editing ? "Change your name" : "What's your name?";
+  $("nameCancel").hidden = !editing;
+  $("nameBtn").querySelector(".s-btn-label").textContent = editing ? "Save" : "Continue";
+  $("dmName").value = editing ? (user.user_metadata && user.user_metadata.name) || "" : "";
+  $("dmNameError").textContent = ""; $("dmName").setAttribute("aria-invalid", "false"); $("nameMsg").textContent = "";
+  setTimeout(() => $("dmName").focus(), 50);
+}
+async function saveName() {
+  const name = $("dmName").value.replace(/\s+/g, " ").trim();
+  const err = (m) => { $("dmNameError").textContent = m || ""; $("dmName").setAttribute("aria-invalid", m ? "true" : "false"); };
+  err(""); $("nameMsg").textContent = "";
+  if (name.length < 2) { err("Enter your name"); return; }
+  const btn = $("nameBtn"); btn.disabled = true; btn.classList.add("loading");
+  const { data, error } = await S.sb.auth.updateUser({ data: { name: name } });
+  btn.disabled = false; btn.classList.remove("loading");
+  if (error) { $("nameMsg").textContent = "Couldn't save your name: " + error.message; return; }
+  const u = (data && data.user) || Object.assign({}, S.pendingUser, { user_metadata: Object.assign({}, (S.pendingUser || {}).user_metadata, { name: name }) });
+  const wasIn = !!S.user; S.pendingUser = null; resetSigninCard();
+  if (wasIn) { S.user = u; hideLogin(); renderBoard(); if (!$("reviewView").hidden) renderReview(); }
+  else enter(u);
 }
 function hideLogin() {
   $("loginView").hidden = true;
@@ -1472,7 +1527,11 @@ async function enter(user) {
   S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
-  ["email", "password"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
+  $("nameForm").addEventListener("submit", (e) => { e.preventDefault(); saveName(); });
+  $("dmName").addEventListener("input", () => { $("dmNameError").textContent = ""; $("dmName").setAttribute("aria-invalid", "false"); });
+  $("nameCancel").onclick = () => { S.pendingUser = null; resetSigninCard(); hideLogin(); };
+  $("me").addEventListener("click", () => { if (S.user) showNameStep(S.user, true); });
+  ["email", "password", "nameInput"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); location.reload(); };
   $("backBtn").onclick = closeReview;
   $("versionSelect").onchange = (e) => { S.shotId = e.target.value; S.draft = null; renderReview(); };
@@ -1524,7 +1583,7 @@ async function enter(user) {
   });
 
   const { data } = await S.sb.auth.getSession();
-  if (data.session) enter(data.session.user); else showLogin();
+  if (data.session) { if (needsName(data.session.user)) showNameStep(data.session.user); else enter(data.session.user); } else showLogin();
 })();
 </script>
 </body>
