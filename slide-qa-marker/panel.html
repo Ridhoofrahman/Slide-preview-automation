@@ -171,6 +171,11 @@
   .field select:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); outline: none; }
   .field select[aria-invalid="true"] { border-color: #C0352B; }
   .field select:invalid, .field select option[value=""] { color: var(--secondary); }
+
+  /* Assignment tag (who the DM gave this slide to) */
+  .assign-tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; border: 1px solid #E3E6EB; background: #EEF0F3; color: #3F4652; font-size: 12px; line-height: 16px; }
+  .assign-tag.mine { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; font-weight: 500; }
+  .my-slides { margin: 0; padding: 8px 20px; font-size: 12px; line-height: 16px; color: #00308D; font-weight: 500; }
 </style>
 </head>
 <body>
@@ -221,6 +226,7 @@
               <span class="meta-label" id="metaLabel">No slide selected</span>
               <span class="tag none" id="curStatus" hidden>Not sent</span>
             </div>
+            <span class="assign-tag" id="assignTag" hidden></span>
             <div class="thumb">
               <div id="thumb" class="thumb-inner"><span>Select a slide</span></div>
               <div id="tpins" class="tpins" aria-hidden="true"></div>
@@ -253,6 +259,7 @@
     </div>
 
     <div class="dock" id="dock">
+      <p class="my-slides" id="mySlides" hidden></p>
       <section class="summary" id="summary" hidden aria-label="Order progress">
         <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="summaryGrid"><span id="summaryText"></span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="summary-grid" id="summaryGrid" hidden></div>
@@ -264,7 +271,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.8";
+const APP_VERSION = "2.9";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -356,6 +363,28 @@ async function selectSlide(id) {
 }
 
 /* ---------- Supabase ---------- */
+// ---- assignments: which slides the DM gave to whom (by slide number)
+const orderKey = () => (projectName() || "").trim().toLowerCase();
+async function loadAssignments() {
+  const { data, error } = await S.sb.from("slide_assignments").select("*").eq("order_key", orderKey());
+  if (error) return;
+  S.assign = {}; S.mySlides = [];
+  data.forEach((a) => (a.slides || []).forEach((n) => {
+    S.assign[n] = a;
+    if (a.assignee_id === S.user.id) S.mySlides.push(n);
+  }));
+  S.mySlides.sort((a, b) => a - b);
+}
+// 1,2,3,4,5,8 → "1–5, 8"
+function rangesText(nums) {
+  const out = []; let i = 0;
+  while (i < nums.length) { let j = i; while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++; out.push(i === j ? String(nums[i]) : nums[i] + "\u2013" + nums[j]); i = j + 1; }
+  return out.join(", ");
+}
+async function saveProfile(user) {
+  const m = user.user_metadata || {};
+  try { await S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: m.team || null, updated_at: new Date().toISOString() }, { onConflict: "user_id" }); } catch (e) {}
+}
 async function loadReviews() {
   // Mine = sent by this account from this file (including slides sent before per-designer keys existed)
   const { data, error } = await S.sb.from("slide_shots").select("*").eq("designer_id", S.user.id).in("file_key", [fileKey(), baseFileKey()]).order("version", { ascending: false });
@@ -383,9 +412,10 @@ function refreshReviewsSoon() {
 }
 function subscribe() {
   if (S.channel) S.sb.removeChannel(S.channel);
-  const reload = debounce(async () => { try { await loadReviews(); render(); } catch (e) {} }, 400);
+  const reload = debounce(async () => { try { await loadReviews(); await loadAssignments(); render(); } catch (e) {} }, 400);
   S.channel = S.sb.channel("deck-" + fileKey())
     .on("postgres_changes", { event: "*", schema: "public", table: "slide_shots", filter: "file_key=eq." + fileKey() }, reload)
+    .on("postgres_changes", { event: "*", schema: "public", table: "slide_assignments" }, reload)
     .on("postgres_changes", { event: "*", schema: "public", table: "shot_comments" }, (p) => {
       const id = (p.new && p.new.shot_id) || (p.old && p.old.shot_id);
       if (Object.values(S.latest).some((r) => r.id === id)) reload();
@@ -437,6 +467,18 @@ function render() {
   else if (v.mode === "locked") meta = "Designer: " + shot.designer + ", v" + shot.version;
   $("metaLabel").textContent = meta;
   const tag = $("curStatus"); tag.className = "tag " + (status || "none"); tag.textContent = status ? STATUS_LABEL[status] : "Not sent"; tag.hidden = !cur;
+
+  // Assignment from the DM for this slide
+  const as = cur && S.assign ? S.assign[cur.n] : null;
+  const at = $("assignTag"); at.hidden = !as;
+  if (as) {
+    const mine = as.assignee_id === S.user.id;
+    at.className = "assign-tag" + (mine ? " mine" : "");
+    at.textContent = mine ? "Assigned to you" : "Assigned to " + as.assignee_name + (as.assignee_team ? "-" + as.assignee_team : "");
+  }
+  const ms = S.mySlides || [];
+  $("mySlides").hidden = !ms.length;
+  if (ms.length) $("mySlides").textContent = "Your slides: " + rangesText(ms);
 
   // Preview source changes (live slide vs sent snapshot) re-render the image
   const thumbKey = (cur ? cur.id : "") + "|" + v.mode + "|" + (shot ? shot.image_path : v.team ? v.team.image_path : "");
@@ -675,6 +717,8 @@ async function enterApp(user) {
   }
   await refreshDeck();
   try { await loadReviews(); } catch (e) { say($("msg"), "Couldn't load review status: " + e.message, "err"); }
+  saveProfile(user);
+  try { await loadAssignments(); } catch (e) {}
   render();
   subscribe();
   setInterval(() => { if (!document.hidden) refreshReviewsSoon(); }, 20000);
@@ -740,6 +784,7 @@ Office.onReady(async (info) => {
     const v = e.target.value.trim();
     docStore.set("slideqa.project", v && v !== fileTitle() ? v : "");
     render();
+    loadAssignments().then(render).catch(() => {});
   });
 
   const { data } = await S.sb.auth.getSession();

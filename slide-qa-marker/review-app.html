@@ -625,6 +625,74 @@
   .review .rv-details .rows { display: grid; grid-template-columns: max-content max-content minmax(0, 1fr); column-gap: 24px; row-gap: 4px; }
   .review .rv-details .row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; gap: 0 24px; }
   .review .rv-details .row > span:nth-child(1), .review .rv-details .row > span:nth-child(2) { white-space: nowrap; }
+
+  /* Assign slides */
+  .bd-headtools { display: flex; align-items: center; gap: 12px; flex: none; }
+  .bd-assignbtn { height: 40px; padding: 0 14px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #1F2430; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .bd-assignbtn:hover { background: #F6F7F9; }
+  .bd-thumbs .front.ph { left: 0; }
+  .as-dialog { width: min(520px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 12px; box-shadow: 0 12px 40px rgba(18,18,23,.22); font-family: "Geist", "Segoe UI", system-ui, sans-serif; color: #1F2430; }
+  .as-dialog::backdrop { background: rgba(24,32,43,.35); }
+  .as-dialog form { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+  .as-dialog h2 { margin: 0; font-size: 18px; line-height: 28px; font-weight: 600; }
+  .as-sub { margin: -8px 0 4px; font-size: 14px; line-height: 20px; color: #6B7280; }
+  .as-dialog .s-field input { height: 40px; padding: 8px; border: 1px solid #CDD2DA; border-radius: 8px; font: 14px/20px inherit; font-family: inherit; color: #3F4652; }
+  .as-dialog .s-field input[readonly] { background: #F6F7F9; color: #6B7280; }
+  .as-head { display: grid; grid-template-columns: minmax(0, 1fr) 140px 32px; gap: 8px; margin-top: 4px; font-size: 14px; line-height: 20px; color: #1F2430; }
+  .as-rows { display: flex; flex-direction: column; gap: 8px; }
+  .as-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px 32px; gap: 8px; align-items: center; }
+  .as-row select, .as-row input { height: 40px; padding: 8px; border: 1px solid #CDD2DA; border-radius: 8px; background: #FFFFFF; font: 14px/20px inherit; font-family: inherit; color: #3F4652; min-width: 0; }
+  .as-row select { padding-right: 28px; appearance: none; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' fill='none' stroke='%233F4652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center / 18px; }
+  .as-row.bad select, .as-row.bad input { border-color: #D44D5D; background-color: #FAE9EB; }
+  .as-remove { width: 32px; height: 32px; border: 0; border-radius: 6px; background: none; color: #6B7280; cursor: pointer; display: grid; place-items: center; }
+  .as-remove:hover { background: #F6F7F9; color: #1F2430; }
+  .as-remove svg { width: 16px; height: 16px; }
+  .as-add { align-self: flex-start; border: 0; background: none; padding: 4px 0; font: 500 14px/20px inherit; font-family: inherit; color: #00308D; cursor: pointer; }
+  .as-err { margin: 0; font-size: 14px; line-height: 20px; color: #CA2135; }
+  .as-err:empty { display: none; }
+  .as-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .as-cancel { height: 32px; padding: 6px 12px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; color: #1F2430; cursor: pointer; }
+  .rv-assigned { margin: 0; align-self: flex-start; padding: 2px 8px; border-radius: 999px; border: 1px solid #E3E6EB; background: #EEF0F3; color: #3F4652; font-size: 12px; line-height: 16px; }
+
+  /* Designer filter above the slide strip */
+  .rv-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .rv-filter:empty { display: none; }
+  .rv-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid #E3E6EB; border-radius: 999px; background: #FFFFFF; color: #3F4652; font: 500 12px/16px inherit; font-family: inherit; cursor: pointer; }
+  .rv-chip:hover { background: #F6F7F9; }
+  .rv-chip[aria-pressed="true"] { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; }
+  .rv-chipmeta { font-weight: 400; color: #6B7280; }
+  .rv-chip[aria-pressed="true"] .rv-chipmeta { color: #3359A4; }
+  .rv-editsplit { margin-left: auto; border: 0; background: none; padding: 4px 0; font: 500 12px/16px inherit; font-family: inherit; color: #00308D; cursor: pointer; }
+  .rv-editsplit:hover { text-decoration: underline; }
+  .review .rv-thumb.pending { cursor: default; }
+  .review .rv-thumb.pending:hover { background: none; }
+  .review .rv-thumb.pending .ph { display: grid; place-items: center; width: 104px; aspect-ratio: 16 / 9; border-radius: 4px; border: 1px dashed #CDD2DA; background: #FFFFFF; font-size: 11px; line-height: 14px; color: #8B93A1; }
+
+  /* Header: Adjust distribution (Figma: Button / Secondary / s) */
+  .rv-secondary { display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #3F4652; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .rv-secondary svg { width: 16px; height: 16px; flex: none; }
+  .rv-secondary span { padding: 0 4px; }
+  .rv-secondary:hover { background: #EEF0F3; }
+  /* "Not sent yet" placeholder (Figma: Slide / States=Empty) */
+  .review .rv-thumb.pending .ph { background: #EEF0F3; border: 1px dashed #CDD2DA; color: #8B93A1; font-size: 12px; line-height: 16px; }
+  /* Empty order: no right panel, a waiting message with a small animation */
+  .review.empty .rv-main { grid-template-columns: minmax(0, 1fr); }
+  .review.empty .rv-panel, .review.empty #figure, .review.empty #rvDetails { display: none; }
+  .rv-empty { flex: 1; min-height: 360px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding-bottom: 80px; }
+  .rv-empty p { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #3F4652; text-align: center; }
+  .rv-emptycard { position: relative; width: 119px; height: 67px; border-radius: 6px; background: #E7E7E7; }
+  .rv-emptycard i { position: absolute; left: 11.3px; display: block; background: rgba(183,183,183,.78); border-radius: 1.5px; transform-origin: left center; }
+  .rv-emptycard i:nth-child(1) { top: 12.4px; width: 50px; height: 6.7px; border-radius: 2.1px; }
+  .rv-emptycard i:nth-child(2) { top: 24.7px; width: 74.4px; height: 4.7px; }
+  .rv-emptycard i:nth-child(3) { top: 35px; width: 42.8px; height: 4.7px; }
+  /* Lines are "written" one after another, held, then cleared — like a slide being put together */
+  .rv-emptycard i { animation: rv-write 2.4s ease-in-out infinite; }
+  .rv-emptycard i:nth-child(2) { animation-delay: .25s; }
+  .rv-emptycard i:nth-child(3) { animation-delay: .5s; }
+  .rv-emptycard { animation: rv-float 2.4s ease-in-out infinite; }
+  @keyframes rv-write { 0% { transform: scaleX(0); opacity: 0; } 25% { transform: scaleX(1); opacity: 1; } 75% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+  @keyframes rv-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @media (prefers-reduced-motion: reduce) { .rv-emptycard, .rv-emptycard i { animation: none; } }
 </style>
 </head>
 <body>
@@ -696,6 +764,7 @@
       <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6.91793 10.2848C6.73032 10.124 6.73032 9.85595 6.91793 9.69514L12.4925 4.1206C12.6533 3.9598 12.9213 3.9598 13.0821 4.1206C13.2697 4.28141 13.2697 4.54941 13.0821 4.71022L7.82915 9.98995L13.0821 15.2697C13.2697 15.4305 13.2697 15.6985 13.0821 15.8593C12.9213 16.0469 12.6533 16.0469 12.4925 15.8593L6.91793 10.2848Z" fill="currentColor"/></svg></button>
       <div class="rv-titlewrap"><h2 id="rvProject" class="rv-name"></h2><span class="rv-divider" aria-hidden="true"></span><span class="rv-progress" id="rvProgress"></span></div>
       <button id="rvSendCustomer" class="rv-primary" hidden>Send to customer</button>
+      <button id="rvAdjust" class="rv-secondary" type="button"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.59998 12C1.59998 11.775 1.77498 11.6 1.99998 11.6H3.64998C3.82498 10.7 4.62498 10 5.59998 10C6.57498 10 7.37498 10.7 7.54998 11.6H14C14.225 11.6 14.4 11.775 14.4 12C14.4 12.225 14.225 12.4 14 12.4H7.54998C7.37498 13.325 6.57498 14 5.59998 14C4.62498 14 3.82498 13.325 3.64998 12.4H1.99998C1.77498 12.4 1.59998 12.225 1.59998 12ZM6.79998 12C6.79998 11.325 6.27498 10.8 5.59998 10.8C4.92498 10.8 4.39998 11.325 4.39998 12C4.39998 12.675 4.92498 13.2 5.59998 13.2C6.27498 13.2 6.79998 12.675 6.79998 12ZM11.6 8C11.6 7.325 11.075 6.8 10.4 6.8C9.72498 6.8 9.19998 7.325 9.19998 8C9.19998 8.675 9.72498 9.2 10.4 9.2C11.075 9.2 11.6 8.675 11.6 8ZM10.4 6C11.375 6 12.175 6.7 12.35 7.6H14C14.225 7.6 14.4 7.775 14.4 8C14.4 8.225 14.225 8.4 14 8.4H12.35C12.175 9.325 11.375 10 10.4 10C9.42498 10 8.62498 9.325 8.44998 8.4H1.99998C1.77498 8.4 1.59998 8.225 1.59998 8C1.59998 7.775 1.77498 7.6 1.99998 7.6H8.44998C8.62498 6.7 9.42498 6 10.4 6ZM6.39998 2.8C5.72498 2.8 5.19998 3.325 5.19998 4C5.19998 4.675 5.72498 5.2 6.39998 5.2C7.07498 5.2 7.59998 4.675 7.59998 4C7.59998 3.325 7.07498 2.8 6.39998 2.8ZM8.34998 3.6H14C14.225 3.6 14.4 3.775 14.4 4C14.4 4.225 14.225 4.4 14 4.4H8.34998C8.17498 5.325 7.37498 6 6.39998 6C5.42498 6 4.62498 5.325 4.44998 4.4H1.99998C1.77498 4.4 1.59998 4.225 1.59998 4C1.59998 3.775 1.77498 3.6 1.99998 3.6H4.44998C4.62498 2.7 5.42498 2 6.39998 2C7.37498 2 8.17498 2.7 8.34998 3.6Z" fill="currentColor"/></svg><span id="rvAdjustLabel">Adjust distribution</span></button>
       <div class="rv-tools" role="group" aria-label="View">
         <button id="stripToggle" class="rv-toggle" aria-pressed="true" aria-label="Slide list" title="Hide the slide list"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.59998 6.29334H14.4M3.30664 2.88H12.6933C13.6359 2.88 14.4 3.64411 14.4 4.58667V11.4133C14.4 12.3559 13.6359 13.12 12.6933 13.12H3.30664C2.36408 13.12 1.59998 12.3559 1.59998 11.4133V4.58667C1.59998 3.64411 2.36408 2.88 3.30664 2.88Z" stroke="currentColor"/></svg></button>
         <div class="rv-zoom" role="group" aria-label="Zoom">
@@ -709,7 +778,7 @@
     </header>
     <div class="rv-main">
       <div class="rv-work" id="rvWork">
-        <div class="rv-stripwrap" id="rvStripWrap"><div class="rv-strip">
+        <div class="rv-stripwrap" id="rvStripWrap"><div class="rv-filter" id="rvFilter" role="toolbar" aria-label="Show slides for"></div><div class="rv-strip">
           <button class="rv-scroll" id="railPrev" aria-label="Scroll slides left"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <nav class="rv-rail" id="rvRail" aria-label="Slides in this order"></nav>
           <button class="rv-scroll" id="railNext" aria-label="Scroll slides right"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -717,6 +786,10 @@
         <div class="rv-scrollarea" id="rvScroll">
           <div id="olderBanner" class="rv-banner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-bannerbtn">View latest</button></div>
           <div id="decidedBanner" class="rv-banner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-bannerbtn">Cancel</button></div>
+          <div class="rv-empty" id="rvEmpty" hidden>
+            <div class="rv-emptycard" aria-hidden="true"><i></i><i></i><i></i></div>
+            <p>The designers are busy putting together slides right now…</p>
+          </div>
           <figure class="slide" id="figure"><img id="rvImg" alt=""><div id="pins"></div></figure>
           <div id="rvDetails" class="rv-details" aria-label="Slide details"></div>
         </div>
@@ -726,6 +799,7 @@
           <div class="rv-sender">
             <div class="rv-headrow"><div class="rv-headcol"><span id="rvSlideNo"></span><p id="rvBy"></p></div><span id="rvStatus" class="rv-tag"></span></div>
             <p id="rvNote" hidden></p>
+            <p id="rvAssigned" class="rv-assigned" hidden></p>
           </div>
           <div class="rv-actions" id="decisionBtns">
             <button id="approveBtn" class="rv-approve">Approve slide</button>
@@ -756,6 +830,18 @@
     </div>
   </div>
 
+<dialog id="assignDialog" class="as-dialog" aria-labelledby="asTitle">
+  <form id="assignForm" novalidate>
+    <h2 id="asTitle">Assign slides</h2>
+    <p class="as-sub">Split the order between designers. Use slide numbers like 1-5 or 1-3, 7.</p>
+    <label class="s-field"><span class="s-label">Order number</span><input id="asOrder" placeholder="e.g. 351164" autocomplete="off"></label>
+    <div class="as-head" aria-hidden="true"><span>Designer</span><span>Slides</span></div>
+    <div class="as-rows" id="asRows"></div>
+    <button type="button" class="as-add" id="asAdd">+ Add designer</button>
+    <p class="as-err" id="asErr" role="alert"></p>
+    <div class="as-actions"><button type="button" class="as-cancel" id="asCancel">Cancel</button><button type="submit" class="rv-primary" id="asSave">Save</button></div>
+  </form>
+</dialog>
 <dialog id="deleteDialog" class="confirm" aria-labelledby="delTitle">
   <h2 id="delTitle"></h2>
   <p id="delBody"></p>
@@ -799,6 +885,10 @@ async function loadAll() {
   const ps = await S.sb.from("project_status").select("*");
   S.projectStatus = {};
   if (!ps.error) ps.data.forEach((r) => { S.projectStatus[r.key] = r; });
+  const [pr, as] = await Promise.all([S.sb.from("profiles").select("user_id,name,team"), S.sb.from("slide_assignments").select("*")]);
+  S.profiles = pr && !pr.error ? pr.data : [];
+  S.assignments = {};
+  if (as && !as.error) as.data.forEach((a) => { (S.assignments[a.order_key] = S.assignments[a.order_key] || []).push(a); });
   buildIndex();
 }
 // Everything a project needs to be sent: every slide of the deck sent and approved
@@ -855,6 +945,13 @@ function buildIndex() {
     const p = S.projects[k], teams = new Set(p.slides.map((x) => x.team).filter(Boolean));
     p.teams = teams;
     if (S.myTeam && teams.size && !teams.has(S.myTeam)) delete S.projects[k];
+  });
+  Object.entries(S.assignments || {}).forEach(([k, rows]) => {
+    if (S.projects[k]) return;
+    const mine = !S.myTeam || rows.some((a) => a.created_team === S.myTeam || a.assignee_team === S.myTeam);
+    if (!mine) return;
+    S.projects[k] = { key: k, name: rows[0].order_name, slides: [], designers: new Set(rows.map((a) => a.assignee_name)), waiting: 0,
+      lastAt: rows.reduce((m, a) => (a.created_at > m ? a.created_at : m), ""), teams: new Set(rows.map((a) => a.assignee_team).filter(Boolean)), assignOnly: true };
   });
   // Every designer works in a full copy of the deck, so slide numbers match the original: sort by them
   Object.values(S.projects).forEach((p) => p.slides.sort((a, b) => a.slide_number - b.slide_number || a.designer.localeCompare(b.designer)));
@@ -919,6 +1016,7 @@ function ring(p) {
 }
 function openProject(p) {
   S.project = p.key;
+  if (!p.slides.length) { openEmptyOrder(); return; }
   const first = p.slides.find((x) => x.status === "ready") || p.slides.find((x) => x.status === "changes") || p.slides[0];
   if (first) openReview(keyOf(first));
 }
@@ -929,7 +1027,8 @@ function cardMenu(p, anchor) {
   const item = (label, fn, opts = {}) => { const b = el("button", "bd-menuitem" + (opts.danger ? " danger" : ""), label); b.setAttribute("role", "menuitem"); b.disabled = !!opts.disabled; if (opts.title) b.title = opts.title; b.onclick = (e) => { e.stopPropagation(); m.remove(); fn(); }; m.append(b); };
   if (st && st.sent_at) item("Undo \u201Csent to customer\u201D", () => setSentToCustomer(p.key, false));
   else item("Mark as sent to customer", () => askSendToCustomer(p.key), { disabled: !prog.allApproved, title: prog.allApproved ? "" : prog.approvedNums + " of " + prog.total + " slides approved" });
-  item("Delete order", () => askDeleteProject(p.key), { danger: true });
+  item("Assign slides", () => openAssign(p.key));
+  if (p.slides.length) item("Delete order", () => askDeleteProject(p.key), { danger: true });
   anchor.parentElement.append(m);
   setTimeout(() => document.addEventListener("click", function off(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener("click", off); } }), 0);
 }
@@ -938,16 +1037,18 @@ function orderCard(p) {
   const front = p.slides.find((x) => x.status === "ready") || p.slides[0]; const back = p.slides.find((x) => x !== front);
   const th = el("div", "bd-thumbs");
   if (back) { const b = new Image(); b.className = "back"; b.alt = ""; b.dataset.k = keyOf(back); th.append(b); } else th.append(el("span", "back ph"));
-  const f = new Image(); f.className = "front"; f.alt = ""; f.dataset.k = keyOf(front); th.append(f);
+  if (front) { const f = new Image(); f.className = "front"; f.alt = ""; f.dataset.k = keyOf(front); th.append(f); } else th.append(el("span", "front ph"));
   th.append(ring(p)); c.append(th);
   const info = el("div", "bd-info");
   const t = el("h3", "", p.name); t.title = p.name; info.append(t);
   info.append(el("p", "bd-who", [...p.designers].join(", ")));
+  if (p.assignOnly) info.querySelector(".bd-who").textContent = "Assigned: " + [...p.designers].join(", ");
   const when = el("p", "bd-when"); when.innerHTML = CLOCK; when.append(document.createTextNode(ago(p.lastAt)));
   const st = S.projectStatus[p.key];
   if (st && st.sent_at) when.append(el("span", "bd-tag sent", "Sent to customer"));
   else if (projectProgress(p).allApproved) when.append(el("span", "bd-tag ok", "All approved"));
   if (p.teams && p.teams.size > 1) { const t = el("span", "bd-tag tagteam", "Tag team"); t.title = [...p.teams].join(" + "); when.append(t); }
+  if (p.assignOnly) { when.innerHTML = ""; when.append(el("span", "", "No slides sent yet")); }
   info.append(when); c.append(info);
   const more = el("button", "bd-more"); more.setAttribute("aria-label", "More actions for " + p.name); more.textContent = "\u22EF";
   more.onclick = (e) => { e.stopPropagation(); cardMenu(p, more); };
@@ -989,7 +1090,9 @@ async function renderBoard() {
   const sel = document.createElement("select"); sel.setAttribute("aria-label", "Sort orders");
   Object.entries(SORTS).forEach(([k, v]) => { const o = el("option", "", v); o.value = k; if (k === BOARD.sort) o.selected = true; sel.append(o); });
   sel.onchange = () => { BOARD.sort = sel.value; try { localStorage.setItem("qa.sort", sel.value); } catch (e) {} renderBoard(); };
-  sortWrap.append(sel); head.append(hl, sortWrap); c.append(head);
+  sortWrap.append(sel);
+  const right = el("div", "bd-headtools"); const ab = el("button", "bd-assignbtn", "Assign slides"); ab.type = "button"; ab.onclick = () => openAssign(null);
+  right.append(ab, sortWrap); head.append(hl, right); c.append(head);
   const grid = el("div", "bd-grid"); projects.forEach((p) => grid.append(orderCard(p))); c.append(grid);
   c.append(el("p", "bd-retention", "Orders are removed automatically " + RETENTION_DAYS + " days after their last activity."));
   renderActivity();
@@ -1044,15 +1147,91 @@ function renderActivity() {
     group.append(li);
   });
 }
+
+// ---- Assign slides (DM splits an order between designers)
+function assignmentFor(shot) {
+  const rows = (S.assignments || {})[(shot.project || "").trim().toLowerCase()] || [];
+  return rows.find((a) => (a.slides || []).includes(shot.slide_number)) || null;
+}
+// "1-5, 8" → [1,2,3,4,5,8]; null if the text can't be read
+function parseSlides(txt) {
+  const out = new Set(); const parts = String(txt || "").split(/[,;\s]+/).filter(Boolean);
+  if (!parts.length) return null;
+  for (const p of parts) {
+    const m = p.match(/^(\d+)(?:[-\u2013](\d+))?$/); if (!m) return null;
+    const a = +m[1], b = m[2] ? +m[2] : a; if (!a || !b || b < a || b - a > 500) return null;
+    for (let i = a; i <= b; i++) out.add(i);
+  }
+  return [...out].sort((x, y) => x - y);
+}
+const rangesOf = (nums) => { const out = []; let i = 0; while (i < nums.length) { let j = i; while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++; out.push(i === j ? String(nums[i]) : nums[i] + "-" + nums[j]); i = j + 1; } return out.join(", "); };
+function orderNameFrom(v) { const t = String(v || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})$/i); return m ? "Order #" + m[1] : t; }
+function designerSelect(value) {
+  const sel = document.createElement("select"); sel.className = "as-who"; sel.setAttribute("aria-label", "Designer");
+  sel.append(new Option("Choose a designer", ""));
+  const people = (S.profiles || []).filter((p) => p.user_id !== S.user.id || true).slice().sort((a, b) => a.name.localeCompare(b.name));
+  const mine = people.filter((p) => S.myTeam && p.team === S.myTeam), others = people.filter((p) => !(S.myTeam && p.team === S.myTeam));
+  const group = (label, list) => { if (!list.length) return; const g = document.createElement("optgroup"); g.label = label; list.forEach((p) => g.append(new Option(p.name + (p.team ? "-" + p.team : ""), p.user_id))); sel.append(g); };
+  group(S.myTeam ? "Your team (" + S.myTeam + ")" : "People", mine); group("Other teams", others);
+  sel.value = value || "";
+  return sel;
+}
+function assignRow(a) {
+  const r = el("div", "as-row");
+  const who = designerSelect(a ? a.assignee_id : "");
+  const sl = document.createElement("input"); sl.className = "as-slides"; sl.placeholder = "e.g. 1-5"; sl.setAttribute("aria-label", "Slides"); sl.value = a ? rangesOf(a.slides || []) : "";
+  const x = el("button", "as-remove"); x.type = "button"; x.setAttribute("aria-label", "Remove"); x.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  x.onclick = () => { r.remove(); if (!$("asRows").children.length) $("asRows").append(assignRow()); };
+  [who, sl].forEach((n) => n.addEventListener("input", () => { $("asErr").textContent = ""; r.classList.remove("bad"); }));
+  r.append(who, sl, x); return r;
+}
+function openAssign(key) {
+  const rows = key ? (S.assignments || {})[key] || [] : [];
+  const p = key ? S.projects[key] : null;
+  $("asOrder").value = p ? p.name : rows[0] ? rows[0].order_name : "";
+  $("asOrder").readOnly = !!key;
+  const box = $("asRows"); box.innerHTML = "";
+  (rows.length ? rows : [null, null]).forEach((a) => box.append(assignRow(a)));
+  $("asErr").textContent = "";
+  $("assignDialog").showModal();
+  (key ? box.querySelector("select") : $("asOrder")).focus();
+}
+async function saveAssign() {
+  const err = (m, row) => { $("asErr").textContent = m; if (row) row.classList.add("bad"); };
+  const name = orderNameFrom($("asOrder").value); if (!name) { err("Enter the order number."); $("asOrder").focus(); return; }
+  const key = name.toLowerCase();
+  const rows = [], owner = {};
+  for (const r of $("asRows").children) {
+    const id = r.querySelector(".as-who").value, txt = r.querySelector(".as-slides").value.trim();
+    if (!id && !txt) continue;
+    if (!id) { err("Choose a designer for every row.", r); return; }
+    const nums = parseSlides(txt); if (!nums) { err("Write slides as numbers or ranges, like 1-5 or 1-3, 7.", r); return; }
+    const prof = (S.profiles || []).find((x) => x.user_id === id) || {};
+    for (const n of nums) { if (owner[n]) { err("Slide " + n + " is given to both " + owner[n] + " and " + prof.name + ".", r); return; } owner[n] = prof.name; }
+    const same = rows.find((x) => x.assignee_id === id);
+    if (same) { same.slides = [...new Set(same.slides.concat(nums))].sort((a, b) => a - b); continue; }
+    rows.push({ order_key: key, order_name: name, assignee_id: id, assignee_name: prof.name || "Designer", assignee_team: prof.team || null, slides: nums, created_by: displayName(S.user), created_team: S.myTeam });
+  }
+  if (!rows.length) { err("Add at least one designer and their slides."); return; }
+  $("asSave").disabled = true;
+  try {
+    const del = await S.sb.from("slide_assignments").delete().eq("order_key", key); if (del.error) throw del.error;
+    const ins = await S.sb.from("slide_assignments").insert(rows); if (ins.error) throw ins.error;
+    $("assignDialog").close();
+    await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview();
+  } catch (e) { err("Couldn't save: " + e.message); }
+  finally { $("asSave").disabled = false; }
+}
 function projectSlides() { const p = S.projects[S.project]; return p ? p.slides : []; }
 function openReview(slideKey, shotId) {
+  $("reviewView").classList.remove("empty"); $("rvEmpty").hidden = true;
   S.slideKey = slideKey; S.shotId = shotId || null; S.draft = null; S.hot = null;
   $("commentBody").value = ""; say($("rvMsg"), "");
   $("reviewView").hidden = false;
   renderReview();
   $("backBtn").focus({ focusVisible: false });
 }
-function closeReview() { $("reviewView").hidden = true; S.slideKey = null; renderBoard(); }
+function closeReview() { $("reviewView").hidden = true; $("reviewView").classList.remove("empty"); $("rvEmpty").hidden = true; S.slideKey = null; renderBoard(); }
 function currentShot() {
   const vers = S.versions[S.slideKey]; if (!vers) return null;
   return vers.find((v) => v.id === S.shotId) || vers[0];
@@ -1092,8 +1271,29 @@ function zoomStep(dir) {
   if (next) setZoom(next);
 }
 const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Request change" };
+// An order that's been split but has no slides yet: strip of "Not sent yet" placeholders and a waiting message
+function openEmptyOrder() {
+  S.slideKey = null; S.shotId = null;
+  const rv = $("reviewView"); rv.hidden = false; rv.classList.add("empty");
+  renderEmptyOrder();
+  $("backBtn").focus({ focusVisible: false });
+}
+function renderEmptyOrder() {
+  const p = S.projects[S.project]; if (!p) { closeReview(); return; }
+  if (p.slides.length) { openProject(p); return; }   // the first slide arrived
+  $("rvProject").textContent = p.name;
+  const r = projectRingState(p); const pr = $("rvProgress");
+  pr.innerHTML = '<span class="ic">' + ringSvg(0, false) + "</span>"; pr.append(document.createTextNode("0/" + ((S.assignments[S.project] || []).reduce((n, a) => n + a.slides.length, 0)) + " slides approved"));
+  ["rvSendCustomer", "versionWrap", "deleteSlideBtn"].forEach((id) => { $(id).hidden = true; });
+  $("rvAdjustLabel").textContent = "Adjust distribution";
+  ["olderBanner", "decidedBanner"].forEach((id) => { $(id).hidden = true; });
+  $("rvEmpty").hidden = false;
+  renderRail();
+}
 async function renderReview() {
+  if (!S.slideKey && S.project && $("reviewView").classList.contains("empty")) { renderEmptyOrder(); return; }
   const shot = currentShot(); if (!shot) { closeReview(); return; }
+  $("rvAdjustLabel").textContent = ((S.assignments || {})[S.project] || []).length ? "Adjust distribution" : "Assign slides";
   S.shotId = shot.id;
   const vers = S.versions[S.slideKey];
   const latest = vers[0], isLatest = shot.id === latest.id;
@@ -1122,6 +1322,9 @@ async function renderReview() {
   const tag = $("rvStatus"); tag.className = "rv-tag " + shot.status; tag.textContent = REVIEW_LABEL[shot.status] || shot.status;
   tag.hidden = false;
 
+  const asg = assignmentFor(shot);
+  $("rvAssigned").hidden = !asg;
+  if (asg) $("rvAssigned").textContent = "Assigned to " + asg.assignee_name + (asg.assignee_team ? "-" + asg.assignee_team : "");
   $("rvBy").textContent = "Sent by " + shot.designer + (shot.team ? "-" + shot.team : "") + ", " + ago(shot.created_at);
   $("rvNote").hidden = !shot.note; $("rvNote").textContent = shot.note ? "Note: \u201C" + shot.note + "\u201D" : "";
 
@@ -1153,9 +1356,42 @@ async function renderReview() {
   applyView();
 }
 // Left rail: every slide sent in this order, newest version of each
+// Designer filter above the strip: All slides, or one designer's assigned slides (unsent ones as placeholders)
+function renderFilter(all) {
+  const box = $("rvFilter"); box.innerHTML = "";
+  const rows = ((S.assignments || {})[S.project] || []).slice().sort((a, b) => Math.min(...a.slides) - Math.min(...b.slides));
+  S.railFilter = S.railFilter || {};
+  let f = S.railFilter[S.project] || "all";
+  if (f !== "all" && !rows.some((a) => a.assignee_id === f)) f = S.railFilter[S.project] = "all";
+  const chip = (id, label, extra) => {
+    const b = el("button", "rv-chip"); b.type = "button"; b.setAttribute("aria-pressed", String(f === id));
+    b.append(el("span", "", label)); if (extra) b.append(el("span", "rv-chipmeta", extra));
+    b.onclick = () => { S.railFilter[S.project] = id; renderRail(); applyView(); };
+    box.append(b);
+  };
+  const p = S.projects[S.project];
+  if (rows.length && p && p.teams && p.teams.size > 1) {   // designer chips only for tag-team orders
+    chip("all", "All slides");
+    rows.forEach((a) => {
+      const sent = a.slides.filter((n) => all.some((x) => x.slide_number === n)).length;
+      chip(a.assignee_id, a.assignee_name + (a.assignee_team ? "-" + a.assignee_team : ""), sent + "/" + a.slides.length + " sent");
+    });
+  }
+  return f === "all" ? null : rows.find((a) => a.assignee_id === f);
+}
 async function renderRail() {
-  const list = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
+  const all = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
+  const only = renderFilter(all);
+  // With a designer picked: their slide numbers, in order; prefer the copy they sent
+  const assigned = [...new Set(((S.assignments || {})[S.project] || []).flatMap((a) => a.slides))];
+  const nums = [...new Set(assigned.concat(all.map((x) => x.slide_number)))].sort((a, b) => a - b);
+  const list = !only ? (assigned.length ? nums.flatMap((n) => { const sent = all.filter((x) => x.slide_number === n); return sent.length ? sent : [{ placeholder: true, slide_number: n }]; }) : all) : only.slides.map((n) => all.find((x) => x.slide_number === n && x.designer_id === only.assignee_id) || all.find((x) => x.slide_number === n) || { placeholder: true, slide_number: n });
   list.forEach((s) => {
+    if (s.placeholder) {
+      const b = el("div", "rv-thumb pending"); b.setAttribute("aria-label", "Slide " + s.slide_number + ", not sent yet");
+      b.append(el("span", "n", s.slide_number)); const ph = el("span", "ph"); ph.append(el("span", "", "Not sent yet")); b.append(ph);
+      rail.append(b); return;
+    }
     const b = el("button", "rv-thumb"); b.type = "button";
     if (keyOf(s) === S.slideKey) b.setAttribute("aria-current", "true");
     b.setAttribute("aria-label", "Slide " + s.slide_number + (s.designer ? ", " + s.designer : ""));
@@ -1164,8 +1400,9 @@ async function renderRail() {
     b.onclick = () => openReview(keyOf(s));
     rail.append(b);
   });
-  try { await ensureUrls(list); } catch (e) {}
-  rail.querySelectorAll("img").forEach((im, i) => { const u = urlFor(list[i]); if (u && im.src !== u) im.src = u; });
+  const sent = list.filter((x) => !x.placeholder);
+  try { await ensureUrls(sent); } catch (e) {}
+  rail.querySelectorAll("img").forEach((im, i) => { const u = urlFor(sent[i]); if (u && im.src !== u) im.src = u; });
   const cur = rail.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
   updateRailArrows();
 }
@@ -1557,6 +1794,7 @@ function hideLogin() {
 async function enter(user) {
   S.user = user;
   S.myTeam = (user.user_metadata || {}).team || null;
+  try { S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: S.myTeam, updated_at: new Date().toISOString() }, { onConflict: "user_id" }).then(() => {}, () => {}); } catch (e) {}
   hideLogin(); $("boardView").hidden = false;
   $("content").innerHTML = ""; $("boardView").classList.add("solo"); { const e = el("div", "bd-state loading"); e.append(loadingIllo(), el("strong", "", "Loading slides…")); $("content").append(e); }
   try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
@@ -1593,6 +1831,10 @@ async function enter(user) {
   $("railNext").onclick = () => { $("rvRail").scrollBy({ left: 3 * 165 }); };
   $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
   $("rvSendCustomer").onclick = () => { const k = $("rvSendCustomer").dataset.key; if (k) askSendToCustomer(k); };
+  $("rvAdjust").onclick = () => openAssign(S.project);
+  $("asAdd").onclick = () => { const r = assignRow(); $("asRows").append(r); r.querySelector("select").focus(); };
+  $("asCancel").onclick = () => $("assignDialog").close();
+  $("assignForm").addEventListener("submit", (e) => { e.preventDefault(); saveAssign(); });
   $("stripToggle").onclick = () => { VIEW.strip = !VIEW.strip; saveView(); applyView(); if (VIEW.strip) updateRailArrows(); };
   $("zoomIn").onclick = () => zoomStep(1);
   $("zoomOut").onclick = () => zoomStep(-1);
