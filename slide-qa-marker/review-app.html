@@ -958,6 +958,16 @@ function buildIndex() {
     if (l.status === "ready" && (!l.team || l.team === S.myTeam)) p.waiting++;
     if (l.created_at > p.lastAt) p.lastAt = l.created_at;
   });
+  // File each distribution under the order it belongs to (matched by order number, whatever the file name spelling)
+  {
+    const byId = {}; Object.keys(S.projects).forEach((k) => { byId[orderId(S.projects[k].name)] = k; });
+    const merged = {};
+    Object.values(S.assignments || {}).flat().forEach((a) => {
+      const id = orderId(a.order_name || a.order_key); const k = byId[id] || id;
+      (merged[k] = merged[k] || []).push(a);
+    });
+    S.assignments = merged;
+  }
   // Teams: keep orders my team works on (tag team = several teams on one order); slides from before teams existed show for everyone
   Object.keys(S.projects).forEach((k) => {
     const p = S.projects[k], split = (S.assignments || {})[k] || [];
@@ -1187,6 +1197,7 @@ function parseSlides(txt) {
   return [...out].sort((x, y) => x - y);
 }
 const rangesOf = (nums) => { const out = []; let i = 0; while (i < nums.length) { let j = i; while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++; out.push(i === j ? String(nums[i]) : nums[i] + "-" + nums[j]); i = j + 1; } return out.join(", "); };
+const orderId = (name) => { const t = String(name || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})(?!\d)/i); return m ? m[1] : t.toLowerCase(); };
 function orderNameFrom(v) { const t = String(v || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})$/i); return m ? "Order #" + m[1] : t; }
 function designerSelect(value) {
   const sel = document.createElement("select"); sel.className = "as-who"; sel.setAttribute("aria-label", "Designer");
@@ -1221,7 +1232,7 @@ function openAssign(key) {
 async function saveAssign() {
   const err = (m, row) => { $("asErr").textContent = m; if (row) row.classList.add("bad"); };
   const name = orderNameFrom($("asOrder").value); if (!name) { err("Enter the order number."); $("asOrder").focus(); return; }
-  const key = name.toLowerCase();
+  const key = orderId(name);
   const rows = [], owner = {};
   for (const r of $("asRows").children) {
     const id = r.querySelector(".as-who").value, txt = r.querySelector(".as-slides").value.trim();
@@ -1237,7 +1248,8 @@ async function saveAssign() {
   if (!rows.length) { err("Add at least one designer and their slides."); return; }
   $("asSave").disabled = true;
   try {
-    const del = await S.sb.from("slide_assignments").delete().eq("order_key", key); if (del.error) throw del.error;
+    const keys = [...new Set([key, "order #" + key, name.toLowerCase(), S.project || ""].filter(Boolean))];
+    const del = await S.sb.from("slide_assignments").delete().in("order_key", keys); if (del.error) throw del.error;
     const ins = await S.sb.from("slide_assignments").insert(rows); if (ins.error) throw ins.error;
     $("assignDialog").close();
     await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview();
@@ -1715,7 +1727,7 @@ async function deleteProject() {
       await removeShots(rows.map((r) => r.id), rows.map((r) => r.image_path));
     }
     await S.sb.from("project_status").delete().eq("key", key);
-    await S.sb.from("slide_assignments").delete().eq("order_key", key);
+    { const p = S.projects[key] || {}; const id = orderId(p.name || key); await S.sb.from("slide_assignments").delete().in("order_key", [...new Set([key, id, "order #" + id])]); }
     $("deleteDialog").close(); deleteKey = null;
     if (S.project === key) S.project = null;
     await loadAll(); renderBoard();

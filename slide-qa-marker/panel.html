@@ -176,6 +176,16 @@
   .assign-tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; border: 1px solid #E3E6EB; background: #EEF0F3; color: #3F4652; font-size: 12px; line-height: 16px; }
   .assign-tag.mine { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; font-weight: 500; }
   .my-slides { margin: 0; padding: 8px 20px; font-size: 12px; line-height: 16px; color: #00308D; font-weight: 500; }
+
+  /* Slide that isn't yours (the DM distributed the order) */
+  .not-mine { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: #F6F7F9; border: 1px solid #E3E6EB; }
+  .not-mine strong { font-size: 14px; line-height: 20px; font-weight: 500; color: #1F2430; }
+  .not-mine p { margin: 0; font-size: 12px; line-height: 16px; color: #6B7280; }
+
+  /* Assignment tag (Figma: Slide status / Tag, size s) */
+  .assign-tag { display: inline-flex; align-items: center; height: 24px; padding: 4px 8px; border-radius: 20px; border: 1px solid #CDD2DA; background: #EEF0F3; color: #3F4652; font-size: 12px; line-height: 16px; font-weight: 400; white-space: nowrap; }
+  .assign-tag.mine { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; font-weight: 400; }
+  .meta .assign-tag { margin-right: auto; }
 </style>
 </head>
 <body>
@@ -223,10 +233,10 @@
         <div class="slide-content">
           <div class="slide-header">
             <div class="meta">
+              <span class="assign-tag" id="assignTag" hidden></span>
               <span class="meta-label" id="metaLabel">No slide selected</span>
               <span class="tag none" id="curStatus" hidden>Not sent</span>
             </div>
-            <span class="assign-tag" id="assignTag" hidden></span>
             <div class="thumb">
               <div id="thumb" class="thumb-inner"><span>Select a slide</span></div>
               <div id="tpins" class="tpins" aria-hidden="true"></div>
@@ -236,6 +246,7 @@
             </div>
           </div>
           <p class="sent-note" id="sentNote" hidden></p>
+          <div class="not-mine" id="notMine" hidden role="status"><strong>Not your slide</strong><p id="notMineText"></p></div>
           <button class="add-note" id="addNoteBtn" aria-expanded="false" aria-controls="noteField"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Add note for DM</button>
           <p class="undo-note" id="undoNote" hidden role="status">Note removed. <button type="button" id="undoNoteBtn">Undo (<span id="undoCount">5</span>)</button></p>
           <div class="field" id="noteField" hidden>
@@ -271,7 +282,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.9";
+const APP_VERSION = "2.11";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -364,10 +375,14 @@ async function selectSlide(id) {
 
 /* ---------- Supabase ---------- */
 // ---- assignments: which slides the DM gave to whom (by slide number)
-const orderKey = () => (projectName() || "").trim().toLowerCase();
+// Orders are matched by their number: "351164", "Order #351164" and "#351164" are the same order
+const orderId = (name) => { const t = String(name || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})(?!\d)/i); return m ? m[1] : t.toLowerCase(); };
+const orderKey = () => orderId(projectName());
 async function loadAssignments() {
-  const { data, error } = await S.sb.from("slide_assignments").select("*").eq("order_key", orderKey());
-  if (error) return;
+  const id = orderKey(), keys = [...new Set([id, "order #" + id, (projectName() || "").trim().toLowerCase()])];
+  const { data, error } = await S.sb.from("slide_assignments").select("*").in("order_key", keys);
+  if (error) { S.assignLoaded = false; return; }
+  S.assignLoaded = true;
   S.assign = {}; S.mySlides = [];
   data.forEach((a) => (a.slides || []).forEach((n) => {
     S.assign[n] = a;
@@ -470,15 +485,17 @@ function render() {
 
   // Assignment from the DM for this slide
   const as = cur && S.assign ? S.assign[cur.n] : null;
-  const at = $("assignTag"); at.hidden = !as;
-  if (as) {
-    const mine = as.assignee_id === S.user.id;
+  const splitOrder = !!S.assignLoaded;   // no distribution yet → every slide is "Not to work"
+  const at = $("assignTag"); at.hidden = !(cur && splitOrder);
+  if (cur && splitOrder) {
+    const mine = !!as && as.assignee_id === S.user.id;
     at.className = "assign-tag" + (mine ? " mine" : "");
-    at.textContent = mine ? "Assigned to you" : "Assigned to " + as.assignee_name + (as.assignee_team ? "-" + as.assignee_team : "");
-  }
-  const ms = S.mySlides || [];
-  $("mySlides").hidden = !ms.length;
-  if (ms.length) $("mySlides").textContent = "Your slides: " + rangesText(ms);
+    at.textContent = mine ? "Assigned to you" : as ? "Assigned to " + as.assignee_name + (as.assignee_team ? "-" + as.assignee_team : "") : "Not to work";
+    // In a distributed order the tag replaces the "Designer: …" line; the status shows once the slide is sent
+    $("metaLabel").hidden = true;
+    if (!status) tag.hidden = true;
+  } else $("metaLabel").hidden = false;
+  $("mySlides").hidden = true;
 
   // Preview source changes (live slide vs sent snapshot) re-render the image
   const thumbKey = (cur ? cur.id : "") + "|" + v.mode + "|" + (shot ? shot.image_path : v.team ? v.team.image_path : "");
@@ -527,6 +544,14 @@ function render() {
   btn.textContent = v.mode === "update" ? "Send v" + (shot.version + 1) + " for review" : cur ? "Mark slide " + cur.n + " ready for review" : "Select a slide";
   cancel.hidden = v.mode !== "update"; cancel.disabled = S.busy;
   upd.hidden = !(locked && shot.status !== "approved");
+  // Once the DM has distributed the order, only your own slides can be sent
+  const split = !!S.assignLoaded;
+  const blocked = !!cur && split && !(as && as.assignee_id === S.user.id) && (v.mode === "notsent" || v.mode === "update" || (locked && shot.status !== "approved"));
+  $("notMine").hidden = true;
+  if (blocked) {
+    btn.hidden = true; upd.hidden = true; cancel.hidden = true;
+    $("addNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
+  }
   $("actions").hidden = btn.hidden && upd.hidden && cancel.hidden && !$("msg").textContent;
 
   // Feedback on the sent version
