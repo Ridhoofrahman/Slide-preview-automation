@@ -1197,7 +1197,7 @@ function parseSlides(txt) {
   return [...out].sort((x, y) => x - y);
 }
 const rangesOf = (nums) => { const out = []; let i = 0; while (i < nums.length) { let j = i; while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++; out.push(i === j ? String(nums[i]) : nums[i] + "-" + nums[j]); i = j + 1; } return out.join(", "); };
-const orderId = (name) => { const t = String(name || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})(?!\d)/i); return m ? m[1] : t.toLowerCase(); };
+const orderId = (name) => { const t = String(name || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d+)\s*$/i) || t.match(/^(?:order\s*)?#?\s*(\d{5,7})(?!\d)/i); return m ? m[1] : t.toLowerCase(); };
 function orderNameFrom(v) { const t = String(v || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})$/i); return m ? "Order #" + m[1] : t; }
 function designerSelect(value) {
   const sel = document.createElement("select"); sel.className = "as-who"; sel.setAttribute("aria-label", "Designer");

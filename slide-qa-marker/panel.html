@@ -323,7 +323,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.15";
+const APP_VERSION = "2.16";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -417,17 +417,18 @@ async function selectSlide(id) {
 /* ---------- Supabase ---------- */
 // ---- assignments: which slides the DM gave to whom (by slide number)
 // Orders are matched by their number: "351164", "Order #351164" and "#351164" are the same order
-const orderId = (name) => { const t = String(name || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})(?!\d)/i); return m ? m[1] : t.toLowerCase(); };
+const orderId = (name) => { const t = String(name || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d+)\s*$/i) || t.match(/^(?:order\s*)?#?\s*(\d{5,7})(?!\d)/i); return m ? m[1] : t.toLowerCase(); };
 const orderKey = () => orderId(projectName());
 async function loadAssignments() {
   const id = orderKey(), keys = [...new Set([id, "order #" + id, (projectName() || "").trim().toLowerCase()])];
   const { data, error } = await S.sb.from("slide_assignments").select("*").in("order_key", keys);
   if (error) { S.assignLoaded = false; return; }
   // Slides already sent under this order number, to spot a different deck using the same number
-  const names = [...new Set([projectName(), "Order #" + id, id])];
+  const names = [...new Set([projectName(), "Order #" + id, "#" + id, id, ...data.map((a) => a.order_name)])];
   const sent = await S.sb.from("slide_shots").select("file_key,slide_id").in("project", names).limit(1000);
   S.orderShots = sent.error ? [] : sent.data;
   S.assignLoaded = true;
+  if (data.length && data[0].order_name && data[0].order_name !== projectName()) docStore.set("slideqa.project", data[0].order_name);
   S.assign = {}; S.mySlides = [];
   data.forEach((a) => (a.slides || []).forEach((n) => {
     S.assign[n] = a;
@@ -811,8 +812,8 @@ async function enterApp(user) {
 
 // Ask for the order number once per deck; it must match an order the DM has distributed
 // Shown as "#351164"; stored as "Order #351164" so it matches slides sent earlier
-const canonicalOrder = (v) => { const t = String(v || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})$/i); return m ? "Order #" + m[1] : t; };
-const shownOrder = (v) => String(v || "").replace(/^order\s*#/i, "#");
+const canonicalOrder = (v) => { const t = String(v || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d+)$/i); return m ? "Order #" + m[1] : t; };
+const shownOrder = (v) => { const id = orderId(v); return /^\d+$/.test(id) ? "#" + id : String(v || ""); };
 // Typing digits adds the "#" in front automatically
 function hashAsYouType(input) {
   input.addEventListener("input", () => {
@@ -832,10 +833,11 @@ function askOrder() {
       const raw = input.value.trim(); if (!raw || raw === "#") { err("Enter the order ID."); return; }
       const id = orderId(raw), name = canonicalOrder(raw);
       const btn = $("orderBtn"); btn.disabled = true;
-      const { data, error } = await S.sb.from("slide_assignments").select("id").in("order_key", [...new Set([id, "order #" + id, name.toLowerCase()])]).limit(1);
+      const { data, error } = await S.sb.from("slide_assignments").select("order_name").in("order_key", [...new Set([id, "order #" + id, name.toLowerCase()])]).limit(1);
       btn.disabled = false;
       if (!error && !data.length) { err("We can't find this order. Check the number with your DM; they need to distribute it first."); return; }
-      docStore.set("slideqa.project", name); docStore.set("slideqa.orderSet", "1");
+      // Use the order exactly as the DM wrote it, so every designer's slides land in the same order
+      docStore.set("slideqa.project", !error && data[0].order_name ? data[0].order_name : name); docStore.set("slideqa.orderSet", "1");
       resolve();
     };
   });
