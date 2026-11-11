@@ -34,9 +34,13 @@
   [hidden] { display: none !important; }
   svg { display: block; }
 
-  .container { padding: 16px 20px calc(var(--dock-h, 40px) + 24px); display: flex; flex-direction: column; gap: 20px; }
-  .head { display: flex; flex-direction: column; gap: 4px; }
-  .project { width: 100%; height: 32px; border: 1px solid transparent; background: transparent; font-size: 20px; line-height: 32px; font-weight: 500; padding: 0 6px; margin-left: -7px; border-radius: 6px; color: var(--ink); text-overflow: ellipsis; }
+  .container { padding: 0 0 calc(var(--dock-h, 40px) + 24px); display: flex; flex-direction: column; gap: 20px; }
+  .head { display: block; }
+  .head-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; background: #EEF0F3; }
+  .head-order { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+  .head-slide { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+  .head-slideno { font-size: 12px; line-height: 16px; color: #6B7280; padding-right: 9px; }
+  .project { width: 100%; height: 32px; border: 1px solid transparent; background: transparent; font-size: 20px; line-height: 32px; font-weight: 500; padding: 0; border-radius: 6px; color: var(--ink); text-overflow: ellipsis; }
   .project:hover { border-color: var(--line); }
   .project:focus { border-color: var(--focus); background: var(--surface); outline: none; }
   .link { border: 0; background: none; padding: 0; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-position: from-font; font-size: 13px; line-height: 1.45; font-family: var(--font); }
@@ -51,12 +55,19 @@
   .approved { background: var(--green-bg); border-color: var(--green-bd); color: var(--green-fg); }
 
   /* Slide */
-  .slide-part { display: flex; flex-direction: column; gap: 20px; }
+  .slide-part { display: flex; flex-direction: column; gap: 20px; padding: 0 20px; }
+  #unsupported, #idError { margin: 0 20px; }
   .slide-content { display: flex; flex-direction: column; gap: 16px; }
   .slide-content.tight { gap: 12px; }
   .slide-header { display: flex; flex-direction: column; gap: 8px; }
-  .meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
-  .meta-label { font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slide-topline { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+  .slide-topline .assign-tag { margin-right: auto; }
+  .meta-label { margin-right: auto; font-size: 14px; line-height: 20px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slide-hbtns { display: flex; gap: 8px; flex: none; }
+  .hdr-ic { width: 24px; height: 24px; padding: 4px; border: 0.8px solid #E3E6EB; border-radius: 4px; background: #FFFFFF; color: #3F4652; display: grid; place-items: center; cursor: pointer; }
+  .hdr-ic svg { width: 16px; height: 16px; }
+  .hdr-ic:hover { background: #F6F7F9; }
+  .hdr-ic.on { background: #F0F6FC; border-color: #9FC3EE; color: #00308D; }
   .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #E9ECF0; }
   .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -216,6 +227,81 @@
 
   /* Order ID label above the title (Figma) */
   .order-label { font-size: 12px; line-height: 16px; color: #6B7280; }
+
+  /* Working-file confirm (Figma: "Is this your working file for …") */
+  .work-confirm { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border-radius: 8px; background: #EFEDF8; }
+  .wc-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #473C90; }
+  .wc-body { margin: 0; font-size: 12px; line-height: 16px; color: #3F4652; }
+  .wc-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+  .wc-actions .primary { height: 36px; border-radius: 8px; font: 500 14px/20px var(--font); }
+  .wc-no { height: 32px; border: 0; background: none; font: 500 13px/20px var(--font); color: #473C90; cursor: pointer; border-radius: 6px; }
+  .wc-no:hover { background: rgba(71,60,144,.08); }
+  /* Mapped-position swap button + popover */
+  .map-pop { position: absolute; right: 20px; top: 40px; z-index: 20; min-width: 180px; padding: 4px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
+  .map-opt { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 6px; font: 13px/18px var(--font); color: #1F2430; cursor: pointer; }
+  .map-opt:hover { background: #F6F7F9; }
+  .map-opt.on { background: #F0F6FC; color: #00308D; font-weight: 500; }
+  .map-used { font-size: 12px; color: #8B93A1; }
+
+  .work-note { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 8px; background: #EFEDF8; }
+  .work-note .wc-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #473C90; }
+  .work-note .wc-body { margin: 0; font-size: 12px; line-height: 16px; color: #3F4652; }
+
+  /* ===== Order step (Figma: Add in / Order ID confirmation) ===== */
+  .order-gate { padding: 0; min-height: 100vh; display: flex; flex-direction: column; background: #F6F7F9; }
+  .og-bar { display: flex; align-items: center; padding: 12px 20px; background: #EEF0F3; }
+  .og-logo { display: inline-flex; align-items: center; gap: 8px; }
+  .og-mark { width: 25px; height: 25px; flex: none; }
+  .og-word { font-family: "Vampiro One", cursive; font-size: 16px; line-height: 24px; font-weight: 400; color: #18202B; }
+  .order-gate .og-body { display: flex; flex-direction: column; gap: 20px; padding: 20px; }
+  .og-text { display: flex; flex-direction: column; gap: 8px; }
+  .order-gate .og-text h1 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1F2430; }
+  .order-gate .og-text .order-sub { margin: 0 -2px 0 0; font-size: 14px; line-height: 20px; color: #3F4652; }
+  .order-gate .og-field { gap: 8px; }
+  .order-gate .og-field .field-label { font-size: 14px; line-height: 20px; color: #1F2430; }
+  .order-gate .og-field input { height: 40px; padding: 8px; border: 1px solid #CDD2DA; border-radius: 8px; background: #FFFFFF; font-size: 14px; line-height: 20px; color: #1F2430; }
+  .order-gate .og-field input::placeholder { color: #6B7280; }
+  .order-gate .og-btn { height: 40px; border-radius: 8px; background: #00308D; color: #FFFFFF; font: 500 14px/20px var(--font); box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .og-band { margin-top: auto; height: 117px; line-height: 0; overflow: hidden; }
+  .og-band-svg { width: 100%; height: 152px; display: block; }
+  .og-wordmark { width: 79px; height: 13px; display: block; }
+  /* ===== Footer (Figma v3): "Name - Team" left, "v2.19 • Sign out" right ===== */
+  .foot { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 8px 20px; font-size: 12px; line-height: 16px; color: #5A6575; background: #F6F7F9; border-top: 1px solid #E3E6EB; }
+  .foot-r { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+  .foot-dot { width: 4px; height: 4px; border-radius: 2px; background: #CDD7E5; }
+  .foot-signout { border: 0; background: none; padding: 0; font: 12px/16px var(--font); color: #5A6575; cursor: pointer; }
+  .foot-signout:hover { color: #1F2430; text-decoration: underline; }
+  #footReview:empty { display: none; }
+  .summary { display: none !important; }
+
+  /* Sent slide (Figma: Waiting for review) */
+  .sent-badge { right: 7px; bottom: 9px; padding: 2px 4px; border-radius: 4px; border: 0.5px solid #CDD2DA; background: rgba(31,36,48,.5); backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 9.6px; line-height: 15.4px; color: #FFFFFF; box-shadow: 0 1px 2px rgba(18,18,23,.06), 0 1px 3px rgba(18,18,23,.10); }
+  .upload-latest { display: inline-flex; align-items: center; justify-content: center; gap: 0; height: 40px; padding: 8px 12px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #3F4652; font: 500 14px/20px var(--font); box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .upload-latest svg { width: 20px; height: 20px; flex: none; }
+  .upload-latest span { padding: 0 8px; }
+  .upload-latest:hover { background: #F6F7F9; }
+  .head-slide .tag { box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+
+  /* Icon buttons (Figma: Button Icon / Secondary / xs) */
+  .hdr-ic { box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .hdr-ic.open { border-color: #3359A4; }
+  /* Change slide position popup (Figma) */
+  .slide-content { position: relative; }
+  .pos-pop { position: absolute; left: -1px; top: 29px; z-index: 20; width: 249px; display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 8px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(18,18,23,.06), 0 4px 6px rgba(18,18,23,.08); }
+  .pos-pop[hidden] { display: none; }
+  .pp-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #000000; }
+  .pp-box { display: flex; border: 1px solid #E3E6EB; border-radius: 6px; }
+  .pp-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 8px; }
+  .pp-cur { border-right: 1px solid #E3E6EB; }
+  .pp-lab { font-size: 12px; line-height: 16px; color: #6B7280; }
+  .pp-val { font-size: 14px; line-height: 20px; color: #000000; }
+  .pp-select { position: relative; display: flex; align-items: center; height: 24px; }
+  .pp-select select { width: 100%; height: 24px; padding: 0 24px 0 0; border: 0; background: transparent; appearance: none; -webkit-appearance: none; font: 14px/20px var(--font); color: #3F4652; cursor: pointer; }
+  .pp-select select:focus-visible { outline: 2px solid #3D66F5; outline-offset: 1px; border-radius: 4px; }
+  .pp-chev { position: absolute; right: 0; top: 0; width: 24px; height: 24px; pointer-events: none; }
+  .pp-actions { display: flex; justify-content: flex-end; }
+  .pp-save { height: 20px; padding: 0 4px; border: 0; border-radius: 4px; background: none; font: 500 14px/20px var(--font); color: #00308D; cursor: pointer; }
+  .pp-save:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -252,18 +338,70 @@
   <!-- Main -->
   <!-- First time a deck is opened: the designer types the order number (so it matches the DM's list) -->
   <section id="orderView" class="order-gate" hidden>
-    <form id="orderForm" novalidate>
-      <h1>Which order is this?</h1>
-      <p class="order-sub">Type the order ID from the order page so your slides go to the order your DM set up.</p>
-      <label class="field"><span class="field-label">Order ID</span><input id="orderInput" inputmode="numeric" autocomplete="off" placeholder="e.g. #351164" aria-describedby="orderInputError"><span class="field-error" id="orderInputError" aria-live="polite"></span></label>
-      <button id="orderBtn" class="primary" type="submit">Continue</button>
+    <div class="og-bar"><span class="og-logo"><svg class="og-mark" viewBox="0 0 25 25" fill="none" aria-hidden="true"><path d="M18.7588 0H5.99509C2.68409 0 0 2.68409 0 5.99509V18.7588C0 22.0698 2.68409 24.7539 5.99509 24.7539H18.7588C22.0698 24.7539 24.7539 22.0698 24.7539 18.7588V5.99509C24.7539 2.68409 22.0698 0 18.7588 0Z" fill="url(#ogm-g)"/><path d="M18.0752 5.64377L5.40663 7.19928C4.66456 7.29039 4.13685 7.96583 4.22797 8.7079L5.07643 15.618C5.16754 16.3601 5.84297 16.8878 6.58504 16.7967L19.2536 15.2412C19.9957 15.1501 20.5234 14.4746 20.4323 13.7326L19.5838 6.82243C19.4927 6.08036 18.8173 5.55266 18.0752 5.64377Z" fill="white"/><path d="M11.7726 8.26756L6.59001 8.9039C6.27197 8.94295 6.04582 9.23242 6.08487 9.55045C6.12391 9.86849 6.41338 10.0946 6.73142 10.0556L11.914 9.41925C12.2321 9.3802 12.4582 9.09073 12.4192 8.7727C12.3801 8.45467 12.0906 8.22851 11.7726 8.26756Z" fill="#B9CCFF"/><path d="M15.2353 9.88939L6.6936 10.9382C6.45508 10.9675 6.28546 11.1846 6.31475 11.4231C6.34403 11.6616 6.56114 11.8312 6.79966 11.802L15.3414 10.7532C15.5799 10.7239 15.7495 10.5068 15.7202 10.2682C15.6909 10.0297 15.4738 9.86011 15.2353 9.88939Z" fill="#DCE6FF"/><path d="M11.4046 12.0152L6.8938 12.569C6.65528 12.5983 6.48566 12.8154 6.51494 13.054C6.54423 13.2925 6.76133 13.4621 6.99986 13.4328L11.5106 12.879C11.7492 12.8497 11.9188 12.6326 11.8895 12.394C11.8602 12.1555 11.6431 11.9859 11.4046 12.0152Z" fill="#DCE6FF"/><path d="M17.6954 20.7893C19.7781 20.7893 21.4665 19.1009 21.4665 17.0182C21.4665 14.9355 19.7781 13.2471 17.6954 13.2471C15.6127 13.2471 13.9243 14.9355 13.9243 17.0182C13.9243 19.1009 15.6127 20.7893 17.6954 20.7893Z" fill="#33C297" fill-opacity="0.3"/><path d="M17.6948 20.0166C19.3503 20.0166 20.6924 18.6745 20.6924 17.019C20.6924 15.3635 19.3503 14.0215 17.6948 14.0215C16.0393 14.0215 14.6973 15.3635 14.6973 17.019C14.6973 18.6745 16.0393 20.0166 17.6948 20.0166Z" fill="#34D3A0"/><path d="M16.2451 17.1144L17.3088 18.1781L19.2427 15.9541" stroke="white" stroke-width="0.870255" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.632 3.84082C19.9521 5.60134 20.4323 6.08148 22.1928 6.40157C20.4323 6.72166 19.9521 7.2018 19.632 8.96232C19.3119 7.2018 18.8318 6.72166 17.0713 6.40157C18.8318 6.08148 19.3119 5.60134 19.632 3.84082Z" fill="#FFE27A"/><defs><linearGradient id="ogm-g" x1="4.64136" y1="1.54712" x2="20.1125" y2="23.2068" gradientUnits="userSpaceOnUse"><stop stop-color="#4B74FF"/><stop offset="1" stop-color="#00308D"/></linearGradient></defs></svg><svg class="og-wordmark" viewBox="0 0 79 13" fill="none" role="img" aria-label="Slideshot"><path d="M8.57589 2.7037C7.43456 3.3117 6.39989 4.12237 5.47189 5.1357C5.58922 5.50904 5.75989 5.90904 5.98389 6.3357C6.20789 6.7517 6.44256 7.1997 6.68789 7.6797C7.33856 8.8957 7.80256 9.9357 8.07989 10.7997L6.73589 12.9437C4.74122 12.421 2.97056 11.6904 1.42389 10.7517C0.943891 10.453 0.469224 10.1437 -0.000109434 9.8237L1.07189 7.8717C2.69322 8.9917 4.17589 9.81304 5.51989 10.3357C5.26389 9.70637 4.87989 8.94904 4.36789 8.0637C3.85589 7.1677 3.48256 6.4957 3.24789 6.0477C3.02389 5.58904 2.84789 5.1357 2.71989 4.6877C3.38122 3.86637 4.22389 3.0557 5.24789 2.2557C6.18656 1.5197 7.08256 0.949036 7.93589 0.543702L11.0239 2.6077C10.8212 3.51437 10.3572 4.6397 9.63189 5.9837C9.45056 6.32504 9.29056 6.59704 9.15189 6.7997L7.23189 5.6957C7.65856 5.01304 8.10656 4.0157 8.57589 2.7037ZM9.87677 10.6877C10.3354 9.03437 11.1514 7.16237 12.3248 5.0717C13.1034 3.68504 13.9781 2.45304 14.9488 1.3757C15.4394 0.831703 15.9461 0.373036 16.4688 -0.000297546L19.1728 1.9037C18.8101 4.8157 17.4874 6.86904 15.2048 8.0637C14.4688 8.4477 13.6474 8.7517 12.7408 8.9757C12.4848 9.60504 12.2874 10.1437 12.1488 10.5917C13.4714 10.4104 14.5008 10.2077 15.2368 9.9837C16.6768 9.55704 17.8768 9.0237 18.8368 8.3837L19.1728 9.9997C17.6048 11.0877 15.8234 11.845 13.8288 12.2717C13.1674 12.4104 12.5114 12.4957 11.8608 12.5277L9.87677 10.6877ZM13.6688 6.9757C14.6394 6.51704 15.4128 5.8557 15.9888 4.9917C16.5648 4.1277 16.9488 3.11437 17.1408 1.9517C16.2981 2.70904 15.3968 3.91437 14.4368 5.5677C14.1594 6.03704 13.9034 6.50637 13.6688 6.9757ZM22.6478 3.0397C22.4024 2.7837 22.2798 2.47437 22.2798 2.1117C22.2798 1.74904 22.4024 1.44504 22.6478 1.1997C22.9038 0.943702 23.2131 0.815702 23.5758 0.815702C23.9384 0.815702 24.2424 0.943702 24.4878 1.1997C24.7438 1.44504 24.8718 1.74904 24.8718 2.1117C24.8718 2.47437 24.7438 2.7837 24.4878 3.0397C24.2424 3.28504 23.9384 3.4077 23.5758 3.4077C23.2131 3.4077 22.9038 3.28504 22.6478 3.0397ZM20.2318 10.0797C21.3198 9.74904 22.6264 9.1837 24.1518 8.3837L24.4878 9.9997C23.4531 10.6717 22.2051 11.3277 20.7438 11.9677C20.2531 12.181 19.7731 12.3677 19.3038 12.5277L17.4638 10.8317C17.9864 9.40237 18.9251 7.62104 20.2798 5.4877C20.6851 4.8477 21.0798 4.2877 21.4638 3.8077L23.0478 4.9757C22.2691 6.04237 21.5118 7.3277 20.7758 8.8317C20.5624 9.2797 20.3811 9.6957 20.2318 10.0797ZM28.4243 11.0877C27.5816 11.749 26.6109 12.229 25.5123 12.5277L23.5283 10.6877C23.5283 9.84504 23.6563 9.01837 23.9123 8.2077C24.1683 7.39704 24.5469 6.66637 25.0483 6.0157C25.5496 5.36504 26.1683 4.82637 26.9043 4.3997C27.6509 3.96237 28.5096 3.70104 29.4803 3.6157L30.3603 4.9597C31.1923 3.34904 32.0669 1.9197 32.9843 0.671702L34.5363 2.0157C33.4803 3.3597 32.3869 5.26904 31.2563 7.7437C30.9149 8.49037 30.6109 9.22104 30.3443 9.9357C31.4856 9.59437 32.6803 9.07704 33.9283 8.3837L34.2803 9.9997C33.5549 10.5437 32.3816 11.2104 30.7603 11.9997C30.3016 12.213 29.9336 12.3677 29.6563 12.4637L28.4243 11.0877ZM25.7683 10.2237C26.9096 9.91437 27.9496 9.15704 28.8883 7.9517C29.1656 7.3437 29.3736 6.58637 29.5123 5.6797C28.4136 5.78637 27.5123 6.2717 26.8083 7.1357C26.1149 7.98904 25.7683 9.01837 25.7683 10.2237ZM37.0695 9.0077C36.5682 9.0077 36.1735 8.97037 35.8855 8.8957C35.7148 9.3117 35.6082 9.82904 35.5655 10.4477C37.4002 10.341 39.1708 9.93037 40.8775 9.2157C41.4535 8.98104 42.0082 8.7037 42.5415 8.3837L42.8775 9.9997C41.8855 10.629 40.7122 11.1837 39.3575 11.6637C37.9175 12.1757 36.5575 12.4637 35.2775 12.5277L33.2935 10.6877C33.2935 9.2157 33.6935 7.8717 34.4935 6.6557C35.0695 5.81304 35.7202 5.14637 36.4455 4.6557C37.1815 4.16504 37.8855 3.81304 38.5575 3.5997L41.2615 5.8397C40.9948 6.94904 40.4882 7.75437 39.7415 8.2557C38.9948 8.75704 38.1042 9.0077 37.0695 9.0077ZM36.5575 7.4557C37.1762 7.4557 37.7148 7.28504 38.1735 6.9437C38.7068 6.53837 38.9735 5.97304 38.9735 5.2477C37.8962 5.83437 37.0908 6.57037 36.5575 7.4557ZM44.6229 12.6557C43.8549 12.1437 43.1829 11.6584 42.6069 11.1997C42.0842 10.741 41.5136 10.1917 40.8949 9.5517L42.5429 8.3837C43.2896 9.16237 43.8389 9.68504 44.1909 9.9517C44.5429 10.2077 44.8576 10.4264 45.1349 10.6077C45.4336 10.5757 45.9189 10.4744 46.5909 10.3037L43.9349 7.7917C43.6896 7.5357 43.4976 7.30637 43.3589 7.1037C43.7642 6.37837 44.4629 5.62637 45.4549 4.8477C46.3829 4.12237 47.2682 3.63704 48.1109 3.3917L50.6709 5.4557C50.4896 6.18104 50.0629 7.14104 49.3909 8.3357L47.6789 7.0557C47.9029 6.72504 48.1002 6.3677 48.2709 5.9837C48.4416 5.5997 48.5429 5.3437 48.5749 5.2157C47.9776 5.4397 47.3642 5.84504 46.7349 6.4317C46.5109 6.64504 46.3082 6.8637 46.1269 7.0877C46.3296 7.39704 46.6389 7.72237 47.0549 8.0637C47.7589 8.6717 48.3509 9.19437 48.8309 9.6317C50.0149 9.22637 51.0176 8.81037 51.8389 8.3837L52.1749 9.9997C51.3216 10.6077 50.1216 11.173 48.5749 11.6957C47.1456 12.1757 45.8282 12.4957 44.6229 12.6557ZM54.7678 6.5117C55.7598 5.75437 56.9011 5.03437 58.1918 4.3517L60.1278 5.8717C59.7758 7.38637 59.1571 8.7517 58.2718 9.9677C59.3384 9.60504 60.5491 9.07704 61.9038 8.3837L62.2398 9.9997C61.8024 10.2877 61.1358 10.6557 60.2398 11.1037C58.7038 11.861 57.6424 12.3357 57.0558 12.5277L55.0718 11.1197C55.7118 10.3517 56.2451 9.59437 56.6718 8.8477C57.1091 8.09037 57.3918 7.42904 57.5198 6.8637C56.1224 7.55704 55.1998 8.0477 54.7518 8.3357C54.3144 8.6237 53.9198 8.89037 53.5678 9.1357C53.0451 10.4264 52.6451 11.557 52.3678 12.5277L50.4638 11.2957C50.8158 10.0904 51.5891 8.2877 52.7838 5.8877C53.8718 3.69037 54.8478 1.9517 55.7118 0.671702L57.3438 1.9037C56.4478 3.35437 55.5891 4.89037 54.7678 6.5117ZM67.5983 10.2877C66.5743 11.4717 65.2249 12.2184 63.5503 12.5277L61.2783 10.6237C61.2783 9.5997 61.4809 8.58637 61.8863 7.5837C62.3983 6.32504 63.2409 5.30637 64.4143 4.5277C65.2249 3.9837 66.1049 3.6477 67.0543 3.5197L69.5983 5.6957C69.4169 6.8477 69.1076 7.85037 68.6703 8.7037C69.4383 8.66104 70.3076 8.55437 71.2783 8.3837L71.6303 9.9997C70.2436 10.5757 69.1556 10.965 68.3663 11.1677L67.5983 10.2877ZM63.4223 10.3517C64.6383 10.0744 65.6516 9.32237 66.4623 8.0957C66.8036 7.57304 67.0489 7.0717 67.1983 6.5917C67.3476 6.1117 67.4276 5.7277 67.4383 5.4397C66.5743 5.55704 65.7529 6.0157 64.9743 6.8157C64.0036 7.8077 63.4863 8.98637 63.4223 10.3517ZM75.1813 5.0237C76.1733 4.91704 76.9039 4.7997 77.3733 4.6717L77.7413 6.3997C76.8026 6.63437 75.6079 6.77304 74.1573 6.8157C73.5066 8.0957 73.0213 9.25837 72.7013 10.3037C73.5653 10.1544 74.4879 9.94104 75.4693 9.6637C76.4506 9.3757 77.4373 8.94904 78.4293 8.3837L78.7653 9.9997C77.7946 10.6717 76.6853 11.2477 75.4373 11.7277C74.2106 12.197 73.1226 12.4637 72.1733 12.5277L70.1893 10.6877C70.8186 8.59704 71.8906 6.39437 73.4053 4.0797C73.8746 3.35437 74.3759 2.6557 74.9093 1.9837L76.3333 3.2957C75.9173 3.8717 75.5333 4.4477 75.1813 5.0237Z" fill="#18202B"/></svg></span></div>
+    <form id="orderForm" class="og-body" novalidate>
+      <div class="og-text">
+        <h1>Which order is this?</h1>
+        <p class="order-sub">Make sure you type the correct order ID as seen in the order page at the Inner Platform</p>
+      </div>
+      <label class="field og-field"><span class="field-label">Order ID</span><input id="orderInput" inputmode="numeric" autocomplete="off" placeholder="#123456" aria-describedby="orderInputError"><span class="field-error" id="orderInputError" aria-live="polite"></span></label>
+      <div class="work-note" id="orderWork" hidden><p class="wc-title" id="orderWorkTitle"></p><p class="wc-body">You're building these slides in a new file. We'll place them into the positions your DM assigned you. You can adjust the order later.</p></div>
+      <button id="orderBtn" class="primary og-btn" type="submit">Continue</button>
     </form>
+    <div class="og-band" aria-hidden="true"><svg class="og-band-svg" viewBox="0 0 320 152" fill="none" aria-hidden="true" preserveAspectRatio="xMidYMin slice">
+<g clip-path="url(#ogb0)">
+<rect opacity="0.88" x="-47.1373" y="92.7491" width="117.165" height="66.6376" rx="4.03398" transform="rotate(-42.3391 -47.1373 92.7491)" fill="#E6E0FF"/>
+<g opacity="0.88" clip-path="url(#ogb1)">
+<rect x="-30.5966" y="94.4058" width="49.2093" height="6.66377" rx="1.41819" transform="rotate(-42.3391 -30.5966 94.4058)" fill="#B3A6EC" fill-opacity="0.75"/>
+<rect x="-22.3683" y="103.436" width="73.2282" height="4.66464" rx="0.992736" transform="rotate(-42.3391 -22.3683 103.436)" fill="#B3A6EC" fill-opacity="0.75"/>
+<rect x="-15.4864" y="110.989" width="42.1794" height="4.66464" rx="0.992736" transform="rotate(-42.3391 -15.4864 110.989)" fill="#B3A6EC" fill-opacity="0.75"/>
+</g>
+<g clip-path="url(#ogb2)">
+<path d="M63.9233 71.9885C69.1847 67.1945 69.5203 58.9955 64.673 53.6757C59.8257 48.3559 51.631 47.9297 46.3696 52.7237C41.1082 57.5178 40.7726 65.7167 45.6199 71.0365C50.4672 76.3564 58.6619 76.7826 63.9233 71.9885Z" fill="#00308D"/>
+<path d="M50.8162 66.3018L56.64 66.6047L56.7181 54.5132" stroke="white" stroke-width="1.41189" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<rect opacity="0.78" x="144.421" y="-1.87729" width="163.338" height="110.05" rx="3.35618" transform="rotate(9.61132 144.421 -1.87729)" fill="#FFE5D6"/>
+<g opacity="0.78" clip-path="url(#ogb3)">
+<rect x="156.283" y="20.8426" width="68.6018" height="11.005" rx="1.17991" transform="rotate(9.61132 156.283 20.8426)" fill="#EDB296" fill-opacity="0.75"/>
+<rect x="152.915" y="40.7353" width="102.086" height="7.70352" rx="0.825935" transform="rotate(9.61132 152.915 40.7353)" fill="#EDB296" fill-opacity="0.75"/>
+<rect x="150.097" y="57.3728" width="58.8016" height="7.70352" rx="0.825935" transform="rotate(9.61132 150.097 57.3728)" fill="#EDB296" fill-opacity="0.75"/>
+</g>
+<rect opacity="0.8" x="36.1259" y="78.3552" width="136.957" height="76.7787" rx="3.49283" transform="rotate(-16.4273 36.1259 78.3552)" fill="#FBDDE8"/>
+<g opacity="0.8" clip-path="url(#ogb4)">
+<rect x="52.6121" y="88.3476" width="57.5218" height="7.67787" rx="1.22795" transform="rotate(-16.4273 52.6121 88.3476)" fill="#E7A1BB" fill-opacity="0.75"/>
+<rect x="56.5928" y="101.849" width="85.5979" height="5.37451" rx="0.859564" transform="rotate(-16.4273 56.5928 101.849)" fill="#E7A1BB" fill-opacity="0.75"/>
+<rect x="59.9221" y="113.141" width="49.3044" height="5.37451" rx="0.859564" transform="rotate(-16.4273 59.9221 113.141)" fill="#E7A1BB" fill-opacity="0.75"/>
+</g>
+<g clip-path="url(#ogb5)">
+<path d="M163.219 112.303C171.199 109.95 175.768 101.595 173.423 93.641C171.078 85.6872 162.707 81.1469 154.727 83.4998C146.746 85.8528 142.177 94.2081 144.522 102.162C146.867 110.116 155.238 114.656 163.219 112.303Z" fill="#00308D"/>
+<path d="M152.404 99.838L158.353 103.065L164.654 90.5343" stroke="white" stroke-width="1.22249" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<rect opacity="0.87" x="246.969" y="43.8619" width="122.987" height="69.5271" rx="6.20388" transform="rotate(-8.03197 246.969 43.8619)" fill="#D6F1E6"/>
+<g opacity="0.87" clip-path="url(#ogb6)">
+<rect x="260.32" y="55.0069" width="51.6546" height="6.95271" rx="2.18105" transform="rotate(-8.03197 260.32 55.0069)" fill="#8FCDB4" fill-opacity="0.74902"/>
+<rect x="262.101" y="67.6285" width="76.8669" height="4.8669" rx="1.52674" transform="rotate(-8.03197 262.101 67.6285)" fill="#8FCDB4" fill-opacity="0.74902"/>
+<rect x="263.59" y="78.1847" width="44.2754" height="4.8669" rx="1.52674" transform="rotate(-8.03197 263.59 78.1847)" fill="#8FCDB4" fill-opacity="0.74902"/>
+</g>
+</g>
+<defs>
+<clipPath id="ogb0"><rect width="320" height="152" fill="white"/></clipPath>
+<clipPath id="ogb1"><rect width="95.1966" height="29.6167" fill="white" transform="translate(-38.7158 101.804) rotate(-42.3391)"/></clipPath>
+<clipPath id="ogb2"><rect width="25.7763" height="26.0627" fill="white" transform="translate(36.843 61.4041) rotate(-42.3391)"/></clipPath>
+<clipPath id="ogb3"><rect width="132.712" height="48.9112" fill="white" transform="translate(141.185 18.2859) rotate(9.61132)"/></clipPath>
+<clipPath id="ogb4"><rect width="111.277" height="34.1239" fill="white" transform="translate(40.2965 91.9786) rotate(-16.4273)"/></clipPath>
+<clipPath id="ogb5"><rect width="30.1305" height="30.029" fill="white" transform="translate(140.276 87.7602) rotate(-16.4273)"/></clipPath>
+<clipPath id="ogb6"><rect width="99.927" height="30.9009" fill="white" transform="translate(248.903 56.6179) rotate(-8.03197)"/></clipPath>
+</defs>
+</svg></div>
+    <footer class="foot og-foot"><span class="whoName"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout">Sign out</button></span></footer>
   </section>
   <section id="appView" hidden>
     <div class="container">
       <header class="head">
-        <label class="order-label" for="projectName">Order ID</label>
-        <input id="projectName" class="project" aria-label="Order ID" spellcheck="false">
+        <div class="head-bar">
+          <div class="head-order"><label class="order-label" for="projectName">Order ID</label><input id="projectName" class="project" aria-label="Order ID" spellcheck="false"></div>
+          <div class="head-slide"><span class="head-slideno" id="headSlide"></span><span class="tag none" id="curStatus" hidden>Not sent yet</span></div>
+        </div>
         <span id="reviewLinkWrap"></span>
         <p class="id-error" id="idError" role="alert" hidden><strong>Order ID has already been used.</strong> Another deck is using this ID. Please verify and try a different one.</p>
       </header>
@@ -273,10 +411,13 @@
       <section class="slide-part" aria-label="Selected slide">
         <div class="slide-content">
           <div class="slide-header">
-            <div class="meta">
+            <div class="slide-topline">
               <span class="assign-tag" id="assignTag" hidden></span>
               <span class="meta-label" id="metaLabel">No slide selected</span>
-              <span class="tag none" id="curStatus" hidden>Not sent</span>
+              <div class="slide-hbtns" id="slideHbtns">
+                <button class="hdr-ic" id="mapSwap" type="button" hidden aria-label="Change slide position" aria-expanded="false" aria-controls="mapPop" title="Change slide position"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10.0998 1.65973C10.3998 1.53493 10.7498 1.60981 10.9748 1.83445L14.9748 5.82808C15.2748 6.15256 15.2748 6.65176 14.9748 6.97624L10.9748 10.9699C10.7498 11.1945 10.3998 11.2694 10.0998 11.1446C9.7998 11.0198 9.5998 10.7203 9.5998 10.3958V8.39897H5.9998C5.8998 8.39897 5.7998 8.34905 5.7248 8.27417C5.6498 8.19929 5.5998 8.09945 5.5998 7.99961V5.60343L1.5998 9.59706L5.5998 13.5907V11.1945C5.5998 10.9699 5.7748 10.7951 5.9998 10.7951H7.5998C7.8248 10.7951 7.9998 10.9699 7.9998 11.1945C7.9998 11.4192 7.8248 11.5939 7.5998 11.5939H6.3998V13.5907C6.3998 13.9152 6.1998 14.2147 5.8998 14.3395C5.5998 14.4643 5.2748 14.3894 5.0248 14.1648L1.0248 10.1711C0.724805 9.84666 0.724805 9.34746 1.0248 9.02298L5.0248 5.02935C5.2748 4.80471 5.5998 4.75479 5.8998 4.87959C6.1998 5.00439 6.3998 5.27895 6.3998 5.60343V7.60025H9.9998C10.0998 7.60025 10.1998 7.65017 10.2748 7.72505C10.3498 7.79993 10.3998 7.89977 10.3998 7.99961V10.3958L14.3998 6.40216L10.3998 2.40853V4.80471C10.3998 5.02935 10.2248 5.20407 9.9998 5.20407H8.39981C8.1748 5.20407 7.9998 5.02935 7.9998 4.80471C7.9998 4.58007 8.1748 4.40535 8.39981 4.40535H9.5998V2.40853C9.5998 2.08405 9.7998 1.78453 10.0998 1.65973Z" fill="currentColor"/></svg></button>
+                <button class="hdr-ic" id="editNoteBtn" type="button" hidden aria-label="Add note for DM" title="Add note for DM"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.8596 2.64413C13.5425 2.32662 13.029 2.32914 12.717 2.64665L12.0525 3.32199L13.4871 4.75835L14.1591 4.08301C14.4737 3.76802 14.4737 3.25647 14.1591 2.944L13.8596 2.64413ZM7.90228 7.52524C7.79405 7.63611 7.71855 7.77471 7.68583 7.92591L7.36116 9.4807L8.90901 9.15563C9.06253 9.12287 9.20347 9.04728 9.31421 8.9364L12.9158 5.32786L11.4837 3.89401L7.90228 7.52524ZM12.1431 2.07966C12.7698 1.44212 13.7967 1.4396 14.4284 2.0721L14.7279 2.3745C15.3571 3.00448 15.3571 4.02505 14.7279 4.65503L9.88302 9.5059C9.66154 9.72766 9.37965 9.87885 9.07512 9.94437L6.92323 10.3954C6.78984 10.4232 6.65142 10.3828 6.55578 10.2871C6.46014 10.1913 6.41735 10.0527 6.44755 9.91917L6.90058 7.75959C6.9635 7.4572 7.11451 7.17749 7.33096 6.95825L12.1431 2.07966ZM0.799805 6.33583C0.799805 5.44629 1.52213 4.72307 2.41057 4.72307H6.84018C7.06166 4.72307 7.24287 4.90451 7.24287 5.12626C7.24287 5.34802 7.06166 5.52945 6.84018 5.52945H2.41057C1.96509 5.52945 1.60519 5.8898 1.60519 6.33583V12.7869C1.60519 13.2329 1.96509 13.5932 2.41057 13.5932H12.0752C12.5206 13.5932 12.8806 13.2329 12.8806 12.7869V8.35177C12.8806 8.13002 13.0618 7.94858 13.2832 7.94858C13.5047 7.94858 13.6859 8.13002 13.6859 8.35177V12.7869C13.6859 13.6764 12.9636 14.3996 12.0752 14.3996H2.41057C1.52213 14.3996 0.799805 13.6764 0.799805 12.7869V6.33583ZM4.02134 9.56134C4.02134 9.22619 4.29064 8.95656 4.62537 8.95656C4.96011 8.95656 5.22941 9.22619 5.22941 9.56134C5.22941 9.89649 4.96011 10.1661 4.62537 10.1661C4.29064 10.1661 4.02134 9.89649 4.02134 9.56134Z" fill="currentColor"/></svg></button>
+              </div>
             </div>
             <div class="thumb">
               <div id="thumb" class="thumb-inner"><span>Select a slide</span></div>
@@ -286,9 +427,16 @@
               <div id="sentOverlay" class="sent-overlay" hidden role="status"><span class="ok-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="sentOverlayText"></span></div>
             </div>
           </div>
+          <div class="pos-pop" id="mapPop" hidden role="dialog" aria-labelledby="ppTitle">
+            <p class="pp-title" id="ppTitle">Change slide position</p>
+            <div class="pp-box">
+              <div class="pp-col pp-cur"><span class="pp-lab">Current position</span><span class="pp-val" id="ppCur"></span></div>
+              <div class="pp-col"><span class="pp-lab" id="ppSentLab">Sent as</span><span class="pp-select"><select id="ppSel" aria-labelledby="ppSentLab"></select><svg class="pp-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L11.6464 14.6464C11.8417 14.8417 12.1583 14.8417 12.3536 14.6464L18 9" stroke="#3F4652" stroke-linecap="round"/></svg></span></div>
+            </div>
+            <div class="pp-actions"><button type="button" class="pp-save" id="ppSave">Save</button></div>
+          </div>
           <p class="sent-note" id="sentNote" hidden></p>
           <div class="not-mine warn" id="notMine" hidden role="status"><strong id="notMineTitle"></strong><p id="notMineText"></p></div>
-          <button class="add-note" id="addNoteBtn" aria-expanded="false" aria-controls="noteField"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Add note for DM</button>
           <p class="undo-note" id="undoNote" hidden role="status">Note removed. <button type="button" id="undoNoteBtn">Undo (<span id="undoCount">5</span>)</button></p>
           <div class="field" id="noteField" hidden>
             <div class="field-head"><span>Note for DM</span><button type="button" class="icon-x" id="hideNoteBtn" aria-label="Remove note"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button></div>
@@ -296,7 +444,7 @@
           </div>
         </div>
         <div class="actions" id="actions">
-          <button id="updateBtn" class="secondary" hidden><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Send updated version</button>
+          <button id="updateBtn" class="secondary upload-latest" hidden><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M17 11C17 10.4375 16.5625 10 16 10H4C3.4375 10 3 10.4375 3 11V15.5C3 16.0625 3.4375 16.5 4 16.5H16C16.5625 16.5 17 16.0625 17 15.5V11ZM16 9C17.0938 9 18 9.90625 18 11V15.5C18 16.5938 17.0938 17.5 16 17.5H4C2.90625 17.5 2 16.5938 2 15.5V11C2 9.90625 2.90625 9 4 9H16ZM16 5.75C16.2812 5.75 16.5 5.96875 16.5 6.25C16.5 6.53125 16.2812 6.75 16 6.75H4C3.71875 6.75 3.5 6.53125 3.5 6.25C3.5 5.96875 3.71875 5.75 4 5.75H16ZM14.5 2.5C14.7812 2.5 15 2.71875 15 3C15 3.28125 14.7812 3.5 14.5 3.5H5.5C5.21875 3.5 5 3.28125 5 3C5 2.71875 5.21875 2.5 5.5 2.5H14.5Z" fill="currentColor"/></svg><span>Upload the latest version</span></button>
           <button id="markBtn" class="primary" disabled>Select a slide</button>
           <button id="cancelUpdateBtn" class="cancel" hidden>Cancel</button>
           <p id="msg" class="msg" role="status" aria-live="polite"></p>
@@ -316,14 +464,14 @@
         <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="summaryGrid"><span id="summaryText"></span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="summary-grid" id="summaryGrid" hidden></div>
       </section>
-      <footer class="foot"><span id="whoName"></span> <button id="signOutBtn" class="link">Sign out</button><span id="footReview"></span><span id="appVersion"></span></footer>
+      <footer class="foot"><span class="whoName" id="whoName"></span><span class="foot-r"><span id="footReview"></span><span class="appVersion" id="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout" id="signOutBtn">Sign out</button></span></footer>
     </div>
   </section>
 </main>
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.16";
+const APP_VERSION = "2.21";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -369,12 +517,19 @@ function ago(iso) {
 }
 
 /* ---------- PowerPoint ---------- */
+async function currentSlideIds() {
+  let ids = [];
+  await PowerPoint.run(async (ctx) => { const sl = ctx.presentation.slides; sl.load("items/id"); await ctx.sync(); ids = sl.items.map((x) => x.id); });
+  return ids;
+}
+
 async function readDeck() {
   await PowerPoint.run(async (ctx) => {
     const slides = ctx.presentation.slides; slides.load("items/id");
     const sel = ctx.presentation.getSelectedSlides(); sel.load("items/id");
     await ctx.sync();
-    S.slides = slides.items.map((s, i) => ({ id: s.id, n: i + 1 }));
+    S.slides = slides.items.map((s, i) => ({ id: s.id, local: i + 1, n: i + 1 }));
+    applyWorkingMap();
     S.currentId = sel.items.length ? sel.items[0].id : null;
   });
 }
@@ -435,6 +590,7 @@ async function loadAssignments() {
     if (a.assignee_id === S.user.id) S.mySlides.push(n);
   }));
   S.mySlides.sort((a, b) => a - b);
+  applyWorkingMap();
 }
 // 1,2,3,4,5,8 → "1–5, 8"
 function rangesText(nums) {
@@ -518,7 +674,8 @@ function render() {
   const me = displayName(S.user);
 
   if (document.activeElement !== $("projectName")) $("projectName").value = shownOrder(projectName());
-  $("whoName").textContent = "Signed in as " + me + ".";
+  const myTeam = (S.user.user_metadata || {}).team;
+  document.querySelectorAll(".whoName").forEach((el) => { el.textContent = me + (myTeam ? " - " + myTeam : ""); });
 
   // Meta line: "Designer: Name, v1". While preparing a new version, the version is dropped.
   let meta = "No slide selected";
@@ -527,20 +684,20 @@ function render() {
   else if (v.mode === "update") meta = "Designer: " + shot.designer;
   else if (v.mode === "locked") meta = "Designer: " + shot.designer + ", v" + shot.version;
   $("metaLabel").textContent = meta;
-  const tag = $("curStatus"); tag.className = "tag " + (status || "none"); tag.textContent = status ? STATUS_LABEL[status] : "Not sent"; tag.hidden = !cur;
+  // Header right: "Slide N" + status chip
+  $("headSlide").textContent = cur ? "Slide " + cur.local : "";
+  const tag = $("curStatus"); tag.className = "tag " + (status || "none"); tag.textContent = status ? STATUS_LABEL[status] : "Not sent yet"; tag.hidden = !cur;
 
   // Assignment from the DM for this slide
-  const as = cur && S.assign ? S.assign[cur.n] : null;
-  const splitOrder = !!S.assignLoaded;   // no distribution yet → every slide is "Not to work"
+  var as = cur && S.assign ? S.assign[cur.n] : null;
+  var mine = !!as && as.assignee_id === S.user.id;
+  var splitOrder = !!S.assignLoaded;
   const at = $("assignTag"); at.hidden = !(cur && splitOrder);
   if (cur && splitOrder) {
-    const mine = !!as && as.assignee_id === S.user.id;
     at.className = "assign-tag" + (mine ? " mine" : "");
     if (mine) at.innerHTML = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5.00006 1.79883H11.0001C11.8204 1.79883 12.5001 2.47852 12.5001 3.29883V13.0488C12.5001 13.3301 12.3594 13.5645 12.1251 13.7051C11.8907 13.8457 11.586 13.8223 11.3751 13.6816L8.00006 11.666L4.62506 13.6816C4.41412 13.8223 4.10943 13.8223 3.87506 13.7051C3.64068 13.5645 3.50006 13.3301 3.50006 13.0488V3.29883C3.50006 2.47852 4.17974 1.79883 5.00006 1.79883Z" fill="currentColor"/></svg><span>Assigned to you</span>';
     else at.textContent = as ? "Assigned to " + as.assignee_name + (as.assignee_team ? "-" + as.assignee_team : "") : "Not to work";
-    // In a distributed order the tag replaces the "Designer: …" line; the status shows once the slide is sent
     $("metaLabel").hidden = true;
-    if (!status) tag.hidden = true;
   } else $("metaLabel").hidden = false;
   $("mySlides").hidden = true;
 
@@ -551,9 +708,9 @@ function render() {
   // Preview extras
   const locked = v.mode === "locked";
   // Version badge only matters once there's more than one version
-  const showBadge = locked && shot.version > 1;
+  const showBadge = locked;   // Figma: "v1 sent, 5 min ago" on every sent slide
   $("sentBadge").hidden = !showBadge;
-  if (showBadge) $("sentBadge").textContent = "v" + shot.version + ", sent " + ago(shot.created_at);
+  if (showBadge) $("sentBadge").textContent = "v" + shot.version + " sent, " + ago(shot.created_at);
   $("refreshBtn").hidden = v.mode !== "update";
   const justSent = !!(cur && S.justSent[cur.id] && Date.now() - S.justSent[cur.id] < 2600);
   $("sentOverlay").hidden = !justSent;
@@ -580,8 +737,9 @@ function render() {
   $("noteField").hidden = !noteOpen;
   $("undoNote").hidden = !undoHere;
   if (undoHere) $("undoCount").textContent = Math.max(1, Math.ceil((S.undo.until - Date.now()) / 1000));
-  $("addNoteBtn").hidden = !notesHere || noteOpen || undoHere;
-  $("addNoteBtn").setAttribute("aria-expanded", String(noteOpen));
+  $("editNoteBtn").hidden = !notesHere;
+  $("editNoteBtn").classList.toggle("on", noteOpen);
+  $("editNoteBtn").setAttribute("aria-expanded", String(noteOpen));
 
   // Actions
   const btn = $("markBtn"), upd = $("updateBtn"), cancel = $("cancelUpdateBtn");
@@ -599,14 +757,20 @@ function render() {
   const others = (S.orderShots || []).filter((r) => (r.file_key || "").split(":")[0] !== myBase);
   const clash = !!cur && others.length > 0 && !others.some((r) => myIds.has(r.slide_id));
   $("notMine").hidden = true;
-  $("idError").hidden = !clash;   // Figma: Add in — "Order ID has already been used"
-  if (clash) {
+  const iAmAssigned = S.assignLoaded && (S.mySlides || []).length > 0;
+  const isWorking = docStore.get("slideqa.workfile") === orderKey();
+  const idClash = clash && !iAmAssigned;   // genuinely a different deck (handled at the order step for assigned designers)
+  $("idError").hidden = !idClash;
+  if (idClash) {
     btn.hidden = true; upd.hidden = true; cancel.hidden = true;
-    $("addNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
+    $("editNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
   }
+  // Change slide position: on my own slides, before they're sent
+  $("mapSwap").hidden = !(cur && mine && notesHere) || idClash;
+  if ($("mapSwap").hidden && S.closeMapPop) S.closeMapPop();
   if (blocked) {
-    btn.hidden = true; upd.hidden = true; cancel.hidden = true;
-    $("addNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
+    btn.hidden = true; upd.hidden = true; cancel.hidden = true; $("mapSwap").hidden = true;
+    $("editNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
   }
   $("actions").hidden = btn.hidden && upd.hidden && cancel.hidden && !$("msg").textContent;
 
@@ -642,7 +806,7 @@ function render() {
   Object.values(S.team || {}).forEach((r) => { if (!(r.slide_number in byNumber)) byNumber[r.slide_number] = { status: r.status, designer: r.designer }; });
   const nums = Object.keys(byNumber).map(Number).sort((a, b) => a - b);
   const approved = nums.filter((n) => byNumber[n].status === "approved").length;
-  $("summary").hidden = !nums.length;
+  $("summary").hidden = true;   // removed in Figma v3
   const stext = $("summaryText"); stext.innerHTML = "";
   const cnt = document.createElement("span"); cnt.className = "count"; cnt.textContent = nums.length + " ";
   stext.append(cnt, document.createTextNode("slides sent, " + approved + " approved"));
@@ -723,8 +887,55 @@ async function refreshDeck() {
 }
 
 /* ---------- actions ---------- */
-async function markReady() {
+
+// ---- working file: map local slides to the order positions the DM assigned me
+function applyWorkingMap() {
+  if (!S.slides) return;
+  const working = docStore.get("slideqa.workfile") === orderKey();
+  const slots = (S.mySlides || []).slice();
+  let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
+  if (working && slots.length) {
+    // Working file: my slides fill the positions the DM gave me, manual picks first
+    const taken = new Set();
+    S.slides.forEach((s) => { const m = saved[s.id]; if (m && slots.includes(m) && !taken.has(m)) { s.n = m; taken.add(m); } else s.n = null; });
+    const free = slots.filter((n) => !taken.has(n));
+    S.slides.forEach((s) => { if (s.n == null) s.n = free.shift() || 0; });
+    return;
+  }
+  // Original deck: each slide keeps its own position; a manual pick swaps places with the slide already there
+  S.slides.forEach((s) => { s.n = s.local; });
+  Object.keys(saved).forEach((id) => {
+    const s = S.slides.find((x) => x.id === id), pos = saved[id];
+    if (!s || !pos || s.n === pos) return;
+    const other = S.slides.find((x) => x.n === pos && x !== s);
+    if (other) other.n = s.n;
+    s.n = pos;
+  });
+}
+function setPosition(slideId, pos) {
+  let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
+  Object.keys(saved).forEach((k) => { if (saved[k] === pos && k !== slideId) delete saved[k]; });
+  saved[slideId] = pos; docStore.set("slideqa.map", JSON.stringify(saved));
+  applyWorkingMap(); render();
+}
+// "Change slide position" popup: Current position (this file) → Sent as (position in the order)
+function openMapPop() {
   const cur = currentSlide(); if (!cur) return;
+  const pop = $("mapPop");
+  $("ppCur").textContent = "Slide " + cur.local;
+  const sel = $("ppSel"); sel.innerHTML = "";
+  const choices = (S.mySlides || []).length ? S.mySlides.slice() : S.slides.map((x) => x.local);
+  choices.forEach((pos) => { const o = document.createElement("option"); o.value = pos; o.textContent = "Slide " + pos; if (pos === cur.n) o.selected = true; sel.append(o); });
+  pop.hidden = false; $("mapSwap").classList.add("open"); $("mapSwap").setAttribute("aria-expanded", "true");
+  const close = () => { pop.hidden = true; $("mapSwap").classList.remove("open"); $("mapSwap").setAttribute("aria-expanded", "false"); document.removeEventListener("click", outside); };
+  const outside = (e) => { if (!pop.contains(e.target) && !$("mapSwap").contains(e.target)) close(); };
+  $("ppSave").onclick = () => { const v = +sel.value; close(); if (v && v !== cur.n) setPosition(cur.id, v); };
+  setTimeout(() => document.addEventListener("click", outside), 0);
+  S.closeMapPop = close;
+}
+
+async function markReady() {
+  const cur = currentSlide(); if (!cur || !cur.n) return;
   const prev = S.latest[cur.id];
   const version = prev ? prev.version + 1 : 1;
   S.busy = true; render();
@@ -802,6 +1013,7 @@ async function enterApp(user) {
   try { await loadReviews(); } catch (e) { say($("msg"), "Couldn't load review status: " + e.message, "err"); }
   saveProfile(user);
   try { await loadAssignments(); } catch (e) {}
+  applyWorkingMap();
   render();
   subscribe();
   setInterval(() => { if (!document.hidden) refreshReviewsSoon(); }, 20000);
@@ -824,20 +1036,42 @@ function hashAsYouType(input) {
 function askOrder() {
   return new Promise((resolve) => {
     $("appView").hidden = true; $("orderView").hidden = false;
+    { const t = (S.user.user_metadata || {}).team; document.querySelectorAll(".og-foot .whoName").forEach((el) => { el.textContent = displayName(S.user) + (t ? " - " + t : ""); }); }
     const input = $("orderInput"), err = (m) => { $("orderInputError").textContent = m || ""; input.setAttribute("aria-invalid", m ? "true" : "false"); };
     input.value = ""; err(""); setTimeout(() => input.focus(), 50);
     if (!input.dataset.hash) { hashAsYouType(input); input.dataset.hash = "1"; }
     input.oninput = () => err("");
+    let checkedId = null, workName = null;
+    input.addEventListener("input", () => { $("orderWork").hidden = true; checkedId = null; });
     $("orderForm").onsubmit = async (e) => {
       e.preventDefault();
       const raw = input.value.trim(); if (!raw || raw === "#") { err("Enter the order ID."); return; }
       const id = orderId(raw), name = canonicalOrder(raw);
       const btn = $("orderBtn"); btn.disabled = true;
-      const { data, error } = await S.sb.from("slide_assignments").select("order_name").in("order_key", [...new Set([id, "order #" + id, name.toLowerCase()])]).limit(1);
+      const { data, error } = await S.sb.from("slide_assignments").select("order_name,assignee_id,slides").in("order_key", [...new Set([id, "order #" + id, name.toLowerCase()])]);
       btn.disabled = false;
       if (!error && !data.length) { err("We can't find this order. Check the number with your DM; they need to distribute it first."); return; }
-      // Use the order exactly as the DM wrote it, so every designer's slides land in the same order
-      docStore.set("slideqa.project", !error && data[0].order_name ? data[0].order_name : name); docStore.set("slideqa.orderSet", "1");
+      const order = (!error && data[0] && data[0].order_name) ? data[0].order_name : name;
+      // Is this a working file? Its slides don't match the order's deck, but I'm assigned slides in it.
+      const assignedHere = !error && data.some((a) => a.assignee_id === S.user.id && (a.slides || []).length);
+      if (checkedId !== id) {
+        let working = false;
+        if (assignedHere) {
+          try { const localIds = await currentSlideIds();
+            const deck = await S.sb.from("slide_shots").select("slide_id").in("project", [...new Set([order, "Order #" + id, id])]).limit(1000);
+            const inDeck = new Set((deck.data || []).map((r) => r.slide_id));
+            working = inDeck.size > 0 && !localIds.some((sid) => inDeck.has(sid));
+          } catch (e2) {}
+        }
+        if (working) {   // first Continue just reveals the note; a second Continue proceeds
+          checkedId = id; workName = order;
+          $("orderWorkTitle").textContent = "Is this your working file for " + shownOrder(order) + "?";
+          $("orderWork").hidden = false; return;
+        }
+        checkedId = id;
+      }
+      docStore.set("slideqa.project", order); docStore.set("slideqa.orderSet", "1");
+      docStore.set("slideqa.workfile", $("orderWork").hidden ? "" : orderId(order));
       resolve();
     };
   });
@@ -862,13 +1096,14 @@ Office.onReady(async (info) => {
     // Small link in the footer (the title area stays clean)
     const a = document.createElement("a"); a.className = "link"; a.href = cfg.REVIEW_PAGE_URL; a.target = "_blank"; a.rel = "noopener";
     a.textContent = "Review site";
-    $("footReview").append(document.createTextNode(" \u00B7 "), a);
+    void a;   // Figma footer (v3) has no review link
   }
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
   ["email", "password", "teamInput"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("markBtn").onclick = markReady;
-  $("addNoteBtn").onclick = () => { S.noteOpen = true; render(); $("note").focus(); };
+  $("mapSwap").onclick = (e) => { e.stopPropagation(); if ($("mapPop").hidden) openMapPop(); else if (S.closeMapPop) S.closeMapPop(); };
+  $("editNoteBtn").onclick = () => { S.noteOpen = !($("noteField").hidden === false); render(); if (!$("noteField").hidden) $("note").focus(); };
   $("note").addEventListener("input", () => { if (S.currentId) S.notes[S.currentId] = $("note").value; });
   $("hideNoteBtn").onclick = (e) => {
     e.preventDefault();
@@ -877,7 +1112,7 @@ Office.onReady(async (info) => {
     clearInterval(S.undoTimer);
     S.undo = text.trim() ? { id: id, text: text, until: Date.now() + 5000 } : null;
     if (S.undo) S.undoTimer = setInterval(() => { if (!S.undo || Date.now() >= S.undo.until) { clearInterval(S.undoTimer); S.undo = null; } render(); }, 250);
-    render(); (S.undo ? $("undoNoteBtn") : $("addNoteBtn")).focus();
+    render(); (S.undo ? $("undoNoteBtn") : $("editNoteBtn")).focus();
   };
   $("undoNoteBtn").onclick = () => {
     if (!S.undo) return;
@@ -885,7 +1120,7 @@ Office.onReady(async (info) => {
     S.notes[S.undo.id] = S.undo.text; if (S.undo.id === S.currentId) $("note").value = S.undo.text;
     S.undo = null; S.noteOpen = true; render(); $("note").focus();
   };
-  $("appVersion").textContent = " · v" + APP_VERSION;
+  document.querySelectorAll(".appVersion").forEach((el) => { el.textContent = "v" + APP_VERSION; });
   // Keep page content clear of the pinned dock as it grows or shrinks
   const syncDock = () => document.documentElement.style.setProperty("--dock-h", $("dock").offsetHeight + "px");
   if (window.ResizeObserver) new ResizeObserver(syncDock).observe($("dock")); else window.addEventListener("resize", syncDock);
@@ -895,7 +1130,7 @@ Office.onReady(async (info) => {
   $("refreshBtn").onclick = () => renderThumb();
   try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
   $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
-  $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); showLogin(); };
+  document.querySelectorAll(".foot-signout").forEach((b) => { b.onclick = async () => { await S.sb.auth.signOut(); showLogin(); }; });
   hashAsYouType($("projectName"));
   $("projectName").addEventListener("change", (e) => {
     const v = canonicalOrder(e.target.value);
