@@ -201,6 +201,18 @@
   /* Order ID already used by another deck (Figma: Error message) */
   .id-error { margin: 4px 0 0; padding: 8px 10px; border-radius: 8px; background: #FAE9EB; color: #CA2135; font-size: 14px; line-height: 20px; font-weight: 400; }
   .id-error strong { font-weight: 500; }
+
+  /* First-run order step */
+  .order-gate { padding: 24px 20px; }
+  .order-gate form { display: flex; flex-direction: column; gap: 20px; }
+  .order-gate h1 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #18202B; }
+  .order-gate .order-sub { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: #6B7280; }
+  .order-gate .field { gap: 8px; }
+  .order-gate .field-label { font-size: 14px; line-height: 20px; color: #18202B; }
+  .order-gate .field input { height: 40px; padding: 8px; }
+  .order-gate .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+  .order-gate .field input[aria-invalid="true"] { border-color: #D44D5D; background: #FAE9EB; }
+  .order-gate .primary { height: 40px; border-radius: 8px; font: 500 14px/20px var(--font); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -235,6 +247,15 @@
   </section>
 
   <!-- Main -->
+  <!-- First time a deck is opened: the designer types the order number (so it matches the DM's list) -->
+  <section id="orderView" class="order-gate" hidden>
+    <form id="orderForm" novalidate>
+      <h1>Which order is this?</h1>
+      <p class="order-sub">Type the order number from the order page so your slides go to the order your DM set up.</p>
+      <label class="field"><span class="field-label">Order number</span><input id="orderInput" inputmode="numeric" autocomplete="off" placeholder="e.g. 351164" aria-describedby="orderInputError"><span class="field-error" id="orderInputError" aria-live="polite"></span></label>
+      <button id="orderBtn" class="primary" type="submit">Continue</button>
+    </form>
+  </section>
   <section id="appView" hidden>
     <div class="container">
       <header class="head">
@@ -298,7 +319,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.13";
+const APP_VERSION = "2.14";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -765,7 +786,9 @@ async function signIn() {
 async function enterApp(user) {
   S.user = user;
   if (S.hero) { S.hero.destroy(); S.hero = null; }
-  $("loginView").hidden = true; $("appView").hidden = false;
+  $("loginView").hidden = true;
+  if (!docStore.get("slideqa.orderSet")) await askOrder();
+  $("orderView").hidden = true; $("appView").hidden = false;
   if (!S.handlerAdded) {
     Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, debounce(refreshDeck, 250));
     S.handlerAdded = true;
@@ -782,9 +805,29 @@ async function enterApp(user) {
   document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshReviewsSoon(); });
 }
 
+// Ask for the order number once per deck; it must match an order the DM has distributed
+function askOrder() {
+  return new Promise((resolve) => {
+    $("appView").hidden = true; $("orderView").hidden = false;
+    const input = $("orderInput"), err = (m) => { $("orderInputError").textContent = m || ""; input.setAttribute("aria-invalid", m ? "true" : "false"); };
+    input.value = ""; err(""); setTimeout(() => input.focus(), 50);
+    input.oninput = () => err("");
+    $("orderForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const raw = input.value.trim(); if (!raw) { err("Enter the order number."); return; }
+      const id = orderId(raw), name = /^\d{5,7}$/.test(id) ? "Order #" + id : raw;
+      const btn = $("orderBtn"); btn.disabled = true;
+      const { data, error } = await S.sb.from("slide_assignments").select("id").in("order_key", [...new Set([id, "order #" + id, name.toLowerCase()])]).limit(1);
+      btn.disabled = false;
+      if (!error && !data.length) { err("We can't find this order. Check the number with your DM; they need to distribute it first."); return; }
+      docStore.set("slideqa.project", name); docStore.set("slideqa.orderSet", "1");
+      resolve();
+    };
+  });
+}
 function showLogin() {
   S.user = null;
-  $("appView").hidden = true; $("loginView").hidden = false;
+  $("appView").hidden = true; $("orderView").hidden = true; $("loginView").hidden = false;
   // Flying-slides hero runs only while the sign-in screen is visible
   if (!S.hero && window.SlideshotHero) S.hero = SlideshotHero.mount($("hero"), { theme: "pastel", height: 146 });
   $("email").focus();
@@ -838,7 +881,7 @@ Office.onReady(async (info) => {
   $("signOutBtn").onclick = async () => { await S.sb.auth.signOut(); showLogin(); };
   $("projectName").addEventListener("change", (e) => {
     const v = e.target.value.trim();
-    docStore.set("slideqa.project", v && v !== fileTitle() ? v : "");
+    docStore.set("slideqa.project", v && v !== fileTitle() ? v : ""); if (v) docStore.set("slideqa.orderSet", "1");
     render();
     loadAssignments().then(render).catch(() => {});
   });
