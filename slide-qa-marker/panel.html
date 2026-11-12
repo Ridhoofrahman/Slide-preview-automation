@@ -302,6 +302,10 @@
   .pp-actions { display: flex; justify-content: flex-end; }
   .pp-save { height: 20px; padding: 0 4px; border: 0; border-radius: 4px; background: none; font: 500 14px/20px var(--font); color: #00308D; cursor: pointer; }
   .pp-save:hover { text-decoration: underline; }
+
+  #footReview { display: inline-flex; align-items: center; gap: 8px; }
+  .foot-link { color: #5A6575; text-decoration: none; }
+  .foot-link:hover { color: #1F2430; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -471,7 +475,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.21";
+const APP_VERSION = "2.22";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -597,6 +601,18 @@ function rangesText(nums) {
   const out = []; let i = 0;
   while (i < nums.length) { let j = i; while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++; out.push(i === j ? String(nums[i]) : nums[i] + "\u2013" + nums[j]); i = j + 1; }
   return out.join(", ");
+}
+// "Dashboard" link in the footer: DMs only for now (the page is DM-only until the designer dashboard ships)
+async function showDashboardLink(user) {
+  const slot = $("footReview"); slot.innerHTML = "";
+  if (!S.dashUrl) return;
+  try {
+    const { data, error } = await S.sb.from("design_managers").select("user_id").eq("user_id", user.id).maybeSingle();
+    if (error || !data) return;
+  } catch (e) { return; }
+  const a = document.createElement("a"); a.className = "foot-link"; a.href = S.dashUrl; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Dashboard";
+  const dot = document.createElement("span"); dot.className = "foot-dot"; dot.setAttribute("aria-hidden", "true");
+  slot.append(a, dot);
 }
 async function saveProfile(user) {
   const m = user.user_metadata || {};
@@ -1012,6 +1028,7 @@ async function enterApp(user) {
   await refreshDeck();
   try { await loadReviews(); } catch (e) { say($("msg"), "Couldn't load review status: " + e.message, "err"); }
   saveProfile(user);
+  showDashboardLink(user);
   try { await loadAssignments(); } catch (e) {}
   applyWorkingMap();
   render();
@@ -1096,7 +1113,7 @@ Office.onReady(async (info) => {
     // Small link in the footer (the title area stays clean)
     const a = document.createElement("a"); a.className = "link"; a.href = cfg.REVIEW_PAGE_URL; a.target = "_blank"; a.rel = "noopener";
     a.textContent = "Review site";
-    void a;   // Figma footer (v3) has no review link
+    S.dashUrl = cfg.REVIEW_PAGE_URL;   // shown in the footer for DMs only (see showDashboardLink)
   }
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
