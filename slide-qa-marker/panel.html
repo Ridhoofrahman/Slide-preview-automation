@@ -475,7 +475,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.23";
+const APP_VERSION = "2.24";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -584,7 +584,7 @@ async function loadAssignments() {
   if (error) { S.assignLoaded = false; return; }
   // Slides already sent under this order number, to spot a different deck using the same number
   const names = [...new Set([projectName(), "Order #" + id, "#" + id, id, ...data.map((a) => a.order_name)])];
-  const sent = await S.sb.from("slide_shots").select("file_key,slide_id").in("project", names).limit(1000);
+  const sent = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number").in("project", names).limit(1000);
   S.orderShots = sent.error ? [] : sent.data;
   S.assignLoaded = true;
   if (data.length && data[0].order_name && data[0].order_name !== projectName()) docStore.set("slideqa.project", data[0].order_name);
@@ -683,6 +683,7 @@ function viewFor(cur) {
   return { mode: "locked", shot };
 }
 function render() {
+  applyWorkingMap();
   const cur = currentSlide();
   const v = viewFor(cur);
   const shot = v.shot || null;
@@ -701,7 +702,7 @@ function render() {
   else if (v.mode === "locked") meta = "Designer: " + shot.designer + ", v" + shot.version;
   $("metaLabel").textContent = meta;
   // Header right: "Slide N" + status chip
-  $("headSlide").textContent = cur ? "Slide " + cur.local : "";
+  $("headSlide").textContent = !cur ? "" : (cur.n && cur.n !== cur.local ? "Slide " + cur.local + " \u2192 Slide " + cur.n : "Slide " + cur.local);
   const tag = $("curStatus"); tag.className = "tag " + (status || "none"); tag.textContent = status ? STATUS_LABEL[status] : "Not sent yet"; tag.hidden = !cur;
 
   // Assignment from the DM for this slide
@@ -765,7 +766,7 @@ function render() {
   const canPrimary = v.mode === "notsent" || v.mode === "update";
   btn.hidden = !canPrimary;
   btn.disabled = !canPrimary || S.busy || !S.canImage;
-  btn.textContent = v.mode === "update" ? "Send v" + (shot.version + 1) + " for review" : cur ? "Mark slide " + cur.n + " ready for review" : "Select a slide";
+  btn.textContent = v.mode === "update" ? "Send v" + (shot.version + 1) + " for review" : cur ? "Mark slide " + cur.local + " ready for review" : "Select a slide";
   cancel.hidden = v.mode !== "update"; cancel.disabled = S.busy;
   upd.hidden = !(locked && shot.status !== "approved");
   // Once the DM has distributed the order, only your own slides can be sent
@@ -913,22 +914,24 @@ function applyWorkingMap() {
   const working = docStore.get("slideqa.workfile") === orderKey();
   const slots = (S.mySlides || []).slice();
   let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
+  const used = new Set();
+  S.slides.forEach((s) => { s.n = null; });
+  // 1) slides already sent keep the position they were sent as
+  S.slides.forEach((s) => { const l = S.latest && S.latest[s.id]; if (l && l.slide_number) { s.n = l.slide_number; used.add(s.n); } });
+  // 2) manual picks, if that position is still free
+  S.slides.forEach((s) => { const m = saved[s.id]; if (s.n == null && m && !used.has(m) && (!working || slots.includes(m))) { s.n = m; used.add(m); } });
   if (working && slots.length) {
-    // Working file: my slides fill the positions the DM gave me, manual picks first
-    const taken = new Set();
-    S.slides.forEach((s) => { const m = saved[s.id]; if (m && slots.includes(m) && !taken.has(m)) { s.n = m; taken.add(m); } else s.n = null; });
-    const free = slots.filter((n) => !taken.has(n));
-    S.slides.forEach((s) => { if (s.n == null) s.n = free.shift() || 0; });
+    // 3a) working file: the rest fill my assigned positions in order
+    const free = slots.filter((n) => !used.has(n));
+    S.slides.forEach((s) => { if (s.n == null) { s.n = free.shift() || 0; if (s.n) used.add(s.n); } });
     return;
   }
-  // Original deck: each slide keeps its own position; a manual pick swaps places with the slide already there
-  S.slides.forEach((s) => { s.n = s.local; });
-  Object.keys(saved).forEach((id) => {
-    const s = S.slides.find((x) => x.id === id), pos = saved[id];
-    if (!s || !pos || s.n === pos) return;
-    const other = S.slides.find((x) => x.n === pos && x !== s);
-    if (other) other.n = s.n;
-    s.n = pos;
+  // 3b) original deck: the rest keep their own position; if it's taken, use one that a moved slide left free
+  const vacated = S.slides.filter((s) => s.n != null && s.n !== s.local && !used.has(s.local)).map((s) => s.local).sort((a, b) => a - b);
+  S.slides.forEach((s) => {
+    if (s.n != null) return;
+    if (!used.has(s.local)) { s.n = s.local; used.add(s.local); return; }
+    const v = vacated.find((x) => !used.has(x)); s.n = v || 0; if (v) used.add(v);
   });
 }
 function setPosition(slideId, pos) {
@@ -944,11 +947,19 @@ function openMapPop() {
   $("ppCur").textContent = "Slide " + cur.local;
   const sel = $("ppSel"); sel.innerHTML = "";
   const choices = (S.mySlides || []).length ? S.mySlides.slice() : S.slides.map((x) => x.local);
-  choices.forEach((pos) => { const o = document.createElement("option"); o.value = pos; o.textContent = "Slide " + pos; if (pos === cur.n) o.selected = true; sel.append(o); });
+  const taken = new Set();
+  (S.orderShots || []).forEach((r) => { if (r.slide_id !== cur.id && r.slide_number) taken.add(r.slide_number); });
+  Object.values(S.latest || {}).forEach((r) => { if (r.slide_id !== cur.id && r.slide_number) taken.add(r.slide_number); });
+  choices.forEach((pos) => {
+    const o = document.createElement("option"); o.value = pos;
+    const busy = taken.has(pos) && pos !== cur.n;
+    o.textContent = "Slide " + pos + (busy ? " \u00B7 sent" : ""); o.disabled = busy;
+    if (pos === cur.n) o.selected = true; sel.append(o);
+  });
   pop.hidden = false; $("mapSwap").classList.add("open"); $("mapSwap").setAttribute("aria-expanded", "true");
   const close = () => { pop.hidden = true; $("mapSwap").classList.remove("open"); $("mapSwap").setAttribute("aria-expanded", "false"); document.removeEventListener("click", outside); };
   const outside = (e) => { if (!pop.contains(e.target) && !$("mapSwap").contains(e.target)) close(); };
-  $("ppSave").onclick = () => { const v = +sel.value; close(); if (v && v !== cur.n) setPosition(cur.id, v); };
+  $("ppSave").onclick = () => { const v = +sel.value; close(); if (v && v !== cur.n && !sel.selectedOptions[0].disabled) setPosition(cur.id, v); };
   setTimeout(() => document.addEventListener("click", outside), 0);
   S.closeMapPop = close;
 }
