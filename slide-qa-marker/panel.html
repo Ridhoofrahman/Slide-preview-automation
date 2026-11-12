@@ -475,7 +475,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.24";
+const APP_VERSION = "2.25";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -584,7 +584,7 @@ async function loadAssignments() {
   if (error) { S.assignLoaded = false; return; }
   // Slides already sent under this order number, to spot a different deck using the same number
   const names = [...new Set([projectName(), "Order #" + id, "#" + id, id, ...data.map((a) => a.order_name)])];
-  const sent = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number").in("project", names).limit(1000);
+  const sent = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version").in("project", names).limit(1000);
   S.orderShots = sent.error ? [] : sent.data;
   S.assignLoaded = true;
   if (data.length && data[0].order_name && data[0].order_name !== projectName()) docStore.set("slideqa.project", data[0].order_name);
@@ -909,30 +909,49 @@ async function refreshDeck() {
 /* ---------- actions ---------- */
 
 // ---- working file: map local slides to the order positions the DM assigned me
+// Where each slide currently sits in the order = the position of its latest sent version (what the DM sees)
+function sentPositions() {
+  const latest = {};
+  (S.orderShots || []).forEach((r) => { const k = r.slide_id; if (!latest[k] || (r.version || 0) > (latest[k].version || 0)) latest[k] = r; });
+  Object.values(S.latest || {}).forEach((r) => { const k = r.slide_id; if (!latest[k] || (r.version || 0) >= (latest[k].version || 0)) latest[k] = r; });
+  const byId = {}; Object.values(latest).forEach((r) => { if (r.slide_number) byId[r.slide_id] = r.slide_number; });
+  return byId;   // slide_id -> position
+}
 function applyWorkingMap() {
   if (!S.slides) return;
   const working = docStore.get("slideqa.workfile") === orderKey();
   const slots = (S.mySlides || []).slice();
   let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
-  const used = new Set();
-  S.slides.forEach((s) => { s.n = null; });
-  // 1) slides already sent keep the position they were sent as
-  S.slides.forEach((s) => { const l = S.latest && S.latest[s.id]; if (l && l.slide_number) { s.n = l.slide_number; used.add(s.n); } });
-  // 2) manual picks, if that position is still free
-  S.slides.forEach((s) => { const m = saved[s.id]; if (s.n == null && m && !used.has(m) && (!working || slots.includes(m))) { s.n = m; used.add(m); } });
+  const sentAt = sentPositions();
+  const mine = new Set(S.slides.map((x) => x.id));
+  const pick = (x) => { const m = saved[x.id]; return m && (!working || slots.includes(m)) ? m : null; };
+  // Positions held by sent slides. A sent slide of mine that's being moved gives its old place up.
+  const held = {};   // position -> slide_id
+  Object.keys(sentAt).forEach((id) => {
+    const me = S.slides.find((x) => x.id === id);
+    if (me && pick(me) && pick(me) !== sentAt[id]) return;
+    held[sentAt[id]] = id;
+  });
+  const used = new Set(Object.keys(held).map(Number));
+  S.slides.forEach((x) => { x.n = null; x.sentAt = sentAt[x.id] || null; });
+  // 1) moves the designer chose, unless another slide already holds that position
+  S.slides.forEach((x) => { const m = pick(x); if (m && (!held[m] || held[m] === x.id) && !(used.has(m) && held[m] !== x.id)) { x.n = m; used.add(m); } });
+  // 2) sent slides stay where they were sent
+  S.slides.forEach((x) => { if (x.n == null && x.sentAt) { x.n = x.sentAt; used.add(x.n); } });
   if (working && slots.length) {
     // 3a) working file: the rest fill my assigned positions in order
     const free = slots.filter((n) => !used.has(n));
-    S.slides.forEach((s) => { if (s.n == null) { s.n = free.shift() || 0; if (s.n) used.add(s.n); } });
+    S.slides.forEach((x) => { if (x.n == null) { x.n = free.shift() || 0; if (x.n) used.add(x.n); } });
     return;
   }
-  // 3b) original deck: the rest keep their own position; if it's taken, use one that a moved slide left free
-  const vacated = S.slides.filter((s) => s.n != null && s.n !== s.local && !used.has(s.local)).map((s) => s.local).sort((a, b) => a - b);
-  S.slides.forEach((s) => {
-    if (s.n != null) return;
-    if (!used.has(s.local)) { s.n = s.local; used.add(s.local); return; }
-    const v = vacated.find((x) => !used.has(x)); s.n = v || 0; if (v) used.add(v);
+  // 3b) original deck: the rest keep their own position; if it's taken, use one a moved slide left free
+  const vacated = S.slides.filter((x) => x.n != null && x.n !== x.local && !used.has(x.local)).map((x) => x.local).sort((a, b) => a - b);
+  S.slides.forEach((x) => {
+    if (x.n != null) return;
+    if (!used.has(x.local)) { x.n = x.local; used.add(x.local); return; }
+    const v = vacated.find((y) => !used.has(y)); x.n = v || 0; if (v) used.add(v);
   });
+  void mine;
 }
 function setPosition(slideId, pos) {
   let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
@@ -948,8 +967,9 @@ function openMapPop() {
   const sel = $("ppSel"); sel.innerHTML = "";
   const choices = (S.mySlides || []).length ? S.mySlides.slice() : S.slides.map((x) => x.local);
   const taken = new Set();
-  (S.orderShots || []).forEach((r) => { if (r.slide_id !== cur.id && r.slide_number) taken.add(r.slide_number); });
-  Object.values(S.latest || {}).forEach((r) => { if (r.slide_id !== cur.id && r.slide_number) taken.add(r.slide_number); });
+  const sentAt = sentPositions();
+  Object.keys(sentAt).forEach((id) => { if (id !== cur.id) taken.add(sentAt[id]); });
+  S.slides.forEach((x) => { if (x.id !== cur.id && x.n && x.sentAt === x.n) taken.add(x.n); });
   choices.forEach((pos) => {
     const o = document.createElement("option"); o.value = pos;
     const busy = taken.has(pos) && pos !== cur.n;
