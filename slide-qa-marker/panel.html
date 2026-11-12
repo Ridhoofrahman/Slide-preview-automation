@@ -475,7 +475,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.22";
+const APP_VERSION = "2.23";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -708,11 +708,14 @@ function render() {
   var as = cur && S.assign ? S.assign[cur.n] : null;
   var mine = !!as && as.assignee_id === S.user.id;
   var splitOrder = !!S.assignLoaded;
+  // Header tag: a slide nobody was assigned reads "Not to work" instead of "Not sent yet"
+  if (cur && splitOrder && !as && !status) { tag.textContent = "Not to work"; tag.className = "tag none"; tag.hidden = false; }
   const at = $("assignTag"); at.hidden = !(cur && splitOrder);
   if (cur && splitOrder) {
     at.className = "assign-tag" + (mine ? " mine" : "");
     if (mine) at.innerHTML = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5.00006 1.79883H11.0001C11.8204 1.79883 12.5001 2.47852 12.5001 3.29883V13.0488C12.5001 13.3301 12.3594 13.5645 12.1251 13.7051C11.8907 13.8457 11.586 13.8223 11.3751 13.6816L8.00006 11.666L4.62506 13.6816C4.41412 13.8223 4.10943 13.8223 3.87506 13.7051C3.64068 13.5645 3.50006 13.3301 3.50006 13.0488V3.29883C3.50006 2.47852 4.17974 1.79883 5.00006 1.79883Z" fill="currentColor"/></svg><span>Assigned to you</span>';
     else at.textContent = as ? "Assigned to " + as.assignee_name + (as.assignee_team ? "-" + as.assignee_team : "") : "Not to work";
+    if (!as) at.hidden = true;   // unassigned: the header tag already says "Not to work"
     $("metaLabel").hidden = true;
   } else $("metaLabel").hidden = false;
   $("mySlides").hidden = true;
