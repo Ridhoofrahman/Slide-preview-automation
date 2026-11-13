@@ -1,0 +1,15 @@
+{
+  "name": "slideshot",
+  "private": true,
+  "type": "module",
+  "description": "Slideshot: PowerPoint add-in for designers + web dashboard for Design Managers (24Slides). No build step; this file only holds dev tooling.",
+  "scripts": {
+    "dev": "node dev/serve.mjs",
+    "check": "node dev/check-syntax.mjs",
+    "shot": "node dev/shot.mjs",
+    "docs": "python3 docs/gen/gen.py"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

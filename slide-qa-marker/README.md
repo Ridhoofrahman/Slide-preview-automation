@@ -1,3 +1,5 @@
+> **Outdated.** This README was written for the original “QA Marker” and still describes the first version of the product. The Supabase and GitHub Pages setup steps below are still valid, but for how Slideshot works today read `../CLAUDE.md` and `../docs/slideshot-docs.html`.
+
 # Slide Review — panduan setup
 
 Dua bagian yang saling terhubung:

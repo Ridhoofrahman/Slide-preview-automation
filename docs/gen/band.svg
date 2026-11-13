@@ -1,0 +1,45 @@
+<svg class="og-band-svg" viewBox="0 0 320 152" fill="none" aria-hidden="true" preserveAspectRatio="xMidYMax slice">
+<g clip-path="url(#ogb0)">
+<rect opacity="0.88" x="-47.1373" y="92.7491" width="117.165" height="66.6376" rx="4.03398" transform="rotate(-42.3391 -47.1373 92.7491)" fill="#E6E0FF"/>
+<g opacity="0.88" clip-path="url(#ogb1)">
+<rect x="-30.5966" y="94.4058" width="49.2093" height="6.66377" rx="1.41819" transform="rotate(-42.3391 -30.5966 94.4058)" fill="#B3A6EC" fill-opacity="0.75"/>
+<rect x="-22.3683" y="103.436" width="73.2282" height="4.66464" rx="0.992736" transform="rotate(-42.3391 -22.3683 103.436)" fill="#B3A6EC" fill-opacity="0.75"/>
+<rect x="-15.4864" y="110.989" width="42.1794" height="4.66464" rx="0.992736" transform="rotate(-42.3391 -15.4864 110.989)" fill="#B3A6EC" fill-opacity="0.75"/>
+</g>
+<g clip-path="url(#ogb2)">
+<path d="M63.9233 71.9885C69.1847 67.1945 69.5203 58.9955 64.673 53.6757C59.8257 48.3559 51.631 47.9297 46.3696 52.7237C41.1082 57.5178 40.7726 65.7167 45.6199 71.0365C50.4672 76.3564 58.6619 76.7826 63.9233 71.9885Z" fill="#00308D"/>
+<path d="M50.8162 66.3018L56.64 66.6047L56.7181 54.5132" stroke="white" stroke-width="1.41189" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<rect opacity="0.78" x="144.421" y="-1.87729" width="163.338" height="110.05" rx="3.35618" transform="rotate(9.61132 144.421 -1.87729)" fill="#FFE5D6"/>
+<g opacity="0.78" clip-path="url(#ogb3)">
+<rect x="156.283" y="20.8426" width="68.6018" height="11.005" rx="1.17991" transform="rotate(9.61132 156.283 20.8426)" fill="#EDB296" fill-opacity="0.75"/>
+<rect x="152.915" y="40.7353" width="102.086" height="7.70352" rx="0.825935" transform="rotate(9.61132 152.915 40.7353)" fill="#EDB296" fill-opacity="0.75"/>
+<rect x="150.097" y="57.3728" width="58.8016" height="7.70352" rx="0.825935" transform="rotate(9.61132 150.097 57.3728)" fill="#EDB296" fill-opacity="0.75"/>
+</g>
+<rect opacity="0.8" x="36.1259" y="78.3552" width="136.957" height="76.7787" rx="3.49283" transform="rotate(-16.4273 36.1259 78.3552)" fill="#FBDDE8"/>
+<g opacity="0.8" clip-path="url(#ogb4)">
+<rect x="52.6121" y="88.3476" width="57.5218" height="7.67787" rx="1.22795" transform="rotate(-16.4273 52.6121 88.3476)" fill="#E7A1BB" fill-opacity="0.75"/>
+<rect x="56.5928" y="101.849" width="85.5979" height="5.37451" rx="0.859564" transform="rotate(-16.4273 56.5928 101.849)" fill="#E7A1BB" fill-opacity="0.75"/>
+<rect x="59.9221" y="113.141" width="49.3044" height="5.37451" rx="0.859564" transform="rotate(-16.4273 59.9221 113.141)" fill="#E7A1BB" fill-opacity="0.75"/>
+</g>
+<g clip-path="url(#ogb5)">
+<path d="M163.219 112.303C171.199 109.95 175.768 101.595 173.423 93.641C171.078 85.6872 162.707 81.1469 154.727 83.4998C146.746 85.8528 142.177 94.2081 144.522 102.162C146.867 110.116 155.238 114.656 163.219 112.303Z" fill="#00308D"/>
+<path d="M152.404 99.838L158.353 103.065L164.654 90.5343" stroke="white" stroke-width="1.22249" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<rect opacity="0.87" x="246.969" y="43.8619" width="122.987" height="69.5271" rx="6.20388" transform="rotate(-8.03197 246.969 43.8619)" fill="#D6F1E6"/>
+<g opacity="0.87" clip-path="url(#ogb6)">
+<rect x="260.32" y="55.0069" width="51.6546" height="6.95271" rx="2.18105" transform="rotate(-8.03197 260.32 55.0069)" fill="#8FCDB4" fill-opacity="0.74902"/>
+<rect x="262.101" y="67.6285" width="76.8669" height="4.8669" rx="1.52674" transform="rotate(-8.03197 262.101 67.6285)" fill="#8FCDB4" fill-opacity="0.74902"/>
+<rect x="263.59" y="78.1847" width="44.2754" height="4.8669" rx="1.52674" transform="rotate(-8.03197 263.59 78.1847)" fill="#8FCDB4" fill-opacity="0.74902"/>
+</g>
+</g>
+<defs>
+<clipPath id="ogb0"><rect width="320" height="152" fill="white"/></clipPath>
+<clipPath id="ogb1"><rect width="95.1966" height="29.6167" fill="white" transform="translate(-38.7158 101.804) rotate(-42.3391)"/></clipPath>
+<clipPath id="ogb2"><rect width="25.7763" height="26.0627" fill="white" transform="translate(36.843 61.4041) rotate(-42.3391)"/></clipPath>
+<clipPath id="ogb3"><rect width="132.712" height="48.9112" fill="white" transform="translate(141.185 18.2859) rotate(9.61132)"/></clipPath>
+<clipPath id="ogb4"><rect width="111.277" height="34.1239" fill="white" transform="translate(40.2965 91.9786) rotate(-16.4273)"/></clipPath>
+<clipPath id="ogb5"><rect width="30.1305" height="30.029" fill="white" transform="translate(140.276 87.7602) rotate(-16.4273)"/></clipPath>
+<clipPath id="ogb6"><rect width="99.927" height="30.9009" fill="white" transform="translate(248.903 56.6179) rotate(-8.03197)"/></clipPath>
+</defs>
+</svg>
