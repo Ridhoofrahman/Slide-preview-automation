@@ -453,7 +453,9 @@
   .bd-sort select { border: 0; background: transparent; font: 14px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; padding-right: 4px; }
   .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
   .bd-card { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 16px 12px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; cursor: pointer; outline: none; transition: box-shadow .15s ease, border-color .15s ease; }
-  .bd-card:hover, .bd-card:focus-visible { border-color: #DDE4EE; box-shadow: 0 2px 4px rgba(18,18,23,.06), 0 8px 20px rgba(18,18,23,.06); }
+  /* Figma 156:9063 (State=Hover, Type=Card): background/neutral/default, outline/neutral, Shadow/s */
+  .bd-card:hover, .bd-card:focus-visible { background: #FFFFFF; border-color: #DDE4EE; box-shadow: 0 1px 2px rgba(18,18,23,.06), 0 1px 3px rgba(18,18,23,.10); }
+  .bd-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .bd-thumbrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
   .bd-thumbs { position: relative; flex: none; width: 112px; height: 63.5px; }
   .bd-thumbs img, .bd-thumbs .ph { position: absolute; left: 0; top: 0; width: 112px; height: 63.5px; object-fit: cover; border-radius: 3.73px; background: #EEF2F8; }
