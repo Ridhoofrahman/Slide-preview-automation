@@ -39,7 +39,7 @@ ANAT=f'''<figure class="anat">
 <div class="ph-body"><div class="ph-row"><span class="assigned">{BOOK}Assigned to you</span><span class="ph-btns"><span class="ic">{SWAP}</span><span class="ic">{EDIT}</span></span><i class="pin l">3</i><i class="pin r">4</i></div>
 <div class="ph-thumb"><span>Annual Summit</span><i class="pin l">5</i></div>
 <div class="ph-btn">Mark slide 9 ready for review<i class="pin l">6</i></div></div>
-<div class="ph-foot"><span>Bela - Cascade</span><span>v2.25 • Sign out</span><i class="pin r">7</i></div></div>
+<div class="ph-foot"><span>Bela - Cascade</span><span>v2.26 • Sign out</span><i class="pin r">7</i></div></div>
 <figcaption><ol class="legend">
 <li>{T('<b>Order ID.</b> The order this deck belongs to. Type digits and the # is added for you.','<b>Order ID.</b> Order tempat deck ini berada. Ketik angka, tanda # ditambahkan otomatis.')}</li>
 <li>{T('<b>Slide and status.</b> Your slide number, plus where it will sit in the order when you moved it (“Slide 9 → Slide 4”), and its status tag.','<b>Slide dan status.</b> Nomor slide di file-mu, plus posisinya di order jika kamu memindahkannya (“Slide 9 → Slide 4”), dan tag statusnya.')}</li>
@@ -57,9 +57,26 @@ FLOW=f'''<ol class="flow">
 <li><b>{T('Designer updates','Designer memperbarui')}</b><span>{T('Uploads the latest version if changes were needed.','Mengunggah versi terbaru jika ada perubahan.')}</span></li>
 <li><b>{T('DM closes the order','DM menutup order')}</b><span>{T('Everything approved, so the DM marks it sent to customer.','Semua approved, lalu DM menandainya terkirim ke customer.')}</span></li></ol>'''
 
-BCARD=f'''<div class="bcards"><div class="bcard"><div class="bthumb"></div><i class="ring" style="--p:60">3</i><b>Order #351164</b><span>Bela, Kevin</span><span class="tt">Tag team</span></div>
-<div class="bcard"><div class="bthumb empty"></div><i class="ring" style="--p:0">0</i><b>Order #123</b><span>Assigned: Ridho</span><span class="muted">No slides sent yet</span></div>
-<div class="bcard"><div class="bthumb"></div><i class="ring full" style="--p:100">✓</i><b>Order #45236</b><span>Rama</span><span class="muted">Sent to customer</span></div></div>'''
+# Board order card, same build as review-app.html orderCard() (Figma 156:8747: Amount =1 / >1 / Not sent yet)
+import math
+CLOCK='<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10.2 5.99995C10.2 3.67495 8.32495 1.79995 5.99995 1.79995C3.67495 1.79995 1.79995 3.67495 1.79995 5.99995C1.79995 8.32495 3.67495 10.2 5.99995 10.2C8.32495 10.2 10.2 8.32495 10.2 5.99995ZM1.19995 5.99995C1.19995 3.3562 3.3562 1.19995 5.99995 1.19995C8.6437 1.19995 10.8 3.3562 10.8 5.99995C10.8 8.6437 8.6437 10.8 5.99995 10.8C3.3562 10.8 1.19995 8.6437 1.19995 5.99995ZM5.69995 3.29995C5.69995 3.1312 5.8312 2.99995 5.99995 2.99995C6.1687 2.99995 6.29995 3.1312 6.29995 3.29995V5.8312L7.9687 6.9562C8.09995 7.04995 8.13745 7.23745 8.0437 7.3687C7.94995 7.49995 7.7812 7.53745 7.6312 7.4437L5.8312 6.2437C5.7562 6.18745 5.69995 6.0937 5.69995 5.99995V3.29995Z" fill="currentColor"/></svg>'
+SENT_RING='<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M0 15C0 6.71573 6.71573 0 15 0C23.2843 0 30 6.71573 30 15C30 23.2843 23.2843 30 15 30C6.71573 30 0 23.2843 0 15Z" fill="#0C7F49"/><path d="M20.5994 10.3525C20.9792 10.6125 21.0642 11.1125 20.788 11.47L13.988 20.27C13.8419 20.46 13.6161 20.5775 13.3664 20.5975C13.1167 20.6175 12.875 20.53 12.6997 20.365L9.29968 17.165C8.96765 16.8525 8.96765 16.345 9.29968 16.0325C9.63171 15.72 10.1709 15.72 10.503 16.0325L13.1991 18.57L19.4147 10.5275C19.6909 10.17 20.2222 10.09 20.602 10.35L20.5994 10.3525Z" fill="white"/></svg>'
+NSY='<svg class="nsy-svg" viewBox="0 0 60 34" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="59" height="33" rx="5.5" fill="#F7F9FC" stroke="#DDE4EE" stroke-dasharray="2 2"/><g transform="translate(22 9)"><path d="M1.60001 6.29322H14.4M3.30667 2.87988H12.6933C13.6359 2.87988 14.4 3.64398 14.4 4.58655V11.4132C14.4 12.3558 13.6359 13.1199 12.6933 13.1199H3.30667C2.36411 13.1199 1.60001 12.3558 1.60001 11.4132V4.58655C1.60001 3.64398 2.36411 2.87988 3.30667 2.87988Z" stroke="#DDE4EE"/></g></svg>'
+def ringsvg(n,total,sent=False):
+    if sent: return f'<span class="bc-ring">{SENT_RING}</span>'
+    C=2*math.pi*13.5; f=min(1,n/total)
+    arc=('<circle cx="15" cy="15" r="13.5" fill="none" stroke="#7ED9A8" stroke-width="3"/>' if f>=1 else
+         f'<circle cx="15" cy="15" r="13.5" fill="none" stroke="#7ED9A8" stroke-width="3" stroke-linecap="round" stroke-dasharray="{C*f:.2f} {C:.2f}" transform="rotate(-90 15 15)"/>' if f>0 else '')
+    return f'<span class="bc-ring"><svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect x="1" y="1" width="28" height="28" rx="14" fill="white"/><rect x="1" y="1" width="28" height="28" rx="14" stroke="#DDE4EE" stroke-width="2"/>{arc}</svg><span class="n">{n}</span></span>'
+def bcard(name,who,when,thumbs,ring,tt=False):
+    th={'one':'<span class="front"></span>','stack':'<span class="back"></span><span class="front"></span>','none':f'<span class="front nsy">{NSY}</span>'}[thumbs]
+    w=f'<span>Last update</span><span class="bc-ago">{CLOCK}{when}</span>' if when else '<span>No slides sent yet</span>'
+    return (f'<div class="bc"><div class="bc-row"><div class="bc-thumbs">{th}{ring}</div>'+('<span class="bc-tt">Tag team</span>' if tt else '')+
+            f'</div><div class="bc-info"><b>{name}</b><span class="bc-who">{who}</span><span class="bc-when">{w}</span></div></div>')
+BCARD=('<div class="bcards" role="img" aria-label="Three example order cards">'+
+ bcard('Order #351164','Bela, Kevin','2 min ago','stack',ringsvg(3,5),tt=True)+
+ bcard('Order #123','Assigned: Ridho',None,'none',ringsvg(0,1))+
+ bcard('Order #45236','Rama','1 day ago','one',ringsvg(4,4,sent=True))+'</div>')
 
 # ---------- sections ----------
 S=[]
@@ -138,6 +155,8 @@ p('Open the Dashboard from the <b>Dashboard</b> link in the add-in footer, or fr
 h3('The board','Board')+
 p('After signing in you land on the board: a greeting, how many slides wait for your review, and one card per order.','Setelah masuk kamu tiba di board: sapaan, berapa slide yang menunggu review, dan satu kartu per order.')+BCARD+
 ul([('<b>Ring number</b> = approved slides. Grey for none, partly green while in progress, a full circle when everything sent is approved, and solid green with a check once sent to customer.','<b>Angka di ring</b> = slide yang sudah approved. Abu-abu jika belum ada, hijau sebagian saat berjalan, lingkaran penuh jika semua yang terkirim sudah approved, dan hijau solid dengan centang setelah terkirim ke customer.'),
+('<b>Thumbnail</b> = the order’s slides. One slide shows a single thumbnail; with more than one, two thumbnails are stacked, and the one in front is a slide waiting for your review when there is one. An order with nothing sent yet shows a dashed “Not sent yet” box.','<b>Thumbnail</b> = slide di order itu. Satu slide tampil sebagai satu thumbnail; jika lebih dari satu, dua thumbnail ditumpuk, dan yang di depan adalah slide yang menunggu reviewmu bila ada. Order yang belum punya slide terkirim menampilkan kotak putus-putus “Not sent yet”.'),
+('<b>Last update</b> under the names shows how long ago the order last changed.','<b>Last update</b> di bawah nama menunjukkan kapan order terakhir berubah.'),
 ('<b>Sort</b> by Longest waiting (default), Most waiting, Recently updated, or Name.','<b>Urutkan</b> berdasarkan Longest waiting (default), Most waiting, Recently updated, atau Name.'),
 ('<b>Tag team</b> appears on orders that involve more than one team.','<b>Tag team</b> muncul di order yang melibatkan lebih dari satu tim.'),
 ('The <b>⋯ menu</b> on a card offers Assign slides, Mark as sent to customer (or Undo), and Delete order.','<b>Menu ⋯</b> di kartu berisi Assign slides, Mark as sent to customer (atau Undo), dan Delete order.'),
@@ -249,7 +268,9 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 ('Recognising a replacement slide as the next version of the one it replaced (parked).','Mengenali slide pengganti sebagai versi berikutnya dari slide yang digantikan (ditunda).')])))
 
 S.append(section('releases','Release notes','Catatan rilis',
-table([('Add-in','Add-in'),('What changed','Yang berubah')],[
+table([('Version','Versi'),('What changed','Yang berubah')],[
+['Dashboard',('Board cards: slide thumbnail (stacked when an order has more than one slide, dashed “Not sent yet” box when nothing is sent), purple Tag team chip, “Last update”; the ⋯ button moved to the bottom-right.','Kartu board: thumbnail slide (bertumpuk jika order punya lebih dari satu slide, kotak putus-putus “Not sent yet” jika belum ada yang terkirim), chip Tag team ungu, “Last update”; tombol ⋯ pindah ke kanan bawah.')],
+['v2.26',('New colours from the Builder DS design system in the add-in and the Dashboard: brand blue, greys, status colours and the progress ring. Nothing changes in how it works.','Warna baru dari design system Builder DS di add-in dan Dashboard: biru brand, abu-abu, warna status dan ring progress. Cara kerjanya tidak berubah.')],
 ['v2.25',('Sent slides can move to a new position with their next version.','Slide yang sudah dikirim bisa pindah posisi bersama versi berikutnya.')],
 ['v2.24',('Positions held by another slide are disabled; header shows “Slide 9 → Slide 4”.','Posisi yang dipegang slide lain dinonaktifkan; header menampilkan “Slide 9 → Slide 4”.')],
 ['v2.23',('“Not to work” tag for unassigned slides.','Tag “Not to work” untuk slide yang tidak ditugaskan.')],
@@ -290,11 +311,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.25','Add-in v2.25')}</span><span class="meta">{T('Updated 12 Nov 2026','Diperbarui 12 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.26','Add-in v2.26')}</span><span class="meta">{T('Updated 13 Nov 2026','Diperbarui 13 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.25.','Slideshot untuk 24Slides. Add-in v2.25.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.26.','Slideshot untuk 24Slides. Add-in v2.26.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)
