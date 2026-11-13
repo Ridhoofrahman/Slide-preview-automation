@@ -17,8 +17,8 @@
     --bg: #F7F9FC; --surface: #FFFFFF; --stage: #EEF2F8; --ink: #1A1F2E; --muted: #6A7389; --line: #DDE4EE;
     --brand: #1C43A5; --brand-hover: #132D70; --focus: #3D66F5;
     --wait: #AD7300; --wait-tint: #FFF9E6;
-    --ok: #0A6139;   --ok-tint: #E6F7EE;
-    --fix: #A81A1A;  --fix-tint: #FFF1F1; --fix-bg: #FFF1F1; --fix-solid: #D62020; --ok-solid: #0C7F49;
+    --ok: #417618;   --ok-tint: #EEF8E6;
+    --fix: #A81A1A;  --fix-tint: #FFF1F1; --fix-bg: #FFF1F1; --fix-solid: #D62020; --ok-solid: #559B1F;
     --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; }
@@ -263,7 +263,7 @@
   .rv-older { align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 8px; background: #F0EBFC; color: #4A2999; font-size: 13px; line-height: 20px; }
   .rv-tag { display: inline-flex; padding: 4px 12px; border-radius: 20px; border: 1px solid; font-size: 16px; line-height: 24px; }
   .rv-tag.ready { background: #FFF9E6; border-color: #FFE08A; color: #AD7300; }
-  .rv-tag.approved { background: #E6F7EE; border-color: #7ED9A8; color: #0A6139; }
+  .rv-tag.approved { background: #EEF8E6; border-color: #B3E295; color: #417618; }
   .rv-tag.changes { background: #FFF1F1; border-color: #FFB0B0; color: #A81A1A; }
   .review figure.slide { align-self: stretch; display: block; border-radius: 6px; overflow: visible; box-shadow: none; background: transparent; }
   .review figure.slide img { width: 100%; max-height: none; border-radius: 6px; }
@@ -290,12 +290,12 @@
   #rvNote { color: #6A7389; overflow-wrap: anywhere; }
   .rv-actions { display: flex; flex-direction: column; gap: 8px; }
   .rv-approve, .rv-change { height: 40px; border-radius: 8px; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
-  .rv-approve { border: 0; background: #0C7F49; color: #FFFFFF; }
-  .rv-approve:hover { background: #0A6139; }
+  .rv-approve { border: 0; background: #559B1F; color: #FFFFFF; }
+  .rv-approve:hover { background: #417618; }
   .rv-change { border: 1px solid #DDE4EE; background: #FFFFFF; color: #A81A1A; }
   .rv-change:hover { border-color: #FFB0B0; }
   .rv-decided { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 20px; }
-  .rv-decided.approved { background: #E6F7EE; color: #0A6139; }
+  .rv-decided.approved { background: #EEF8E6; color: #417618; }
   .rv-decided.changes { background: #FFF9E6; color: #AD7300; }
   .rv-cancel { border: 0; background: none; padding: 0 4px; font: 500 12px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; }
   .rv-cancel:hover { text-decoration: underline; }
@@ -306,7 +306,7 @@
   .rv-comment { display: flex; gap: 8px; padding: 10px; border: 1px solid #DDE4EE; border-radius: 10px; background: #FFFFFF; cursor: default; }
   .rv-comment.hot { background: #EEF2F8; }
   .rv-comment.active { border-color: #A8C3FF; background: #FFFFFF; }
-  .rv-comment.resolved { border-color: #7ED9A8; }
+  .rv-comment.resolved { border-color: #B3E295; }
   .rv-comment .pinno { flex: none; width: 22px; height: 22px; border-radius: 11px; background: #1C43A5; color: #FFFFFF; font-size: 12px; font-weight: 500; display: grid; place-items: center; }
   .rv-comment.resolved .pinno { background: #A3ADC2; }
   .rv-comment .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -363,7 +363,7 @@
   .rv-thumb { flex: none; }
   .rv-banner { flex: none; display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; }
   .rv-banner > span { flex: 1; }
-  .rv-banner.approved { background: #E6F7EE; color: #0A6139; }
+  .rv-banner.approved { background: #EEF8E6; color: #417618; }
   .rv-banner.changes { background: #FFF1F1; color: #A81A1A; }
   .rv-banner.older { background: #F0EBFC; color: #4A2999; }
   .rv-bannerbtn { border: 0; background: none; padding: 0 4px; font: 500 12px/20px inherit; font-family: inherit; color: inherit; cursor: pointer; }
@@ -380,7 +380,7 @@
   .rv-sender { gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #DDE4EE; }
   .rv-sender p { font-size: 14px; line-height: 20px; }
   .rv-actions { padding-bottom: 16px; }
-  .rv-comment.resolved { background: #E6F7EE; border-color: #7ED9A8; }
+  .rv-comment.resolved { background: #EEF8E6; border-color: #B3E295; }
 
   /* ===== Review panel (Figma: Review panel component, 6 states) ===== */
   .review .rv-decision { padding: 16px; gap: 16px; border-bottom: 0; }
@@ -475,7 +475,7 @@
   .bd-ago { display: inline-flex; align-items: center; gap: 4px; }
   .bd-when svg { width: 12px; height: 12px; }
   .bd-tag { margin-left: 4px; padding: 0 6px; border-radius: 10px; font-size: 11px; line-height: 16px; font-weight: 500; }
-  .bd-tag.ok { background: #E6F7EE; color: #0A6139; }
+  .bd-tag.ok { background: #EEF8E6; color: #417618; }
   .bd-tag.sent { background: #EEF4FF; color: #1C43A5; }
   .bd-more { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #6A7389; font-size: 18px; line-height: 1; cursor: pointer; opacity: 0; }
   .bd-card:hover .bd-more, .bd-card:focus-within .bd-more { opacity: 1; background: #FFFFFF; }
@@ -512,7 +512,7 @@
   .bd-act.go { cursor: pointer; }
   .bd-act.go:hover .line strong:last-of-type { text-decoration: underline; text-underline-position: from-font; }
   .bd-act .ic { flex: none; width: 20px; height: 20px; border-radius: 14px; border: 1px solid #A8C3FF; background: #EEF4FF; color: #1C43A5; font-size: 11px; line-height: 18px; text-align: center; font-weight: 600; }
-  .bd-act.k-approved .ic { background: #E6F7EE; border-color: #7ED9A8; color: #0A6139; }
+  .bd-act.k-approved .ic { background: #EEF8E6; border-color: #B3E295; color: #417618; }
   .bd-act.k-changes .ic { background: #FFF1F1; border-color: #FFB0B0; color: #A81A1A; }
   .bd-act.k-comment .ic, .bd-act.k-voice .ic { background: #F0EBFC; border-color: #BDA6EE; color: #4A2999; }
   .bd-act.k-customer .ic { background: #FFF9E6; border-color: #FFE08A; color: #AD7300; }
@@ -544,7 +544,7 @@
   .rv-delete-ic:hover, .rv-delete-ic:focus-visible { background: #FFF1F1; border-color: transparent; }
   /* ===== Banner (Figma component: Banner — Success / Error / Information) ===== */
   .rv-banner { align-items: flex-start; min-height: 52px; padding: 10px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; gap: 0; }
-  .rv-banner.approved { background: #E6F7EE; color: #0A6139; }
+  .rv-banner.approved { background: #EEF8E6; color: #417618; }
   .rv-banner.changes { background: #FFF1F1; color: #A81A1A; }
   .rv-banner.older { background: #F0EBFC; color: #4A2999; }
   .rv-bannerbtn { height: 20px; padding: 0 4px; border-radius: 6px; font: 500 12px/20px inherit; font-family: inherit; color: inherit; background: none; }
@@ -1030,12 +1030,12 @@ function stackIllo(grey) {
   return d;
 }
 // Progress ring (Figma component: states 0 / Some approved / All approved / Sent to customer)
-const SENT_RING = '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M0 15C0 6.71573 6.71573 0 15 0C23.2843 0 30 6.71573 30 15C30 23.2843 23.2843 30 15 30C6.71573 30 0 23.2843 0 15Z" fill="#0C7F49"/><path d="M20.5994 10.3525C20.9792 10.6125 21.0642 11.1125 20.788 11.47L13.988 20.27C13.8419 20.46 13.6161 20.5775 13.3664 20.5975C13.1167 20.6175 12.875 20.53 12.6997 20.365L9.29968 17.165C8.96765 16.8525 8.96765 16.345 9.29968 16.0325C9.63171 15.72 10.1709 15.72 10.503 16.0325L13.1991 18.57L19.4147 10.5275C19.6909 10.17 20.2222 10.09 20.602 10.35L20.5994 10.3525Z" fill="white"/></svg>';
+const SENT_RING = '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M0 15C0 6.71573 6.71573 0 15 0C23.2843 0 30 6.71573 30 15C30 23.2843 23.2843 30 15 30C6.71573 30 0 23.2843 0 15Z" fill="#559B1F"/><path d="M20.5994 10.3525C20.9792 10.6125 21.0642 11.1125 20.788 11.47L13.988 20.27C13.8419 20.46 13.6161 20.5775 13.3664 20.5975C13.1167 20.6175 12.875 20.53 12.6997 20.365L9.29968 17.165C8.96765 16.8525 8.96765 16.345 9.29968 16.0325C9.63171 15.72 10.1709 15.72 10.503 16.0325L13.1991 18.57L19.4147 10.5275C19.6909 10.17 20.2222 10.09 20.602 10.35L20.5994 10.3525Z" fill="white"/></svg>';
 function ringSvg(frac, sent) {
   if (sent) return SENT_RING;
   const C = 2 * Math.PI * 13.5;
-  const arc = frac >= 1 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#7ED9A8" stroke-width="3"/>'
-    : frac > 0 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#7ED9A8" stroke-width="3" stroke-linecap="round" stroke-dasharray="' + (C * frac).toFixed(2) + ' ' + C.toFixed(2) + '" transform="rotate(-90 15 15)"/>' : "";
+  const arc = frac >= 1 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#559B1F" stroke-width="3"/>'
+    : frac > 0 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#559B1F" stroke-width="3" stroke-linecap="round" stroke-dasharray="' + (C * frac).toFixed(2) + ' ' + C.toFixed(2) + '" transform="rotate(-90 15 15)"/>' : "";
   return '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect x="1" y="1" width="28" height="28" rx="14" fill="white"/><rect x="1" y="1" width="28" height="28" rx="14" stroke="#DDE4EE" stroke-width="2"/>' + arc + '</svg>';
 }
 function projectRingState(p) {

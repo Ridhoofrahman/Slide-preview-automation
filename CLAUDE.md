@@ -7,7 +7,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - **Apply Figma designs exactly.** Read the node, measure it, then match px, colors, radius and spacing. Export icons from Figma as SVG; never hand-draw icons. After building, measure DOM positions against the Figma numbers and look at a screenshot. Fonts render ~1px wider in Chrome than in Figma, so give wrapping text 1–2px slack to keep Figma's line breaks.
 - If the design conflicts with how something works (e.g. a hover button covering a tag), do not silently pick: apply the design where possible, explain the conflict, propose one fix.
 - **Never commit or push until she says "commit".** Commit messages are short English imperatives, e.g. `Fix duplicate positions; show Slide x → Slide y in the header`.
-- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.26). The dashboard has no version string.
+- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.27). The dashboard has no version string.
 - **After every shipped change, update the docs**: edit `docs/gen/gen.py` (English and Indonesian together, plus a release-notes row, the version badge and the "Updated" date), run `npm run docs`, and publish/commit `docs/slideshot-docs.html`.
 - For each visual change, save a preview PNG (`npm run shot`) and tell her where it is. Say plainly what was only tested with mock data.
 - Be honest and short. Report what changed, what you verified, and what she needs to decide.
@@ -67,7 +67,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 Figma file: `https://www.figma.com/design/DHcyMFzra5Wi7o18Uy6fW0/Slideshot` (fileKey `DHcyMFzra5Wi7o18Uy6fW0`). Node ids and what they define are in `design/FIGMA.md`. Connect the official **Figma MCP** in Claude Code to read it.
 - Font **Geist** (400/500; 600 for the docs page). Brand blue **#1C43A5** (`background/brand/default`).
 - Text `#1A1F2E` (title) / `#454C63` (body), subtle `#6A7389`; borders `#DDE4EE` (`outline/neutral`), input borders `#C2CCDB` (`divider/default`); canvas `#F7F9FC`; header bar `#EEF2F8` (`elevation/sunken`); keyboard focus ring `#3D66F5` (no DS token).
-- Status chips (Builder DS accent/outline/text): grey `#F7F9FC / #DDE4EE / #454C63`, yellow `#FFF9E6 / #FFE08A / #AD7300`, red `#FFF1F1 / #FFB0B0 / #A81A1A`, green `#E6F7EE / #7ED9A8 / #0A6139` (ring `#7ED9A8`, solid `#0C7F49`), purple (Tag team, working-file note) `#F0EBFC / #BDA6EE / #4A2999`. Scrim `overlay/scrim` #1A1F2E 50%. Full list: `design/DESIGN-SYSTEM.md`.
+- Status chips (Builder DS accent/outline/text): grey `#F7F9FC / #DDE4EE / #454C63`, yellow `#FFF9E6 / #FFE08A / #AD7300`, red `#FFF1F1 / #FFB0B0 / #A81A1A`, green `#EEF8E6 / #B3E295 / #417618` (ring `#559B1F` = `icon/success`, solid `#559B1F`), purple (Tag team, working-file note) `#F0EBFC / #BDA6EE / #4A2999`. Scrim `overlay/scrim` #1A1F2E 50%. Full list: `design/DESIGN-SYSTEM.md`.
 - Names that were decided: "Adjust distribution" (not "Edit split"), "Dashboard" (footer link; was "Review site"), "Not to work", "Not sent yet", "Upload the latest version", "Send to customer".
 
 ## Develop and test
@@ -94,9 +94,9 @@ npm run docs                     # regenerate docs/slideshot-docs.html
 5. Update the docs page (see above).
 
 ## Current state (when this package was made)
-- Panel is v2.26: the add-in, the Dashboard and the docs page use the Builder DS palette (Figma file and both apps migrated 2026-11-13).
+- Panel is v2.27: the add-in, the Dashboard and the docs page use the Builder DS palette (Figma file and both apps migrated 2026-11-13).
 - The board order cards (Figma node 156:8747) and `manifest.xml` v1.0.3.0 are committed (`e43227c`); Windows needs the manifest replaced by hand in the shared folder.
-- `docs/slideshot-docs.html` is current for panel v2.26, including the new board cards.
+- `docs/slideshot-docs.html` is current for panel v2.27, including the new board cards.
 
 ## Open items and decisions waiting for Uda
 1. Done: board cards and docs committed; colours aligned with Builder DS (v2.26).

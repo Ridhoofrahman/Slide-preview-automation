@@ -22,7 +22,7 @@
     --grey-bg: #EEF2F8; --grey-bd: #DDE4EE;
     --yellow-bg: #FFF9E6; --yellow-bd: #FFE08A; --yellow-fg: #AD7300;
     --red-bg: #FFF1F1; --red-bd: #FFB0B0; --red-fg: #A81A1A;
-    --green-bg: #E6F7EE; --green-bd: #7ED9A8; --green-fg: #0A6139; --success: #7ED9A8; --success-solid: #0C7F49; --danger-solid: #D62020;
+    --green-bg: #EEF8E6; --green-bd: #B3E295; --green-fg: #417618; --success: #B3E295; --success-solid: #559B1F; --danger-solid: #D62020;
     --pin-bd: #A8C3FF; --scrim: rgba(26, 31, 46, .5); --overlay: rgba(26, 31, 46, .5); /* Builder DS: overlay/scrim */
     --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
@@ -200,7 +200,7 @@
 
   /* Assignment marker as plain text (Figma: Add in — other designer / me / not to work) */
   .assign-tag, .assign-tag.mine { height: auto; padding: 0; border: 0; border-radius: 0; background: none; font-size: 12px; line-height: 16px; font-weight: 400; color: #6A7389; }
-  .assign-tag.mine { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; color: #0A6139; }
+  .assign-tag.mine { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; color: #417618; }
   .assign-tag.mine svg { width: 16px; height: 16px; flex: none; }
   #reviewLinkWrap { display: none; }
 
@@ -475,7 +475,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.26";
+const APP_VERSION = "2.27";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);

@@ -5,7 +5,7 @@
 - Library: **Builder DS** (Figma team library, already added to the Slideshot file `DHcyMFzra5Wi7o18Uy6fW0`).
 - Library key: `lk-76d9bae431e360dd225a71fc8893a838af097617d6d9bf50b6ea70697f6ac365f1960248279e5d59a08d82849de616bad8f412724f1720eb917c6c25b8a2905c`
 - Slideshot-specific components (order card, slide thumbnail, progress ring, review panel…) are on the Slideshot **Components** page (`347:10403`). See `design/FIGMA.md`. **They still use the old token set** (see "Migration status").
-- Catalogue read from the published library on **2026-11-13**, after Uda published the new token setup. If the DS changes, refresh this file (see the end).
+- Catalogue read from the published library on **2026-11-13**, after Uda published the new token setup; success palette and icon/* values re-read later the same day (new green #559B1F). If the DS changes, refresh this file (see the end).
 
 ## Token structure (new)
 | Collection | What it holds | Use it for |
@@ -45,11 +45,11 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | `text/disabled` | #A3ADC2 |
 | `text/on-color` | #FFFFFF |
 | `text/color/brand` | #1C43A5 |
-| `text/color/success` | #0A6139 |
+| `text/color/success` | #417618 |
 | `text/color/warning` | #AD7300 |
 | `text/color/danger` | #A81A1A |
 | `text/color/information` | #4A2999 |
-| `text/disabled/brand · success · warning · danger · information` | #3B74F5 · #12A45F · #FFB800 · #F23B3B · #7D4FE0 |
+| `text/disabled/brand · success · warning · danger · information` | #3B74F5 · #6EC22F · #FFB800 · #F23B3B · #7D4FE0 |
 
 ### Icon
 | Token | Value |
@@ -57,23 +57,23 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | `icon/neutral` | #454C63 |
 | `icon/subtle` · `icon/disabled` | #A3ADC2 |
 | `icon/on-color` | #FFFFFF |
-| `icon/brand` | #1C43A5 |
-| `icon/success` | #0A6139 |
-| `icon/warning` | #AD7300 |
-| `icon/danger` | #A81A1A |
-| `icon/information` | #4A2999 |
+| `icon/brand` | #2557D4 |
+| `icon/success` | #559B1F (also the progress ring) |
+| `icon/warning` | #E09600 |
+| `icon/danger` | #D62020 |
+| `icon/information` | #6035C4 |
 
 ### Background
 | Token | default · hover · active / hover-subtle · disabled |
 |---|---|
 | `background/neutral/*` | #FFFFFF · #F7F9FC · active #DDE4EE · disabled #F7F9FC |
 | `background/brand/*` | #1C43A5 · #132D70 · active #EEF4FF · hover-subtle #EEF4FF · disabled #A8C3FF |
-| `background/success/*` | #0C7F49 · #0A6139 · disabled #7ED9A8 |
+| `background/success/*` | #559B1F · #417618 · disabled #B3E295 |
 | `background/warning/*` | #E09600 · #AD7300 · disabled #FFE08A |
 | `background/danger/*` | #D62020 · #A81A1A · hover-subtle #FFF1F1 · disabled #FFB0B0 |
 | `background/information/*` | #6035C4 · #4A2999 · disabled #BDA6EE |
 | `background/disabled/disabled` | #EEF2F8 |
-| `background/accent/neutral · brand · success · warning · danger · information` | #F7F9FC · #EEF4FF · #E6F7EE · #FFF9E6 · #FFF1F1 · #F0EBFC |
+| `background/accent/neutral · brand · success · warning · danger · information` | #F7F9FC · #EEF4FF · #EEF8E6 · #FFF9E6 · #FFF1F1 · #F0EBFC |
 
 ### Elevation, outline, divider
 | Token | Value |
@@ -82,7 +82,7 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | `elevation/default` · `raised` · `overlay` | #FFFFFF |
 | `outline/neutral` | #DDE4EE |
 | `outline/brand` | #A8C3FF |
-| `outline/success` · `warning` · `danger` · `information` | #7ED9A8 · #FFE08A · #FFB0B0 · #BDA6EE |
+| `outline/success` · `warning` · `danger` · `information` | #B3E295 · #FFE08A · #FFB0B0 · #BDA6EE |
 | `outline/on-color` | #FFFFFF |
 | `divider/default` | #C2CCDB |
 | `tooltip/default` | #1A1F2E |
@@ -133,7 +133,7 @@ Found while reading on 2026-11-13. Check with Uda before relying on these:
 2. **Old number/typography bindings were fixed on 2026-11-13** in the Builder DS file (`QMbLblwBhRXTdJLRetSG6X`): 1,529 bindings were moved to `scale/*`, `radii/*` and `font-*` with the same value (including all icons, which now use `scale/400` for 20 px). Radius 999 uses `scale/full`; radius 0 uses `scale/none`. Uda fixed the colour bindings by hand. **Audit of 2026-11-13: every active component binds only to the new collections.** Old variables remain only in the archived `.buttons` component on the Archives page and in the documentation frames on the Typography, Effects, Icon and Tab pages. Those are not components, so they were left on purpose.
 3. **`text-xl/Bold` is SemiBold** (bound to `font-weight/semi-bold`), while the other Bold styles are Bold.
 4. No text style for 16/24 or 13 px.
-5. **Slideshot file, stage 1 done (2026-11-13):** 905 old number/typography bindings on the Add in, Review page and Components pages were moved to `scale/*`, `radii/*` and `font-*` with the same value. `radii/round` (999) was later moved to the new `radii/full`. Left on purpose: 3 chevron icons in `Summary` instances on the old **v1** frames (Add in page), whose main component "Summary/Opened old" is gone. Uda keeps v1 as is. **Stage 2 (colours) done (2026-11-13):** 769 paint bindings + 42 text ranges were moved to Mapped tokens. Decisions: canvas/bg → `background/accent/neutral`; header bar/accent grey/subtle → `elevation/sunken`; icon/secondary → `icon/neutral`; icon/red → `icon/danger` (icons) or `background/danger/default` (shapes); input border dark-grey → `divider/default`; progress ring → `outline/success`; Tag team icon purple → `icon/information`; scrim → the new `overlay/scrim`. The local collections "Slide QA / Color" and "Collection" were deleted from the Slideshot file afterwards.
+5. **Slideshot file, stage 1 done (2026-11-13):** 905 old number/typography bindings on the Add in, Review page and Components pages were moved to `scale/*`, `radii/*` and `font-*` with the same value. `radii/round` (999) was later moved to the new `radii/full`. Left on purpose: 3 chevron icons in `Summary` instances on the old **v1** frames (Add in page), whose main component "Summary/Opened old" is gone. Uda keeps v1 as is. **Stage 2 (colours) done (2026-11-13):** 769 paint bindings + 42 text ranges were moved to Mapped tokens. Decisions: canvas/bg → `background/accent/neutral`; header bar/accent grey/subtle → `elevation/sunken`; icon/secondary → `icon/neutral`; icon/red → `icon/danger` (icons) or `background/danger/default` (shapes); input border dark-grey → `divider/default`; progress ring → `outline/success` (later `icon/success`, see Figma 146:7514); Tag team icon purple → `icon/information`; scrim → the new `overlay/scrim`. The local collections "Slide QA / Color" and "Collection" were deleted from the Slideshot file afterwards.
    Raw-hex pass (2026-11-13): unbound old-palette hex on UI text/fills was bound to Mapped tokens too. Left on purpose: the three dialogs on the Review page (Uda will redo them), logo/illustration vectors (their colours are illustration-only), and section title annotations on the canvas.
 6. **New token `overlay/scrim`** (added 2026-11-13): Mapped `overlay/scrim` → Alias `overlay/scrim-50` (hidden) → Brand `color/overlay/scrim-50` (hidden) = #1A1F2E at 50%. Used for badges over slide thumbnails and modal backdrops.
 7. The **apps** (`panel.html`, `review-app.html`) still use the **old palette** (brand #00308D, body #3F4652, canvas #F6F7F9, outline #E3E6EB…). The new palette has a different brand blue (#1C43A5) and cooler greys. To move Slideshot over, accept the library update in Figma and rebind the components, then update the CSS variables in `panel.html` / `review-app.html`. That is a visible change, so only on Uda's go.
