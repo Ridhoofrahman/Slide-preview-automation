@@ -7,13 +7,13 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>6f3c2a1e-8b4d-4e7a-9c52-1d2e3f4a5b6c</Id>
-  <Version>1.0.2.0</Version>
+  <Version>1.0.3.0</Version>
   <ProviderName>24Slides</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Slideshot"/>
   <Description DefaultValue="Send finished slides to your design manager for review and see their feedback, right inside PowerPoint."/>
-  <IconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-64.png"/>
+  <IconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-32.png?v=slideshot1"/>
+  <HighResolutionIconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-64.png?v=slideshot1"/>
   <SupportUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/"/>
   <AppDomains>
     <AppDomain>https://ridhoofrahman.github.io</AppDomain>
@@ -69,9 +69,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-16.png"/>
-        <bt:Image id="Icon.32" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-32.png"/>
-        <bt:Image id="Icon.80" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-80.png"/>
+        <bt:Image id="Icon.16" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-16.png?v=slideshot1"/>
+        <bt:Image id="Icon.32" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-32.png?v=slideshot1"/>
+        <bt:Image id="Icon.80" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/assets/icon-80.png?v=slideshot1"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Taskpane.Url" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/taskpane.html"/>

@@ -453,26 +453,32 @@
   .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
   .bd-card { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 16px 12px; background: #FFFFFF; border: 1px solid #E3E6EB; border-radius: 8px; cursor: pointer; outline: none; transition: box-shadow .15s ease, border-color .15s ease; }
   .bd-card:hover, .bd-card:focus-visible { border-color: #CDD2DA; box-shadow: 0 2px 4px rgba(18,18,23,.06), 0 8px 20px rgba(18,18,23,.06); }
-  .bd-thumbs { position: relative; width: 124px; height: 68px; margin: 1px 0 0 1px; }
-  .bd-thumbs img, .bd-thumbs .ph { position: absolute; left: 0; top: 8px; width: 111px; height: 60px; object-fit: cover; border-radius: 2px; background: #EEF0F3; box-shadow: 0 1px 2px rgba(18,18,23,.12), 0 1px 3px rgba(18,18,23,.08); }
-  .bd-thumbs .back { left: 3px; top: 4px; transform: rotate(4deg); }
-  .bd-thumbs .front { left: 0; }
-  .bd-ring { position: absolute; left: 95px; top: -8px; width: 30px; height: 30px; }
+  .bd-thumbrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .bd-thumbs { position: relative; flex: none; width: 112px; height: 63.5px; }
+  .bd-thumbs img, .bd-thumbs .ph { position: absolute; left: 0; top: 0; width: 112px; height: 63.5px; object-fit: cover; border-radius: 3.73px; background: #EEF0F3; }
+  .bd-thumbs .front { box-shadow: 0 1.86px 3.72px rgba(18,18,23,.06), 0 1.86px 5.58px rgba(18,18,23,.10); }
+  /* Second slide peeks out behind the first: up and left, tilted 3 degrees (counter-clockwise) */
+  .bd-thumbs .back { left: -5.1px; top: -3px; transform: rotate(-3deg); transform-origin: 0 0; }
+  .bd-thumbs .nsy { border-radius: 11.2px; background: transparent; overflow: visible; }
+  .bd-thumbs .nsy .nsy-svg { display: block; width: 112px; height: 63.5px; }
+  .bd-tt { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px solid #ACA4D9; border-radius: 20px; background: #EFEDF8; color: #473C90; font-size: 12px; line-height: 16px; white-space: nowrap; }
+  .bd-ring { position: absolute; left: 94px; top: -8px; width: 30px; height: 30px; }
   .bd-ring svg { position: absolute; inset: 0; width: 30px; height: 30px; }
   .bd-ring .n { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #1F2430; }
   .bd-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .bd-info h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1F2430; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .bd-who { margin: 0; font-size: 14px; line-height: 20px; color: #3F4652; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bd-when { margin: 0; display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: #6B7280; flex-wrap: wrap; }
+  .bd-when { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6B7280; flex-wrap: wrap; }
+  .bd-ago { display: inline-flex; align-items: center; gap: 4px; }
   .bd-when svg { width: 12px; height: 12px; }
   .bd-tag { margin-left: 4px; padding: 0 6px; border-radius: 10px; font-size: 11px; line-height: 16px; font-weight: 500; }
   .bd-tag.ok { background: #E6F8F2; color: #006B4B; }
   .bd-tag.sent { background: #F0F6FC; color: #00308D; }
-  .bd-more { position: absolute; right: 8px; top: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #6B7280; font-size: 18px; line-height: 1; cursor: pointer; opacity: 0; }
-  .bd-card:hover .bd-more, .bd-card:focus-within .bd-more { opacity: 1; }
+  .bd-more { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #6B7280; font-size: 18px; line-height: 1; cursor: pointer; opacity: 0; }
+  .bd-card:hover .bd-more, .bd-card:focus-within .bd-more { opacity: 1; background: #FFFFFF; }
   .bd-more:hover { background: #F6F7F9; color: #1F2430; }
   @media (hover: none) { .bd-more { opacity: 1; } }
-  .bd-menu { position: absolute; right: 8px; top: 40px; z-index: 6; min-width: 220px; padding: 4px; background: #FFFFFF; border: 1px solid #E3E6EB; border-radius: 8px; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
+  .bd-menu { position: absolute; right: 8px; bottom: 40px; z-index: 6; min-width: 220px; padding: 4px; background: #FFFFFF; border: 1px solid #E3E6EB; border-radius: 8px; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
   .bd-menuitem { text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 6px; font: 14px/20px inherit; font-family: inherit; color: #1F2430; cursor: pointer; }
   .bd-menuitem:hover:not(:disabled) { background: #F6F7F9; }
   .bd-menuitem:disabled { color: #8B93A1; cursor: not-allowed; }
@@ -630,7 +636,6 @@
   .bd-headtools { display: flex; align-items: center; gap: 12px; flex: none; }
   .bd-assignbtn { height: 40px; padding: 0 14px; border: 1px solid #E3E6EB; border-radius: 8px; background: #FFFFFF; color: #1F2430; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
   .bd-assignbtn:hover { background: #F6F7F9; }
-  .bd-thumbs .front.ph { left: 0; }
   .as-dialog { width: min(520px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 12px; box-shadow: 0 12px 40px rgba(18,18,23,.22); font-family: "Geist", "Segoe UI", system-ui, sans-serif; color: #1F2430; }
   .as-dialog::backdrop { background: rgba(24,32,43,.35); }
   .as-dialog form { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
@@ -1007,7 +1012,7 @@ function visibleProjects() {
 const BOARD = { sort: "waiting" };
 try { BOARD.sort = localStorage.getItem("qa.sort") || "waiting"; } catch (e) {}
 const SORTS = { waiting: "Longest waiting", most: "Most waiting", recent: "Recently updated", name: "Name" };
-const CLOCK = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.6" stroke="currentColor" stroke-width="1.1"/><path d="M6 3.6V6l1.6 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>';
+const CLOCK = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10.2 5.99995C10.2 3.67495 8.32495 1.79995 5.99995 1.79995C3.67495 1.79995 1.79995 3.67495 1.79995 5.99995C1.79995 8.32495 3.67495 10.2 5.99995 10.2C8.32495 10.2 10.2 8.32495 10.2 5.99995ZM1.19995 5.99995C1.19995 3.3562 3.3562 1.19995 5.99995 1.19995C8.6437 1.19995 10.8 3.3562 10.8 5.99995C10.8 8.6437 8.6437 10.8 5.99995 10.8C3.3562 10.8 1.19995 8.6437 1.19995 5.99995ZM5.69995 3.29995C5.69995 3.1312 5.8312 2.99995 5.99995 2.99995C6.1687 2.99995 6.29995 3.1312 6.29995 3.29995V5.8312L7.9687 6.9562C8.09995 7.04995 8.13745 7.23745 8.0437 7.3687C7.94995 7.49995 7.7812 7.53745 7.6312 7.4437L5.8312 6.2437C5.7562 6.18745 5.69995 6.0937 5.69995 5.99995V3.29995Z" fill="currentColor"/></svg>';
 const firstName = (n) => (n || "").split(/\s+/)[0] || "";
 function greeting() { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
 // Loading: "Cards · Stacking motion" (Figma) — mint stays, pink / lavender / peach fly in and settle, loop 2.2587s
@@ -1065,19 +1070,22 @@ function cardMenu(p, anchor) {
 function orderCard(p) {
   const c = el("article", "bd-card"); c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", "Open " + p.name);
   const front = p.slides.find((x) => x.status === "ready") || p.slides[0]; const back = p.slides.find((x) => x !== front);
+  const top = el("div", "bd-thumbrow");
   const th = el("div", "bd-thumbs");
-  if (back) { const b = new Image(); b.className = "back"; b.alt = ""; b.dataset.k = keyOf(back); th.append(b); } else th.append(el("span", "back ph"));
-  if (front) { const f = new Image(); f.className = "front"; f.alt = ""; f.dataset.k = keyOf(front); th.append(f); } else th.append(el("span", "front ph"));
-  th.append(ring(p)); c.append(th);
+  if (front) {
+    if (back) { const b = new Image(); b.className = "back"; b.alt = ""; b.dataset.k = keyOf(back); th.append(b); }   // more than one slide: stacked
+    const f = new Image(); f.className = "front"; f.alt = ""; f.dataset.k = keyOf(front); th.append(f);
+  } else { const n = el("span", "front ph nsy"); n.innerHTML = '<svg class="nsy-svg" viewBox="0 0 60 34" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="59" height="33" rx="5.5" fill="#F6F7F9" stroke="#CDD2DA" stroke-dasharray="2 2"/><g transform="translate(22 9)"><path d="M1.60001 6.29322H14.4M3.30667 2.87988H12.6933C13.6359 2.87988 14.4 3.64398 14.4 4.58655V11.4132C14.4 12.3558 13.6359 13.1199 12.6933 13.1199H3.30667C2.36411 13.1199 1.60001 12.3558 1.60001 11.4132V4.58655C1.60001 3.64398 2.36411 2.87988 3.30667 2.87988Z" stroke="#CDD2DA"/></g></svg>'; th.append(n); }   // nothing sent yet
+  th.append(ring(p)); top.append(th);
+  if (p.teams && p.teams.size > 1) { const t = el("span", "bd-tt", "Tag team"); t.title = [...p.teams].join(" + "); top.append(t); }
+  c.append(top);
   const info = el("div", "bd-info");
   const t = el("h3", "", p.name); t.title = p.name; info.append(t);
   info.append(el("p", "bd-who", [...p.designers].join(", ")));
   if (p.assignOnly) info.querySelector(".bd-who").textContent = "Assigned: " + [...p.designers].join(", ");
-  const when = el("p", "bd-when"); when.innerHTML = CLOCK; when.append(document.createTextNode(ago(p.lastAt)));
-  const st = S.projectStatus[p.key];
-  if (st && st.sent_at) when.append(el("span", "bd-tag sent", "Sent to customer"));
-  else if (projectProgress(p).allApproved) when.append(el("span", "bd-tag ok", "All approved"));
-  if (p.teams && p.teams.size > 1) { const t = el("span", "bd-tag tagteam", "Tag team"); t.title = [...p.teams].join(" + "); when.append(t); }
+  const when = el("p", "bd-when");
+  when.append(el("span", "", "Last update"));
+  const ago_ = el("span", "bd-ago"); ago_.innerHTML = CLOCK; ago_.append(document.createTextNode(ago(p.lastAt))); when.append(ago_);
   if (p.assignOnly) { when.innerHTML = ""; when.append(el("span", "", "No slides sent yet")); }
   info.append(when); c.append(info);
   const more = el("button", "bd-more"); more.setAttribute("aria-label", "More actions for " + p.name); more.textContent = "\u22EF";
