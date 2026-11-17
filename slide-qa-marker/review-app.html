@@ -250,8 +250,8 @@
   .rv-back:hover { background: #F7F9FC; }
   .rv-back svg { width: 20px; height: 20px; }
   .rv-name { flex: 1; min-width: 0; margin: 0 0 0 -2px; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rv-version select { height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; padding: 0 32px 0 10px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' fill='none' stroke='%233F4652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center / 18px; appearance: none; font: 14px/20px inherit; font-family: inherit; color: #454C63; cursor: pointer; }
-  .rv-delete { display: inline-flex; align-items: center; gap: 0; height: 40px; padding: 8px 12px; border: 0; border-radius: 8px; background: none; color: #A81A1A; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .rv-version select { height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; padding: 0 32px 0 10px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' fill='none' stroke='%233F4652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center / 18px; appearance: none; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; cursor: pointer; }
+  .rv-delete { display: inline-flex; align-items: center; gap: 0; height: 40px; padding: 8px 12px; border: 0; border-radius: 8px; background: none; color: #A81A1A; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
   .rv-delete span { padding: 0 8px; }
   .rv-delete svg { width: 20px; height: 20px; }
   .rv-delete:hover { background: #FFF1F1; }
@@ -291,7 +291,7 @@
   #rvBy { color: #1A1F2E; font-weight: 500; }
   #rvNote { color: #6A7389; overflow-wrap: anywhere; }
   .rv-actions { display: flex; flex-direction: column; gap: 8px; }
-  .rv-approve, .rv-change { height: 40px; border-radius: 8px; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .rv-approve, .rv-change { height: 40px; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
   .rv-approve { border: 0; background: #559B1F; color: #FFFFFF; }
   .rv-approve:hover { background: #417618; }
   .rv-change { border: 1px solid #DDE4EE; background: #FFFFFF; color: #A81A1A; }
@@ -299,7 +299,7 @@
   .rv-decided { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 20px; }
   .rv-decided.approved { background: #EEF8E6; color: #417618; }
   .rv-decided.changes { background: #FFF9E6; color: #AD7300; }
-  .rv-cancel { border: 0; background: none; padding: 0 4px; font: 500 12px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; }
+  .rv-cancel { border: 0; background: none; padding: 0 4px; font-family: inherit; font-size: 12px; line-height: 20px; font-weight: 500; color: #1A1F2E; cursor: pointer; }
   .rv-cancel:hover { text-decoration: underline; }
   .rv-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
   .rv-thread h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
@@ -317,7 +317,7 @@
   .rv-comment .meta { display: flex; justify-content: space-between; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: #6A7389; }
   .rv-comment .when { display: flex; align-items: center; gap: 4px; }
   .rv-comment .dot { width: 4px; height: 4px; border-radius: 2px; background: currentColor; opacity: .7; }
-  .rv-comment .act { border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .rv-comment .act { border: 0; background: none; padding: 0; font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .player { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 4px; border-radius: 999px; background: #F7F9FC; }
   .player .pp { width: 20px; height: 20px; border: 0; padding: 0; background: none; color: #1C43A5; cursor: pointer; display: grid; place-items: center; flex: none; }
   .player .pp svg { width: 18px; height: 18px; }
@@ -327,13 +327,13 @@
   .wave.live i { animation: wave 1s ease-in-out infinite; }
   @keyframes wave { 50% { transform: scaleY(.45); } }
   .rv-closed { margin: 0; padding: 14px 16px 18px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 18px; color: #6A7389; }
-  .rv-link { border: 0; background: none; padding: 0; font: 500 12px/18px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; text-decoration: underline; text-underline-position: from-font; }
+  .rv-link { border: 0; background: none; padding: 0; font-family: inherit; font-size: 12px; line-height: 18px; font-weight: 500; color: #1A1F2E; cursor: pointer; text-decoration: underline; text-underline-position: from-font; }
   .rv-older .rv-link { font-size: 13px; color: #4A2999; }
   .rv-composer { padding: 12px 16px 16px; border-top: 1px solid #DDE4EE; display: flex; flex-direction: column; gap: 8px; }
   .rv-composer > p { margin: 0; font-size: 12px; line-height: 16px; color: #A3ADC2; }
   .rv-msgbox { display: flex; flex-direction: column; gap: 8px; padding: 8px; border: 1px solid #C2CCDB; border-radius: 8px; background: #FFFFFF; }
   .rv-msgbox:focus-within { border-color: #A8C3FF; }
-  .rv-msgbox textarea { border: 0; padding: 0; resize: none; min-height: 40px; font: 14px/20px inherit; font-family: inherit; color: #454C63; outline: none; background: none; }
+  .rv-msgbox textarea { border: 0; padding: 0; resize: none; min-height: 40px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; outline: none; background: none; }
   .rv-msgbox textarea::placeholder { color: #6A7389; }
   .rv-recorded { display: flex; align-items: center; gap: 8px; }
   .rv-recorded #recPlayer { flex: 1; min-width: 0; }
@@ -401,7 +401,7 @@
   .rv-pbanner.approved { background: #EEF8E6; border-color: #B3E295; color: #417618; }
   .rv-pbanner.changes { background: #FFF1F1; border-color: #FFB0B0; color: #A81A1A; } /* Banner type Error */
   .rv-pbanner.older { background: #F0EBFC; border-color: #BDA6EE; color: #4A2999; }
-  .rv-pbtn { flex: none; border: 0; background: none; padding: 0; border-radius: 8px; font: 500 14px/20px inherit; font-family: inherit; color: inherit; cursor: pointer; }
+  .rv-pbtn { flex: none; border: 0; background: none; padding: 0; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: inherit; cursor: pointer; }
   .rv-pbtn:hover { text-decoration: underline; }
   /* Comments */
   .rv-thread { background: #F7F9FC; }
@@ -416,7 +416,7 @@
   /* Older version: comments closed */
   .rv-closed { flex: none; margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px 16px 18px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 16px; color: #6A7389; }
   .rv-closed p { margin: 0; }
-  .rv-latest { margin: 0; border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .rv-latest { margin: 0; border: 0; background: none; padding: 0; font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .rv-latest:hover { text-decoration: underline; }
   /* Composer: hint, then a 90px message box (text above, tools below) */
   .rv-composer { flex: none; background: #FFFFFF; }
@@ -452,7 +452,7 @@
 
   /* View tools: slide list toggle and zoom */
   .rv-tools { display: flex; align-items: center; gap: 8px; }
-  .rv-tool { height: 32px; min-width: 32px; padding: 0 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #454C63; font: 500 13px/20px inherit; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .rv-tool { height: 32px; min-width: 32px; padding: 0 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #454C63; font-family: inherit; font-size: 13px; line-height: 20px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .rv-tool:hover { background: #F7F9FC; }
   .rv-tool:disabled { opacity: .4; cursor: default; background: #FFFFFF; }
   .rv-tool svg { width: 18px; height: 18px; }
@@ -483,7 +483,7 @@
   .bd-user { display: flex; align-items: center; gap: 2px; }
   .bd-user #me { padding: 6px 8px; font-size: 14px; line-height: 20px; color: #6A7389; }
   .bd-dot { width: 4px; height: 4px; border-radius: 2px; background: #C2CCDB; }
-  .bd-signout { border: 0; background: none; padding: 6px 12px; border-radius: 6px; font: 500 14px/20px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .bd-signout { border: 0; background: none; padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .bd-signout:hover { background: #EEF4FF; }
   .bd-body { display: grid; grid-template-columns: minmax(0, 1fr) 313px; gap: 40px; padding: 32px clamp(24px, 6.7vw, 86px); max-width: 1440px; margin: 0 auto; }
   .bd-main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
@@ -492,7 +492,7 @@
   .bd-head h2 { margin: 0 0 2px; font-size: 20px; line-height: 32px; font-weight: 700; color: #1A1F2E; }
   .bd-sub { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; }
   .bd-sort { flex: none; display: flex; align-items: center; gap: 4px; height: 40px; padding: 0 8px 0 10px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; font-size: 14px; color: #6A7389; }
-  .bd-sort select { border: 0; background: transparent; font: 14px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; padding-right: 4px; }
+  .bd-sort select { border: 0; background: transparent; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; cursor: pointer; padding-right: 4px; }
   .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
   .bd-card { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 16px 12px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; cursor: pointer; outline: none; transition: box-shadow .15s ease, border-color .15s ease; }
   /* Figma 156:9063 (State=Hover, Type=Card): background/neutral/default, outline/neutral, Shadow/s */
@@ -524,7 +524,7 @@
   .bd-more:hover { background: #F7F9FC; color: #1A1F2E; }
   @media (hover: none) { .bd-more { opacity: 1; } }
   .bd-menu { position: absolute; right: 8px; bottom: 40px; z-index: 6; min-width: 220px; padding: 4px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
-  .bd-menuitem { text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 6px; font: 14px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; }
+  .bd-menuitem { text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 6px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; cursor: pointer; }
   .bd-menuitem:hover:not(:disabled) { background: #F7F9FC; }
   .bd-menuitem:disabled { color: #A3ADC2; cursor: not-allowed; }
   .bd-menuitem.danger { color: #A81A1A; font-weight: 400; background: none; }
@@ -597,7 +597,7 @@
   .review figure.slide { position: relative; z-index: 1; }
 
   /* Button: Primary / s (Figma) */
-  .rv-primary { height: 32px; padding: 6px 12px; border: 0; border-radius: 8px; background: #1C43A5; color: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .rv-primary { height: 32px; padding: 6px 12px; border: 0; border-radius: 8px; background: #1C43A5; color: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; white-space: nowrap; }
   .rv-primary:hover { background: #132D70; }
   .rv-primary:disabled { background: #EEF2F8; color: #A3ADC2; cursor: default; }
 
@@ -654,7 +654,7 @@
   .s-link { width: 100%; height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .s-link:hover { background: #F7F9FC; }
   #slackMsg { margin: 8px 0 0; }
-  .bd-user .bd-me { border: 0; background: none; padding: 6px 8px; border-radius: 6px; font: 14px/20px inherit; font-family: inherit; color: #6A7389; cursor: pointer; }
+  .bd-user .bd-me { border: 0; background: none; padding: 6px 8px; border-radius: 6px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #6A7389; cursor: pointer; }
   .bd-user .bd-me:hover { background: #F7F9FC; color: #1A1F2E; }
 
   /* Teams */
@@ -685,46 +685,46 @@
 
   /* Assign slides */
   .bd-headtools { display: flex; align-items: center; gap: 12px; flex: none; }
-  .bd-assignbtn { height: 40px; padding: 0 14px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #1A1F2E; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; }
+  .bd-assignbtn { height: 40px; padding: 0 14px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #1A1F2E; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
   .bd-assignbtn:hover { background: #F7F9FC; }
   .as-dialog { width: min(520px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 12px; box-shadow: 0 12px 40px rgba(18,18,23,.22); font-family: "Geist", "Segoe UI", system-ui, sans-serif; color: #1A1F2E; }
   .as-dialog::backdrop { background: rgba(24,32,43,.35); }
   .as-dialog form { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
   .as-dialog h2 { margin: 0; font-size: 18px; line-height: 28px; font-weight: 600; }
   .as-sub { margin: -8px 0 4px; font-size: 14px; line-height: 20px; color: #6A7389; }
-  .as-dialog .s-field input { height: 40px; padding: 8px; border: 1px solid #C2CCDB; border-radius: 8px; font: 14px/20px inherit; font-family: inherit; color: #454C63; }
+  .as-dialog .s-field input { height: 40px; padding: 8px; border: 1px solid #C2CCDB; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; }
   .as-dialog .s-field input[readonly] { background: #F7F9FC; color: #6A7389; }
   .as-head { display: grid; grid-template-columns: minmax(0, 1fr) 140px 32px; gap: 8px; margin-top: 4px; font-size: 14px; line-height: 20px; color: #1A1F2E; }
   .as-rows { display: flex; flex-direction: column; gap: 8px; }
   .as-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px 32px; gap: 8px; align-items: center; }
-  .as-row select, .as-row input { height: 40px; padding: 8px; border: 1px solid #C2CCDB; border-radius: 8px; background: #FFFFFF; font: 14px/20px inherit; font-family: inherit; color: #454C63; min-width: 0; }
+  .as-row select, .as-row input { height: 40px; padding: 8px; border: 1px solid #C2CCDB; border-radius: 8px; background: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; min-width: 0; }
   .as-row select { padding-right: 28px; appearance: none; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 8l5 5 5-5' fill='none' stroke='%233F4652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center / 18px; }
   .as-row.bad select, .as-row.bad input { border-color: #FFB0B0; background-color: #FFF1F1; }
   .as-remove { width: 32px; height: 32px; border: 0; border-radius: 6px; background: none; color: #6A7389; cursor: pointer; display: grid; place-items: center; }
   .as-remove:hover { background: #F7F9FC; color: #1A1F2E; }
   .as-remove svg { width: 16px; height: 16px; }
-  .as-add { align-self: flex-start; border: 0; background: none; padding: 4px 0; font: 500 14px/20px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .as-add { align-self: flex-start; border: 0; background: none; padding: 4px 0; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .as-err { margin: 0; font-size: 14px; line-height: 20px; color: #A81A1A; }
   .as-err:empty { display: none; }
   .as-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
-  .as-cancel { height: 32px; padding: 6px 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; }
+  .as-cancel { height: 32px; padding: 6px 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; cursor: pointer; }
 
   /* Designer filter above the slide strip */
   .rv-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
   .rv-filter:empty { display: none; }
-  .rv-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid #DDE4EE; border-radius: 999px; background: #FFFFFF; color: #454C63; font: 500 12px/16px inherit; font-family: inherit; cursor: pointer; }
+  .rv-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid #DDE4EE; border-radius: 999px; background: #FFFFFF; color: #454C63; font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 500; cursor: pointer; }
   .rv-chip:hover { background: #F7F9FC; }
   .rv-chip[aria-pressed="true"] { background: #EEF4FF; border-color: #A8C3FF; color: #1C43A5; }
   .rv-chipmeta { font-weight: 400; color: #6A7389; }
   .rv-chip[aria-pressed="true"] .rv-chipmeta { color: #A8C3FF; }
-  .rv-editsplit { margin-left: auto; border: 0; background: none; padding: 4px 0; font: 500 12px/16px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .rv-editsplit { margin-left: auto; border: 0; background: none; padding: 4px 0; font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .rv-editsplit:hover { text-decoration: underline; }
   .review .rv-thumb.pending { cursor: default; }
   .review .rv-thumb.pending:hover { background: none; }
   .review .rv-thumb.pending .ph { display: grid; place-items: center; width: 104px; aspect-ratio: 16 / 9; border-radius: 4px; border: 1px dashed #DDE4EE; background: #FFFFFF; font-size: 11px; line-height: 14px; color: #A3ADC2; }
 
   /* Header: Adjust distribution (Figma: Button / Secondary / s) */
-  .rv-secondary { display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #454C63; font: 500 14px/20px inherit; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .rv-secondary { display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #454C63; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; white-space: nowrap; }
   .rv-secondary svg { width: 16px; height: 16px; flex: none; }
   .rv-secondary span { padding: 0 4px; }
   .rv-secondary:hover { background: #EEF2F8; }

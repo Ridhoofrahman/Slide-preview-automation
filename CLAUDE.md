@@ -25,7 +25,6 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 | `auth-slack.html` | Browser page for the add-in's **Continue with Slack**: Slack/Supabase round trip, then parks the tokens with `login-handoff` under the panel's one-time code; the panel polls, takes them once and calls `setSession`. |
 | `supabase/functions/login-handoff/` | Edge Function (deploy with JWT verification off) for that handoff; the only thing that touches table `login_handoffs` (RLS on, no policies, 5-minute rows, deleted on read). |
 | `slide-details.js` | Reads fonts, slide size and speaker notes from the exported .pptx (needs JSZip). |
-| `slideshot-hero.js` | Canvas "flying slides" hero for the sign-in screens. |
 | `config.js` | Supabase URL + anon key + dashboard URL + `DAYS_TO_SHOW`. |
 | `manifest.xml`, `commands.html`, `assets/` | Add-in install files and icons. |
 | `supabase-setup.sql` | **Canonical full database setup** (tables, RLS, storage, realtime). |

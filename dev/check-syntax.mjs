@@ -12,5 +12,5 @@ for (const f of ['panel.html', 'review-app.html', 'taskpane.html', 'review.html'
   const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   blocks.forEach((b, i) => check(`${f} (inline script ${i + 1})`, b));
 }
-for (const f of ['slide-details.js', 'slideshot-hero.js', 'config.js']) check(f, fs.readFileSync(path.join(APP, f), 'utf8'));
+for (const f of ['slide-details.js', 'config.js']) check(f, fs.readFileSync(path.join(APP, f), 'utf8'));
 process.exit(bad ? 1 : 0);

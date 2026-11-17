@@ -13,7 +13,7 @@ const SUPABASE_CDN = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\
 const OFFICE_JS = /<script src="https:\/\/appsforoffice\.microsoft\.com\/[^"]*"><\/script>/;
 const JSZIP = /<script src="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/jszip\/[^"]*"><\/script>/;
 
-function localScripts(html) {   // keep working relative script tags (e.g. slideshot-hero.js)
+function localScripts(html) {   // keep working relative script tags (e.g. slide-details.js)
   return html.replace(/<script src="(?!https?:|\/)([^"]+\.js)"><\/script>/g, '<script src="/slide-qa-marker/$1"></script>');
 }
 
