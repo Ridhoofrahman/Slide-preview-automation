@@ -87,12 +87,34 @@ alter publication supabase_realtime add table public.project_status;
 
 -- 9. Teams (simple): designers and DMs pick their team at sign-in; each slide records the sender's team
 alter table public.slide_shots add column if not exists team text;
+-- 13. Teams: the list of teams, by office (the add-in and the Dashboard fill their team dropdown from here)
+-- Spelling matches Inner Platform. Add or retire a team with an insert / `update public.teams set active = false`.
+-- RLS: signed-in users can read; nobody writes from the client (edit here in the SQL Editor, later synced from Inner Platform).
+create table if not exists public.teams (
+  name   text primary key,
+  office text not null,
+  active boolean not null default true
+);
+alter table public.teams enable row level security;
+drop policy if exists "teams: everyone reads" on public.teams;
+create policy "teams: everyone reads" on public.teams for select to authenticated using (true);
+revoke insert, update, delete on public.teams from anon, authenticated;
+
+insert into public.teams (name, office) values
+  ('Ablaze','Indonesia'),('Alpha','Indonesia'),('Avvenger','Indonesia'),('Bright','Indonesia'),('Cascade','Indonesia'),
+  ('Clementine','Indonesia'),('Clover','Indonesia'),('Cosmic','Indonesia'),('Fortis','Indonesia'),('Fourtastic','Indonesia'),
+  ('Horme','Indonesia'),('Hustle','Indonesia'),('Jackdaw','Indonesia'),('Magnetic','Indonesia'),('Meraki','Indonesia'),
+  ('Nucleonz','Indonesia'),('Phoenix','Indonesia'),('Radiant','Indonesia'),('Sirius','Indonesia'),('Titant','Indonesia'),
+  ('Vincero','Indonesia'),
+  ('Alpaka','Peru'),('Kaleido','Peru'),('Polaris','Peru')
+on conflict (name) do nothing;
+
 -- 10. Slide assignments: a DM splits an order between designers (e.g. 1-5 → Budi, 6-10 → Rina)
 -- Who's who: every account saves its name and team here when it signs in (used for the designer picker)
 create table if not exists public.profiles (
   user_id    uuid primary key default auth.uid() references auth.users(id) on delete cascade,
   name       text not null,
-  team       text,
+  team       text references public.teams(name),   -- nullable; see sql/profiles-team-fk.sql for an existing project
   updated_at timestamptz not null default now()
 );
 alter table public.profiles enable row level security;

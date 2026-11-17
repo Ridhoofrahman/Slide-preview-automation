@@ -16,7 +16,7 @@ const db={
   // order D: sent to customer
   shot('Order #999000',1,'d1','b','approved',900,'Cascade','Lina'),shot('Order #999000',2,'d2','c','approved',880,'Cascade','Lina'),shot('Order #999000',3,'d3','d','approved',870,'Cascade','Lina')
  ],
- shot_comments:[], profiles:[{user_id:'dm1',name:'Ridho',team:'Cascade'}],
+ shot_comments:[], teams:[...'Ablaze Alpha Avvenger Bright Cascade Clementine Clover Cosmic Fortis Fourtastic Horme Hustle Jackdaw Magnetic Meraki Nucleonz Phoenix Radiant Sirius Titant Vincero'.split(' ').map(n=>({name:n,office:'Indonesia',active:true})),...'Alpaka Kaleido Polaris'.split(' ').map(n=>({name:n,office:'Peru',active:true}))], profiles:[{user_id:'dm1',name:'Ridho',team:'Cascade'}],
  project_status:[{key:'order #999000',name:'Order #999000',sent_at:iso(600),sent_by:'Ridho',updated_at:iso(600)}],
  design_managers:[{user_id:'dm1'}],
  slide_assignments:[{order_key:'123',order_name:'Order #123',assignee_id:'u2',assignee_name:'Kevin',assignee_team:'Cascade',assignee_team_:'',slides:[1,2,3],created_by:'dm1',created_team:'Cascade',created_at:iso(500)}]
