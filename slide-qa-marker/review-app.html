@@ -787,7 +787,7 @@
       <form class="signin-form" id="loginForm" novalidate hidden>
         <label class="s-field"><span class="s-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="s-error" id="emailError" aria-live="polite"></span></label>
         <label class="s-field"><span class="s-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="s-error" id="passwordError" aria-live="polite"></span></label>
-        <label class="s-field"><span class="s-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="s-error" id="teamInputError" aria-live="polite"></span></label>
+        <label class="s-field"><span class="s-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option><option>Cosmic</option></select><span class="s-error" id="teamInputError" aria-live="polite"></span></label>
         <label class="s-field"><span class="s-label">Your name, as designers will see it</span><input id="nameInput" autocomplete="name" maxlength="60" placeholder="Only needed the first time" aria-describedby="nameInputError"><span class="s-error" id="nameInputError" aria-live="polite"></span></label>
         <button id="signInBtn" class="s-button" type="submit"><span class="s-btn-label">Sign in</span><span class="s-spinner" aria-hidden="true"></span></button>
         <p id="loginMsg" class="s-msg" role="status" aria-live="polite"></p>
@@ -796,7 +796,7 @@
       <!-- One-time step: DMs without a display name pick one (also used to change it later) -->
       <form class="signin-form" id="nameForm" novalidate hidden>
         <p class="s-lead" id="nameLead">Designers will see this name on your approvals, comments and voice notes.</p>
-        <label class="s-field" id="dmTeamField" hidden><span class="s-label">Your team</span><select id="dmTeam" aria-describedby="dmTeamError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="s-error" id="dmTeamError" aria-live="polite"></span></label>
+        <label class="s-field" id="dmTeamField" hidden><span class="s-label">Your team</span><select id="dmTeam" aria-describedby="dmTeamError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option><option>Cosmic</option></select><span class="s-error" id="dmTeamError" aria-live="polite"></span></label>
         <label class="s-field" id="dmNameField"><span class="s-label">Your name</span><input id="dmName" autocomplete="name" maxlength="60" placeholder="e.g. Ridho Fadhlurrahman" aria-describedby="dmNameError"><span class="s-error" id="dmNameError" aria-live="polite"></span></label>
         <button id="nameBtn" class="s-button" type="submit"><span class="s-btn-label">Continue</span><span class="s-spinner" aria-hidden="true"></span></button>
         <button id="nameCancel" class="s-cancel" type="button" hidden>Cancel</button>
@@ -1813,17 +1813,19 @@ async function signIn() {
   }
   let user = data.user;
   // Same as the designer panel: team and name are only needed the first time
-  const meta = user.user_metadata || {}, chosen = $("teamInput").value;
+  const meta = user.user_metadata || {}, chosen = $("teamInput").value, team = await profileTeam(user);
   let missing = false;
-  if (!chosen && !meta.team) { setFieldError("teamInput", "Choose your team. It's only needed the first time."); missing = true; }
+  if (!chosen && !team) { setFieldError("teamInput", "Choose your team. It's only needed the first time."); missing = true; }
   if (needsName(user) && !name) { setFieldError("nameInput", "Enter your name. It's only needed the first time you sign in."); missing = true; }
   if (missing) { await S.sb.auth.signOut(); return; }
-  const changes = {}; if (needsName(user)) changes.name = name; if (chosen && chosen !== meta.team) changes.team = chosen;
+  const changes = {}; if (needsName(user)) changes.name = name;
   if (Object.keys(changes).length) {
     const upd = await S.sb.auth.updateUser({ data: changes });
     user = !upd.error && upd.data && upd.data.user ? upd.data.user : Object.assign({}, user, { user_metadata: Object.assign({}, meta, changes) });
   }
-  enter(user);
+  // The team lives in public.profiles; the dropdown only fills it when profiles has none yet
+  if (!team && !(await saveProfileTeam(user, chosen))) { await S.sb.auth.signOut(); $("loginMsg").textContent = "Couldn't save your team. Please try again."; return; }
+  enter(user, team || chosen);
 }
 // ---- Sign in with Slack (Supabase provider slack_oidc). Sign-ups are off: only accounts an admin created can sign in.
 const SLACK_ERR = {
@@ -1924,12 +1926,12 @@ function setSigninTitle(text) {
 function resetSigninCard() {
   $("slackBlock").hidden = false; $("loginForm").hidden = true; $("nameForm").hidden = true; setSigninTitle();
 }
-function showNameStep(user, editing) {
-  S.pendingUser = user;
+function showNameStep(user, editing, team) {
+  S.pendingUser = user; S.pendingTeam = team || null;
   showLogin();
   $("slackBlock").hidden = true; $("loginForm").hidden = true; $("nameForm").hidden = false;
   // First Slack sign-in: the account has no team yet, so ask for it here (and the name, if Slack didn't give one)
-  const needTeam = !editing && !((user.user_metadata || {}).team), askName = editing || needsName(user);
+  const needTeam = !editing && !S.pendingTeam, askName = editing || needsName(user);
   S.needTeam = needTeam; S.askName = askName;
   $("dmTeamField").hidden = !needTeam; $("dmTeam").value = ""; $("dmTeamError").textContent = ""; $("dmTeam").setAttribute("aria-invalid", "false");
   $("dmNameField").hidden = !askName;
@@ -1950,15 +1952,20 @@ async function saveName() {
   if (S.needTeam && !team) { teamErr("Choose your team"); ok = false; }
   if (S.askName && name.length < 2) { err("Enter your name"); ok = false; }
   if (!ok) return;
-  const changes = {}; if (S.askName) changes.name = name; if (S.needTeam) changes.team = team;
+  const changes = {}; if (S.askName) changes.name = name;
   const btn = $("nameBtn"); btn.disabled = true; btn.classList.add("loading");
-  const { data, error } = await S.sb.auth.updateUser({ data: changes });
+  let u = S.pendingUser, failed = false;
+  if (Object.keys(changes).length) {
+    const { data, error } = await S.sb.auth.updateUser({ data: changes });
+    failed = !!error;
+    if (!error) u = (data && data.user) || Object.assign({}, u, { user_metadata: Object.assign({}, (u || {}).user_metadata, changes) });
+  }
+  if (!failed && S.needTeam) failed = !(await saveProfileTeam(u, team));
   btn.disabled = false; btn.classList.remove("loading");
-  if (error) { $("nameMsg").textContent = "Couldn't save your details. Please try again."; return; }
-  const u = (data && data.user) || Object.assign({}, S.pendingUser, { user_metadata: Object.assign({}, (S.pendingUser || {}).user_metadata, changes) });
-  const wasIn = !!S.user; S.pendingUser = null; resetSigninCard();
+  if (failed) { $("nameMsg").textContent = "Couldn't save your details. Please try again."; return; }
+  const wasIn = !!S.user, myTeam = S.needTeam ? team : S.pendingTeam; S.pendingUser = null; resetSigninCard();
   if (wasIn) { S.user = u; hideLogin(); renderBoard(); if (!$("reviewView").hidden) renderReview(); }
-  else enter(u);
+  else enter(u, myTeam);
 }
 function hideLogin() {
   $("loginView").hidden = true;
@@ -1969,15 +1976,32 @@ async function isDesignManager(user) {
   if (error) return true;   // table not set up yet: don't lock anyone out
   return !!data;
 }
-async function enter(user) {
+// The signed-in user's team always comes from public.profiles (later: Inner Platform).
+// Auth user_metadata.team is only a copy for the add-in; it is never read here.
+async function profileTeam(user) {
+  const { data, error } = await S.sb.from("profiles").select("team").eq("user_id", user.id).maybeSingle();
+  if (error) return null;
+  return (data && data.team) || null;
+}
+// First time only (profiles has no team yet): store the chosen team in profiles, and copy it to the account metadata for the add-in
+async function saveProfileTeam(user, team) {
+  const { error } = await S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: team, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+  if (error) return false;
+  S.sb.auth.updateUser({ data: { team: team } }).then(() => {}, () => {});
+  return true;
+}
+async function enter(user, team) {
   if (!(await isDesignManager(user))) {
     await S.sb.auth.signOut(); showLogin();
     ($("loginForm").hidden ? $("slackMsg") : $("loginMsg")).textContent = "This page is for design managers. Designers send slides from the Slideshot add-in in PowerPoint.";
     return;
   }
   S.user = user;
-  S.myTeam = (user.user_metadata || {}).team || null;
-  try { S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: S.myTeam, updated_at: new Date().toISOString() }, { onConflict: "user_id" }).then(() => {}, () => {}); } catch (e) {}
+  S.myTeam = team || null;
+  // Keep the profile's name current; never write the team here (profiles is the source of truth)
+  try { S.sb.from("profiles").update({ name: displayName(user), updated_at: new Date().toISOString() }).eq("user_id", user.id).then(() => {}, () => {}); } catch (e) {}
+  // The add-in still reads user_metadata.team: bring that copy in line with profiles
+  if (S.myTeam && (user.user_metadata || {}).team !== S.myTeam) S.sb.auth.updateUser({ data: { team: S.myTeam } }).then(() => {}, () => {});
   hideLogin(); $("boardView").hidden = false;
   $("content").innerHTML = ""; $("boardView").classList.add("solo"); { const e = el("div", "bd-state loading"); e.append(loadingIllo(), el("strong", "", "Loading slides…")); $("content").append(e); }
   try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
@@ -2068,7 +2092,7 @@ async function enter(user) {
   const su = data.session && data.session.user;
   if (!su && authError) { showLogin(); $("slackMsg").textContent = slackErrorText(authError); return; }
   // No team yet (e.g. first Slack sign-in): ask for it instead of signing out
-  if (su) { if (!(su.user_metadata || {}).team || needsName(su)) showNameStep(su); else enter(su); }
+  if (su) { const team = await profileTeam(su); if (!team || needsName(su)) showNameStep(su, false, team); else enter(su, team); }
   else showLogin();
 })();
 </script>

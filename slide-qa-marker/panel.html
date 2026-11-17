@@ -357,7 +357,7 @@
       <form class="login-form" id="loginForm" novalidate hidden>
         <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="field-error" id="emailError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="field-error" id="passwordError" aria-live="polite"></span></label>
-        <label class="field"><span class="field-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="field-error" id="teamInputError" aria-live="polite"></span></label>
+        <label class="field"><span class="field-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option><option>Cosmic</option></select><span class="field-error" id="teamInputError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
         <button id="signInBtn" class="primary" type="submit">Sign in</button>
         <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
@@ -366,7 +366,7 @@
       <!-- First Slack sign-in: the account has no team yet -->
       <form class="login-form" id="teamForm" novalidate hidden>
         <p class="login-lead">It's only needed the first time.</p>
-        <label class="field"><span class="field-label">Your team</span><select id="teamStep" aria-describedby="teamStepError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="field-error" id="teamStepError" aria-live="polite"></span></label>
+        <label class="field"><span class="field-label">Your team</span><select id="teamStep" aria-describedby="teamStepError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option><option>Cosmic</option></select><span class="field-error" id="teamStepError" aria-live="polite"></span></label>
         <button id="teamBtn" class="primary" type="submit">Continue</button>
         <p id="teamMsg" class="msg" role="status" aria-live="polite"></p>
       </form>
@@ -510,7 +510,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.31";
+const APP_VERSION = "2.32";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -649,9 +649,26 @@ async function showDashboardLink(user) {
   const dot = document.createElement("span"); dot.className = "foot-dot"; dot.setAttribute("aria-hidden", "true");
   slot.append(a, dot);
 }
+// The team always comes from public.profiles (later: Inner Platform). user_metadata.team is only a copy, never read.
+async function profileTeam(user) {
+  try {
+    const { data, error } = await S.sb.from("profiles").select("team").eq("user_id", user.id).maybeSingle();
+    return (!error && data && data.team) || null;
+  } catch (e) { return null; }
+}
+// First time only (profiles has no team yet): store the chosen team in profiles, plus the metadata copy
+async function saveProfileTeam(user, team) {
+  try {
+    const { error } = await S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: team, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+    if (error) return false;
+  } catch (e) { return false; }
+  S.sb.auth.updateUser({ data: { team: team } }).then(() => {}, () => {});
+  return true;
+}
+// Keep the profile's name current; never write the team here (profiles is the source of truth)
 async function saveProfile(user) {
-  const m = user.user_metadata || {};
-  try { await S.sb.from("profiles").upsert({ user_id: user.id, name: displayName(user), team: m.team || null, updated_at: new Date().toISOString() }, { onConflict: "user_id" }); } catch (e) {}
+  try { await S.sb.from("profiles").update({ name: displayName(user), updated_at: new Date().toISOString() }).eq("user_id", user.id); } catch (e) {}
+  if (S.myTeam && (user.user_metadata || {}).team !== S.myTeam) S.sb.auth.updateUser({ data: { team: S.myTeam } }).then(() => {}, () => {});
 }
 async function loadReviews() {
   // Mine = sent by this account from this file (including slides sent before per-designer keys existed)
@@ -726,7 +743,7 @@ function render() {
   const me = displayName(S.user);
 
   if (document.activeElement !== $("projectName")) $("projectName").value = shownOrder(projectName());
-  const myTeam = (S.user.user_metadata || {}).team;
+  const myTeam = S.myTeam;
   document.querySelectorAll(".whoName").forEach((el) => { el.textContent = me + (myTeam ? " - " + myTeam : ""); });
 
   // Meta line: "Designer: Name, v1". While preparing a new version, the version is dropped.
@@ -1035,7 +1052,7 @@ async function markReady() {
     if (up.error) throw up.error;
     const ins = await S.sb.from("slide_shots").insert({
       file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.n, total_slides: S.slides.length,
-      version: version, designer: displayName(S.user), team: (S.user.user_metadata || {}).team || null, note: (!$("noteField").hidden && $("note").value.trim()) || null, image_path: path, details: details
+      version: version, designer: displayName(S.user), team: S.myTeam || null, note: (!$("noteField").hidden && $("note").value.trim()) || null, image_path: path, details: details
     }).select().single();
     if (ins.error) throw ins.error;
     S.latest[cur.id] = ins.data;
@@ -1072,20 +1089,20 @@ async function signIn() {
     return;
   }
   let user = data.user;
-  // Team: chosen here the first time (or to switch), then remembered on the account
-  const meta = user.user_metadata || {}, chosen = $("teamInput").value;
-  if (!chosen && !meta.team) { await S.sb.auth.signOut(); setFieldError("teamInput", "Choose your team. It's only needed the first time."); return; }
-  const changes = {}; if (name) changes.name = name; if (chosen && chosen !== meta.team) changes.team = chosen;
-  if (Object.keys(changes).length) {
-    const upd = await S.sb.auth.updateUser({ data: changes });
-    user = !upd.error && upd.data && upd.data.user ? upd.data.user : Object.assign({}, user, { user_metadata: Object.assign({}, meta, changes) });
+  // Team: lives in public.profiles; the dropdown only fills it when profiles has none yet
+  const meta = user.user_metadata || {}, chosen = $("teamInput").value, team = await profileTeam(user);
+  if (!chosen && !team) { await S.sb.auth.signOut(); setFieldError("teamInput", "Choose your team. It's only needed the first time."); return; }
+  if (name) {
+    const upd = await S.sb.auth.updateUser({ data: { name: name } });
+    user = !upd.error && upd.data && upd.data.user ? upd.data.user : Object.assign({}, user, { user_metadata: Object.assign({}, meta, { name: name }) });
   }
+  if (!team && !(await saveProfileTeam(user, chosen))) { await S.sb.auth.signOut(); say($("loginMsg"), "Couldn't save your team. Please try again.", "err"); return; }
   say($("loginMsg"), "");
-  enterApp(user);
+  enterApp(user, team || chosen);
 }
 
-async function enterApp(user) {
-  S.user = user;
+async function enterApp(user, team) {
+  S.user = user; S.myTeam = team || null;
   $("loginView").hidden = true;
   if (!docStore.get("slideqa.orderSet")) await askOrder();
   $("orderView").hidden = true; $("appView").hidden = false;
@@ -1121,7 +1138,7 @@ function hashAsYouType(input) {
 function askOrder() {
   return new Promise((resolve) => {
     $("appView").hidden = true; $("orderView").hidden = false;
-    { const t = (S.user.user_metadata || {}).team; document.querySelectorAll(".og-foot .whoName").forEach((el) => { el.textContent = displayName(S.user) + (t ? " - " + t : ""); }); }
+    { const t = S.myTeam; document.querySelectorAll(".og-foot .whoName").forEach((el) => { el.textContent = displayName(S.user) + (t ? " - " + t : ""); }); }
     const input = $("orderInput"), err = (m) => { $("orderInputError").textContent = m || ""; input.setAttribute("aria-invalid", m ? "true" : "false"); };
     input.value = ""; err(""); setTimeout(() => input.focus(), 50);
     if (!input.dataset.hash) { hashAsYouType(input); input.dataset.hash = "1"; }
@@ -1260,20 +1277,20 @@ function signInWithSlack() {
   });
 }
 // After any sign-in: the team is needed once (Slack doesn't know it)
-function afterSignIn(user) {
-  if ((user.user_metadata || {}).team) { say($("slackMsg"), ""); enterApp(user); return; }
+async function afterSignIn(user) {
+  const team = await profileTeam(user);
+  if (team) { say($("slackMsg"), ""); enterApp(user, team); return; }
   S.pendingUser = user; showLogin("team");
 }
 async function saveTeam() {
   const team = $("teamStep").value; setFieldError("teamStep", ""); say($("teamMsg"), "");
   if (!team) { setFieldError("teamStep", "Choose your team"); return; }
   const btn = $("teamBtn"); btn.disabled = true; btn.textContent = "Saving…";
-  const { data, error } = await S.sb.auth.updateUser({ data: { team: team } });
+  const u = S.pendingUser, ok = await saveProfileTeam(u, team);
   btn.disabled = false; btn.textContent = "Continue";
-  if (error) { say($("teamMsg"), "Couldn't save your team. Please try again.", "err"); return; }
-  const u = (data && data.user) || Object.assign({}, S.pendingUser, { user_metadata: Object.assign({}, (S.pendingUser || {}).user_metadata, { team: team }) });
+  if (!ok) { say($("teamMsg"), "Couldn't save your team. Please try again.", "err"); return; }
   S.pendingUser = null; $("teamStep").value = "";
-  enterApp(u);
+  enterApp(u, team);
 }
 
 /* ---------- start ---------- */
