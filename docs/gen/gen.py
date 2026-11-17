@@ -39,7 +39,7 @@ ANAT=f'''<figure class="anat">
 <div class="ph-body"><div class="ph-row"><span class="assigned">{BOOK}Assigned to you</span><span class="ph-btns"><span class="ic">{SWAP}</span><span class="ic">{EDIT}</span></span><i class="pin l">3</i><i class="pin r">4</i></div>
 <div class="ph-thumb"><span>Annual Summit</span><i class="pin l">5</i></div>
 <div class="ph-btn">Mark slide 9 ready for review<i class="pin l">6</i></div></div>
-<div class="ph-foot"><span>Bela - Cascade</span><span>v2.27 • Sign out</span><i class="pin r">7</i></div></div>
+<div class="ph-foot"><span>Bela - Cascade</span><span>v2.28 • Sign out</span><i class="pin r">7</i></div></div>
 <figcaption><ol class="legend">
 <li>{T('<b>Order ID.</b> The order this deck belongs to. Type digits and the # is added for you.','<b>Order ID.</b> Order tempat deck ini berada. Ketik angka, tanda # ditambahkan otomatis.')}</li>
 <li>{T('<b>Slide and status.</b> Your slide number, plus where it will sit in the order when you moved it (“Slide 9 → Slide 4”), and its status tag.','<b>Slide dan status.</b> Nomor slide di file-mu, plus posisinya di order jika kamu memindahkannya (“Slide 9 → Slide 4”), dan tag statusnya.')}</li>
@@ -270,6 +270,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
 ['Dashboard',('Board cards: slide thumbnail (stacked when an order has more than one slide, dashed “Not sent yet” box when nothing is sent), purple Tag team chip, “Last update”; the ⋯ button moved to the bottom-right.','Kartu board: thumbnail slide (bertumpuk jika order punya lebih dari satu slide, kotak putus-putus “Not sent yet” jika belum ada yang terkirim), chip Tag team ungu, “Last update”; tombol ⋯ pindah ke kanan bawah.')],
+['v2.28',('New Slideshot logo in the add-in, the Dashboard, the docs and the PowerPoint ribbon icon.','Logo Slideshot baru di add-in, Dashboard, dokumentasi dan ikon ribbon PowerPoint.')],
 ['v2.27',('New green from Builder DS for Approved, the progress ring and Sent to customer.','Hijau baru dari Builder DS untuk Approved, ring progress dan Sent to customer.')],
 ['v2.26',('New colours from the Builder DS design system in the add-in and the Dashboard: brand blue, greys, status colours and the progress ring. Nothing changes in how it works.','Warna baru dari design system Builder DS di add-in dan Dashboard: biru brand, abu-abu, warna status dan ring progress. Cara kerjanya tidak berubah.')],
 ['v2.25',('Sent slides can move to a new position with their next version.','Slide yang sudah dikirim bisa pindah posisi bersama versi berikutnya.')],
@@ -312,11 +313,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.27','Add-in v2.27')}</span><span class="meta">{T('Updated 13 Nov 2026','Diperbarui 13 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.28','Add-in v2.28')}</span><span class="meta">{T('Updated 13 Nov 2026','Diperbarui 13 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.27.','Slideshot untuk 24Slides. Add-in v2.27.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.28.','Slideshot untuk 24Slides. Add-in v2.28.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)

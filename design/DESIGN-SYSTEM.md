@@ -2,7 +2,8 @@
 
 **Every design exploration (Figma, Paper, HTML mockups, code) starts from Builder DS.** Use its tokens, text styles, shadows, components and icons. Do not invent a colour, size, radius or icon when the DS has one. If something is missing, say so and propose an addition to the DS. Do not quietly hardcode a new value.
 
-- Library: **Builder DS** (Figma team library, already added to the Slideshot file `DHcyMFzra5Wi7o18Uy6fW0`).
+- Library: **Builder DS** (Figma team library, already added to the Slideshot file `DHcyMFzra5Wi7o18Uy6fW0`). Figma file: `QMbLblwBhRXTdJLRetSG6X`.
+- Documentation page (Claude artifact, private until shared): https://claude.ai/artifact/BPEn4Z5f3zEt41WXoEfRym
 - Library key: `lk-76d9bae431e360dd225a71fc8893a838af097617d6d9bf50b6ea70697f6ac365f1960248279e5d59a08d82849de616bad8f412724f1720eb917c6c25b8a2905c`
 - Slideshot-specific components (order card, slide thumbnail, progress ring, review panel…) are on the Slideshot **Components** page (`347:10403`). See `design/FIGMA.md`. **They still use the old token set** (see "Migration status").
 - Catalogue read from the published library on **2026-11-13**, after Uda published the new token setup; success palette and icon/* values re-read later the same day (new green #559B1F). If the DS changes, refresh this file (see the end).
@@ -113,7 +114,7 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 ## Components (Builder DS, republished 2026-11-13)
 | Component | Variants (default size) |
 |---|---|
-| **Button** | Variant: Primary, Secondary, Destructive, Warning, Information, Success · **Type: Filled, Text** · Size: m, s · State: Default, Hover & active, Focus, Disabled, Loading · 117×40 (padding scale/200 × scale/400, radius l) |
+| **Button** | Variant: Primary, Secondary, Destructive, Warning, Information, Success · **Type: Filled, Text** · Size: m, s · State: Default, Hover & active, Focus, Disabled, Loading · m 40px high, padding 8 × 12 (`scale/150` × `scale/200`), label padding 0 × 8; s 32px, padding 6 × 8; radius l, `text-s/Medium`, `Shadow/xs` |
 | **Button Icon** | Variant: Primary, Secondary, Ghost, Destructive, Ghost destructive · Size: xs, s, m · State: Default, Hover & active, Focus, Disabled · 40×40 |
 | **Button tag** | State: Default, Hover, Selected · Size: s, m · 125×32 |
 | **Toggle button** | States: Default, Hover, Active · 77×32 |
@@ -132,7 +133,7 @@ Found while reading on 2026-11-13. Check with Uda before relying on these:
 1. Alias is unpublished by design (see above). Note: two primitive families appear in the alias chains, `neutral/*` and `color/grey/*` (same values, e.g. 700 = #454C63).
 2. **Old number/typography bindings were fixed on 2026-11-13** in the Builder DS file (`QMbLblwBhRXTdJLRetSG6X`): 1,529 bindings were moved to `scale/*`, `radii/*` and `font-*` with the same value (including all icons, which now use `scale/400` for 20 px). Radius 999 uses `scale/full`; radius 0 uses `scale/none`. Uda fixed the colour bindings by hand. **Audit of 2026-11-13: every active component binds only to the new collections.** Old variables remain only in the archived `.buttons` component on the Archives page and in the documentation frames on the Typography, Effects, Icon and Tab pages. Those are not components, so they were left on purpose.
 3. **`text-xl/Bold` is SemiBold** (bound to `font-weight/semi-bold`), while the other Bold styles are Bold.
-4. No text style for 16/24 or 13 px.
+4. No text style for 13 px. (`text-base` 16/24, `text-lg/Regular`, `mono-s`, `mono-base` and the `Focus` effect style exist; recorded 16 Nov 2026.)
 5. **Slideshot file, stage 1 done (2026-11-13):** 905 old number/typography bindings on the Add in, Review page and Components pages were moved to `scale/*`, `radii/*` and `font-*` with the same value. `radii/round` (999) was later moved to the new `radii/full`. Left on purpose: 3 chevron icons in `Summary` instances on the old **v1** frames (Add in page), whose main component "Summary/Opened old" is gone. Uda keeps v1 as is. **Stage 2 (colours) done (2026-11-13):** 769 paint bindings + 42 text ranges were moved to Mapped tokens. Decisions: canvas/bg → `background/accent/neutral`; header bar/accent grey/subtle → `elevation/sunken`; icon/secondary → `icon/neutral`; icon/red → `icon/danger` (icons) or `background/danger/default` (shapes); input border dark-grey → `divider/default`; progress ring → `outline/success` (later `icon/success`, see Figma 146:7514); Tag team icon purple → `icon/information`; scrim → the new `overlay/scrim`. The local collections "Slide QA / Color" and "Collection" were deleted from the Slideshot file afterwards.
    Raw-hex pass (2026-11-13): unbound old-palette hex on UI text/fills was bound to Mapped tokens too. Left on purpose: the three dialogs on the Review page (Uda will redo them), logo/illustration vectors (their colours are illustration-only), and section title annotations on the canvas.
 6. **New token `overlay/scrim`** (added 2026-11-13): Mapped `overlay/scrim` → Alias `overlay/scrim-50` (hidden) → Brand `color/overlay/scrim-50` (hidden) = #1A1F2E at 50%. Used for badges over slide thumbnails and modal backdrops.

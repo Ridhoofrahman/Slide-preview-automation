@@ -7,7 +7,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - **Apply Figma designs exactly.** Read the node, measure it, then match px, colors, radius and spacing. Export icons from Figma as SVG; never hand-draw icons. After building, measure DOM positions against the Figma numbers and look at a screenshot. Fonts render ~1px wider in Chrome than in Figma, so give wrapping text 1–2px slack to keep Figma's line breaks.
 - If the design conflicts with how something works (e.g. a hover button covering a tag), do not silently pick: apply the design where possible, explain the conflict, propose one fix.
 - **Never commit or push until she says "commit".** Commit messages are short English imperatives, e.g. `Fix duplicate positions; show Slide x → Slide y in the header`.
-- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.27). The dashboard has no version string.
+- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.28). The dashboard has no version string.
 - **After every shipped change, update the docs**: edit `docs/gen/gen.py` (English and Indonesian together, plus a release-notes row, the version badge and the "Updated" date), run `npm run docs`, and publish/commit `docs/slideshot-docs.html`.
 - For each visual change, save a preview PNG (`npm run shot`) and tell her where it is. Say plainly what was only tested with mock data.
 - Be honest and short. Report what changed, what you verified, and what she needs to decide.
@@ -94,9 +94,9 @@ npm run docs                     # regenerate docs/slideshot-docs.html
 5. Update the docs page (see above).
 
 ## Current state (when this package was made)
-- Panel is v2.27: the add-in, the Dashboard and the docs page use the Builder DS palette (Figma file and both apps migrated 2026-11-13).
-- The board order cards (Figma node 156:8747) and `manifest.xml` v1.0.3.0 are committed (`e43227c`); Windows needs the manifest replaced by hand in the shared folder.
-- `docs/slideshot-docs.html` is current for panel v2.27, including the new board cards.
+- Panel is v2.28 (new logo, Figma 396:4649): the add-in, the Dashboard and the docs page use the Builder DS palette (Figma file and both apps migrated 2026-11-13).
+- The board order cards (Figma node 156:8747) and `manifest.xml` (now v1.0.4.0, new icons) are committed (`e43227c`); Windows needs the manifest replaced by hand in the shared folder.
+- `docs/slideshot-docs.html` is current for panel v2.28, including the new board cards.
 
 ## Open items and decisions waiting for Uda
 1. Done: board cards and docs committed; colours aligned with Builder DS (v2.26).
@@ -109,5 +109,5 @@ npm run docs                     # regenerate docs/slideshot-docs.html
 8. Hosting runs on a Supabase project under a personal account. The original README asks IT/legal whether client data may be stored there; this approval is still open. Windows rollout through Microsoft 365 Admin Center needs IT.
 9. A slide that is deleted and rebuilt counts as a new slide (history does not follow). Recognising a replacement slide as the next version was parked. Assignments match **slide numbers**, so if the original deck's order changes the DM must update the distribution.
 10. Possible leftovers in the data: duplicate slide positions from an old bug (e.g. order #351164) need one deleted on the dashboard.
-11. Logo: three concepts are in the Figma page "Logo explorations"; the mark currently used comes from Figma node 312:5348.
+11. Logo: the current mark and lockup are Figma node 396:4649 ("Winner" on the Logo explorations page). The master SVG is `slide-qa-marker/assets/slideshot-mark.svg`; the PNG icons are rendered from it.
 12. Voice-note audio playback on PowerPoint for Mac is unverified.
