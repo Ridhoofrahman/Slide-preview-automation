@@ -7,7 +7,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - **Apply Figma designs exactly.** Read the node, measure it, then match px, colors, radius and spacing. Export icons from Figma as SVG; never hand-draw icons. After building, measure DOM positions against the Figma numbers and look at a screenshot. Fonts render ~1px wider in Chrome than in Figma, so give wrapping text 1–2px slack to keep Figma's line breaks.
 - If the design conflicts with how something works (e.g. a hover button covering a tag), do not silently pick: apply the design where possible, explain the conflict, propose one fix.
 - **Never commit or push until she says "commit".** Commit messages are short English imperatives, e.g. `Fix duplicate positions; show Slide x → Slide y in the header`.
-- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.34). The dashboard has no version string.
+- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.35). The dashboard has no version string.
 - **After every shipped change, update the docs**: edit `docs/gen/gen.py` (English and Indonesian together, plus a release-notes row, the version badge and the "Updated" date), run `npm run docs`, and publish/commit `docs/slideshot-docs.html`.
 - For each visual change, save a preview PNG (`npm run shot`) and tell her where it is. Say plainly what was only tested with mock data.
 - Be honest and short. Report what changed, what you verified, and what she needs to decide.
@@ -57,7 +57,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 
 **Tag team.** An order is tag team when slides or distributions involve more than one team. Each DM can decide (approve / request changes) only on **their own team's** slides (`canReview`); both see the whole deck. Designer filter chips on the review page appear when 2+ designers work on the order.
 
-**Dashboard access.** DM-only (`isDesignManager`, reads `design_managers`; fails open if the table is missing so nobody is locked out during setup). The add-in footer shows a **Dashboard** link to DM accounts only. A designer view is planned (see open items).
+**Dashboard access.** DM-only (`isDesignManager`, reads `design_managers`; fails open if the table is missing so nobody is locked out during setup). The add-in footer (Figma 412:11104) shows name and team; a click opens a second row with an **Open dashboard** link (DM accounts only), the version and Sign out. A designer view is planned (see open items).
 
 **Progress.** The ring counts approved vs **sent** slides only. All approved shows a full ring; after "Send to customer" the ring is solid green with a check. "Send to customer" only marks status inside Slideshot; it does not email or notify anyone.
 

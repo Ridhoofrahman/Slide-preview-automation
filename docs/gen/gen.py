@@ -39,7 +39,7 @@ ANAT=f'''<figure class="anat">
 <div class="ph-body"><div class="ph-row"><span class="assigned">{BOOK}Assigned to you</span><span class="ph-btns"><span class="ic">{SWAP}</span><span class="ic">{EDIT}</span></span><i class="pin l">3</i><i class="pin r">4</i></div>
 <div class="ph-thumb"><span>Annual Summit</span><i class="pin l">5</i></div>
 <div class="ph-btn">Mark slide 9 ready for review<i class="pin l">6</i></div></div>
-<div class="ph-foot"><span>Bela - Cascade</span><span>v2.34 • Sign out</span><i class="pin r">7</i></div></div>
+<div class="ph-foot"><span>Bela</span><span>Cascade</span><i class="pin r">7</i></div></div>
 <figcaption><ol class="legend">
 <li>{T('<b>Order ID.</b> The order this deck belongs to. Type digits and the # is added for you.','<b>Order ID.</b> Order tempat deck ini berada. Ketik angka, tanda # ditambahkan otomatis.')}</li>
 <li>{T('<b>Slide and status.</b> Your slide number, plus where it will sit in the order when you moved it (“Slide 9 → Slide 4”), and its status tag.','<b>Slide dan status.</b> Nomor slide di file-mu, plus posisinya di order jika kamu memindahkannya (“Slide 9 → Slide 4”), dan tag statusnya.')}</li>
@@ -47,7 +47,7 @@ ANAT=f'''<figure class="anat">
 <li>{T('<b>Two buttons.</b> Left: change slide position. Right: add a note for your DM.','<b>Dua tombol.</b> Kiri: ubah posisi slide. Kanan: tambah catatan untuk DM.')}</li>
 <li>{T('<b>Preview.</b> The slide you selected. After sending, a badge shows the version and how long ago.','<b>Preview.</b> Slide yang kamu pilih. Setelah dikirim, lencana menampilkan versi dan kapan dikirim.')}</li>
 <li>{T('<b>Main action.</b> Send the slide, or upload the latest version once it has been sent.','<b>Aksi utama.</b> Kirim slide, atau unggah versi terbaru setelah slide pernah dikirim.')}</li>
-<li>{T('<b>Footer.</b> Your name and team, the version, and Sign out. DMs also get a Dashboard link here.','<b>Footer.</b> Nama dan timmu, versi add-in, dan Sign out. DM juga mendapat link Dashboard di sini.')}</li></ol></figcaption></figure>'''
+<li>{T('<b>Footer.</b> Your name and team. Click it to open a second row with the add-in version and Sign out; DMs also get an Open dashboard link there. Click again to close.','<b>Footer.</b> Nama dan timmu. Klik untuk membuka baris kedua berisi versi add-in dan Sign out; DM juga mendapat link Open dashboard di sana. Klik lagi untuk menutup.')}</li></ol></figcaption></figure>'''
 
 FLOW=f'''<ol class="flow">
 <li><b>{T('DM distributes','DM membagi')}</b><span>{T('Gives each designer their slides, for example 1–5.','Memberi tiap designer slide-nya, misalnya 1–5.')}</span></li>
@@ -152,7 +152,7 @@ h3('8. “Order ID has already been used”','8. “Order ID has already been us
 p('Shown when a different deck already uses this Order ID and you aren’t assigned slides in it. Check the number, or type a different one in the header. Copies of the same deck, and working files for orders you’re assigned to, don’t trigger this.','Muncul jika deck lain sudah memakai Order ID ini dan kamu tidak ditugaskan slide di dalamnya. Periksa nomornya, atau ketik nomor lain di header. Salinan deck yang sama, dan working file untuk order yang ditugaskan kepadamu, tidak memicu pesan ini.')))
 
 S.append(section('dms','For Design Managers','Untuk Design Manager',
-p('Open the Dashboard from the <b>Dashboard</b> link in the add-in footer, or from the address your admin shared. Only accounts on the DM list can enter; designers who try see “This page is for design managers.”','Buka Dashboard dari link <b>Dashboard</b> di footer add-in, atau dari alamat yang dibagikan admin. Hanya akun di daftar DM yang bisa masuk; designer yang mencoba akan melihat “This page is for design managers.”')+
+p('Open the Dashboard from the <b>Open dashboard</b> link in the add-in footer (click the footer to open it), or from the address your admin shared. Only accounts on the DM list can enter; designers who try see “This page is for design managers.”','Buka Dashboard dari link <b>Open dashboard</b> di footer add-in (klik footer untuk membukanya), atau dari alamat yang dibagikan admin. Hanya akun di daftar DM yang bisa masuk; designer yang mencoba akan melihat “This page is for design managers.”')+
 h3('The board','Board')+
 p('After signing in you land on the board: a greeting, how many slides wait for your review, and one card per order.','Setelah masuk kamu tiba di board: sapaan, berapa slide yang menunggu review, dan satu kartu per order.')+BCARD+
 ul([('<b>Ring number</b> = approved slides. Grey for none, partly green while in progress, a full circle when everything sent is approved, and solid green with a check once sent to customer.','<b>Angka di ring</b> = slide yang sudah approved. Abu-abu jika belum ada, hijau sebagian saat berjalan, lingkaran penuh jika semua yang terkirim sudah approved, dan hijau solid dengan centang setelah terkirim ke customer.'),
@@ -272,6 +272,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.35',('Add-in footer redesigned: it shows your name and team; click it to open the dashboard link, version and Sign out. The slide preview sits 12px below the slide row, as in the design.','Footer add-in didesain ulang: menampilkan nama dan timmu; klik untuk membuka link dashboard, versi, dan Sign out. Preview slide berjarak 12px di bawah baris slide, sesuai desain.')],
 ['v2.34',('The team list now comes from the teams table (24 teams in Indonesia and Peru) instead of being fixed in the app. Signing in with email no longer asks for a team on the form: if you have none yet, you choose it right after signing in.','Daftar tim sekarang dari tabel teams (24 tim di Indonesia dan Peru), bukan lagi tetap di dalam aplikasi. Sign in dengan email tidak lagi menanyakan tim di form: kalau belum punya tim, kamu memilihnya setelah sign in.')],
 ['v2.33',('Slack sign-in in the add-in now opens your web browser instead of a window inside PowerPoint, so it works on PowerPoint for Mac (Slack refused the built-in window).','Sign-in Slack di add-in sekarang membuka browser, bukan jendela di dalam PowerPoint, jadi berfungsi di PowerPoint for Mac (Slack menolak jendela bawaan).')],
 ['v2.32',('The add-in and the Dashboard read your team from the profiles table (no longer from the account), so a team changed there shows everywhere. New team: Cosmic.','Add-in dan Dashboard membaca tim dari tabel profiles (bukan lagi dari akun), jadi tim yang diubah di sana tampil di mana-mana. Tim baru: Cosmic.')],
@@ -323,11 +324,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.34','Add-in v2.34')}</span><span class="meta">{T('Updated 17 Nov 2026','Diperbarui 17 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.35','Add-in v2.35')}</span><span class="meta">{T('Updated 17 Nov 2026','Diperbarui 17 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.34.','Slideshot untuk 24Slides. Add-in v2.34.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.35.','Slideshot untuk 24Slides. Add-in v2.35.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)

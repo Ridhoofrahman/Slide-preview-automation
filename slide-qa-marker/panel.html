@@ -58,7 +58,7 @@
   #unsupported, #idError { margin: 0 20px; }
   .slide-content { display: flex; flex-direction: column; gap: 16px; }
   .slide-content.tight { gap: 12px; }
-  .slide-header { display: flex; flex-direction: column; gap: 8px; }
+  .slide-header { display: flex; flex-direction: column; gap: 12px; }
   .slide-topline { display: flex; align-items: center; gap: 8px; min-height: 24px; }
   .slide-topline .assign-tag { margin-right: auto; }
   .meta-label { margin-right: auto; font-size: 14px; line-height: 20px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -299,13 +299,20 @@
   .og-band { margin-top: auto; height: 117px; line-height: 0; overflow: hidden; }
   .og-band-svg { width: 100%; height: 152px; display: block; }
   .og-wordmark { width: 79px; height: 13px; display: block; }
-  /* ===== Footer (Figma v3): "Name - Team" left, "v2.19 • Sign out" right ===== */
-  .foot { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 8px 20px; font-size: 12px; line-height: 16px; color: #6A7389; background: #F7F9FC; border-top: 1px solid #DDE4EE; }
-  .foot-r { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+  /* ===== Footer (Figma 412:11104): "Name  Team", click to open "Open dashboard  v2.34 • Sign out" ===== */
+  .foot { display: block; padding: 0; font-size: 12px; line-height: 16px; color: #6A7389; background: #F7F9FC; border-top: 1px solid #DDE4EE; }
+  .foot-top { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; padding: 8px 20px; border: 0; background: none; text-align: left; font-family: var(--font); font-size: 12px; line-height: 16px; font-weight: 400; color: #6A7389; cursor: pointer; }
+  .foot-top:focus-visible { outline: 2px solid #3D66F5; outline-offset: -2px; }
+  .foot-name { font-weight: 500; }
+  .foot-team { font-weight: 400; }
+  .foot.open .foot-top { padding-bottom: 2px; }
+  .foot-more { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 20px 8px; }
+  .foot-more[hidden] { display: none; }
+  .foot-dash:empty { display: none; }
+  .foot-r { display: inline-flex; align-items: center; gap: 8px; flex: none; margin-left: auto; }
   .foot-dot { width: 4px; height: 4px; border-radius: 2px; background: #C2CCDB; }
-  .foot-signout { border: 0; background: none; padding: 0; font: 12px/16px var(--font); color: #6A7389; cursor: pointer; }
+  .foot-signout { border: 0; background: none; padding: 0; font-family: var(--font); font-size: 12px; line-height: 16px; font-weight: 400; color: #6A7389; cursor: pointer; }
   .foot-signout:hover { color: #1A1F2E; text-decoration: underline; }
-  #footReview:empty { display: none; }
   .summary { display: none !important; }
 
   /* Sent slide (Figma: Waiting for review) */
@@ -337,7 +344,6 @@
   .pp-save { height: 20px; padding: 0 4px; border: 0; border-radius: 4px; background: none; font: 500 14px/20px var(--font); color: #1C43A5; cursor: pointer; }
   .pp-save:hover { text-decoration: underline; }
 
-  #footReview { display: inline-flex; align-items: center; gap: 8px; }
   .foot-link { color: #6A7389; text-decoration: none; }
   .foot-link:hover { color: #1A1F2E; text-decoration: underline; }
 </style>
@@ -440,7 +446,7 @@
 <clipPath id="ogb6"><rect width="99.927" height="30.9009" fill="white" transform="translate(248.903 56.6179) rotate(-8.03197)"/></clipPath>
 </defs>
 </svg></div>
-    <footer class="foot og-foot"><span class="whoName"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout">Sign out</button></span></footer>
+    <footer class="foot og-foot"><button type="button" class="foot-top" aria-expanded="false"><span class="foot-name"></span><span class="foot-team"></span></button><div class="foot-more" hidden><span class="foot-dash"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout">Sign out</button></span></div></footer>
   </section>
   <section id="appView" hidden>
     <div class="container">
@@ -511,14 +517,14 @@
         <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="summaryGrid"><span id="summaryText"></span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="summary-grid" id="summaryGrid" hidden></div>
       </section>
-      <footer class="foot"><span class="whoName" id="whoName"></span><span class="foot-r"><span id="footReview"></span><span class="appVersion" id="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout" id="signOutBtn">Sign out</button></span></footer>
+      <footer class="foot"><button type="button" class="foot-top" aria-expanded="false"><span class="foot-name"></span><span class="foot-team"></span></button><div class="foot-more" hidden><span class="foot-dash"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout" id="signOutBtn">Sign out</button></span></div></footer>
     </div>
   </section>
 </main>
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.34";
+const APP_VERSION = "2.35";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -647,15 +653,25 @@ function rangesText(nums) {
 }
 // "Dashboard" link in the footer: DMs only for now (the page is DM-only until the designer dashboard ships)
 async function showDashboardLink(user) {
-  const slot = $("footReview"); slot.innerHTML = "";
+  const slots = document.querySelectorAll(".foot-dash"); slots.forEach((slot) => { slot.innerHTML = ""; });
   if (!S.dashUrl) return;
   try {
     const { data, error } = await S.sb.from("design_managers").select("user_id").eq("user_id", user.id).maybeSingle();
     if (error || !data) return;
   } catch (e) { return; }
-  const a = document.createElement("a"); a.className = "foot-link"; a.href = S.dashUrl; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Dashboard";
-  const dot = document.createElement("span"); dot.className = "foot-dot"; dot.setAttribute("aria-hidden", "true");
-  slot.append(a, dot);
+  slots.forEach((slot) => {
+    const a = document.createElement("a"); a.className = "foot-link"; a.href = S.dashUrl; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Open dashboard";
+    slot.append(a);
+  });
+}
+// Footer: name and team on the first row; a click opens the second row (dashboard link, version, sign out). One state for every footer.
+function setFootOpen(open) {
+  S.footOpen = !!open;
+  document.querySelectorAll(".foot").forEach((f) => {
+    f.classList.toggle("open", S.footOpen);
+    f.querySelector(".foot-top").setAttribute("aria-expanded", S.footOpen ? "true" : "false");
+    f.querySelector(".foot-more").hidden = !S.footOpen;
+  });
 }
 // Active teams from public.teams, grouped by office (Indonesia, Peru, …). Returns false if they couldn't be loaded.
 async function fillTeams(sel) {
@@ -761,7 +777,8 @@ function render() {
 
   if (document.activeElement !== $("projectName")) $("projectName").value = shownOrder(projectName());
   const myTeam = S.myTeam;
-  document.querySelectorAll(".whoName").forEach((el) => { el.textContent = me + (myTeam ? " - " + myTeam : ""); });
+  document.querySelectorAll(".foot-name").forEach((el) => { el.textContent = me; });
+  document.querySelectorAll(".foot-team").forEach((el) => { el.textContent = myTeam || ""; });
 
   // Meta line: "Designer: Name, v1". While preparing a new version, the version is dropped.
   let meta = "No slide selected";
@@ -1153,7 +1170,8 @@ function hashAsYouType(input) {
 function askOrder() {
   return new Promise((resolve) => {
     $("appView").hidden = true; $("orderView").hidden = false;
-    { const t = S.myTeam; document.querySelectorAll(".og-foot .whoName").forEach((el) => { el.textContent = displayName(S.user) + (t ? " - " + t : ""); }); }
+    document.querySelectorAll(".foot-name").forEach((el) => { el.textContent = displayName(S.user); });
+    document.querySelectorAll(".foot-team").forEach((el) => { el.textContent = S.myTeam || ""; });
     const input = $("orderInput"), err = (m) => { $("orderInputError").textContent = m || ""; input.setAttribute("aria-invalid", m ? "true" : "false"); };
     input.value = ""; err(""); setTimeout(() => input.focus(), 50);
     if (!input.dataset.hash) { hashAsYouType(input); input.dataset.hash = "1"; }
@@ -1393,7 +1411,8 @@ Office.onReady(async (info) => {
   $("refreshBtn").onclick = () => renderThumb();
   try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
   $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
-  document.querySelectorAll(".foot-signout").forEach((b) => { b.onclick = async () => { await S.sb.auth.signOut(); showLogin(); }; });
+  document.querySelectorAll(".foot-top").forEach((b) => { b.onclick = () => setFootOpen(!S.footOpen); });
+  document.querySelectorAll(".foot-signout").forEach((b) => { b.onclick = async () => { setFootOpen(false); await S.sb.auth.signOut(); showLogin(); }; });
   hashAsYouType($("projectName"));
   $("projectName").addEventListener("change", (e) => {
     const v = canonicalOrder(e.target.value);
