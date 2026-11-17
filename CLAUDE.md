@@ -7,14 +7,14 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - **Apply Figma designs exactly.** Read the node, measure it, then match px, colors, radius and spacing. Export icons from Figma as SVG; never hand-draw icons. After building, measure DOM positions against the Figma numbers and look at a screenshot. Fonts render ~1px wider in Chrome than in Figma, so give wrapping text 1–2px slack to keep Figma's line breaks.
 - If the design conflicts with how something works (e.g. a hover button covering a tag), do not silently pick: apply the design where possible, explain the conflict, propose one fix.
 - **Never commit or push until she says "commit".** Commit messages are short English imperatives, e.g. `Fix duplicate positions; show Slide x → Slide y in the header`.
-- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.32). The dashboard has no version string.
+- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.33). The dashboard has no version string.
 - **After every shipped change, update the docs**: edit `docs/gen/gen.py` (English and Indonesian together, plus a release-notes row, the version badge and the "Updated" date), run `npm run docs`, and publish/commit `docs/slideshot-docs.html`.
 - For each visual change, save a preview PNG (`npm run shot`) and tell her where it is. Say plainly what was only tested with mock data.
 - Be honest and short. Report what changed, what you verified, and what she needs to decide.
 
 ## Architecture (no build step)
 - Static files served by **GitHub Pages**: repo `Ridhoofrahman/Slide-preview-automation`, folder `slide-qa-marker/`. Live base URL: `https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/`. Pages deploys ~1 minute after a push.
-- Backend: **Supabase** (project URL is in `slide-qa-marker/config.js`; the anon/publishable key there is public by design). **Sign in with Slack** (provider `slack_oidc`, implicit flow; dashboard redirects to `REVIEW_PAGE_URL`, the add-in uses an Office dialog on `auth-slack.html`), with email + password kept as a fallback link. Sign-ups disabled (an admin creates users; a Slack login attaches to the user with the same email). The first Slack sign-in asks for the team. Postgres tables, private storage bucket `slides`, realtime.
+- Backend: **Supabase** (project URL is in `slide-qa-marker/config.js`; the anon/publishable key there is public by design). **Sign in with Slack** (provider `slack_oidc`, implicit flow; dashboard redirects to `REVIEW_PAGE_URL`, the add-in opens `auth-slack.html?code=…` in the **system browser** (`openBrowserWindow`; Slack refuses Office's embedded dialog on Mac) and polls the Edge Function `login-handoff` for the session), with email + password kept as a fallback link. Sign-ups disabled (an admin creates users; a Slack login attaches to the user with the same email). The first Slack sign-in asks for the team. Postgres tables, private storage bucket `slides`, realtime.
 - `taskpane.html` and `review.html` are **loaders**: they `fetch` the real app (`panel.html` / `review-app.html`) with a cache-busting `?v=` and `document.write` it, to bypass GitHub Pages' 10-minute cache. **Edit `panel.html` and `review-app.html`, not the loaders.**
 - The add-in manifest (`manifest.xml`) points at `taskpane.html`. Users must reinstall only when the manifest changes (name, icons, URLs); app updates reach them when they close and reopen the panel.
 
@@ -22,7 +22,8 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 |---|---|
 | `panel.html` | **Designer add-in** (~97 KB, one file: CSS + HTML + JS). Single `render()` drives the UI. |
 | `review-app.html` | **DM dashboard** (~155 KB, one file): sign-in, board, assign dialog, review page. |
-| `auth-slack.html` | Popup for the add-in's **Continue with Slack**: Slack/Supabase round trip, then `messageParent` hands the tokens to the panel (`setSession`). |
+| `auth-slack.html` | Browser page for the add-in's **Continue with Slack**: Slack/Supabase round trip, then parks the tokens with `login-handoff` under the panel's one-time code; the panel polls, takes them once and calls `setSession`. |
+| `supabase/functions/login-handoff/` | Edge Function (deploy with JWT verification off) for that handoff; the only thing that touches table `login_handoffs` (RLS on, no policies, 5-minute rows, deleted on read). |
 | `slide-details.js` | Reads fonts, slide size and speaker notes from the exported .pptx (needs JSZip). |
 | `slideshot-hero.js` | Canvas "flying slides" hero for the sign-in screens. |
 | `config.js` | Supabase URL + anon key + dashboard URL + `DAYS_TO_SHOW`. |

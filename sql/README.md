@@ -8,6 +8,7 @@
 | `teams-simple.sql` | Adds `slide_shots.team` | Run (already part of the canonical file) |
 | `assign-setup.sql` | `profiles` and `slide_assignments` with policies and realtime | Run (already part of the canonical file) |
 | `dm-setup.sql` | `design_managers`, `is_dm()`, and DM-only policies for review, comments, delete, status and distribution | Run (already part of the canonical file). **Change the seeded email to your own before running on a new project.** |
+| `login-handoffs.sql` | `login_handoffs` for the add-in's Slack sign-in through the system browser (Edge Function `login-handoff` only) | **To run** (already part of the canonical file) |
 | `teams-setup.sql` | A strict per-team RLS design | **Parked, do not run** unless stricter security is wanted |
 
 Add or remove a DM later:

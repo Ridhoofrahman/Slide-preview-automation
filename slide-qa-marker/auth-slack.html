@@ -4,18 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign in with Slack · Slideshot</title>
-<!-- Popup for the add-in's "Continue with Slack" (opened with Office.context.ui.displayDialogAsync).
-     1st load: sends the user to Slack through Supabase (provider slack_oidc), redirecting back to this page.
-     Return load: supabase-js reads the tokens from the URL hash, then this page hands them to the panel
-     with messageParent; the panel stores the session with setSession. Nothing is kept in this popup. -->
-<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<!-- Slack sign-in for the PowerPoint add-in, in the system browser (PowerPoint's embedded dialog is refused by Slack on Mac).
+     1st load (auth-slack.html?code=<one-time code from the add-in>): keeps the code in sessionStorage and goes to Slack
+     through Supabase (provider slack_oidc), redirecting back to this page.
+     Return load: supabase-js reads the tokens from the URL hash; this page parks them with the Edge Function
+     `login-handoff` under the code. The add-in polls the function and takes them once. Nothing is kept in this browser. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <style>
   html, body { height: 100%; }
-  body { margin: 0; display: grid; place-items: center; background: #F7F9FC; color: #454C63; font: 14px/20px "Geist", "Segoe UI", system-ui, -apple-system, sans-serif; }
-  .box { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; text-align: center; max-width: 320px; }
+  body { margin: 0; display: grid; place-items: center; background: #F7F9FC; color: #454C63; font-family: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 20px; }
+  .box { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; text-align: center; max-width: 360px; }
   .box img { width: 48px; height: 48px; }
+  .box h1 { margin: 0; font-size: 18px; line-height: 26px; font-weight: 500; color: #1A1F2E; }
   .box p { margin: 0; }
   .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #DDE4EE; border-top-color: #1C43A5; animation: spin .8s linear infinite; }
   .err { color: #A81A1A; }
@@ -26,56 +27,70 @@
 <body>
 <div class="box">
   <img src="assets/slideshot-mark.svg" alt="Slideshot">
+  <h1 id="title">Signing you in with Slack…</h1>
   <span class="spin" id="spin" aria-hidden="true"></span>
-  <p id="text" role="status" aria-live="polite">Signing you in with Slack…</p>
+  <p id="text" role="status" aria-live="polite"></p>
 </div>
 <script>
 (function () {
   var cfg = window.SLIDE_REVIEW_CONFIG || {};
+  var KEY = "slideshot.handoff", CODE = /^[A-Za-z0-9_-]{32,128}$/;
   var here = location.origin + location.pathname;   // redirect back to this page, without query or hash
   var q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.replace(/^#/, ""));
-  var get = function (k) { return q.get(k) || h.get(k); };
-  var returning = !!(get("access_token") || get("code") || get("error"));
+  var get = function (k) { return h.get(k) || q.get(k); };
+  var returning = !!(h.get("access_token") || get("error"));
 
-  function show(text, isErr) {
-    document.getElementById("text").textContent = text;
+  function show(title, text, isErr) {
+    document.getElementById("title").textContent = title;
+    document.getElementById("text").textContent = text || "";
     document.getElementById("text").className = isErr ? "err" : "";
-    document.getElementById("spin").hidden = !!isErr;
+    document.getElementById("spin").hidden = true;
   }
-  function send(msg) {
-    try { Office.context.ui.messageParent(JSON.stringify(msg)); }
-    catch (e) { show("Open this from the Slideshot add-in in PowerPoint.", true); }
+  function handoff(body) {
+    return fetch(cfg.SUPABASE_URL + "/functions/v1/login-handoff", {
+      method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.SUPABASE_ANON_KEY }, body: JSON.stringify(body)
+    }).then(function (r) { return r.json().catch(function () { return { status: "error" }; }); });
   }
-  function fail(message) {
-    // The panel turns this into a friendly message; it never shows the raw text
-    send({ type: "slideshot-auth-error", message: String(message || "unknown") });
-    show("Couldn't sign in with Slack. You can close this window.", true);
-  }
+  var notSetUp = function (m) { return /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(m || "")); };
+  var again = "Go back to PowerPoint and click Continue with Slack again.";
 
-  if (!window.supabase || !cfg.SUPABASE_URL) { show("Couldn't load Slideshot. Close this window and try again.", true); return; }
+  if (!window.supabase || !cfg.SUPABASE_URL) { show("Couldn't load Slideshot", "Close this tab and try again.", true); return; }
   var sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+    auth: { flowType: "implicit", persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
   });
 
   if (!returning) {
-    // First load: go to Slack (the page navigates away)
+    // First load: remember the add-in's code for the way back, then go to Slack (the page navigates away)
+    var code = q.get("code") || "";
+    if (!CODE.test(code)) { show("Open this from PowerPoint", "Start the sign-in with Continue with Slack in the Slideshot add-in.", true); return; }
+    try { sessionStorage.setItem(KEY, code); } catch (e) { show("Couldn't sign in with Slack", "This browser blocks site storage. " + again, true); return; }
     sb.auth.signInWithOAuth({ provider: "slack_oidc", options: { redirectTo: here } }).then(function (r) {
-      if (r.error) show("Couldn't open Slack. Close this window and try again.", true);
+      if (r.error) show("Couldn't open Slack", again, true);
     });
     return;
   }
 
-  // Back from Slack: wait for Office (messageParent) and for supabase-js to read the URL
-  Office.onReady(function () {
-    var err = get("error");
-    if (err) { fail([err, get("error_code"), get("error_description")].filter(Boolean).join(" ")); return; }
-    sb.auth.getSession().then(function (r) {
-      var s = r.data && r.data.session;
-      if (!s) { fail((r.error && r.error.message) || "no session"); return; }
-      send({ type: "slideshot-auth", access_token: s.access_token, refresh_token: s.refresh_token });
-      show("Signed in. You can close this window.");
-    }, function (e) { fail(e && e.message); });
-  });
+  // Back from Slack
+  var code2 = ""; try { code2 = sessionStorage.getItem(KEY) || ""; sessionStorage.removeItem(KEY); } catch (e) {}
+  var err = get("error");
+  if (!CODE.test(code2)) { show("Couldn't sign in with Slack", "This sign-in wasn't started from PowerPoint. " + again, true); return; }
+  if (err) {
+    var raw = [err, get("error_code"), get("error_description")].filter(Boolean).join(" ");
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    handoff({ action: "fail", code: code2, error: raw }).catch(function () {});
+    show("Couldn't sign in with Slack", notSetUp(raw) ? "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you." : again, true);
+    return;
+  }
+  sb.auth.getSession().then(function (r) {
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}   // tokens out of the address bar
+    var s = r.data && r.data.session;
+    if (!s) { handoff({ action: "fail", code: code2, error: (r.error && r.error.message) || "no session" }).catch(function () {}); show("Couldn't sign in with Slack", again, true); return; }
+    return handoff({ action: "store", code: code2, access_token: s.access_token, refresh_token: s.refresh_token }).then(function (res) {
+      if (res && res.status === "stored") show("You're signed in", "Return to PowerPoint. You can close this tab.");
+      else if (res && res.status === "expired") show("This sign-in has expired", again, true);
+      else show("Couldn't sign in with Slack", again, true);
+    });
+  }).catch(function () { show("Couldn't sign in with Slack", again, true); });
 })();
 </script>
 </body>

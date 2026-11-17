@@ -19,3 +19,14 @@ function q(t){let f=[],op='select',payload=null;const o={select(){return o},orde
 const OUT=!!qs.get('out');
 window.supabase={createClient(){return{auth:{getSession:async()=>({data:{session:OUT?null:{user}}}),signOut:async()=>{},setSession:async()=>({data:{session:{user}},error:null}),updateUser:async(o)=>({data:{user:Object.assign({},user,{user_metadata:Object.assign({},user.user_metadata,o.data)})},error:null}),signInWithPassword:async()=>({data:{user},error:null})},from:q,storage:{from(){return{upload:async()=>({data:{},error:null}),createSignedUrls:async(p)=>({data:p.map(x=>({path:x,signedUrl:IMG})),error:null}),createSignedUrl:async()=>({data:{signedUrl:IMG},error:null})}}},channel(){const c={on(){return c},subscribe(){return c}};return c},removeChannel(){}}}};
 })();
+// Slack sign-in handoff (Edge Function login-handoff + system browser). ?handoff=ok (default) | fail | wait
+(function(){const mode=new URLSearchParams(location.search).get('handoff')||'ok';let takes=0;window.__opened=[];
+ window.open=(u)=>{const t={closed:false,close(){t.closed=true},location:{set href(v){window.__opened.push(v)}}};if(u)window.__opened.push(u);return t;};
+ const real=window.fetch.bind(window);
+ window.fetch=async(u,o)=>{if(!String(u).includes('/functions/v1/login-handoff'))return real(u,o);
+  const b=JSON.parse(o.body||'{}');let r={status:'error'};
+  if(b.action==='start')r={status:'started'};
+  else if(b.action==='cancel')r={status:'cancelled'};
+  else if(b.action==='take'){takes++;r=mode==='wait'||takes<2?{status:'pending'}:mode==='fail'?{status:'failed',error:'Signups not allowed for this instance'}:{status:'ok',access_token:'at',refresh_token:'rt'};}
+  window.__handoff=(window.__handoff||[]).concat(b.action);
+  return new Response(JSON.stringify(r),{headers:{'Content-Type':'application/json'}});};})();

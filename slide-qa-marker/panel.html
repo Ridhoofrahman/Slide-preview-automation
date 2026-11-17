@@ -203,6 +203,10 @@
   .slack-mark { width: 20px; height: 20px; flex: none; }
   .text-link { width: 100%; height: 40px; padding: 8px 12px; border: 0; border-radius: 8px; background: #FFFFFF; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; color: var(--link); cursor: pointer; }
   .text-link:hover { background: #F7F9FC; }
+  .slack-wait { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; line-height: 20px; color: var(--body); text-align: center; }
+  .slack-wait .spin { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid #DDE4EE; border-top-color: #1C43A5; animation: slackspin .8s linear infinite; }
+  @keyframes slackspin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .slack-wait .spin { animation-duration: 2s; } }
   .login-lead { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); }
   @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } .sent-overlay { animation: none; } }
 
@@ -353,6 +357,11 @@
         <button id="slackBtn" class="primary slack-btn" type="button"><svg class="slack-mark" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.35714 12.1071C5.35714 13.0357 4.60714 13.7857 3.67857 13.7857C2.75 13.7857 2 13.0357 2 12.1071C2 11.1786 2.75 10.4286 3.67857 10.4286H5.35714V12.1071ZM6.21429 12.1071C6.21429 11.1786 6.96429 10.4286 7.89286 10.4286C8.82143 10.4286 9.57143 11.1786 9.57143 12.1071V16.3214C9.57143 17.25 8.82143 18 7.89286 18C6.96429 18 6.21429 17.25 6.21429 16.3214V12.1071ZM7.89286 5.35714C6.96429 5.35714 6.21429 4.60714 6.21429 3.67857C6.21429 2.75 6.96429 2 7.89286 2C8.82143 2 9.57143 2.75 9.57143 3.67857V5.35714H7.89286ZM7.89286 6.21429C8.82143 6.21429 9.57143 6.96429 9.57143 7.89286C9.57143 8.82143 8.82143 9.57143 7.89286 9.57143H3.67857C2.75 9.57143 2 8.82143 2 7.89286C2 6.96429 2.75 6.21429 3.67857 6.21429H7.89286ZM14.6429 7.89286C14.6429 6.96429 15.3929 6.21429 16.3214 6.21429C17.25 6.21429 18 6.96429 18 7.89286C18 8.82143 17.25 9.57143 16.3214 9.57143H14.6429V7.89286ZM13.7857 7.89286C13.7857 8.82143 13.0357 9.57143 12.1071 9.57143C11.1786 9.57143 10.4286 8.82143 10.4286 7.89286V3.67857C10.4286 2.75 11.1786 2 12.1071 2C13.0357 2 13.7857 2.75 13.7857 3.67857V7.89286ZM12.1071 14.6429C13.0357 14.6429 13.7857 15.3929 13.7857 16.3214C13.7857 17.25 13.0357 18 12.1071 18C11.1786 18 10.4286 17.25 10.4286 16.3214V14.6429H12.1071ZM12.1071 13.7857C11.1786 13.7857 10.4286 13.0357 10.4286 12.1071C10.4286 11.1786 11.1786 10.4286 12.1071 10.4286H16.3214C17.25 10.4286 18 11.1786 18 12.1071C18 13.0357 17.25 13.7857 16.3214 13.7857H12.1071Z" fill="currentColor"/></svg><span id="slackLabel">Continue with Slack</span></button>
         <button id="useEmail" class="text-link" type="button">Sign in with email</button>
         <p id="slackMsg" class="msg" role="status" aria-live="polite"></p>
+      </div>
+      <!-- Slack sign-in runs in the system browser; the panel waits for it here -->
+      <div class="login-form slack-block" id="slackWait" hidden>
+        <p class="slack-wait" role="status" aria-live="polite"><span class="spin" aria-hidden="true"></span>Waiting for Slack sign-in in your browser…</p>
+        <button id="slackCancel" class="text-link" type="button">Cancel</button>
       </div>
       <form class="login-form" id="loginForm" novalidate hidden>
         <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="field-error" id="emailError" aria-live="polite"></span></label>
@@ -510,7 +519,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.32";
+const APP_VERSION = "2.33";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1226,55 +1235,87 @@ function playLoginBand() {
 }
 // Sign-in screen: Slack (default), email (fallback), or the one-time team step
 function setLoginMode(mode) {
-  $("slackBlock").hidden = mode !== "slack"; $("loginForm").hidden = mode !== "email"; $("teamForm").hidden = mode !== "team";
+  $("slackBlock").hidden = mode !== "slack"; $("slackWait").hidden = mode !== "wait"; $("loginForm").hidden = mode !== "email"; $("teamForm").hidden = mode !== "team";
   $("loginView").classList.toggle("tall", mode === "email");
   const t = $("loginTitle");
   if (mode === "team") t.textContent = "Choose your team";
   else { t.textContent = "Sign in to  "; const w = document.createElement("span"); w.className = "login-word"; w.textContent = "Slideshot"; t.append(w); }
-  if (mode === "slack") $("slackBtn").focus({ focusVisible: false }); else ({ email: $("email"), team: $("teamStep") })[mode].focus();
+  if (mode === "slack") $("slackBtn").focus({ focusVisible: false }); else if (mode === "wait") $("slackCancel").focus({ focusVisible: false }); else ({ email: $("email"), team: $("teamStep") })[mode].focus();
 }
 
-// ---- Sign in with Slack: a popup (auth-slack.html) does the Slack/Supabase round trip and sends back the tokens
+// ---- Sign in with Slack in the system browser (PowerPoint for Mac's embedded dialog is refused by Slack).
+// The panel makes a one-time code, opens auth-slack.html?code=… in the browser, and polls the Edge Function
+// `login-handoff` until the browser has parked the session under that code (taken once, then deleted).
 const SLACK_ERR = {
   notSetUp: "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you.",
-  generic: "Couldn't sign in with Slack. Please try again."
+  generic: "Couldn't sign in with Slack. Please try again.",
+  timeout: "Slack sign-in timed out. Please try again."
 };
 // Never show raw provider text: map it to one of the two messages
 const slackErrorText = (msg) => /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
+const HANDOFF = { every: 2000, max: 3 * 60 * 1000 };
 function slackBusy(on) {
-  const b = $("slackBtn"); b.disabled = on; $("slackLabel").textContent = on ? "Signing in…" : "Continue with Slack";
+  const b = $("slackBtn"); b.disabled = on; $("slackLabel").textContent = on ? "Opening your browser…" : "Continue with Slack";
 }
-function signInWithSlack() {
-  say($("slackMsg"), "");
-  if (!(Office.context.ui && Office.context.ui.displayDialogAsync)) { say($("slackMsg"), SLACK_ERR.generic, "err"); return; }
-  slackBusy(true);
-  const url = new URL("auth-slack.html", location.href); url.search = ""; url.hash = "";
-  Office.context.ui.displayDialogAsync(url.href, { height: 60, width: 30 }, (res) => {
-    if (res.status === Office.AsyncResultStatus.Failed) {
-      slackBusy(false);
-      // 12009: the user dismissed the "open a window" prompt (PowerPoint on the web): stay quiet
-      if (res.error && res.error.code !== 12009) say($("slackMsg"), SLACK_ERR.generic, "err");
-      return;
-    }
-    const dlg = res.value;
-    dlg.addEventHandler(Office.EventType.DialogMessageReceived, async (arg) => {
-      let m = {}; try { m = JSON.parse(arg.message); } catch (e) {}
-      try { dlg.close(); } catch (e) {}
-      if (m.type === "slideshot-auth" && m.access_token && m.refresh_token) {
-        const { data, error } = await S.sb.auth.setSession({ access_token: m.access_token, refresh_token: m.refresh_token });
-        slackBusy(false);
-        if (error || !data.session) { say($("slackMsg"), SLACK_ERR.generic, "err"); return; }
-        afterSignIn(data.session.user);
-      } else {
-        slackBusy(false); say($("slackMsg"), slackErrorText(m.message), "err");
-      }
-    });
-    // 12006: the user closed the popup. Back to sign-in, no error.
-    dlg.addEventHandler(Office.EventType.DialogEventReceived, (arg) => {
-      slackBusy(false);
-      if (arg.error !== 12006) say($("slackMsg"), SLACK_ERR.generic, "err");
-    });
+function handoffCode() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));   // 256 bits -> 43 URL-safe characters
+  return btoa(String.fromCharCode.apply(null, bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+async function handoff(body) {
+  const cfg = window.SLIDE_REVIEW_CONFIG || {};
+  const r = await fetch(cfg.SUPABASE_URL + "/functions/v1/login-handoff", {
+    method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.SUPABASE_ANON_KEY }, body: JSON.stringify(body)
   });
+  return r.json();
+}
+const hasBrowserApi = () => { try { return !!(Office.context.ui && Office.context.ui.openBrowserWindow); } catch (e) { return false; } };
+function openInBrowser(url, tab) {
+  if (hasBrowserApi()) { try { Office.context.ui.openBrowserWindow(url); return true; } catch (e) {} }
+  if (tab && !tab.closed) { tab.location.href = url; return true; }
+  return !!window.open(url, "_blank");
+}
+function stopSlackWait(message) {
+  const h = S.handoff; S.handoff = null;
+  if (h) clearTimeout(h.timer);
+  setLoginMode("slack");
+  if (message) say($("slackMsg"), message, "err");
+  return h;
+}
+async function signInWithSlack() {
+  say($("slackMsg"), "");
+  // No Office browser API (e.g. PowerPoint on the web): open the tab now, while the click still counts, so it isn't blocked
+  const tab = hasBrowserApi() ? null : window.open("", "_blank");
+  slackBusy(true);
+  const code = handoffCode();
+  let started = null; try { started = await handoff({ action: "start", code: code }); } catch (e) {}
+  slackBusy(false);
+  if (!started || started.status !== "started") { if (tab) tab.close(); say($("slackMsg"), SLACK_ERR.generic, "err"); return; }
+  const url = new URL("auth-slack.html", location.href); url.search = "?code=" + code; url.hash = "";
+  if (!openInBrowser(url.href, tab)) { handoff({ action: "cancel", code: code }).catch(() => {}); say($("slackMsg"), SLACK_ERR.generic, "err"); return; }
+  S.handoff = { code: code, until: Date.now() + HANDOFF.max, timer: 0 };
+  setLoginMode("wait");
+  pollHandoff(S.handoff);
+}
+function pollHandoff(h) {
+  h.timer = setTimeout(async () => {
+    if (S.handoff !== h) return;   // cancelled meanwhile
+    let r = null; try { r = await handoff({ action: "take", code: h.code }); } catch (e) {}   // network hiccup: try again
+    if (S.handoff !== h) return;
+    if (r && r.status === "ok" && r.access_token && r.refresh_token) {
+      const { data, error } = await S.sb.auth.setSession({ access_token: r.access_token, refresh_token: r.refresh_token });
+      if (S.handoff !== h) return;
+      if (error || !data.session) { stopSlackWait(SLACK_ERR.generic); return; }
+      stopSlackWait(); afterSignIn(data.session.user); return;
+    }
+    if (r && r.status === "failed") { stopSlackWait(slackErrorText(r.error)); return; }
+    if (r && r.status === "expired") { stopSlackWait(SLACK_ERR.timeout); return; }
+    if (Date.now() >= h.until) { handoff({ action: "cancel", code: h.code }).catch(() => {}); stopSlackWait(SLACK_ERR.timeout); return; }
+    pollHandoff(h);
+  }, HANDOFF.every);
+}
+function cancelSlackWait() {
+  const h = stopSlackWait();
+  if (h) handoff({ action: "cancel", code: h.code }).catch(() => {});
 }
 // After any sign-in: the team is needed once (Slack doesn't know it)
 async function afterSignIn(user) {
@@ -1310,6 +1351,7 @@ Office.onReady(async (info) => {
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
   $("slackBtn").onclick = signInWithSlack;
+  $("slackCancel").onclick = cancelSlackWait;
   $("useEmail").onclick = () => { say($("slackMsg"), ""); setLoginMode("email"); };
   $("useSlack").onclick = () => { say($("loginMsg"), ""); setLoginMode("slack"); };
   $("teamForm").addEventListener("submit", (e) => { e.preventDefault(); saveTeam(); });
