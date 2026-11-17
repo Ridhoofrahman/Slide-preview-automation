@@ -8,7 +8,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="slide-details.js"></script>
-<script src="slideshot-hero.js"></script>
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -174,6 +173,37 @@
   .field-error { font-size: 13px; line-height: 18px; color: #A81A1A; }
   .field-error:empty { display: none; }
   .login .msg { margin: 0; }
+  /* Sign in with Slack: primary button with the Slack mark in white; email stays as a fallback link */
+  /* Sign in v3 (Figma 408:6164): no hero; logo, title and buttons centred on #F7F9FC, slide band at the bottom */
+  .login { position: relative; overflow: hidden; min-height: 100vh; background: #F7F9FC; }
+  .login-panel { position: relative; z-index: 1; flex: 1; margin-top: 0; min-height: 100vh; padding: 0 24px 32px; justify-content: center; gap: 20px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .login-head { position: relative; display: flex; flex-direction: column; align-items: center; }
+  /* The logo sits 8.6 px above the title and doesn't count in the centring (as in Figma) */
+  .login .login-head .logo { position: absolute; left: 50%; top: auto; bottom: calc(100% + 8.6px); width: 56px; height: 56px; transform: translateX(-50%); }
+  .login-head h1 { text-align: center; white-space: pre; }
+  /* The email form is taller than the pane: keep the logo in the flow so it isn't cut off at the top */
+  .login.tall .login-panel { padding-top: 24px; }
+  .login.tall .login-head .logo { position: static; transform: none; margin-bottom: 8.6px; }
+  /* Bottom band: 4 slides rising into place (Figma timeline 2 s); .bs-y/.bs-x/.bs-r carry the motion tracks, .bs-body the rotation */
+  .login-band { position: absolute; left: -56px; right: -47.6px; bottom: -34.88px; height: 153.877px; overflow: hidden; pointer-events: none; z-index: 0; }
+  .band-slide { position: absolute; transform: translate(-50%, -50%); }
+  .bs-body { position: relative; }
+  .bs-bg { position: absolute; inset: 0; border-radius: var(--r); background: var(--fill); opacity: var(--op); }
+  .bs-content { position: absolute; left: .11%; top: 18.56%; width: 81.25%; height: 44.44%; opacity: var(--op); }
+  .bs-content i { position: absolute; left: 11.54%; background: var(--line); border-radius: calc(var(--r) * .246); }
+  .bs-content i:nth-child(1) { top: 0; width: 51.69%; height: 22.5%; border-radius: calc(var(--r) * .3516); }
+  .bs-content i:nth-child(2) { top: 41.25%; width: 76.92%; height: 15.75%; }
+  .bs-content i:nth-child(3) { top: 75.75%; width: 44.31%; height: 15.75%; }
+  .bs-badge { position: absolute; left: 71%; top: 50.11%; width: 22%; height: 39.11%; }
+  .bs-badge svg { display: block; width: 100%; height: 100%; }
+  .login-word { font-family: "Vampiro One", cursive; font-weight: 400; }
+  .slack-block { gap: 12px; }
+  .slack-btn { gap: 0; padding: 8px 12px; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .slack-btn > span { padding: 0 8px; }
+  .slack-mark { width: 20px; height: 20px; flex: none; }
+  .text-link { width: 100%; height: 40px; padding: 8px 12px; border: 0; border-radius: 8px; background: #FFFFFF; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; color: var(--link); cursor: pointer; }
+  .text-link:hover { background: #F7F9FC; }
+  .login-lead { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); }
   @media (prefers-reduced-motion: reduce) { .summary-toggle svg { transition: none; } .sent-overlay { animation: none; } }
 
   /* Team dropdown */
@@ -314,19 +344,34 @@
 
   <!-- Sign in (Figma: Frame 23 — hero + panel) -->
   <section id="loginView" class="login" hidden>
-    <div class="hero" id="hero" aria-hidden="true"></div>
     <div class="login-panel">
+      <div class="login-head">
       <svg class="logo" viewBox="0 0 88 88" fill="none" aria-hidden="true"><g clip-path="url(#pl-clip0)"><rect width="88" height="88" rx="20.1667" fill="url(#pl-paint0)"/><g filter="url(#pl-filter0)"><rect width="88" height="88" rx="20.1667" fill="url(#pl-paint1)"/></g><path d="M78.1028 40.7909L-2.54209 18.8863C-7.26592 17.6032 -12.1355 20.3925 -13.4186 25.1163L-25.3665 69.1045C-26.6496 73.8283 -23.8603 78.6978 -19.1365 79.9809L61.5084 101.886C66.2322 103.169 71.1018 100.379 72.3849 95.6555L84.3328 51.6674C85.6159 46.9435 82.8266 42.074 78.1028 40.7909Z" fill="white"/><path d="M33.4055 41.1147L0.414455 32.1537C-1.61004 31.6038 -3.69699 32.7992 -4.24688 34.8237C-4.79677 36.8482 -3.60137 38.9352 -1.57687 39.4851L31.4142 48.4461C33.4387 48.9959 35.5257 47.8005 36.0756 45.776C36.6254 43.7515 35.43 41.6646 33.4055 41.1147Z" fill="#B9CCFF"/><path d="M50.3874 59.5037L-3.9868 44.7347C-5.50517 44.3223 -7.07038 45.2188 -7.4828 46.7372C-7.89522 48.2556 -6.99866 49.8208 -5.48029 50.2332L48.8939 65.0022C50.4123 65.4146 51.9775 64.5181 52.3899 62.9997C52.8023 61.4813 51.9058 59.9161 50.3874 59.5037Z" fill="#DCE6FF"/><path d="M21.9066 62.9201L-6.80787 55.1208C-8.32624 54.7083 -9.89146 55.6049 -10.3039 57.1233C-10.7163 58.6416 -9.81974 60.2069 -8.30137 60.6193L20.4131 68.4186C21.9315 68.8311 23.4967 67.9345 23.9091 66.4161C24.3215 64.8978 23.425 63.3325 21.9066 62.9201Z" fill="#DCE6FF"/><path d="M21.9066 76.0128L-6.80787 68.2134C-8.32624 67.801 -9.89146 68.6975 -10.3039 70.2159C-10.7163 71.7343 -9.81974 73.2995 -8.30137 73.7119L20.4131 81.5113C21.9315 81.9237 23.4967 81.0271 23.9091 79.5088C24.3215 77.9904 23.425 76.4252 21.9066 76.0128Z" fill="#DCE6FF"/><path d="M62.2906 74.1794L33.5761 66.3801C32.0577 65.9677 30.4925 66.8642 30.0801 68.3826C29.6677 69.901 30.5642 71.4662 32.0826 71.8786L60.7971 79.678C62.3154 80.0904 63.8807 79.1938 64.2931 77.6754C64.7055 76.1571 63.8089 74.5919 62.2906 74.1794Z" fill="#DCE6FF"/><path d="M23.6675 9.36636C22.7033 20.5986 24.8286 24.3113 35.0026 29.1675C23.7704 28.2033 20.0577 30.3286 15.2015 40.5026C16.1656 29.2704 14.0403 25.5577 3.86637 20.7014C15.0986 21.6656 18.8113 19.5403 23.6675 9.36636Z" fill="url(#pl-paint2)"/><path d="M66.5 57C76.165 57 84 49.165 84 39.5C84 29.835 76.165 22 66.5 22C56.835 22 49 29.835 49 39.5C49 49.165 56.835 57 66.5 57Z" fill="#2BAF85"/><path d="M66.4288 52.5355C73.5386 52.5355 79.3021 46.7719 79.3021 39.6622C79.3021 32.5524 73.5386 26.7888 66.4288 26.7888C59.3191 26.7888 53.5555 32.5524 53.5555 39.6622C53.5555 46.7719 59.3191 52.5355 66.4288 52.5355Z" fill="#34D3A0"/><path d="M60.1998 40.0774L64.7677 44.6454L73.0731 35.0942" stroke="white" stroke-width="1.628" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="pl-filter0" x="0" y="0" width="88" height="88" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feTurbulence type="fractalNoise" baseFrequency="2.7272727489471436 2.7272727489471436" stitchTiles="stitch" numOctaves="3" result="noise" seed="6543"/><feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/><feComponentTransfer in="alphaNoise" result="coloredNoise1"><feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/></feComponentTransfer><feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/><feFlood flood-color="#00308D" result="color1Flood"/><feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/><feMerge result="pl-effect1"><feMergeNode in="shape"/><feMergeNode in="color1"/></feMerge></filter><linearGradient id="pl-paint0" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="pl-paint1" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="pl-paint2" x1="23.6675" y1="9.36636" x2="15.2015" y2="40.5026" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD028"/><stop offset="1" stop-color="#FFD749"/></linearGradient><clipPath id="pl-clip0"><rect width="88" height="88" rx="20.1667" fill="white"/></clipPath></defs></svg>
-      <h1>Sign in to Slideshot</h1>
-      <form class="login-form" id="loginForm" novalidate>
+      <h1 id="loginTitle">Sign in to  <span class="login-word">Slideshot</span></h1>
+      </div>
+      <div class="login-form slack-block" id="slackBlock">
+        <button id="slackBtn" class="primary slack-btn" type="button"><svg class="slack-mark" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.35714 12.1071C5.35714 13.0357 4.60714 13.7857 3.67857 13.7857C2.75 13.7857 2 13.0357 2 12.1071C2 11.1786 2.75 10.4286 3.67857 10.4286H5.35714V12.1071ZM6.21429 12.1071C6.21429 11.1786 6.96429 10.4286 7.89286 10.4286C8.82143 10.4286 9.57143 11.1786 9.57143 12.1071V16.3214C9.57143 17.25 8.82143 18 7.89286 18C6.96429 18 6.21429 17.25 6.21429 16.3214V12.1071ZM7.89286 5.35714C6.96429 5.35714 6.21429 4.60714 6.21429 3.67857C6.21429 2.75 6.96429 2 7.89286 2C8.82143 2 9.57143 2.75 9.57143 3.67857V5.35714H7.89286ZM7.89286 6.21429C8.82143 6.21429 9.57143 6.96429 9.57143 7.89286C9.57143 8.82143 8.82143 9.57143 7.89286 9.57143H3.67857C2.75 9.57143 2 8.82143 2 7.89286C2 6.96429 2.75 6.21429 3.67857 6.21429H7.89286ZM14.6429 7.89286C14.6429 6.96429 15.3929 6.21429 16.3214 6.21429C17.25 6.21429 18 6.96429 18 7.89286C18 8.82143 17.25 9.57143 16.3214 9.57143H14.6429V7.89286ZM13.7857 7.89286C13.7857 8.82143 13.0357 9.57143 12.1071 9.57143C11.1786 9.57143 10.4286 8.82143 10.4286 7.89286V3.67857C10.4286 2.75 11.1786 2 12.1071 2C13.0357 2 13.7857 2.75 13.7857 3.67857V7.89286ZM12.1071 14.6429C13.0357 14.6429 13.7857 15.3929 13.7857 16.3214C13.7857 17.25 13.0357 18 12.1071 18C11.1786 18 10.4286 17.25 10.4286 16.3214V14.6429H12.1071ZM12.1071 13.7857C11.1786 13.7857 10.4286 13.0357 10.4286 12.1071C10.4286 11.1786 11.1786 10.4286 12.1071 10.4286H16.3214C17.25 10.4286 18 11.1786 18 12.1071C18 13.0357 17.25 13.7857 16.3214 13.7857H12.1071Z" fill="currentColor"/></svg><span id="slackLabel">Continue with Slack</span></button>
+        <button id="useEmail" class="text-link" type="button">Sign in with email</button>
+        <p id="slackMsg" class="msg" role="status" aria-live="polite"></p>
+      </div>
+      <form class="login-form" id="loginForm" novalidate hidden>
         <label class="field"><span class="field-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="field-error" id="emailError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="field-error" id="passwordError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="field-error" id="teamInputError" aria-live="polite"></span></label>
         <label class="field"><span class="field-label">Your name, as your DM will see it</span><input id="nameInput" autocomplete="name" placeholder="Only needed the first time"></label>
         <button id="signInBtn" class="primary" type="submit">Sign in</button>
         <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+        <button id="useSlack" class="text-link" type="button">Continue with Slack instead</button>
+      </form>
+      <!-- First Slack sign-in: the account has no team yet -->
+      <form class="login-form" id="teamForm" novalidate hidden>
+        <p class="login-lead">It's only needed the first time.</p>
+        <label class="field"><span class="field-label">Your team</span><select id="teamStep" aria-describedby="teamStepError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="field-error" id="teamStepError" aria-live="polite"></span></label>
+        <button id="teamBtn" class="primary" type="submit">Continue</button>
+        <p id="teamMsg" class="msg" role="status" aria-live="polite"></p>
       </form>
     </div>
+    <div class="login-band" id="loginBand" aria-hidden="true"></div>
   </section>
 
   <!-- Main -->
@@ -465,7 +510,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.29";
+const APP_VERSION = "2.30";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1041,7 +1086,6 @@ async function signIn() {
 
 async function enterApp(user) {
   S.user = user;
-  if (S.hero) { S.hero.destroy(); S.hero = null; }
   $("loginView").hidden = true;
   if (!docStore.get("slideqa.orderSet")) await askOrder();
   $("orderView").hidden = true; $("appView").hidden = false;
@@ -1117,12 +1161,121 @@ function askOrder() {
     };
   });
 }
-function showLogin() {
+function showLogin(mode) {
   S.user = null;
   $("appView").hidden = true; $("orderView").hidden = true; $("loginView").hidden = false;
-  // Flying-slides hero runs only while the sign-in screen is visible
-  if (!S.hero && window.SlideshotHero) S.hero = SlideshotHero.mount($("hero"), { theme: "pastel", height: 146 });
-  $("email").focus();
+  setLoginMode(mode || "slack");
+  playLoginBand();
+}
+// Bottom band (Figma 408:6164): 4 slides that rise into place. Keyframe tracks are copied from the Figma timeline (2 s):
+// [offset 0-1, value, easing to the next keyframe]; y and x in px, rotation in radians, all in screen space.
+const BAND_EASE = { land: "cubic-bezier(0.22, 1, 0.36, 1)", sway: "cubic-bezier(0.5, 0, 0.5, 1)" };
+const LOGIN_BAND = [
+  { x: -139.92, y: 79.96, w: 117.16, h: 66.64, rot: -42.33, fill: "#E6E0FF", op: 0.88, line: "179,166,236", badge: 1, r: 4.034,   // Lavender
+    ty: [[0, 150.163757], [0.03069, 150.163757, BAND_EASE.land], [0.28692, -6.589184, "ease-in-out"], [0.37233, 0], [1, 0]],
+    tx: [[0, 0], [0.01059, 0], [0.28692, -6.424858], [1, -6.424858]],
+    rz: [[0, 0], [0.01059, 0, BAND_EASE.sway], [0.98896, 0.176402, BAND_EASE.sway], [1, 0.034638]] },
+  { x: 50.09, y: 67.88, w: 163.34, h: 110.05, rot: 3.71, fill: "#FFE5D6", op: 0.78, line: "237,178,150", badge: 0, r: 3.356,   // Peach
+    ty: [[0, 165.876984], [0.50377, 165.876984, BAND_EASE.land], [0.89547, -2, "ease-in-out"], [0.985, 0], [1, 0]],
+    rz: [[0, 0], [0.04781, 0, BAND_EASE.sway], [1, -0.129887]] },
+  { x: -53, y: 97.69, w: 136.96, h: 76.78, rot: -16.43, fill: "#FBDDE8", op: 0.8, line: "231,161,187", badge: 1, r: 3.493,   // Pink
+    ty: [[0, 124.375694], [0.30456, 124.375694, BAND_EASE.land], [0.51456, -2, "ease-in-out"], [0.58456, 0], [1, 0]] },
+  { x: 147.06, y: 71.57, w: 122.99, h: 69.53, rot: 6.01, fill: "#D6F1E6", op: 0.87, line: "143,205,180", badge: 1, r: 6.204,   // Mint
+    ty: [[0, 137.322159], [0.78624, 137.322159, BAND_EASE.land], [0.9999, -2, "ease-in-out"], [1, 0]] }
+];
+const BAND_BADGE = '<svg viewBox="0 0 25.7763 26.0627" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M12.8882 26.0627C20.0061 26.0627 25.7763 20.2284 25.7763 13.0314C25.7763 5.83434 20.0061 0 12.8882 0C5.77023 0 0 5.83434 0 13.0314C0 20.2284 5.77023 26.0627 12.8882 26.0627Z" fill="#00308D"/><path d="M7.02991 13.0314L11.1307 17.1777L19.3322 8.29269" stroke-width="1.41189" stroke-linecap="round" stroke-linejoin="round" stroke="white"/></svg>';
+function buildLoginBand() {
+  const band = $("loginBand"); if (band.childElementCount) return;
+  LOGIN_BAND.forEach((b) => {
+    const d = document.createElement("div"); d.className = "band-slide";
+    d.style.left = "calc(50% + " + b.x + "px)"; d.style.top = b.y + "px";
+    d.innerHTML = '<div class="bs-y"><div class="bs-x"><div class="bs-r"><div class="bs-body" style="width:' + b.w + "px;height:" + b.h + "px;transform:rotate(" + b.rot + "deg);--r:" + b.r + "px;--fill:" + b.fill + ";--op:" + b.op + ";--line:rgba(" + b.line + ',.75)"><span class="bs-bg"></span><span class="bs-content"><i></i><i></i><i></i></span>' + (b.badge ? '<span class="bs-badge">' + BAND_BADGE + "</span>" : "") + "</div></div></div></div>";
+    band.append(d);
+  });
+}
+// Plays once each time the sign-in screen opens and holds the last frame (the Figma prototype loops)
+function playLoginBand() {
+  buildLoginBand();
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const run = (el, track, fn) => {
+    el.getAnimations().forEach((a) => a.cancel());
+    if (!track || still || !el.animate) return;
+    el.animate(track.map(([o, v, e]) => ({ offset: o, transform: fn(v), easing: e || "linear" })), { duration: 2000, fill: "both" });
+  };
+  [...$("loginBand").children].forEach((d, i) => {
+    const b = LOGIN_BAND[i];
+    run(d.querySelector(".bs-y"), b.ty, (v) => "translateY(" + v + "px)");
+    run(d.querySelector(".bs-x"), b.tx, (v) => "translateX(" + v + "px)");
+    run(d.querySelector(".bs-r"), b.rz, (v) => "rotate(" + v + "rad)");
+  });
+}
+// Sign-in screen: Slack (default), email (fallback), or the one-time team step
+function setLoginMode(mode) {
+  $("slackBlock").hidden = mode !== "slack"; $("loginForm").hidden = mode !== "email"; $("teamForm").hidden = mode !== "team";
+  $("loginView").classList.toggle("tall", mode === "email");
+  const t = $("loginTitle");
+  if (mode === "team") t.textContent = "Choose your team";
+  else { t.textContent = "Sign in to  "; const w = document.createElement("span"); w.className = "login-word"; w.textContent = "Slideshot"; t.append(w); }
+  if (mode === "slack") $("slackBtn").focus({ focusVisible: false }); else ({ email: $("email"), team: $("teamStep") })[mode].focus();
+}
+
+// ---- Sign in with Slack: a popup (auth-slack.html) does the Slack/Supabase round trip and sends back the tokens
+const SLACK_ERR = {
+  notSetUp: "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you.",
+  generic: "Couldn't sign in with Slack. Please try again."
+};
+// Never show raw provider text: map it to one of the two messages
+const slackErrorText = (msg) => /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
+function slackBusy(on) {
+  const b = $("slackBtn"); b.disabled = on; $("slackLabel").textContent = on ? "Signing in…" : "Continue with Slack";
+}
+function signInWithSlack() {
+  say($("slackMsg"), "");
+  if (!(Office.context.ui && Office.context.ui.displayDialogAsync)) { say($("slackMsg"), SLACK_ERR.generic, "err"); return; }
+  slackBusy(true);
+  const url = new URL("auth-slack.html", location.href); url.search = ""; url.hash = "";
+  Office.context.ui.displayDialogAsync(url.href, { height: 60, width: 30 }, (res) => {
+    if (res.status === Office.AsyncResultStatus.Failed) {
+      slackBusy(false);
+      // 12009: the user dismissed the "open a window" prompt (PowerPoint on the web): stay quiet
+      if (res.error && res.error.code !== 12009) say($("slackMsg"), SLACK_ERR.generic, "err");
+      return;
+    }
+    const dlg = res.value;
+    dlg.addEventHandler(Office.EventType.DialogMessageReceived, async (arg) => {
+      let m = {}; try { m = JSON.parse(arg.message); } catch (e) {}
+      try { dlg.close(); } catch (e) {}
+      if (m.type === "slideshot-auth" && m.access_token && m.refresh_token) {
+        const { data, error } = await S.sb.auth.setSession({ access_token: m.access_token, refresh_token: m.refresh_token });
+        slackBusy(false);
+        if (error || !data.session) { say($("slackMsg"), SLACK_ERR.generic, "err"); return; }
+        afterSignIn(data.session.user);
+      } else {
+        slackBusy(false); say($("slackMsg"), slackErrorText(m.message), "err");
+      }
+    });
+    // 12006: the user closed the popup. Back to sign-in, no error.
+    dlg.addEventHandler(Office.EventType.DialogEventReceived, (arg) => {
+      slackBusy(false);
+      if (arg.error !== 12006) say($("slackMsg"), SLACK_ERR.generic, "err");
+    });
+  });
+}
+// After any sign-in: the team is needed once (Slack doesn't know it)
+function afterSignIn(user) {
+  if ((user.user_metadata || {}).team) { say($("slackMsg"), ""); enterApp(user); return; }
+  S.pendingUser = user; showLogin("team");
+}
+async function saveTeam() {
+  const team = $("teamStep").value; setFieldError("teamStep", ""); say($("teamMsg"), "");
+  if (!team) { setFieldError("teamStep", "Choose your team"); return; }
+  const btn = $("teamBtn"); btn.disabled = true; btn.textContent = "Saving…";
+  const { data, error } = await S.sb.auth.updateUser({ data: { team: team } });
+  btn.disabled = false; btn.textContent = "Continue";
+  if (error) { say($("teamMsg"), "Couldn't save your team. Please try again.", "err"); return; }
+  const u = (data && data.user) || Object.assign({}, S.pendingUser, { user_metadata: Object.assign({}, (S.pendingUser || {}).user_metadata, { team: team }) });
+  S.pendingUser = null; $("teamStep").value = "";
+  enterApp(u);
 }
 
 /* ---------- start ---------- */
@@ -1141,6 +1294,11 @@ Office.onReady(async (info) => {
   }
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
+  $("slackBtn").onclick = signInWithSlack;
+  $("useEmail").onclick = () => { say($("slackMsg"), ""); setLoginMode("email"); };
+  $("useSlack").onclick = () => { say($("loginMsg"), ""); setLoginMode("slack"); };
+  $("teamForm").addEventListener("submit", (e) => { e.preventDefault(); saveTeam(); });
+  $("teamStep").addEventListener("change", () => setFieldError("teamStep", ""));
   ["email", "password", "teamInput"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("markBtn").onclick = markReady;
   $("mapSwap").onclick = (e) => { e.stopPropagation(); if ($("mapPop").hidden) openMapPop(); else if (S.closeMapPop) S.closeMapPop(); };
@@ -1181,8 +1339,7 @@ Office.onReady(async (info) => {
   });
 
   const { data } = await S.sb.auth.getSession();
-  if (data.session && (data.session.user.user_metadata || {}).team) enterApp(data.session.user);
-  else { if (data.session) { await S.sb.auth.signOut(); } showLogin(); if (data.session) say($("loginMsg"), "Sign in again and choose your team."); }
+  if (data.session) afterSignIn(data.session.user); else showLogin();
 });
 </script>
 </body>

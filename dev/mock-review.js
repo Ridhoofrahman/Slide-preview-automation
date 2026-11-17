@@ -23,7 +23,8 @@ const db={
 };
 function q(t){let f=[],op='select',payload=null;const o={select(){return o},order(){return o},limit(){return o},range(){return o},upsert(){return o},in(k,v){f.push(r=>v.includes(r[k]));return o},neq(k,v){f.push(r=>r[k]!==v);return o},gte(){return o},lt(){return o},lte(){return o},gt(){return o},is(){return o},eq(k,v){f.push(r=>r[k]===v);return o},insert(p){op='insert';payload=p;return o},update(){op='update';return o},delete(){op='delete';return o},single(){o._one=1;return o},maybeSingle(){o._one=1;return o},
  then(r,j){let d=db[t].filter(x=>f.every(g=>g(x)));r({data:o._one?(d[0]||null):d,error:null})}};return o}
-window.supabase={createClient(){return{auth:{getSession:async()=>({data:{session:{user}}}),signOut:async()=>{},updateUser:async()=>({data:{user},error:null}),signInWithPassword:async()=>({data:{user},error:null})},from:q,
+const OUT=!!new URLSearchParams(location.search).get('out');
+window.supabase={createClient(){return{auth:{getSession:async()=>({data:{session:OUT?null:{user}}}),signInWithOAuth:async()=>({data:{},error:null}),signOut:async()=>{},updateUser:async()=>({data:{user},error:null}),signInWithPassword:async()=>({data:{user},error:null})},from:q,
  storage:{from(){return{createSignedUrls:async(p)=>({data:p.map(x=>({path:x,signedUrl:IM[x]})),error:null}),createSignedUrl:async(x)=>({data:{signedUrl:IM[x]},error:null}),upload:async()=>({data:{},error:null}),remove:async()=>({data:{},error:null})}}},
  channel(){const c={on(){return c},subscribe(){return c}};return c},removeChannel(){}}}};
 })();

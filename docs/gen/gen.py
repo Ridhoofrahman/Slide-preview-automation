@@ -39,7 +39,7 @@ ANAT=f'''<figure class="anat">
 <div class="ph-body"><div class="ph-row"><span class="assigned">{BOOK}Assigned to you</span><span class="ph-btns"><span class="ic">{SWAP}</span><span class="ic">{EDIT}</span></span><i class="pin l">3</i><i class="pin r">4</i></div>
 <div class="ph-thumb"><span>Annual Summit</span><i class="pin l">5</i></div>
 <div class="ph-btn">Mark slide 9 ready for review<i class="pin l">6</i></div></div>
-<div class="ph-foot"><span>Bela - Cascade</span><span>v2.29 • Sign out</span><i class="pin r">7</i></div></div>
+<div class="ph-foot"><span>Bela - Cascade</span><span>v2.30 • Sign out</span><i class="pin r">7</i></div></div>
 <figcaption><ol class="legend">
 <li>{T('<b>Order ID.</b> The order this deck belongs to. Type digits and the # is added for you.','<b>Order ID.</b> Order tempat deck ini berada. Ketik angka, tanda # ditambahkan otomatis.')}</li>
 <li>{T('<b>Slide and status.</b> Your slide number, plus where it will sit in the order when you moved it (“Slide 9 → Slide 4”), and its status tag.','<b>Slide dan status.</b> Nomor slide di file-mu, plus posisinya di order jika kamu memindahkannya (“Slide 9 → Slide 4”), dan tag statusnya.')}</li>
@@ -110,8 +110,9 @@ ul([('<b>Mac:</b> put <code>manifest.xml</code> in <code>~/Library/Containers/co
 ('Ask your admin for the current manifest file.','Minta file manifest terbaru ke admin.')])+
 callout('note','Slideshot needs a recent Microsoft 365 PowerPoint that can capture slide images. On older versions the panel says “This PowerPoint version can’t capture slide images.”','Slideshot butuh PowerPoint Microsoft 365 versi terbaru yang bisa mengambil gambar slide. Di versi lama, panel menampilkan “This PowerPoint version can’t capture slide images.”')+
 h3('Sign in the first time','Masuk pertama kali')+
-ol([('Enter your email and password.','Masukkan email dan password.'),('Choose <b>Your team</b>: Avvenger, Cascade, Clementine, Trident or Magnetic.','Pilih <b>Your team</b>: Avvenger, Cascade, Clementine, Trident, atau Magnetic.'),('Type your name the way you want your DM or designers to see it.','Ketik namamu seperti yang ingin dilihat DM atau designer.')])+
-p('Your team and name are saved to your account, so you only enter them once. The same sign-in works on the Dashboard.','Tim dan namamu tersimpan di akun, jadi cukup diisi sekali. Sign-in yang sama berlaku di Dashboard.')))
+ol([('Click <b>Continue with Slack</b>. A small window opens; sign in to the 24Slides Slack workspace there. The window closes by itself.','Klik <b>Continue with Slack</b>. Jendela kecil terbuka; masuk ke workspace Slack 24Slides di sana. Jendelanya menutup sendiri.'),('The first time, choose <b>Your team</b>: Avvenger, Cascade, Clementine, Trident or Magnetic.','Pertama kali, pilih <b>Your team</b>: Avvenger, Cascade, Clementine, Trident, atau Magnetic.')])+
+p('Your name comes from your Slack profile and your team is saved to your account, so you choose it only once. The same sign-in works on the Dashboard.','Namamu diambil dari profil Slack dan timmu tersimpan di akun, jadi cukup dipilih sekali. Sign-in yang sama berlaku di Dashboard.')+
+callout('note','Slack sign-in only works for accounts your admin has created (same email as in Slack). Otherwise you see “Your Slack account isn’t set up in Slideshot yet. Ask your admin to add you.” <b>Sign in with email</b>, under the Slack button, still works with your email and password.','Sign-in Slack hanya berlaku untuk akun yang sudah dibuat admin (email sama dengan di Slack). Jika belum, muncul “Your Slack account isn’t set up in Slideshot yet. Ask your admin to add you.” <b>Sign in with email</b>, di bawah tombol Slack, tetap bisa dipakai dengan email dan password.')))
 
 S.append(section('designers','For designers','Untuk designer',
 callout('warn','Slides can only be sent once your DM has distributed the order. If you haven’t been given slides yet, everything in the panel shows “Not to work”. Ask your DM first.','Slide hanya bisa dikirim setelah DM membagi order. Jika kamu belum diberi slide, semua slide di panel menampilkan “Not to work”. Tanyakan ke DM terlebih dahulu.')+
@@ -224,6 +225,7 @@ h3('Add or remove a DM','Menambah atau menghapus DM')+
 p('DMs are listed in the <code>design_managers</code> table. Run this in the Supabase SQL Editor, with the person’s sign-in email:','DM tercatat di tabel <code>design_managers</code>. Jalankan ini di Supabase SQL Editor, dengan email sign-in orangnya:')+
 '<pre><code>insert into public.design_managers (user_id)\nselect id from auth.users where email = \'dm@24slides.com\';\n\n-- remove a DM\ndelete from public.design_managers\nwhere user_id = (select id from auth.users where email = \'dm@24slides.com\');</code></pre>'+
 ul([('The person must have signed in at least once so their account exists.','Orangnya harus sudah pernah sign in agar akunnya ada.'),
+('Sign-ups are off. To let someone in, create their account in Supabase (Authentication → Users) with the email they use in Slack; their first Slack sign-in attaches to it.','Pendaftaran mandiri dimatikan. Untuk memberi akses, buat akunnya di Supabase (Authentication → Users) dengan email yang dipakai di Slack; sign-in Slack pertamanya akan terhubung ke akun itu.'),
 ('Approving, commenting, deleting and distributing are enforced in the database for DMs only, so they can’t be bypassed from the browser.','Approve, komentar, hapus, dan membagi slide dibatasi hanya untuk DM di database, jadi tidak bisa dilewati dari browser.')])+
 h3('Release an update','Merilis pembaruan')+
 ul([('Update the files in the repository folder <code>slide-qa-marker/</code>. GitHub Pages publishes within about a minute.','Perbarui file di folder repository <code>slide-qa-marker/</code>. GitHub Pages mempublikasikannya dalam sekitar satu menit.'),
@@ -272,6 +274,7 @@ S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
 ['Dashboard',('New review panel: Order ID title with slide number and status, “Note for DM”, Sent by / Team / Time, decision banners in the panel, green resolved comments and a new voice-note recorder.','Panel review baru: judul Order ID dengan nomor slide dan status, “Note for DM”, Sent by / Team / Time, banner keputusan di panel, komentar resolved berwarna hijau dan perekam voice note baru.')],
 ['Dashboard',('Board cards: slide thumbnail (stacked when an order has more than one slide, dashed “Not sent yet” box when nothing is sent), purple Tag team chip, “Last update”; the ⋯ button moved to the bottom-right.','Kartu board: thumbnail slide (bertumpuk jika order punya lebih dari satu slide, kotak putus-putus “Not sent yet” jika belum ada yang terkirim), chip Tag team ungu, “Last update”; tombol ⋯ pindah ke kanan bawah.')],
+['v2.30',('Sign in with Slack in the add-in and the Dashboard (“Continue with Slack”); email and password stay available under “Sign in with email”. The first Slack sign-in asks for your team.','Sign in dengan Slack di add-in dan Dashboard (“Continue with Slack”); email dan password tetap tersedia lewat “Sign in with email”. Sign-in Slack pertama menanyakan tim.')],
 ['v2.29',('The Slideshot wordmark uses Vampiro One everywhere, also on computers without the font installed.','Wordmark Slideshot memakai Vampiro One di semua tempat, juga di komputer yang belum memasang font itu.')],
 ['v2.28',('New Slideshot logo in the add-in, the Dashboard, the docs and the PowerPoint ribbon icon.','Logo Slideshot baru di add-in, Dashboard, dokumentasi dan ikon ribbon PowerPoint.')],
 ['v2.27',('New green from Builder DS for Approved, the progress ring and Sent to customer.','Hijau baru dari Builder DS untuk Approved, ring progress dan Sent to customer.')],
@@ -316,11 +319,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.29','Add-in v2.29')}</span><span class="meta">{T('Updated 17 Nov 2026','Diperbarui 17 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.30','Add-in v2.30')}</span><span class="meta">{T('Updated 17 Nov 2026','Diperbarui 17 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.29.','Slideshot untuk 24Slides. Add-in v2.29.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.30.','Slideshot untuk 24Slides. Add-in v2.30.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)

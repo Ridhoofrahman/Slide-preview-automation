@@ -10,7 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Vampiro+One&display=swap" rel="stylesheet">
-<script src="slideshot-hero.js"></script>
 <style>
   /* Colours: Builder DS Mapped tokens (design/DESIGN-SYSTEM.md). --focus is the keyboard focus ring; the DS has no token for it. */
   :root {
@@ -53,14 +52,19 @@
   /* Sign in (Figma: Review page / 1 · Sign in) */
   .signin { position: fixed; inset: 0; z-index: 30; background: #F7F9FC; display: grid; place-items: center; padding: 24px; overflow: auto; font-family: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif; color: #1A1F2E; }
   /* Bottom band: a fixed arrangement copied from the Figma frame (positions are from the page centre / bottom) */
-  .signin-band { position: fixed; left: 0; right: 0; bottom: 0; height: 240px; overflow: hidden; pointer-events: none; }
-  .band-slide { position: absolute; border-radius: 6px; }
-  .band-slide i { position: absolute; left: 11.6%; height: 7.5%; border-radius: 999px; }
-  .band-slide i:nth-child(1) { top: 18.6%; width: 30%; height: 10%; }
-  .band-slide i:nth-child(2) { top: 37%; width: 57%; }
-  .band-slide i:nth-child(3) { top: 52%; width: 33%; }
-  .band-slide b { position: absolute; right: 7%; bottom: 10.8%; width: 22%; aspect-ratio: 1; border-radius: 50%; background: #1C43A5; display: grid; place-items: center; }
-  .band-slide b svg { width: 56%; height: 56%; }
+  /* Bottom band (Figma 408:6935): slides positioned by their centre; .bs-move carries the pop-in, .bs-body the rotation */
+  .signin-band { position: fixed; left: 0; right: 0; bottom: 0; height: 0; pointer-events: none; }
+  .band-slide { position: absolute; transform: translate(-50%, 50%); }
+  .bs-move { will-change: transform, opacity; }
+  .bs-body { position: relative; }
+  .bs-bg { position: absolute; inset: 0; border-radius: var(--r); background: var(--fill); opacity: var(--op); }
+  .bs-content { position: absolute; left: .11%; top: 18.56%; width: 81.25%; height: 44.44%; opacity: var(--op); }
+  .bs-content i { position: absolute; left: 11.54%; background: var(--line); border-radius: calc(var(--r) * .246); }
+  .bs-content i:nth-child(1) { top: 0; width: 51.69%; height: 22.5%; border-radius: calc(var(--r) * .3516); }
+  .bs-content i:nth-child(2) { top: 41.25%; width: 76.92%; height: 15.75%; }
+  .bs-content i:nth-child(3) { top: 75.75%; width: 44.31%; height: 15.75%; }
+  .bs-badge { position: absolute; left: 71%; top: 50.11%; width: 22%; height: 39.11%; }
+  .bs-badge svg { display: block; width: 100%; height: 100%; }
   .signin-card { position: relative; z-index: 1; width: 350px; max-width: 100%; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 1.5px rgba(18,18,23,.1), 0 1px 1px rgba(18,18,23,.06); }
   .signin-hero { height: 146px; }
   .signin-head { position: relative; margin-top: -43px; padding: 40px 20px 0; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,.72) 8%, #FFFFFF 38%); }
@@ -633,6 +637,22 @@
   .s-lead { margin: -8px 0 0; font-size: 14px; line-height: 20px; color: #6A7389; }
   .s-cancel { height: 32px; border: 0; background: none; font: 500 14px/20px inherit; font-family: inherit; color: #454C63; cursor: pointer; border-radius: 8px; margin-top: -8px; }
   .s-cancel:hover { background: #F7F9FC; }
+  /* Sign in with Slack (primary button + Slack mark in white) and the email fallback link */
+  /* Sign in v3 (Figma 408:6935): no card and no hero; logo, title and buttons in the middle of the page */
+  .signin-card { width: 350px; padding: 16px 20px 63px; display: flex; flex-direction: column; gap: 28px; background: none; border-radius: 0; box-shadow: none; overflow: visible; }
+  .signin-head { margin: 0; height: auto; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 20px; background: none; }
+  .signin-head .logo { position: static; flex: none; width: 56px; height: 56px; }
+  .signin-head h1 { text-align: center; white-space: nowrap; }
+  .s-word { font-family: "Vampiro One", cursive; font-weight: 400; }
+  .signin-card .signin-form { padding: 0; background: none; }
+  #slackBlock { gap: 8px; }
+  .s-slack { padding: 0 12px; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .s-slack .s-btn-label { display: inline-flex; align-items: center; justify-content: center; }
+  .s-slack-mark { width: 20px; height: 20px; flex: none; }
+  .s-lbl { padding: 0 8px; }
+  .s-link { width: 100%; height: 40px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .s-link:hover { background: #F7F9FC; }
+  #slackMsg { margin: 8px 0 0; }
   .bd-user .bd-me { border: 0; background: none; padding: 6px 8px; border-radius: 6px; font: 14px/20px inherit; font-family: inherit; color: #6A7389; cursor: pointer; }
   .bd-user .bd-me:hover { background: #F7F9FC; color: #1A1F2E; }
 
@@ -754,23 +774,29 @@
   <section id="loginView" class="signin" hidden>
     <div class="signin-band" id="loginBand" aria-hidden="true"></div>
     <div class="signin-card">
-      <div class="signin-hero" id="loginHero" aria-hidden="true"></div>
       <div class="signin-head">
         <svg class="logo" viewBox="0 0 88 88" fill="none" aria-hidden="true"><g clip-path="url(#rl-clip0)"><rect width="88" height="88" rx="20.1667" fill="url(#rl-paint0)"/><g filter="url(#rl-filter0)"><rect width="88" height="88" rx="20.1667" fill="url(#rl-paint1)"/></g><path d="M78.1028 40.7909L-2.54209 18.8863C-7.26592 17.6032 -12.1355 20.3925 -13.4186 25.1163L-25.3665 69.1045C-26.6496 73.8283 -23.8603 78.6978 -19.1365 79.9809L61.5084 101.886C66.2322 103.169 71.1018 100.379 72.3849 95.6555L84.3328 51.6674C85.6159 46.9435 82.8266 42.074 78.1028 40.7909Z" fill="white"/><path d="M33.4055 41.1147L0.414455 32.1537C-1.61004 31.6038 -3.69699 32.7992 -4.24688 34.8237C-4.79677 36.8482 -3.60137 38.9352 -1.57687 39.4851L31.4142 48.4461C33.4387 48.9959 35.5257 47.8005 36.0756 45.776C36.6254 43.7515 35.43 41.6646 33.4055 41.1147Z" fill="#B9CCFF"/><path d="M50.3874 59.5037L-3.9868 44.7347C-5.50517 44.3223 -7.07038 45.2188 -7.4828 46.7372C-7.89522 48.2556 -6.99866 49.8208 -5.48029 50.2332L48.8939 65.0022C50.4123 65.4146 51.9775 64.5181 52.3899 62.9997C52.8023 61.4813 51.9058 59.9161 50.3874 59.5037Z" fill="#DCE6FF"/><path d="M21.9066 62.9201L-6.80787 55.1208C-8.32624 54.7083 -9.89146 55.6049 -10.3039 57.1233C-10.7163 58.6416 -9.81974 60.2069 -8.30137 60.6193L20.4131 68.4186C21.9315 68.8311 23.4967 67.9345 23.9091 66.4161C24.3215 64.8978 23.425 63.3325 21.9066 62.9201Z" fill="#DCE6FF"/><path d="M21.9066 76.0128L-6.80787 68.2134C-8.32624 67.801 -9.89146 68.6975 -10.3039 70.2159C-10.7163 71.7343 -9.81974 73.2995 -8.30137 73.7119L20.4131 81.5113C21.9315 81.9237 23.4967 81.0271 23.9091 79.5088C24.3215 77.9904 23.425 76.4252 21.9066 76.0128Z" fill="#DCE6FF"/><path d="M62.2906 74.1794L33.5761 66.3801C32.0577 65.9677 30.4925 66.8642 30.0801 68.3826C29.6677 69.901 30.5642 71.4662 32.0826 71.8786L60.7971 79.678C62.3154 80.0904 63.8807 79.1938 64.2931 77.6754C64.7055 76.1571 63.8089 74.5919 62.2906 74.1794Z" fill="#DCE6FF"/><path d="M23.6675 9.36636C22.7033 20.5986 24.8286 24.3113 35.0026 29.1675C23.7704 28.2033 20.0577 30.3286 15.2015 40.5026C16.1656 29.2704 14.0403 25.5577 3.86637 20.7014C15.0986 21.6656 18.8113 19.5403 23.6675 9.36636Z" fill="url(#rl-paint2)"/><path d="M66.5 57C76.165 57 84 49.165 84 39.5C84 29.835 76.165 22 66.5 22C56.835 22 49 29.835 49 39.5C49 49.165 56.835 57 66.5 57Z" fill="#2BAF85"/><path d="M66.4288 52.5355C73.5386 52.5355 79.3021 46.7719 79.3021 39.6622C79.3021 32.5524 73.5386 26.7888 66.4288 26.7888C59.3191 26.7888 53.5555 32.5524 53.5555 39.6622C53.5555 46.7719 59.3191 52.5355 66.4288 52.5355Z" fill="#34D3A0"/><path d="M60.1998 40.0774L64.7677 44.6454L73.0731 35.0942" stroke="white" stroke-width="1.628" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="rl-filter0" x="0" y="0" width="88" height="88" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feTurbulence type="fractalNoise" baseFrequency="2.7272727489471436 2.7272727489471436" stitchTiles="stitch" numOctaves="3" result="noise" seed="6543"/><feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/><feComponentTransfer in="alphaNoise" result="coloredNoise1"><feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/></feComponentTransfer><feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/><feFlood flood-color="#00308D" result="color1Flood"/><feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/><feMerge result="rl-effect1"><feMergeNode in="shape"/><feMergeNode in="color1"/></feMerge></filter><linearGradient id="rl-paint0" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="rl-paint1" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="rl-paint2" x1="23.6675" y1="9.36636" x2="15.2015" y2="40.5026" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD028"/><stop offset="1" stop-color="#FFD749"/></linearGradient><clipPath id="rl-clip0"><rect width="88" height="88" rx="20.1667" fill="white"/></clipPath></defs></svg>
-        <h1 id="signinTitle">Sign in to Slideshot</h1>
+        <h1 id="signinTitle">Sign in to <span class="s-word">Slideshot</span></h1>
       </div>
-      <form class="signin-form" id="loginForm" novalidate>
+      <div class="signin-form" id="slackBlock">
+        <button id="slackBtn" class="s-button s-slack" type="button"><span class="s-btn-label"><svg class="s-slack-mark" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.35714 12.1071C5.35714 13.0357 4.60714 13.7857 3.67857 13.7857C2.75 13.7857 2 13.0357 2 12.1071C2 11.1786 2.75 10.4286 3.67857 10.4286H5.35714V12.1071ZM6.21429 12.1071C6.21429 11.1786 6.96429 10.4286 7.89286 10.4286C8.82143 10.4286 9.57143 11.1786 9.57143 12.1071V16.3214C9.57143 17.25 8.82143 18 7.89286 18C6.96429 18 6.21429 17.25 6.21429 16.3214V12.1071ZM7.89286 5.35714C6.96429 5.35714 6.21429 4.60714 6.21429 3.67857C6.21429 2.75 6.96429 2 7.89286 2C8.82143 2 9.57143 2.75 9.57143 3.67857V5.35714H7.89286ZM7.89286 6.21429C8.82143 6.21429 9.57143 6.96429 9.57143 7.89286C9.57143 8.82143 8.82143 9.57143 7.89286 9.57143H3.67857C2.75 9.57143 2 8.82143 2 7.89286C2 6.96429 2.75 6.21429 3.67857 6.21429H7.89286ZM14.6429 7.89286C14.6429 6.96429 15.3929 6.21429 16.3214 6.21429C17.25 6.21429 18 6.96429 18 7.89286C18 8.82143 17.25 9.57143 16.3214 9.57143H14.6429V7.89286ZM13.7857 7.89286C13.7857 8.82143 13.0357 9.57143 12.1071 9.57143C11.1786 9.57143 10.4286 8.82143 10.4286 7.89286V3.67857C10.4286 2.75 11.1786 2 12.1071 2C13.0357 2 13.7857 2.75 13.7857 3.67857V7.89286ZM12.1071 14.6429C13.0357 14.6429 13.7857 15.3929 13.7857 16.3214C13.7857 17.25 13.0357 18 12.1071 18C11.1786 18 10.4286 17.25 10.4286 16.3214V14.6429H12.1071ZM12.1071 13.7857C11.1786 13.7857 10.4286 13.0357 10.4286 12.1071C10.4286 11.1786 11.1786 10.4286 12.1071 10.4286H16.3214C17.25 10.4286 18 11.1786 18 12.1071C18 13.0357 17.25 13.7857 16.3214 13.7857H12.1071Z" fill="currentColor"/></svg><span class="s-lbl">Continue with Slack</span></span><span class="s-spinner" aria-hidden="true"></span></button>
+        <button id="useEmail" class="s-link" type="button">Sign in with email</button>
+        <p id="slackMsg" class="s-msg" role="status" aria-live="polite"></p>
+      </div>
+      <form class="signin-form" id="loginForm" novalidate hidden>
         <label class="s-field"><span class="s-label">Email</span><input id="email" type="email" autocomplete="username" placeholder="you@24slides.com" aria-describedby="emailError"><span class="s-error" id="emailError" aria-live="polite"></span></label>
         <label class="s-field"><span class="s-label">Password</span><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" aria-describedby="passwordError"><span class="s-error" id="passwordError" aria-live="polite"></span></label>
         <label class="s-field"><span class="s-label">Your team</span><select id="teamInput" aria-describedby="teamInputError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="s-error" id="teamInputError" aria-live="polite"></span></label>
         <label class="s-field"><span class="s-label">Your name, as designers will see it</span><input id="nameInput" autocomplete="name" maxlength="60" placeholder="Only needed the first time" aria-describedby="nameInputError"><span class="s-error" id="nameInputError" aria-live="polite"></span></label>
         <button id="signInBtn" class="s-button" type="submit"><span class="s-btn-label">Sign in</span><span class="s-spinner" aria-hidden="true"></span></button>
         <p id="loginMsg" class="s-msg" role="status" aria-live="polite"></p>
+        <button id="useSlack" class="s-link" type="button">Continue with Slack instead</button>
       </form>
       <!-- One-time step: DMs without a display name pick one (also used to change it later) -->
       <form class="signin-form" id="nameForm" novalidate hidden>
-        <p class="s-lead">Designers will see this name on your approvals, comments and voice notes.</p>
-        <label class="s-field"><span class="s-label">Your name</span><input id="dmName" autocomplete="name" maxlength="60" placeholder="e.g. Ridho Fadhlurrahman" aria-describedby="dmNameError"><span class="s-error" id="dmNameError" aria-live="polite"></span></label>
+        <p class="s-lead" id="nameLead">Designers will see this name on your approvals, comments and voice notes.</p>
+        <label class="s-field" id="dmTeamField" hidden><span class="s-label">Your team</span><select id="dmTeam" aria-describedby="dmTeamError"><option value="">Choose your team</option><option>Avvenger</option><option>Cascade</option><option>Clementine</option><option>Trident</option><option>Magnetic</option></select><span class="s-error" id="dmTeamError" aria-live="polite"></span></label>
+        <label class="s-field" id="dmNameField"><span class="s-label">Your name</span><input id="dmName" autocomplete="name" maxlength="60" placeholder="e.g. Ridho Fadhlurrahman" aria-describedby="dmNameError"><span class="s-error" id="dmNameError" aria-live="polite"></span></label>
         <button id="nameBtn" class="s-button" type="submit"><span class="s-btn-label">Continue</span><span class="s-spinner" aria-hidden="true"></span></button>
         <button id="nameCancel" class="s-cancel" type="button" hidden>Cancel</button>
         <p id="nameMsg" class="s-msg" role="status" aria-live="polite"></p>
@@ -1798,64 +1824,143 @@ async function signIn() {
   }
   enter(user);
 }
-// Flying-slides heroes run only while the sign-in screen is visible
+// ---- Sign in with Slack (Supabase provider slack_oidc). Sign-ups are off: only accounts an admin created can sign in.
+const SLACK_ERR = {
+  notSetUp: "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you.",
+  generic: "Couldn't sign in with Slack. Please try again."
+};
+// Never show raw provider text: map it to one of the two messages
+const slackErrorText = (msg) => /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
+// An OAuth error comes back in the query or the hash (?error=…&error_code=…&error_description=…)
+function readAuthError() {
+  const q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.replace(/^#/, ""));
+  const get = (k) => q.get(k) || h.get(k);
+  return get("error") ? [get("error"), get("error_code"), get("error_description")].filter(Boolean).join(" ") : "";
+}
+const hasAuthParams = () => /[?#&](access_token|refresh_token|code|error|error_code|error_description)=/.test(location.search + location.hash);
+async function signInWithSlack() {
+  $("slackMsg").textContent = "";
+  const btn = $("slackBtn"); btn.disabled = true; btn.classList.add("loading"); btn.setAttribute("aria-label", "Signing in with Slack");
+  const redirectTo = cfg.REVIEW_PAGE_URL || (location.origin + location.pathname);
+  const { error } = await S.sb.auth.signInWithOAuth({ provider: "slack_oidc", options: { redirectTo: redirectTo } });
+  // On success the browser is already leaving for Slack
+  if (error) { btn.disabled = false; btn.classList.remove("loading"); btn.removeAttribute("aria-label"); $("slackMsg").textContent = SLACK_ERR.generic; }
+}
+// Sign-in card: Slack button by default, the email form as a fallback
+function setSigninMode(mode) {
+  $("slackBlock").hidden = mode !== "slack"; $("loginForm").hidden = mode !== "email";
+  if (mode === "email") $("email").focus(); else $("slackBtn").focus({ focusVisible: false });
+}
+// Sign-in screen (Figma 408:6935): logo, title and buttons in the middle, the slide band pops in at the bottom
 function showLogin() {
   $("loginView").hidden = false;
   if (!S.pendingUser) resetSigninCard();
   buildLoginBand();
-  if (window.SlideshotHero && !S.heroes) {
-    S.heroes = [SlideshotHero.mount($("loginHero"), { theme: "pastel", height: 146, bg: "#FFFFFF" })];
-  }
-  $("email").focus();
+  if ($("loginForm").hidden) $("slackBtn").focus({ focusVisible: false }); else $("email").focus();
 }
-// [x from page centre, y of centre from page bottom, width, height, rotation°, fill, opacity, line colour, check badge]
-const LOGIN_BAND = [[-1205.4,33.9,198.2,122.3,11.2,"#DCE7FF",0.96,"#9DB5EE",1],[-1205.4,33.9,198.2,122.3,11.2,"#DCE7FF",0.96,"#9DB5EE",1],[-1719.3,6,162,92,0,"#E6E0FF",0.88,"#B3A6EC",0],[-2006.9,55,206.5,117.4,-12.3,"#E6E0FF",0.88,"#B3A6EC",0],[-900.8,44,171.5,97.5,-42.3,"#E6E0FF",0.88,"#B3A6EC",1],[-1603.7,19,142.7,96.2,14.9,"#FFE5D6",0.78,"#EDB296",0],[-1366.6,32.5,169,113.9,-12.2,"#FFE5D6",0.78,"#EDB296",0],[-1366.6,32.5,169,113.9,-12.2,"#FFE5D6",0.78,"#EDB296",0],[-612.2,61.4,239.1,161.1,9.6,"#FFE5D6",0.78,"#EDB296",0],[-1491.3,27,116,66,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1507.3,41.5,170,95,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1042.8,39.5,185,105,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1042.8,39.5,185,105,0,"#D6F1E6",0.87,"#8FCDB4",0],[-1603.7,19,142.7,96.2,14.9,"#FFE5D6",0.78,"#EDB296",0],[-1884.7,33.9,198.2,122.3,11.2,"#DCE7FF",0.96,"#9DB5EE",1],[-763.1,17.8,200.4,112.4,-16.4,"#FBDDE8",0.8,"#E7A1BB",1],[-470.3,56,180,101.8,-8,"#D6F1E6",0.87,"#8FCDB4",0],[67.7,61,190,106.7,12,"#FFE5D6",0.78,"#EDB296",0],[-215.3,66,164,92.5,21,"#E6E0FF",0.88,"#B3A6EC",0],[-329.8,31,205,115.4,-17,"#FBDDE8",0.8,"#E7A1BB",1],[2109.2,46,223,125.2,-12,"#FFE5D6",0.78,"#EDB296",0],[-43.3,39,224,126.6,-4,"#D6F1E6",0.87,"#8FCDB4",1],[467.7,39,180,101.5,5,"#E6E0FF",0.88,"#B3A6EC",1],[191.7,25,168,94.6,-8.1,"#FBDDE8",0.8,"#E7A1BB",0],[615.7,63.7,201,113.6,-15,"#D6F1E6",0.87,"#8FCDB4",0],[355.7,53,212,119,-11,"#FFE5D6",0.78,"#EDB296",0],[880.2,52,195,110,-6,"#E6E0FF",0.88,"#B3A6EC",0],[767.7,29,226,127.2,14,"#FBDDE8",0.8,"#E7A1BB",1],[1004.2,21,173,97.1,19,"#FFE5D6",0.78,"#EDB296",0],[1279.2,40,183,103.5,0,"#D6F1E6",0.87,"#8FCDB4",0],[1546.2,36,163,91.9,-20,"#E6E0FF",0.88,"#B3A6EC",0],[1162.2,62,205,115.4,-11,"#FBDDE8",0.8,"#E7A1BB",0],[1831.2,28,207,117,-7,"#D6F1E6",0.87,"#8FCDB4",0],[1431.7,64,218,122.4,9,"#FFE5D6",0.78,"#EDB296",1],[1957.7,60,176,99.3,25,"#E6E0FF",0.88,"#B3A6EC",1],[1687.7,49,190,107,16,"#FBDDE8",0.8,"#E7A1BB",0]];
+// Bottom band (Figma 408:6935, "Sign in / default"): 15 slides that pop in one after another.
+// [x of centre from page centre, y of centre from page bottom, width, height, rotation°, fill, opacity, line rgb, check badge, corner radius, delay ms, start y px]
+const LOGIN_BAND = [
+  [-896.12,56.98,239.06,161.07,9.61,"#FFE5D6",0.78,"237,178,150",0,4.912,0,280.804626],
+  [-754.2,51.6,180,101.76,-8.03,"#D6F1E6",0.87,"143,205,180",0,9.08,140,213.862244],
+  [-216.21,56.6,190,106.69,12,"#FFE5D6",0.78,"237,178,150",0,9.528,700,252.987244],
+  [-499.2,61.6,164,92.49,21,"#E6E0FF",0.88,"179,166,236",0,8.273,420,258.615173],
+  [-613.71,26.6,205,115.4,-17,"#FBDDE8",0.8,"231,161,187",1,8.805,280,180],
+  [-327.21,34.6,224,126.63,-4,"#D6F1E6",0.87,"143,205,180",1,11.299,560,214.406189],
+  [183.79,34.6,180,101.51,5,"#E6E0FF",0.88,"179,166,236",1,9.08,1120,217.46283],
+  [-92.21,20.6,168,94.57,-8.05,"#FBDDE8",0.8,"231,161,187",0,7.216,840,180.111267],
+  [331.77,59.27,201.03,113.64,-15,"#D6F1E6",0.87,"143,205,180",0,7.92,1260,212.605408],
+  [71.79,48.6,212,119.04,-11.04,"#FFE5D6",0.78,"237,178,150",0,10.631,980,211.168884],
+  [596.29,47.6,195,109.97,-6,"#E6E0FF",0.88,"179,166,236",0,9.836,1540,216.548767],
+  [483.79,24.6,226,127.22,14,"#FBDDE8",0.8,"231,161,187",1,9.707,1400,238.115173],
+  [720.29,16.6,173,97.14,19,"#FFE5D6",0.78,"237,178,150",0,8.675,1680,215.143494],
+  [995.29,35.6,183,103.45,0,"#D6F1E6",0.87,"143,205,180",0,9.231,1960,211.784],
+  [878.3,57.6,205,115.4,-11,"#FBDDE8",0.8,"231,161,187",0,8.805,1820,219.138611]
+];
+// Check badge from Figma (dark blue circle, white check)
+const BAND_BADGE = '<svg viewBox="0 0 45.1 45.1336" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M22.55 45.1336C35.004 45.1336 45.1 35.0301 45.1 22.5668C45.1 10.1035 35.004 0 22.55 0C10.096 0 0 10.1035 0 22.5668C0 35.0301 10.096 45.1336 22.55 45.1336Z" fill="#00308D"/><path d="M12.3 22.5668L19.475 29.7472L33.825 14.3607" stroke-width="3.08188" stroke-linecap="round" stroke-linejoin="round" stroke="white"/></svg>';
+// Pop-in shared by every slide (Figma timeline 2.56 s): rise 300 ms ease-out to -14 px at 107 %,
+// back to +5 px at 98 % (140 ms), then rest (160 ms), all ease-in-out; opacity 0 → 1 in 70 ms.
+const BAND_POP = { rise: 300, over: 140, settle: 160, fade: 70 };
 function buildLoginBand() {
-  const band = $("loginBand"); if (band.childElementCount) return;
-  const check = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 8.4l2.6 2.6L12 5.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  LOGIN_BAND.forEach(([x, y, w, h, rot, fill, op, line, badge]) => {
-    const d = document.createElement("div"); d.className = "band-slide";
-    // Fade the card and its lines, but keep the check badge solid (as in Figma)
-    const rgba = (hex, a) => "rgba(" + [1, 3, 5].map((k) => parseInt(hex.slice(k, k + 2), 16)).join(",") + "," + a + ")";
-    d.style.cssText = "width:" + w + "px;height:" + h + "px;left:calc(50% + " + (x - w / 2) + "px);bottom:" + (y - h / 2) + "px;transform:rotate(" + rot + "deg);background:" + rgba(fill, op);
-    d.innerHTML = '<i></i><i></i><i></i>' + (badge ? "<b>" + check + "</b>" : "");
-    d.querySelectorAll("i").forEach((i) => { i.style.background = rgba(line, (0.75 * op).toFixed(2)); });
-    band.append(d);
+  const band = $("loginBand");
+  if (!band.childElementCount) {
+    LOGIN_BAND.forEach(([x, y, w, h, rot, fill, op, line, badge, r]) => {
+      const d = el("div", "band-slide"); d.style.left = "calc(50% + " + x + "px)"; d.style.bottom = y + "px";
+      const mv = el("div", "bs-move"); const body = el("div", "bs-body");
+      body.style.cssText = "width:" + w + "px;height:" + h + "px;transform:rotate(" + rot + "deg);--r:" + r + "px;--fill:" + fill + ";--op:" + op + ";--line:rgba(" + line + ",.75)";
+      body.innerHTML = '<span class="bs-bg"></span><span class="bs-content"><i></i><i></i><i></i></span>' + (badge ? '<span class="bs-badge">' + BAND_BADGE + "</span>" : "");
+      mv.append(body); d.append(mv); band.append(d);
+    });
+  }
+  playLoginBand();
+}
+// Plays once each time the sign-in screen opens (the Figma prototype loops; a sign-in page shouldn't keep moving)
+function playLoginBand() {
+  const moves = [...$("loginBand").querySelectorAll(".bs-move")];
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  moves.forEach((mv, i) => {
+    mv.getAnimations().forEach((a) => a.cancel());
+    if (still || !mv.animate) return;
+    const [, , , , , , , , , , delay, fromY] = LOGIN_BAND[i];
+    const P = BAND_POP, dur = P.rise + P.over + P.settle;
+    mv.animate([
+      { offset: 0, transform: "translateY(" + fromY + "px) scale(.65)", easing: "ease-out" },
+      { offset: P.rise / dur, transform: "translateY(-14px) scale(1.07)", easing: "ease-in-out" },
+      { offset: (P.rise + P.over) / dur, transform: "translateY(5px) scale(.98)", easing: "ease-in-out" },
+      { offset: 1, transform: "translateY(0) scale(1)" }
+    ], { duration: dur, delay: delay, fill: "backwards" });
+    mv.animate([{ opacity: 0, easing: "ease-out" }, { opacity: 1 }], { duration: P.fade, delay: delay, fill: "backwards" });
   });
 }
 // ---- DM display name
 const needsName = (u) => !(u && u.user_metadata && String(u.user_metadata.name || "").trim());
+// Title of the sign-in card; the default one has the Slideshot wordmark
+function setSigninTitle(text) {
+  const h = $("signinTitle");
+  if (text) h.textContent = text; else { h.textContent = "Sign in to "; h.append(el("span", "s-word", "Slideshot")); }
+}
 function resetSigninCard() {
-  $("loginForm").hidden = false; $("nameForm").hidden = true; $("signinTitle").textContent = "Sign in to Slideshot";
+  $("slackBlock").hidden = false; $("loginForm").hidden = true; $("nameForm").hidden = true; setSigninTitle();
 }
 function showNameStep(user, editing) {
   S.pendingUser = user;
   showLogin();
-  $("loginForm").hidden = true; $("nameForm").hidden = false;
-  $("signinTitle").textContent = editing ? "Change your name" : "What's your name?";
+  $("slackBlock").hidden = true; $("loginForm").hidden = true; $("nameForm").hidden = false;
+  // First Slack sign-in: the account has no team yet, so ask for it here (and the name, if Slack didn't give one)
+  const needTeam = !editing && !((user.user_metadata || {}).team), askName = editing || needsName(user);
+  S.needTeam = needTeam; S.askName = askName;
+  $("dmTeamField").hidden = !needTeam; $("dmTeam").value = ""; $("dmTeamError").textContent = ""; $("dmTeam").setAttribute("aria-invalid", "false");
+  $("dmNameField").hidden = !askName;
+  $("nameLead").textContent = askName ? "Designers will see this name on your approvals, comments and voice notes." : "It's only needed the first time.";
+  setSigninTitle(editing ? "Change your name" : needTeam ? "Choose your team" : "What's your name?");
   $("nameCancel").hidden = !editing;
   $("nameBtn").querySelector(".s-btn-label").textContent = editing ? "Save" : "Continue";
   $("dmName").value = editing ? (user.user_metadata && user.user_metadata.name) || "" : "";
   $("dmNameError").textContent = ""; $("dmName").setAttribute("aria-invalid", "false"); $("nameMsg").textContent = "";
-  setTimeout(() => $("dmName").focus(), 50);
+  setTimeout(() => (needTeam ? $("dmTeam") : $("dmName")).focus(), 50);
 }
 async function saveName() {
   const name = $("dmName").value.replace(/\s+/g, " ").trim();
   const err = (m) => { $("dmNameError").textContent = m || ""; $("dmName").setAttribute("aria-invalid", m ? "true" : "false"); };
-  err(""); $("nameMsg").textContent = "";
-  if (name.length < 2) { err("Enter your name"); return; }
+  const teamErr = (m) => { $("dmTeamError").textContent = m || ""; $("dmTeam").setAttribute("aria-invalid", m ? "true" : "false"); };
+  err(""); teamErr(""); $("nameMsg").textContent = "";
+  const team = $("dmTeam").value; let ok = true;
+  if (S.needTeam && !team) { teamErr("Choose your team"); ok = false; }
+  if (S.askName && name.length < 2) { err("Enter your name"); ok = false; }
+  if (!ok) return;
+  const changes = {}; if (S.askName) changes.name = name; if (S.needTeam) changes.team = team;
   const btn = $("nameBtn"); btn.disabled = true; btn.classList.add("loading");
-  const { data, error } = await S.sb.auth.updateUser({ data: { name: name } });
+  const { data, error } = await S.sb.auth.updateUser({ data: changes });
   btn.disabled = false; btn.classList.remove("loading");
-  if (error) { $("nameMsg").textContent = "Couldn't save your name: " + error.message; return; }
-  const u = (data && data.user) || Object.assign({}, S.pendingUser, { user_metadata: Object.assign({}, (S.pendingUser || {}).user_metadata, { name: name }) });
+  if (error) { $("nameMsg").textContent = "Couldn't save your details. Please try again."; return; }
+  const u = (data && data.user) || Object.assign({}, S.pendingUser, { user_metadata: Object.assign({}, (S.pendingUser || {}).user_metadata, changes) });
   const wasIn = !!S.user; S.pendingUser = null; resetSigninCard();
   if (wasIn) { S.user = u; hideLogin(); renderBoard(); if (!$("reviewView").hidden) renderReview(); }
   else enter(u);
 }
 function hideLogin() {
   $("loginView").hidden = true;
-  if (S.heroes) { S.heroes.forEach((h) => h.destroy()); S.heroes = null; }
 }
 // Only design managers use this page (designers work in the PowerPoint add-in)
 async function isDesignManager(user) {
@@ -1866,7 +1971,7 @@ async function isDesignManager(user) {
 async function enter(user) {
   if (!(await isDesignManager(user))) {
     await S.sb.auth.signOut(); showLogin();
-    $("loginMsg").textContent = "This page is for design managers. Designers send slides from the Slideshot add-in in PowerPoint.";
+    ($("loginForm").hidden ? $("slackMsg") : $("loginMsg")).textContent = "This page is for design managers. Designers send slides from the Slideshot add-in in PowerPoint.";
     return;
   }
   S.user = user;
@@ -1887,9 +1992,15 @@ async function enter(user) {
 
 (async function start() {
   if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { $("configError").hidden = false; return; }
+  // Read what Slack/Supabase put in the URL before supabase-js starts and clears the hash
+  const authError = readAuthError(), hadAuthParams = hasAuthParams();
   S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
+  $("slackBtn").onclick = signInWithSlack;
+  $("useEmail").onclick = () => { $("slackMsg").textContent = ""; setSigninMode("email"); };
+  $("useSlack").onclick = () => { $("loginMsg").textContent = ""; setSigninMode("slack"); };
+  $("dmTeam").addEventListener("change", () => { $("dmTeamError").textContent = ""; $("dmTeam").setAttribute("aria-invalid", "false"); });
   $("nameForm").addEventListener("submit", (e) => { e.preventDefault(); saveName(); });
   $("dmName").addEventListener("input", () => { $("dmNameError").textContent = ""; $("dmName").setAttribute("aria-invalid", "false"); });
   $("nameCancel").onclick = () => { S.pendingUser = null; resetSigninCard(); hideLogin(); };
@@ -1950,10 +2061,14 @@ async function enter(user) {
     if (!typing && e.key === "ArrowRight") step(1);
   });
 
+  // Back from Slack: supabase-js (implicit flow) reads the tokens from the URL hash while it starts up
   const { data } = await S.sb.auth.getSession();
+  if (hadAuthParams || /#$/.test(location.href)) { try { history.replaceState(null, "", location.pathname); } catch (e) {} }   // tokens or errors out of the address bar
   const su = data.session && data.session.user;
-  if (su && (su.user_metadata || {}).team) { if (needsName(su)) showNameStep(su); else enter(su); }
-  else { if (su) await S.sb.auth.signOut(); showLogin(); if (su) $("loginMsg").textContent = "Sign in again and choose your team."; }
+  if (!su && authError) { showLogin(); $("slackMsg").textContent = slackErrorText(authError); return; }
+  // No team yet (e.g. first Slack sign-in): ask for it instead of signing out
+  if (su) { if (!(su.user_metadata || {}).team || needsName(su)) showNameStep(su); else enter(su); }
+  else showLogin();
 })();
 </script>
 </body>

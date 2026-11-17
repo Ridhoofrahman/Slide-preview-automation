@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in with Slack · Slideshot</title>
+<!-- Popup for the add-in's "Continue with Slack" (opened with Office.context.ui.displayDialogAsync).
+     1st load: sends the user to Slack through Supabase (provider slack_oidc), redirecting back to this page.
+     Return load: supabase-js reads the tokens from the URL hash, then this page hands them to the panel
+     with messageParent; the panel stores the session with setSession. Nothing is kept in this popup. -->
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<style>
+  html, body { height: 100%; }
+  body { margin: 0; display: grid; place-items: center; background: #F7F9FC; color: #454C63; font: 14px/20px "Geist", "Segoe UI", system-ui, -apple-system, sans-serif; }
+  .box { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; text-align: center; max-width: 320px; }
+  .box img { width: 48px; height: 48px; }
+  .box p { margin: 0; }
+  .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #DDE4EE; border-top-color: #1C43A5; animation: spin .8s linear infinite; }
+  .err { color: #A81A1A; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2s; } }
+</style>
+</head>
+<body>
+<div class="box">
+  <img src="assets/slideshot-mark.svg" alt="Slideshot">
+  <span class="spin" id="spin" aria-hidden="true"></span>
+  <p id="text" role="status" aria-live="polite">Signing you in with Slack…</p>
+</div>
+<script>
+(function () {
+  var cfg = window.SLIDE_REVIEW_CONFIG || {};
+  var here = location.origin + location.pathname;   // redirect back to this page, without query or hash
+  var q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.replace(/^#/, ""));
+  var get = function (k) { return q.get(k) || h.get(k); };
+  var returning = !!(get("access_token") || get("code") || get("error"));
+
+  function show(text, isErr) {
+    document.getElementById("text").textContent = text;
+    document.getElementById("text").className = isErr ? "err" : "";
+    document.getElementById("spin").hidden = !!isErr;
+  }
+  function send(msg) {
+    try { Office.context.ui.messageParent(JSON.stringify(msg)); }
+    catch (e) { show("Open this from the Slideshot add-in in PowerPoint.", true); }
+  }
+  function fail(message) {
+    // The panel turns this into a friendly message; it never shows the raw text
+    send({ type: "slideshot-auth-error", message: String(message || "unknown") });
+    show("Couldn't sign in with Slack. You can close this window.", true);
+  }
+
+  if (!window.supabase || !cfg.SUPABASE_URL) { show("Couldn't load Slideshot. Close this window and try again.", true); return; }
+  var sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true }
+  });
+
+  if (!returning) {
+    // First load: go to Slack (the page navigates away)
+    sb.auth.signInWithOAuth({ provider: "slack_oidc", options: { redirectTo: here } }).then(function (r) {
+      if (r.error) show("Couldn't open Slack. Close this window and try again.", true);
+    });
+    return;
+  }
+
+  // Back from Slack: wait for Office (messageParent) and for supabase-js to read the URL
+  Office.onReady(function () {
+    var err = get("error");
+    if (err) { fail([err, get("error_code"), get("error_description")].filter(Boolean).join(" ")); return; }
+    sb.auth.getSession().then(function (r) {
+      var s = r.data && r.data.session;
+      if (!s) { fail((r.error && r.error.message) || "no session"); return; }
+      send({ type: "slideshot-auth", access_token: s.access_token, refresh_token: s.refresh_token });
+      show("Signed in. You can close this window.");
+    }, function (e) { fail(e && e.message); });
+  });
+})();
+</script>
+</body>
+</html>
