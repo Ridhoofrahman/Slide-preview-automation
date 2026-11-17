@@ -284,8 +284,6 @@
   .rv-details .dnote { margin-top: 6px; color: #A3ADC2; }
   .rv-panel { background: #FFFFFF; border-left: 1px solid #DDE4EE; display: flex; flex-direction: column; min-height: 0; }
   .rv-decision { padding: 16px; border-bottom: 1px solid #DDE4EE; display: flex; flex-direction: column; gap: 16px; }
-  .rv-sender { display: flex; flex-direction: column; gap: 4px; }
-  .rv-sender p { margin: 0; font-size: 12px; line-height: 16px; }
   #rvBy { color: #1A1F2E; font-weight: 500; }
   #rvNote { color: #6A7389; overflow-wrap: anywhere; }
   .rv-actions { display: flex; flex-direction: column; gap: 8px; }
@@ -361,45 +359,83 @@
   .review .rv-rail { flex: 1; width: auto; max-height: none; align-self: auto; flex-direction: row; align-items: center; gap: 4px; padding: 8px; overflow-x: auto; overflow-y: hidden; border-radius: 12px; scrollbar-width: none; scroll-behavior: smooth; }
   .review .rv-rail::-webkit-scrollbar { display: none; }
   .rv-thumb { flex: none; }
-  .rv-banner { flex: none; display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; }
-  .rv-banner > span { flex: 1; }
-  .rv-banner.approved { background: #EEF8E6; color: #417618; }
-  .rv-banner.changes { background: #FFF1F1; color: #A81A1A; }
-  .rv-banner.older { background: #F0EBFC; color: #4A2999; }
-  .rv-bannerbtn { border: 0; background: none; padding: 0 4px; font: 500 12px/20px inherit; font-family: inherit; color: inherit; cursor: pointer; }
-  .rv-bannerbtn:hover { text-decoration: underline; }
   .review figure.slide { flex: none; }
   .rv-details { grid-template-columns: 200px minmax(0, 370px); gap: 40px; justify-content: start; }
   .rv-details .rows { gap: 4px; }
   .rv-details .row { border-bottom: 1px solid #DDE4EE; padding: 4px 0 8px; }
   .rv-details .row:last-child { border-bottom: 0; }
   .rv-decision { padding: 16px 16px 0; gap: 16px; border-bottom: 0; }
-  .rv-slidehead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #DDE4EE; }
   #rvSlideNo { font-size: 14px; line-height: 20px; font-weight: 500; color: #6A7389; }
-  .rv-slidehead .rv-tag { font-size: 12px; line-height: 16px; padding: 3px 8px; }
-  .rv-sender { gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #DDE4EE; }
-  .rv-sender p { font-size: 14px; line-height: 20px; }
   .rv-actions { padding-bottom: 16px; }
   .rv-comment.resolved { background: #EEF8E6; border-color: #B3E295; }
 
-  /* ===== Review panel (Figma: Review panel component, 6 states) ===== */
-  .review .rv-decision { padding: 16px; gap: 16px; border-bottom: 0; }
+  /* ===== Review panel (Figma 211:4315: Waiting, Approved, No comment, Recording, Full, Older version) ===== */
+  .rv-panel { overflow: hidden; }
+  /* Title: Order ID + slide number and status */
+  .rv-ptitle { flex: none; display: flex; align-items: center; gap: 4px; padding: 12px 20px; background: #EEF2F8; }
+  .rv-ptitle-l { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .rv-ptitle-l span { font-size: 12px; line-height: 16px; color: #6A7389; }
+  .rv-ptitle-l b { font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rv-ptitle-r { flex: none; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
+  #rvSlideNo { font-size: 12px; line-height: 16px; font-weight: 400; color: #6A7389; white-space: nowrap; }
+  .rv-ptitle .rv-tag { min-width: 24px; padding: 4px 8px; border-radius: 999px; font-size: 12px; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); margin-right: -8px; } /* 8px past "Slide x" so the tag's last letter lines up with the number */
+  /* Decision: note, sender facts, buttons or the decision banner */
+  .review .rv-decision { flex: none; padding: 16px; gap: 16px; border-bottom: 0; }
   .review .rv-decision.ruled { border-bottom: 1px solid #DDE4EE; }
-  .review .rv-sender { gap: 8px; padding-bottom: 0; border-bottom: 0; }
-  .rv-headrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; }
-  .rv-headcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  #rvSlideNo { font-size: 14px; line-height: 20px; font-weight: 400; color: #6A7389; }
-  #rvBy { font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
-  #rvNote { font-size: 14px; line-height: 20px; color: #6A7389; }
-  .rv-headrow .rv-tag { flex: none; font-size: 12px; line-height: 16px; padding: 3px 8px; }
-  .review .rv-actions { padding-bottom: 0; }
-  .rv-live { flex: 1; min-width: 0; }
-  .rv-live #recClock { flex: 1; }
-  .rv-live:not([hidden]) ~ .spacer { display: none; }
-  .rv-icon.recording { color: #A81A1A; }
-  .rv-closed { padding: 14px 16px 18px; font-size: 12px; line-height: 16px; }
-  .rv-latest { margin-top: 2px; border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
+  .rv-dmnote { display: flex; flex-direction: column; gap: 4px; }
+  .rv-dmnote span { font-size: 12px; line-height: 16px; color: #6A7389; }
+  #rvNote { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; overflow-wrap: anywhere; }
+  .rv-facts { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #DDE4EE; border-radius: 6px; }
+  .rv-facts > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 8px; }
+  .rv-facts > div + div { border-left: 1px solid #DDE4EE; }
+  .rv-facts dt { font-size: 12px; line-height: 16px; color: #6A7389; }
+  .rv-facts dd { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .review .rv-actions { padding-bottom: 0; gap: 8px; }
+  .rv-approve, .rv-change { box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .rv-pbanner { margin: 0; display: flex; align-items: flex-start; justify-content: flex-start; gap: 8px; padding: 10px 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #F7F9FC; color: #454C63; font-size: 14px; line-height: 20px; }
+  .rv-pbanner > span { flex: 1; min-width: 0; }
+  .rv-pbanner.approved { background: #EEF8E6; border-color: #B3E295; color: #417618; }
+  .rv-pbanner.older { background: #F0EBFC; border-color: #BDA6EE; color: #4A2999; }
+  .rv-pbtn { flex: none; border: 0; background: none; padding: 0; border-radius: 8px; font: 500 14px/20px inherit; font-family: inherit; color: inherit; cursor: pointer; }
+  .rv-pbtn:hover { text-decoration: underline; }
+  /* Comments */
+  .rv-thread { background: #F7F9FC; }
+  .rv-comment.hot { background: #F7F9FC; }
+  .rv-comment.active { background: #FFFFFF; border-color: #A8C3FF; }
+  .rv-comment.resolved { background: #EEF8E6; border-color: #B3E295; }
+  .rv-comment .pinno { background: #2557D4; }
+  .rv-comment.resolved .pinno { background: #A3ADC2; }
+  .rv-comment .dot { width: 4px; height: 4px; padding: .5px; background: none; opacity: 1; flex: none; }
+  .rv-comment .dot::before { content: ""; display: block; width: 3px; height: 3px; border-radius: 50%; background: #C2CCDB; }
+  .rv-comment .act:hover { text-decoration: underline; }
+  /* Older version: comments closed */
+  .rv-closed { flex: none; margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px 16px 18px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 16px; color: #6A7389; }
+  .rv-closed p { margin: 0; }
+  .rv-latest { margin: 0; border: 0; background: none; padding: 0; font: 500 12px/16px inherit; font-family: inherit; color: #1C43A5; cursor: pointer; }
   .rv-latest:hover { text-decoration: underline; }
+  /* Composer: hint, then a 90px message box (text above, tools below) */
+  .rv-composer { flex: none; background: #FFFFFF; }
+  .rv-msgbox { min-height: 90px; gap: 0; justify-content: space-between; border-color: #DDE4EE; }
+  .rv-msgbox:focus-within, .rv-msgbox.recording { border-color: #A8C3FF; }
+  .rv-msgbox textarea { flex: 1 1 40px; height: 40px; min-height: 40px; }
+  .rv-recorded { margin-bottom: 8px; }
+  .rv-msgbar { align-items: flex-end; }
+  .rv-icon, .rv-send { width: 32px; height: 32px; padding: 4px; border-radius: 8px; }
+  .rv-icon svg, .rv-send svg { width: 20px; height: 20px; }
+  .rv-icon { color: #454C63; }
+  .rv-icon:hover { background: #F7F9FC; color: #1A1F2E; }
+  .rv-send { background: #1C43A5; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .rv-send:not(:disabled):hover { background: #163584; }
+  #recDiscard { width: 24px; height: 24px; }
+  #recDiscard svg { width: 16px; height: 16px; }
+  /* Recording: stop, live waveform and timer in one pill; the mic button hides */
+  .rv-live { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: center; gap: 4px; padding: 4px 8px 4px 4px; border-radius: 999px; background: #FFFFFF; }
+  .rv-live:not([hidden]) ~ .spacer { display: none; }
+  .rv-stop { flex: none; width: 24px; height: 24px; padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+  .rv-stop svg { width: 24px; height: 24px; }
+  .rv-live .wave { flex: 1; min-width: 0; overflow: hidden; }
+  .rv-live .wave i { background: #2557D4; }
+  .rv-live #recClock { flex: none; font: 10px/16px "Geist Mono", ui-monospace, Menlo, monospace; color: #6A7389; text-align: right; }
 
   /* Slide strip floats above the slide while it scrolls underneath */
   .review .rv-work { overflow-x: hidden; overflow-y: auto; padding-top: 0; padding-bottom: 24px; }
@@ -543,13 +579,6 @@
   .rv-delete-ic { width: 32px; height: 32px; padding: 4px; border: 0.8px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #A81A1A; display: grid; place-items: center; cursor: pointer; }
   .rv-delete-ic svg { width: 20px; height: 20px; }
   .rv-delete-ic:hover, .rv-delete-ic:focus-visible { background: #FFF1F1; border-color: transparent; }
-  /* ===== Banner (Figma component: Banner — Success / Error / Information) ===== */
-  .rv-banner { align-items: flex-start; min-height: 52px; padding: 10px 12px; border-radius: 8px; font-size: 14px; line-height: 20px; gap: 0; }
-  .rv-banner.approved { background: #EEF8E6; color: #417618; }
-  .rv-banner.changes { background: #FFF1F1; color: #A81A1A; }
-  .rv-banner.older { background: #F0EBFC; color: #4A2999; }
-  .rv-bannerbtn { height: 20px; padding: 0 4px; border-radius: 6px; font: 500 12px/20px inherit; font-family: inherit; color: inherit; background: none; }
-  .rv-bannerbtn:hover { text-decoration: none; background: rgba(255,255,255,.55); }
 
   /* ===== Review: white work area, banner tucked under the slide, header progress ===== */
   .review .rv-main, .review .rv-work { background: #FFFFFF; }
@@ -560,10 +589,6 @@
   .rv-progress { flex: none; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6A7389; white-space: nowrap; }
   .rv-progress .ic { width: 16px; height: 16px; display: inline-flex; }
   .rv-progress .ic svg { width: 16px; height: 16px; }
-  /* Banner sits 12px under the slide: the slide overlaps its bottom edge */
-  /* Banner: default 40px, 16px above the slide */
-  .rv-scrollarea .rv-banner { align-items: center; min-height: 40px; padding: 10px 12px; margin-bottom: -4px; }
-  .rv-scrollarea .rv-banner + .rv-banner { margin-top: 0; }
   .review figure.slide { position: relative; z-index: 1; }
 
   /* Button: Primary / s (Figma) */
@@ -661,7 +686,6 @@
   .as-err:empty { display: none; }
   .as-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
   .as-cancel { height: 32px; padding: 6px 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; font: 500 14px/20px inherit; font-family: inherit; color: #1A1F2E; cursor: pointer; }
-  .rv-assigned { margin: 0; align-self: flex-start; padding: 2px 8px; border-radius: 999px; border: 1px solid #DDE4EE; background: #EEF2F8; color: #454C63; font-size: 12px; line-height: 16px; }
 
   /* Designer filter above the slide strip */
   .rv-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -791,8 +815,6 @@
           <button class="rv-scroll" id="railNext" aria-label="Scroll slides right"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div></div>
         <div class="rv-scrollarea" id="rvScroll">
-          <div id="olderBanner" class="rv-banner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-bannerbtn">View latest</button></div>
-          <div id="decidedBanner" class="rv-banner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-bannerbtn">Cancel</button></div>
           <div class="rv-empty" id="rvEmpty" hidden>
             <div class="rv-emptyslide" aria-hidden="true"><div class="s" style="left:14px;top:14px;width:70px;height:10px;border-radius:5px;background:var(--lavender);--x:-60px;--y:-40px;--r:-25deg;animation-delay:0s"></div><div class="s" style="left:14px;top:32px;width:56px;height:6px;border-radius:3px;background:var(--blue);--x:-70px;--y:20px;--r:20deg;animation-delay:.12s"></div><div class="s" style="left:14px;top:44px;width:64px;height:6px;border-radius:3px;background:var(--blue);--x:-50px;--y:55px;--r:-15deg;animation-delay:.22s"></div><div class="s" style="left:14px;top:56px;width:40px;height:6px;border-radius:3px;background:var(--blue);--x:-30px;--y:70px;--r:30deg;animation-delay:.32s"></div><div class="s" style="left:98px;top:14px;width:64px;height:50px;border-radius:6px;background:var(--mint);--x:70px;--y:-45px;--r:18deg;animation-delay:.08s"></div><div class="s" style="left:136px;top:24px;width:16px;height:16px;border-radius:50%;background:var(--peach);--x:80px;--y:-10px;--r:0deg;animation-delay:.42s"></div><div class="s" style="left:14px;top:76px;width:22px;height:12px;border-radius:6px;background:var(--pink);--x:-40px;--y:60px;--r:-30deg;animation-delay:.5s"></div><div class="s" style="left:98px;top:72px;width:64px;height:16px;border-radius:4px;background:var(--butter);--x:60px;--y:60px;--r:22deg;animation-delay:.18s"></div></div>
             <p>The designers are busy putting together slides right now…</p>
@@ -802,22 +824,29 @@
         </div>
       </div>
       <aside class="rv-panel">
+        <div class="rv-ptitle">
+          <div class="rv-ptitle-l"><span>Order ID</span><b id="rvOrderId"></b></div>
+          <div class="rv-ptitle-r"><span id="rvSlideNo"></span><span id="rvStatus" class="rv-tag"></span></div>
+        </div>
         <div class="rv-decision" id="decisionBox">
-          <div class="rv-sender">
-            <div class="rv-headrow"><div class="rv-headcol"><span id="rvSlideNo"></span><p id="rvBy"></p></div><span id="rvStatus" class="rv-tag"></span></div>
-            <p id="rvNote" hidden></p>
-            <p id="rvAssigned" class="rv-assigned" hidden></p>
-          </div>
+          <div class="rv-dmnote" id="rvNoteBox" hidden><span>Note for DM:</span><p id="rvNote"></p></div>
+          <dl class="rv-facts">
+            <div><dt>Sent by</dt><dd id="rvBy"></dd></div>
+            <div><dt>Team</dt><dd id="rvTeam"></dd></div>
+            <div><dt>Time</dt><dd id="rvTime"></dd></div>
+          </dl>
           <div class="rv-actions" id="decisionBtns">
             <button id="approveBtn" class="rv-approve">Approve slide</button>
             <button id="changesBtn" class="rv-change">Request change</button>
           </div>
+          <div id="decidedBanner" class="rv-pbanner" hidden><span id="decidedText"></span><button id="undoDecision" class="rv-pbtn">Cancel</button></div>
+          <div id="olderBanner" class="rv-pbanner older" hidden><span id="olderText"></span><button id="toLatest" class="rv-pbtn">Check</button></div>
         </div>
         <div class="rv-thread" id="thread">
           <h3>Comments</h3>
           <ol id="comments" class="rv-comments"></ol>
         </div>
-        <p class="rv-closed" id="closedNote" hidden>Comments are closed on older versions.<br><button id="toLatest2" class="rv-latest">Go to the latest version</button></p>
+        <div class="rv-closed" id="closedNote" hidden><p>Comments are closed on older versions.</p><button id="toLatest2" class="rv-latest">Go to the latest version</button></div>
         <div class="rv-composer" id="composer">
           <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
           <div class="rv-msgbox">
@@ -825,10 +854,10 @@
             <textarea id="commentBody" aria-label="Message" placeholder="Send a message..." rows="2"></textarea>
             <div class="rv-msgbar">
               <button id="removePin" class="rv-link" hidden>Remove pin</button>
-              <span class="rv-live" id="recLive" hidden><span id="recClock">00:00/02:00</span><span class="wave live"></span></span>
+              <span class="rv-live" id="recLive" hidden><button id="recStop" class="rv-stop" type="button" aria-label="Stop recording" title="Stop recording"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path opacity="0.4" d="M0.96 12C0.96 14.928 2.12314 17.7361 4.19354 19.8065C6.26394 21.8769 9.07201 23.04 12 23.04C14.928 23.04 17.7361 21.8769 19.8065 19.8065C21.8769 17.7361 23.04 14.928 23.04 12C23.04 9.07201 21.8769 6.26394 19.8065 4.19354C17.7361 2.12314 14.928 0.96 12 0.96C9.07201 0.96 6.26394 2.12314 4.19354 4.19354C2.12314 6.26394 0.96 9.07201 0.96 12ZM7.86 9.24C7.86 8.47669 8.47669 7.86 9.24 7.86H14.76C15.5233 7.86 16.14 8.47669 16.14 9.24V14.76C16.14 15.5233 15.5233 16.14 14.76 16.14H9.24C8.47669 16.14 7.86 15.5233 7.86 14.76V9.24Z" fill="#D62020"/><path d="M9.12 7.68H14.88C15.6765 7.68 16.32 8.3235 16.32 9.12V14.88C16.32 15.6765 15.6765 16.32 14.88 16.32H9.12C8.3235 16.32 7.68 15.6765 7.68 14.88V9.12C7.68 8.3235 8.3235 7.68 9.12 7.68Z" fill="#D62020"/></svg></button><span class="wave live"></span><span id="recClock">00:00/02:00</span></span>
               <span class="spacer"></span>
-              <button id="recBtn" class="rv-icon" aria-label="Record a voice note, up to 2 minutes" title="Record a voice note (up to 2 min)"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 7.5a5 5 0 0010 0M8 12.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
-              <button id="sendComment" class="rv-send" aria-label="Send"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3.5M3.5 8L8 3.5 12.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button id="recBtn" class="rv-icon" aria-label="Record a voice note, up to 2 minutes" title="Record a voice note (up to 2 min)"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path transform="translate(3.75 1.6667)" d="M6.25 1.04167C5.11068 1.04167 4.16667 1.98568 4.16667 3.125V7.29167C4.16667 8.43099 5.11068 9.375 6.25 9.375C7.38932 9.375 8.33333 8.43099 8.33333 7.29167V3.125C8.33333 1.98568 7.38932 1.04167 6.25 1.04167ZM3.125 3.125C3.125 1.39974 4.52474 0 6.25 0C7.97526 0 9.375 1.39974 9.375 3.125V7.29167C9.375 9.01693 7.97526 10.4167 6.25 10.4167C4.52474 10.4167 3.125 9.01693 3.125 7.29167V3.125ZM1.04167 5.72917V7.29167C1.04167 10.1562 3.38542 12.5 6.25 12.5C9.11458 12.5 11.4583 10.1562 11.4583 7.29167V5.72917C11.4583 5.4362 11.6862 5.20833 11.9792 5.20833C12.2721 5.20833 12.5 5.4362 12.5 5.72917V7.29167C12.5 10.5794 9.99349 13.2487 6.77083 13.5091V15.625H8.85417C9.14714 15.625 9.375 15.8529 9.375 16.1458C9.375 16.4388 9.14714 16.6667 8.85417 16.6667H3.64583C3.35286 16.6667 3.125 16.4388 3.125 16.1458C3.125 15.8529 3.35286 15.625 3.64583 15.625H5.72917V13.5091C2.50651 13.2487 0 10.5794 0 7.29167V5.72917C0 5.4362 0.227865 5.20833 0.520833 5.20833C0.813802 5.20833 1.04167 5.4362 1.04167 5.72917Z" fill="currentColor"/></svg></button>
+              <button id="sendComment" class="rv-send" aria-label="Send"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path transform="translate(3.986 2)" d="M6.35777 0.140762L11.8631 5.64614C12.0821 5.83382 12.0821 6.14663 11.8631 6.33431C11.6755 6.55327 11.3627 6.55327 11.175 6.33431L6.51417 1.70479V15.4995C6.51417 15.781 6.29521 16 6.01369 16C5.73216 16 5.5132 15.781 5.5132 15.4995V1.70479L0.852395 6.33431C0.664712 6.55327 0.351906 6.55327 0.164223 6.33431C-0.054741 6.14663 -0.054741 5.83382 0.164223 5.64614L5.6696 0.140762C5.85728 -0.0469208 6.17009 -0.0469208 6.35777 0.140762Z" fill="currentColor"/></svg></button>
             </div>
           </div>
           <p id="rvMsg" class="msg" role="status" aria-live="polite"></p>
@@ -1173,10 +1202,6 @@ function renderActivity() {
 }
 
 // ---- Assign slides (DM splits an order between designers)
-function assignmentFor(shot) {
-  const rows = (S.assignments || {})[(shot.project || "").trim().toLowerCase()] || [];
-  return rows.find((a) => (a.slides || []).includes(shot.slide_number)) || null;
-}
 // "1-5, 8" → [1,2,3,4,5,8]; null if the text can't be read
 function parseSlides(txt) {
   const out = new Set(); const parts = String(txt || "").split(/[,;\s]+/).filter(Boolean);
@@ -1296,7 +1321,14 @@ function zoomStep(dir) {
   const next = dir > 0 ? ZOOMS.find((z) => z > cur + 0.001) : [...ZOOMS].reverse().find((z) => z < cur - 0.001);
   if (next) setZoom(next);
 }
-const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Request change" };
+const REVIEW_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
+// "Time" in the panel: the clock time today, otherwise the date
+function sentTime(iso) {
+  const d = new Date(iso); if (isNaN(d)) return "—";
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  return d.toLocaleDateString("en-US", d.getFullYear() === now.getFullYear() ? { month: "short", day: "numeric" } : { month: "short", day: "numeric", year: "numeric" });
+}
 // An order that's been split but has no slides yet: strip of "Not sent yet" placeholders and a waiting message
 function openEmptyOrder() {
   S.slideKey = null; S.shotId = null;
@@ -1341,20 +1373,24 @@ async function renderReview() {
   const sel = $("versionSelect"); sel.innerHTML = "";
   vers.forEach((v) => { const o = el("option", "", "Version " + v.version); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
   $("versionWrap").hidden = vers.length < 2;
+  // Older version: a purple banner in the panel points to the latest one
   $("olderBanner").hidden = isLatest;
-  $("olderText").textContent = "You are viewing v" + shot.version + ". The latest is v" + latest.version + ".";
+  $("olderText").textContent = "v" + latest.version + " is available";
 
+  // Panel title: Order ID, slide number and status
+  const oid = orderId(shot.project);
+  $("rvOrderId").textContent = /^\d+$/.test(oid) ? "#" + oid : (shot.project || "");
   $("rvSlideNo").textContent = "Slide " + shot.slide_number;
   const tag = $("rvStatus"); tag.className = "rv-tag " + shot.status; tag.textContent = REVIEW_LABEL[shot.status] || shot.status;
   tag.hidden = false;
 
-  const asg = assignmentFor(shot);
-  $("rvAssigned").hidden = !asg;
-  if (asg) $("rvAssigned").textContent = "Assigned to " + asg.assignee_name + (asg.assignee_team ? "-" + asg.assignee_team : "");
-  $("rvBy").textContent = "Sent by " + shot.designer + (shot.team ? "-" + shot.team : "") + ", " + ago(shot.created_at);
-  $("rvNote").hidden = !shot.note; $("rvNote").textContent = shot.note ? "Note: \u201C" + shot.note + "\u201D" : "";
+  $("rvNoteBox").hidden = !shot.note; $("rvNote").textContent = shot.note ? "\u201C" + shot.note + "\u201D" : "";
+  $("rvBy").textContent = shot.designer || "\u2014"; $("rvBy").title = shot.designer || "";
+  $("rvTeam").textContent = shot.team || "\u2014"; $("rvTeam").title = shot.team || "";
+  $("rvTime").textContent = sentTime(shot.created_at);
+  $("rvTime").title = new Date(shot.created_at).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 
-  // Decision: two buttons until the DM decides, then a summary with Cancel
+  // Decision: two buttons until the DM decides, then a banner with Cancel
   const decided = isLatest && (shot.status === "approved" || shot.status === "changes");
   $("decisionBtns").hidden = !isLatest || decided || !canReview(shot);
   // Tag team: another team's slides are reviewed by their own DM, so no decision buttons here
@@ -1362,8 +1398,8 @@ async function renderReview() {
   $("deleteSlideBtn").hidden = !canReview(shot);
   const box = $("decidedBanner"); box.hidden = !decided;
   if (decided) {
-    box.className = "rv-banner " + shot.status;
-    $("decidedText").textContent = (shot.status === "approved" ? "Slide " + shot.slide_number + " approved" : "Change requested") + (shot.reviewed_by ? " by " + shot.reviewed_by : "");
+    box.className = "rv-pbanner " + shot.status;
+    $("decidedText").textContent = (shot.status === "approved" ? "Approved" : "Change requested") + (shot.reviewed_by ? " by " + shot.reviewed_by : "");
   }
 
   renderRail();
@@ -1515,8 +1551,6 @@ const waveEl = (live) => { const w = el("span", "wave" + (live ? " live" : ""));
 const mmss = (sec) => { const t = Math.max(0, Math.floor(sec)); return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"); };
 const PLAY = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.3 6.9l4.6 3.1-4.6 3.1z" fill="currentColor"/></svg>';
 const PAUSE = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.2 7v6M11.8 7v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-const STOP = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="currentColor" fill-opacity=".22"/><rect x="7.5" y="7.5" width="9" height="9" rx="1.5" fill="currentColor"/></svg>';
-const MICI = $("recBtn") ? $("recBtn").innerHTML : "";
 // Compact player: play/pause, waveform, "elapsed/total"
 function makePlayer(audio, total) {
   const p = el("div", "player"); const btn = el("button", "pp"); btn.type = "button"; btn.innerHTML = PLAY; btn.setAttribute("aria-label", "Play voice note");
@@ -1531,9 +1565,9 @@ function makePlayer(audio, total) {
 }
 function renderRecUI() {
   const btn = $("recBtn"); const recording = !!(REC.rec && REC.rec.state === "recording");
-  btn.classList.toggle("recording", recording);
-  btn.innerHTML = recording ? STOP : MICI;
-  btn.setAttribute("aria-label", recording ? "Stop recording" : "Record a voice note, up to 2 minutes");
+  // While recording, the mic button hides; stop sits at the start of the live pill
+  btn.hidden = recording;
+  btn.closest(".rv-msgbox").classList.toggle("recording", recording);
   $("recLive").hidden = !recording;
   if (recording) {
     if (!$("recLive").querySelector(".wave i")) { const w = $("recLive").querySelector(".wave"); w.replaceWith(waveEl(true)); }
@@ -1888,6 +1922,7 @@ async function enter(user) {
   window.addEventListener("resize", () => { if (!$("reviewView").hidden) updateRailArrows(); });
   $("sendComment").onclick = addComment;
   $("recBtn").onclick = toggleRecording;
+  $("recStop").onclick = toggleRecording;
   $("delCancel").onclick = () => { $("deleteDialog").close(); deleteKey = null; };
   $("delConfirm").onclick = () => pendingDelete && pendingDelete();
   $("deleteSlideBtn").onclick = askDeleteSlide;
