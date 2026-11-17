@@ -39,7 +39,7 @@ ANAT=f'''<figure class="anat">
 <div class="ph-body"><div class="ph-row"><span class="assigned">{BOOK}Assigned to you</span><span class="ph-btns"><span class="ic">{SWAP}</span><span class="ic">{EDIT}</span></span><i class="pin l">3</i><i class="pin r">4</i></div>
 <div class="ph-thumb"><span>Annual Summit</span><i class="pin l">5</i></div>
 <div class="ph-btn">Mark slide 9 ready for review<i class="pin l">6</i></div></div>
-<div class="ph-foot"><span>Bela - Cascade</span><span>v2.30 • Sign out</span><i class="pin r">7</i></div></div>
+<div class="ph-foot"><span>Bela - Cascade</span><span>v2.31 • Sign out</span><i class="pin r">7</i></div></div>
 <figcaption><ol class="legend">
 <li>{T('<b>Order ID.</b> The order this deck belongs to. Type digits and the # is added for you.','<b>Order ID.</b> Order tempat deck ini berada. Ketik angka, tanda # ditambahkan otomatis.')}</li>
 <li>{T('<b>Slide and status.</b> Your slide number, plus where it will sit in the order when you moved it (“Slide 9 → Slide 4”), and its status tag.','<b>Slide dan status.</b> Nomor slide di file-mu, plus posisinya di order jika kamu memindahkannya (“Slide 9 → Slide 4”), dan tag statusnya.')}</li>
@@ -274,6 +274,7 @@ S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
 ['Dashboard',('New review panel: Order ID title with slide number and status, “Note for DM”, Sent by / Team / Time, decision banners in the panel, green resolved comments and a new voice-note recorder.','Panel review baru: judul Order ID dengan nomor slide dan status, “Note for DM”, Sent by / Team / Time, banner keputusan di panel, komentar resolved berwarna hijau dan perekam voice note baru.')],
 ['Dashboard',('Board cards: slide thumbnail (stacked when an order has more than one slide, dashed “Not sent yet” box when nothing is sent), purple Tag team chip, “Last update”; the ⋯ button moved to the bottom-right.','Kartu board: thumbnail slide (bertumpuk jika order punya lebih dari satu slide, kotak putus-putus “Not sent yet” jika belum ada yang terkirim), chip Tag team ungu, “Last update”; tombol ⋯ pindah ke kanan bawah.')],
+['v2.31',('Sign-in screens: the slide band settles at its design angles, and the Slack button label is centred and medium weight.','Layar sign-in: band slide berhenti di sudut desainnya, dan label tombol Slack di tengah dengan ketebalan medium.')],
 ['v2.30',('Sign in with Slack in the add-in and the Dashboard (“Continue with Slack”); email and password stay available under “Sign in with email”. The first Slack sign-in asks for your team.','Sign in dengan Slack di add-in dan Dashboard (“Continue with Slack”); email dan password tetap tersedia lewat “Sign in with email”. Sign-in Slack pertama menanyakan tim.')],
 ['v2.29',('The Slideshot wordmark uses Vampiro One everywhere, also on computers without the font installed.','Wordmark Slideshot memakai Vampiro One di semua tempat, juga di komputer yang belum memasang font itu.')],
 ['v2.28',('New Slideshot logo in the add-in, the Dashboard, the docs and the PowerPoint ribbon icon.','Logo Slideshot baru di add-in, Dashboard, dokumentasi dan ikon ribbon PowerPoint.')],
@@ -319,11 +320,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.30','Add-in v2.30')}</span><span class="meta">{T('Updated 17 Nov 2026','Diperbarui 17 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.31','Add-in v2.31')}</span><span class="meta">{T('Updated 17 Nov 2026','Diperbarui 17 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.30.','Slideshot untuk 24Slides. Add-in v2.30.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.31.','Slideshot untuk 24Slides. Add-in v2.31.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)

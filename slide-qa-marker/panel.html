@@ -184,7 +184,7 @@
   /* The email form is taller than the pane: keep the logo in the flow so it isn't cut off at the top */
   .login.tall .login-panel { padding-top: 24px; }
   .login.tall .login-head .logo { position: static; transform: none; margin-bottom: 8.6px; }
-  /* Bottom band: 4 slides rising into place (Figma timeline 2 s); .bs-y/.bs-x/.bs-r carry the motion tracks, .bs-body the rotation */
+  /* Bottom band: 4 slides rising into place (Figma timeline 2 s); .bs-y/.bs-x carry the motion tracks, .bs-body the rotation */
   .login-band { position: absolute; left: -56px; right: -47.6px; bottom: -34.88px; height: 153.877px; overflow: hidden; pointer-events: none; z-index: 0; }
   .band-slide { position: absolute; transform: translate(-50%, -50%); }
   .bs-body { position: relative; }
@@ -510,7 +510,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.30";
+const APP_VERSION = "2.31";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1168,16 +1168,15 @@ function showLogin(mode) {
   playLoginBand();
 }
 // Bottom band (Figma 408:6164): 4 slides that rise into place. Keyframe tracks are copied from the Figma timeline (2 s):
-// [offset 0-1, value, easing to the next keyframe]; y and x in px, rotation in radians, all in screen space.
-const BAND_EASE = { land: "cubic-bezier(0.22, 1, 0.36, 1)", sway: "cubic-bezier(0.5, 0, 0.5, 1)" };
+// [offset 0-1, value, easing to the next keyframe]; y and x in px, in screen space. The Figma rotation tracks were
+// left out on purpose (not intended): every slide ends at its design angle.
+const BAND_EASE = { land: "cubic-bezier(0.22, 1, 0.36, 1)" };
 const LOGIN_BAND = [
   { x: -139.92, y: 79.96, w: 117.16, h: 66.64, rot: -42.33, fill: "#E6E0FF", op: 0.88, line: "179,166,236", badge: 1, r: 4.034,   // Lavender
     ty: [[0, 150.163757], [0.03069, 150.163757, BAND_EASE.land], [0.28692, -6.589184, "ease-in-out"], [0.37233, 0], [1, 0]],
-    tx: [[0, 0], [0.01059, 0], [0.28692, -6.424858], [1, -6.424858]],
-    rz: [[0, 0], [0.01059, 0, BAND_EASE.sway], [0.98896, 0.176402, BAND_EASE.sway], [1, 0.034638]] },
+    tx: [[0, 0], [0.01059, 0], [0.28692, -6.424858], [1, -6.424858]] },
   { x: 50.09, y: 67.88, w: 163.34, h: 110.05, rot: 3.71, fill: "#FFE5D6", op: 0.78, line: "237,178,150", badge: 0, r: 3.356,   // Peach
-    ty: [[0, 165.876984], [0.50377, 165.876984, BAND_EASE.land], [0.89547, -2, "ease-in-out"], [0.985, 0], [1, 0]],
-    rz: [[0, 0], [0.04781, 0, BAND_EASE.sway], [1, -0.129887]] },
+    ty: [[0, 165.876984], [0.50377, 165.876984, BAND_EASE.land], [0.89547, -2, "ease-in-out"], [0.985, 0], [1, 0]] },
   { x: -53, y: 97.69, w: 136.96, h: 76.78, rot: -16.43, fill: "#FBDDE8", op: 0.8, line: "231,161,187", badge: 1, r: 3.493,   // Pink
     ty: [[0, 124.375694], [0.30456, 124.375694, BAND_EASE.land], [0.51456, -2, "ease-in-out"], [0.58456, 0], [1, 0]] },
   { x: 147.06, y: 71.57, w: 122.99, h: 69.53, rot: 6.01, fill: "#D6F1E6", op: 0.87, line: "143,205,180", badge: 1, r: 6.204,   // Mint
@@ -1189,7 +1188,7 @@ function buildLoginBand() {
   LOGIN_BAND.forEach((b) => {
     const d = document.createElement("div"); d.className = "band-slide";
     d.style.left = "calc(50% + " + b.x + "px)"; d.style.top = b.y + "px";
-    d.innerHTML = '<div class="bs-y"><div class="bs-x"><div class="bs-r"><div class="bs-body" style="width:' + b.w + "px;height:" + b.h + "px;transform:rotate(" + b.rot + "deg);--r:" + b.r + "px;--fill:" + b.fill + ";--op:" + b.op + ";--line:rgba(" + b.line + ',.75)"><span class="bs-bg"></span><span class="bs-content"><i></i><i></i><i></i></span>' + (b.badge ? '<span class="bs-badge">' + BAND_BADGE + "</span>" : "") + "</div></div></div></div>";
+    d.innerHTML = '<div class="bs-y"><div class="bs-x"><div class="bs-body" style="width:' + b.w + "px;height:" + b.h + "px;transform:rotate(" + b.rot + "deg);--r:" + b.r + "px;--fill:" + b.fill + ";--op:" + b.op + ";--line:rgba(" + b.line + ',.75)"><span class="bs-bg"></span><span class="bs-content"><i></i><i></i><i></i></span>' + (b.badge ? '<span class="bs-badge">' + BAND_BADGE + "</span>" : "") + "</div></div></div>";
     band.append(d);
   });
 }
@@ -1206,7 +1205,6 @@ function playLoginBand() {
     const b = LOGIN_BAND[i];
     run(d.querySelector(".bs-y"), b.ty, (v) => "translateY(" + v + "px)");
     run(d.querySelector(".bs-x"), b.tx, (v) => "translateX(" + v + "px)");
-    run(d.querySelector(".bs-r"), b.rz, (v) => "rotate(" + v + "rad)");
   });
 }
 // Sign-in screen: Slack (default), email (fallback), or the one-time team step
