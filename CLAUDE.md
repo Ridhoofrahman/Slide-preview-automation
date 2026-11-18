@@ -70,7 +70,7 @@ Figma file: `https://www.figma.com/design/DHcyMFzra5Wi7o18Uy6fW0/Slideshot` (fil
 - Font **Geist** (400/500; 600 for the docs page). Brand blue **#1C43A5** (`background/brand/default`).
 - Text `#1A1F2E` (title) / `#454C63` (body), subtle `#6A7389`; borders `#DDE4EE` (`outline/neutral`), input borders `#C2CCDB` (`divider/default`); canvas `#F7F9FC`; header bar `#EEF2F8` (`elevation/sunken`); keyboard focus ring `#3D66F5` (no DS token).
 - Status chips (Builder DS accent/outline/text): grey `#F7F9FC / #DDE4EE / #454C63`, yellow `#FFF9E6 / #FFE08A / #AD7300`, red `#FFF1F1 / #FFB0B0 / #A81A1A`, green `#EEF8E6 / #B3E295 / #417618` (ring `#559B1F` = `icon/success`, solid `#559B1F`), purple (Tag team, working-file note) `#F0EBFC / #BDA6EE / #4A2999`. Scrim `overlay/scrim` #1A1F2E 50%. Full list: `design/DESIGN-SYSTEM.md`.
-- Names that were decided: "Adjust distribution" (not "Edit split"), "Dashboard" (footer link; was "Review site"), "Not to work", "Not sent yet", "Upload the latest version", "Send to customer".
+- Names that were decided: "Assign order" (not "Assign slides" or "Distribute project"; header button at the far right, after Sort), "Adjust distribution" (not "Edit split"), "Dashboard" (footer link; was "Review site"), "Not to work", "Not sent yet", "Upload the latest version", "Send to customer".
 
 ## Develop and test
 ```bash
@@ -102,7 +102,7 @@ npm run docs                     # regenerate docs/slideshot-docs.html
 
 ## Open items and decisions waiting for Uda
 1. Done: board cards and docs committed; colours aligned with Builder DS (v2.26).
-2. Figma's board card has a **Hover** state (grey card, trash icon instead of the ⋯ menu) and a **List** layout (637×50 rows). Neither is built. The menu (Assign slides, Mark as sent, Delete order) is unchanged.
+2. Figma's board card has a **Hover** state (grey card, trash icon instead of the ⋯ menu) and a **List** layout (637×50 rows). Neither is built. The menu (Assign order, Mark as sent, Delete order) is unchanged.
 3. The **Change slide position** popup in Figma shows an info line ("The slides will switch position"). Recommended replacement text: "Slide 4 will be sent as Slide 1" (updates with the dropdown). Not built yet.
 4. **Designer dashboard** (workload list, team list, who works on what) is planned; the dashboard page will then open to everyone and the footer link will show for all.
 5. "Send to customer" could later connect to the Inner Platform.

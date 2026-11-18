@@ -504,7 +504,7 @@
   .bd-thumbs .front { box-shadow: 0 1.86px 3.72px rgba(18,18,23,.06), 0 1.86px 5.58px rgba(18,18,23,.10); }
   /* Second slide peeks out behind the first: up and left, tilted 3 degrees (counter-clockwise) */
   .bd-thumbs .back { left: -5.1px; top: -3px; transform: rotate(-3deg); transform-origin: 0 0; }
-  .bd-thumbs .nsy { border-radius: 11.2px; background: transparent; overflow: visible; }
+  .bd-thumbs .nsy { border-radius: 11.2px; background: transparent; overflow: visible; box-shadow: none; }
   .bd-thumbs .nsy .nsy-svg { display: block; width: 112px; height: 63.5px; }
   .bd-tt { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px solid #BDA6EE; border-radius: 20px; background: #F0EBFC; color: #4A2999; font-size: 12px; line-height: 16px; white-space: nowrap; }
   .bd-ring { position: absolute; left: 94px; top: -8px; width: 30px; height: 30px; }
@@ -534,18 +534,17 @@
   .bd-state { min-height: calc(100vh - 56px - 64px - 40px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; }
   .bd-state strong { margin-top: 12px; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
   .bd-state p { margin: 0; font-size: 12px; line-height: 16px; color: #6A7389; }
-  .bd-illo { position: relative; width: 112px; height: 72px; }
-  .bd-illo .c { position: absolute; width: 104px; height: 60px; border-radius: 4px; }
-  .bd-illo .c1 { left: 6px; top: 2px; background: #D6F1E6; transform: rotate(4deg); }
-  .bd-illo .c2 { left: 2px; top: 6px; background: #FBDDE8; transform: rotate(-3deg); }
-  .bd-illo .c3 { left: 4px; top: 8px; background: #FFE5D6; padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; }
-  .bd-illo .c3 i { display: block; height: 4px; border-radius: 2px; background: #EDB296; width: 46%; }
-  .bd-illo .c3 i + i { width: 72%; } .bd-illo .c3 i + i + i { width: 40%; }
-  .bd-illo.grey .c1, .bd-illo.grey .c2 { display: none; }
-  .bd-illo.grey .c3 { background: #DDE4EE; } .bd-illo.grey .c3 i { background: #DDE4EE; }
-  .bd-state.loading .bd-illo .c3 { animation: bd-bob 1.4s ease-in-out infinite; }
-  @keyframes bd-bob { 50% { transform: translateY(-4px); } }
-  @media (prefers-reduced-motion: reduce) { .bd-state.loading .bd-illo .c3 { animation: none; } }
+  /* Empty board (Figma 112:910): one grey slide inside the 378x129 "Cards · Stacking motion" frame */
+  .bd-state.empty { gap: 0; box-sizing: border-box; padding-bottom: 40px; }   /* Figma body has 80px bottom padding: content sits 40px above centre */
+  .bd-state.empty strong { margin-top: 0; color: #454C63; }
+  .bd-state.empty p { margin-top: 4px; }
+  .bd-empty-illo { position: relative; width: 378px; height: 129px; flex: none; }
+  .bd-empty-illo .s { position: absolute; left: 129.93px; top: 44.93px; width: 119px; height: 67px; border-radius: 5.965px; background: #E7E7E7; }
+  .bd-empty-illo .s span { position: absolute; left: 0.13px; top: 12.43px; width: 96.7px; height: 29.71px; opacity: .78; }
+  .bd-empty-illo .s i { position: absolute; left: 11.16px; display: block; background: #B7B7B7; }
+  .bd-empty-illo .s i:nth-child(1) { top: 0; width: 49.98px; height: 6.68px; border-radius: 2.097px; }
+  .bd-empty-illo .s i:nth-child(2) { top: 12.26px; width: 74.38px; height: 4.68px; border-radius: 1.468px; }
+  .bd-empty-illo .s i:nth-child(3) { top: 22.5px; width: 42.85px; height: 4.68px; border-radius: 1.468px; }
   .bd-activity { padding-top: 40px; min-width: 0; }
   .bd-activity h2 { margin: 0 0 20px; font-size: 16px; line-height: 24px; font-weight: 700; color: #1A1F2E; }
   .bd-day { margin: 0 0 20px; font-size: 12px; line-height: 16px; font-weight: 400; color: #6A7389; }
@@ -765,7 +764,7 @@
   }
   @media (prefers-reduced-motion: reduce) { .rv-emptyslide .s { animation: none; opacity: 1; } }
 
-  .bd-state .bd-start { margin-top: 12px; }
+  .bd-state .bd-start { margin-top: 16px; }
 </style>
 </head>
 <body>
@@ -895,7 +894,7 @@
 
 <dialog id="assignDialog" class="as-dialog" aria-labelledby="asTitle">
   <form id="assignForm" novalidate>
-    <h2 id="asTitle">Assign slides</h2>
+    <h2 id="asTitle">Assign order</h2>
     <p class="as-sub">Split the order between designers. Use slide numbers like 1-5 or 1-3, 7.</p>
     <label class="s-field"><span class="s-label">Order number</span><input id="asOrder" placeholder="e.g. 351164" autocomplete="off"></label>
     <div class="as-head" aria-hidden="true"><span>Designer</span><span>Slides</span></div>
@@ -1061,9 +1060,9 @@ function loadingIllo() {
   ["mint", "pink", "lav", "peach"].forEach((k) => { const c = el("span", "s " + k); c.innerHTML = "<i></i><i></i><i></i>"; d.append(c); });
   return d;
 }
-function stackIllo(grey) {
-  const d = el("div", "bd-illo" + (grey ? " grey" : ""));
-  d.innerHTML = '<span class="c c1"></span><span class="c c2"></span><span class="c c3"><i></i><i></i><i></i></span>';
+function emptyIllo() {
+  const d = el("div", "bd-empty-illo"); d.setAttribute("aria-hidden", "true");
+  d.innerHTML = '<div class="s"><span><i></i><i></i><i></i></span></div>';
   return d;
 }
 // Progress ring (Figma component: states 0 / Some approved / All approved / Sent to customer)
@@ -1102,7 +1101,7 @@ function cardMenu(p, anchor) {
   const item = (label, fn, opts = {}) => { const b = el("button", "bd-menuitem" + (opts.danger ? " danger" : ""), label); b.setAttribute("role", "menuitem"); b.disabled = !!opts.disabled; if (opts.title) b.title = opts.title; b.onclick = (e) => { e.stopPropagation(); m.remove(); fn(); }; m.append(b); };
   if (st && st.sent_at) item("Undo \u201Csent to customer\u201D", () => setSentToCustomer(p.key, false));
   else item("Mark as sent to customer", () => askSendToCustomer(p.key), { disabled: !prog.allApproved, title: prog.allApproved ? "" : prog.approvedNums + " of " + prog.total + " slides approved" });
-  item("Assign slides", () => openAssign(p.key));
+  item("Assign order", () => openAssign(p.key));
   item("Delete order", () => askDeleteProject(p.key), { danger: true });
   anchor.parentElement.append(m);
   setTimeout(() => document.addEventListener("click", function off(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener("click", off); } }), 0);
@@ -1155,9 +1154,9 @@ async function renderBoard() {
   const projects = sortedProjects();
   $("boardView").classList.toggle("solo", !projects.length);
   if (!projects.length) {
-    const e = el("div", "bd-state"); e.append(stackIllo(true), el("strong", "", "No slides yet"), el("p", "", "Ready-to-review slides will appear here"));
+    const e = el("div", "bd-state empty"); e.append(emptyIllo(), el("strong", "", "No slides yet"), el("p", "", "Ready-to-review slides will appear here"));
     // Figma: Board / No projects yet — start by distributing a project
-    const go = el("button", "rv-primary bd-start", "Distribute project"); go.type = "button"; go.onclick = () => openAssign(null); e.append(go);
+    const go = el("button", "rv-primary bd-start", "Assign order"); go.type = "button"; go.onclick = () => openAssign(null); e.append(go);
     c.append(e); renderActivity(); return;
   }
   const waiting = projects.reduce((n, p) => n + p.waiting, 0), orders = projects.filter((p) => p.waiting > 0).length;
@@ -1171,8 +1170,8 @@ async function renderBoard() {
   Object.entries(SORTS).forEach(([k, v]) => { const o = el("option", "", v); o.value = k; if (k === BOARD.sort) o.selected = true; sel.append(o); });
   sel.onchange = () => { BOARD.sort = sel.value; try { localStorage.setItem("qa.sort", sel.value); } catch (e) {} renderBoard(); };
   sortWrap.append(sel);
-  const right = el("div", "bd-headtools"); const ab = el("button", "bd-assignbtn", "Assign slides"); ab.type = "button"; ab.onclick = () => openAssign(null);
-  right.append(ab, sortWrap); head.append(hl, right); c.append(head);
+  const right = el("div", "bd-headtools"); const ab = el("button", "bd-assignbtn", "Assign order"); ab.type = "button"; ab.onclick = () => openAssign(null);
+  right.append(sortWrap, ab); head.append(hl, right); c.append(head);
   const grid = el("div", "bd-grid"); projects.forEach((p) => grid.append(orderCard(p))); c.append(grid);
   c.append(el("p", "bd-retention", "Orders are removed automatically " + RETENTION_DAYS + " days after their last activity."));
   renderActivity();
@@ -1378,7 +1377,7 @@ function renderEmptyOrder() {
 async function renderReview() {
   if (!S.slideKey && S.project && $("reviewView").classList.contains("empty")) { renderEmptyOrder(); return; }
   const shot = currentShot(); if (!shot) { closeReview(); return; }
-  $("rvAdjustLabel").textContent = ((S.assignments || {})[S.project] || []).length ? "Adjust distribution" : "Assign slides";
+  $("rvAdjustLabel").textContent = ((S.assignments || {})[S.project] || []).length ? "Adjust distribution" : "Assign order";
   S.shotId = shot.id;
   const vers = S.versions[S.slideKey];
   const latest = vers[0], isLatest = shot.id === latest.id;
