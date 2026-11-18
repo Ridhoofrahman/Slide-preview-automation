@@ -13,6 +13,8 @@
 | `login-handoffs.sql` | `login_handoffs` for the add-in's Slack sign-in through the system browser (Edge Function `login-handoff` only) | **To run** (already part of the canonical file) |
 | `dm-allowlist.sql` | `dm_allowlist` (email, name, team): the 24 DMs and the team each leads; triggers keep `design_managers` and `profiles.team` in sync, also for accounts created later | **To run** after `teams-table.sql` (already part of the canonical file) |
 | `signup-hook.sql` | `hook_slideshot_signup`: the Auth hook "Before User Created" that lets only @24slides.com emails sign up (first Slack sign-in creates the account) | Run (already part of the canonical file); hook enabled in Authentication → Hooks |
+| `designer-allowlist.sql` | `designer_allowlist` (110 designers from Inner Platform) and `is_member()`; listed designers get their team automatically. Its last query lists accounts that would lose access | **To run** after `dm-allowlist.sql` (already part of the canonical file) |
+| `members-only.sql` | Restrictive "members only" policies: only DMs and listed designers read or write data and slide files. Undo statements at the end | **To run after** checking the last query of `designer-allowlist.sql` (already part of the canonical file) |
 | `teams-setup.sql` | A strict per-team RLS design | **Parked, do not run** unless stricter security is wanted |
 
 Add, move or remove a DM later (the list keeps `design_managers` and `profiles.team` in sync):

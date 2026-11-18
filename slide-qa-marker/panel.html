@@ -524,7 +524,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.36";
+const APP_VERSION = "2.37";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1341,8 +1341,15 @@ function cancelSlackWait() {
   const h = stopSlackWait();
   if (h) handoff({ action: "cancel", code: h.code }).catch(() => {});
 }
+// Members only: DMs and the designers on the list (public.is_member). Anyone else is signed out with a message.
+// Fails open if the check can't run (function not set up yet), like the DM check, so nobody is locked out by an error.
+async function isMember() {
+  try { const { data, error } = await S.sb.rpc("is_member"); return error ? true : data !== false; } catch (e) { return true; }
+}
+const NO_ACCESS = "Slideshot is for 24Slides designers and DMs. If you are one, ask your DM to get you added.";
 // After any sign-in: the team is needed once (Slack doesn't know it)
 async function afterSignIn(user) {
+  if (!(await isMember())) { await S.sb.auth.signOut(); showLogin(); say($("slackMsg"), NO_ACCESS, "err"); return; }
   const team = await profileTeam(user);
   if (team) { say($("slackMsg"), ""); enterApp(user, team); return; }
   S.pendingUser = user; showLogin("team");
