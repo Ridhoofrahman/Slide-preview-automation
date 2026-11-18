@@ -11,10 +11,13 @@
 | `teams-table.sql` | `teams` (name, office, active) seeded with the 24 teams; signed-in users read, nobody writes from the client | **To run** (already part of the canonical file) |
 | `profiles-team-fk.sql` | Lists `profiles.team` values not in `teams`, then adds the foreign key | **To run after** `teams-table.sql` and cleaning the list (already part of the canonical file) |
 | `login-handoffs.sql` | `login_handoffs` for the add-in's Slack sign-in through the system browser (Edge Function `login-handoff` only) | **To run** (already part of the canonical file) |
+| `dm-allowlist.sql` | `dm_allowlist` (email, name, team): the 24 DMs and the team each leads; triggers keep `design_managers` and `profiles.team` in sync, also for accounts created later | **To run** after `teams-table.sql` (already part of the canonical file) |
 | `teams-setup.sql` | A strict per-team RLS design | **Parked, do not run** unless stricter security is wanted |
 
-Add or remove a DM later:
+Add, move or remove a DM later (the list keeps `design_managers` and `profiles.team` in sync):
 ```sql
-insert into public.design_managers (user_id) select id from auth.users where email = 'dm@24slides.com';
-delete from public.design_managers where user_id = (select id from auth.users where email = 'dm@24slides.com');
+insert into public.dm_allowlist (email, name, team) values ('dm@24slides.com', 'Full Name', 'Cosmic');
+update public.dm_allowlist set team = 'Alpha' where email = 'dm@24slides.com';
+delete from public.dm_allowlist where email = 'dm@24slides.com';
 ```
+An admin who is not a DM of a team can still be added straight to `design_managers`; the list never removes those rows.
