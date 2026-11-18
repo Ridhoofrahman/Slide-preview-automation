@@ -113,9 +113,11 @@
   .notice { background: var(--red-bg); color: var(--red-fg); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
 
   /* Feedback */
-  .feedback { display: flex; flex-direction: column; gap: 8px; }
+  .feedback { display: flex; flex-direction: column; gap: 8px; padding: 0 20px; }
   .feedback-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .feedback-head h2 { font-size: 16px; line-height: 24px; font-weight: 500; margin: 0; }
+  .feedback-head h2 { font-size: 16px; line-height: 24px; font-weight: 500; margin: 0; white-space: nowrap; flex: none; }
+  .feedback-head .fb-meta { flex-wrap: nowrap; min-width: 0; }
+  .feedback-head .fb-meta .by { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .fb-meta, .c-meta { display: flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; flex-wrap: wrap; }
   .fb-meta .ver { font-weight: 500; }
   .dot { width: 4px; height: 4px; border-radius: 2px; background: currentColor; opacity: .7; flex: none; }
@@ -524,7 +526,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.38";
+const APP_VERSION = "2.39";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -888,7 +890,7 @@ function render() {
     $("feedbackTitle").textContent = "Feedback (" + cs.length + ")";
     const m = $("feedbackMeta"); m.innerHTML = "";
     const ver = document.createElement("span"); ver.className = "ver"; ver.textContent = "v" + shot.version; m.append(ver);
-    if (shot.reviewed_by) { const dot = document.createElement("span"); dot.className = "dot"; const by = document.createElement("span"); by.textContent = "Reviewed by " + shot.reviewed_by; m.append(dot, by); }
+    if (shot.reviewed_by) { const dot = document.createElement("span"); dot.className = "dot"; const by = document.createElement("span"); by.className = "by"; by.title = "Reviewed by " + shot.reviewed_by; by.textContent = "Reviewed by " + shot.reviewed_by; m.append(dot, by); }
     let pinNo = 0;
     cs.forEach((c) => {
       const pinned = c.x !== null && c.y !== null; if (pinned) pinNo++;

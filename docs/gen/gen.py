@@ -289,6 +289,8 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.39',('The Feedback list in the panel has the same 20px side margins as the rest of the panel, and its header stays on one line (a long reviewer name ends with “…”).','Daftar Feedback di panel kini punya margin samping 20px seperti bagian panel lainnya, dan headernya tetap satu baris (nama reviewer yang panjang diakhiri “…”).')],
+['Dashboard',('Long slide numbers (e.g. 120 or 2312) in the review page’s slide strip no longer overlap the thumbnail.','Nomor slide yang panjang (mis. 120 atau 2312) di strip slide halaman review tidak lagi menumpuk ke thumbnail.')],
 ['Install',('One-line installers for Mac (Terminal) and Windows (PowerShell): no admin rights, no shared folder. Running the same line again updates the add-in.','Installer satu baris untuk Mac (Terminal) dan Windows (PowerShell): tanpa hak admin, tanpa shared folder. Menjalankan baris yang sama lagi akan memperbarui add-in.')],
 ['Dashboard',('“Assign slides” is now “Assign order” everywhere (board header, empty board, card menu, the dialog and the review page), and the button sits at the far right of the header, after Sort. The empty board shows the grey slide illustration from the design, and the dashed thumbnail of an order with no slides sent yet has no shadow.','“Assign slides” sekarang “Assign order” di semua tempat (header board, board kosong, menu kartu, dialog, dan halaman review), dan tombolnya ada di paling kanan header, setelah Sort. Board kosong menampilkan ilustrasi slide abu-abu sesuai desain, dan thumbnail putus-putus untuk order yang belum ada slide terkirim tidak lagi punya bayangan.')],
 ['v2.38',('Signing in with email no longer gets stuck on “Signing in…”: if the sign-in fails or gets no answer within 20 seconds, the panel says so. Sign out is quicker and can’t block the next sign-in.','Sign in dengan email tidak lagi tertahan di “Signing in…”: kalau gagal atau tidak ada jawaban dalam 20 detik, panel menampilkan pesannya. Sign out lebih cepat dan tidak lagi menghalangi sign in berikutnya.')],
@@ -348,11 +350,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.38','Add-in v2.38')}</span><span class="meta">{T('Updated 18 Nov 2026','Diperbarui 18 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.39','Add-in v2.39')}</span><span class="meta">{T('Updated 18 Nov 2026','Diperbarui 18 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.38.','Slideshot untuk 24Slides. Add-in v2.38.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.39.','Slideshot untuk 24Slides. Add-in v2.39.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)
