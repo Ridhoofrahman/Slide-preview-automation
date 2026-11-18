@@ -584,9 +584,9 @@
   .rv-delete-ic svg { width: 20px; height: 20px; }
   .rv-delete-ic:hover, .rv-delete-ic:focus-visible { background: #FFF1F1; border-color: transparent; }
 
-  /* ===== Review: white work area, banner tucked under the slide, header progress ===== */
-  .review .rv-main, .review .rv-work { background: #FFFFFF; }
-  .rv-stripwrap { background: linear-gradient(#FFFFFF 24px, transparent 24px); }
+  /* ===== Review: work area on the canvas colour (Figma 439:11252, background/accent/neutral) so white slides stand out ===== */
+  .review .rv-main, .review .rv-work { background: #F7F9FC; }
+  .rv-stripwrap { background: linear-gradient(#F7F9FC 24px, transparent 24px); }
   .rv-titlewrap { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
   .rv-titlewrap .rv-name { flex: 0 1 auto; }
   .rv-divider { flex: none; width: 1px; height: 16px; background: #DDE4EE; margin: 0 4px 0 0; }
@@ -664,9 +664,9 @@
   .bd-team { padding: 2px 8px; margin-right: 6px; border-radius: 999px; background: #EEF4FF; color: #1C43A5; font-size: 12px; line-height: 16px; font-weight: 500; }
   .bd-tag.tagteam { background: #F0EBFC; color: #4A2999; }
 
-  /* Slide list panel (Figma: Slide list panel) — light canvas fill with a thin outline, 133px thumbnails */
-  .review .rv-strip { background: #F7F9FC; border: 1px solid #DDE4EE; border-radius: 12px; padding: 0 4px; }
-  .review .rv-rail { background: #F7F9FC; padding: 8px; gap: 4px; border-radius: 12px; }
+  /* Slide list panel (Figma: Slide list panel) — background/neutral/active fill with outline/neutral, 133px thumbnails */
+  .review .rv-strip { background: #DDE4EE; border: 1px solid #DDE4EE; border-radius: 12px; padding: 0 4px; }
+  .review .rv-rail { background: #DDE4EE; padding: 8px; gap: 4px; border-radius: 12px; }
   .review .rv-scroll { color: #454C63; }
   .review .rv-thumb { padding: 2px; gap: 4px; border: 0; border-radius: 6px; } /* inside stroke, like Figma */
   .review .rv-thumb:hover { background: #EEF2F8; }
