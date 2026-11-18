@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compile Lab</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F6F7F9;
+    --surface: #FFFFFF;
+    --title: #1A1F2E;
+    --body: #454C63;
+    --subtle: #6B7489;
+    --line: #DDE4EE;
+    --brand: #2557D4;
+    --brand-dark: #1C43A5;
+    --brand-tint: #EDF2FF;
+    --success: #3F7A12;
+    --success-tint: #EEF8E6;
+    --danger: #B41A1A;
+    --danger-tint: #FDEDED;
+    --font: "Geist", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--body); font: 14px/20px var(--font); }
+  main { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  h1 { margin: 0; color: var(--title); font-size: 18px; line-height: 26px; font-weight: 600; }
+  .intro { margin: 2px 0 0; color: var(--subtle); font-size: 13px; line-height: 18px; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .step { display: flex; gap: 10px; align-items: baseline; }
+  .step-n { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-tint); color: var(--brand-dark); font-weight: 600; font-size: 12px; display: grid; place-items: center; transform: translateY(4px); }
+  h2 { margin: 0; color: var(--title); font-size: 15px; line-height: 22px; font-weight: 600; }
+  .hint { margin: 0; color: var(--subtle); font-size: 13px; line-height: 18px; }
+  button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid transparent; padding: 9px 14px; font-weight: 500; }
+  button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  button:disabled { cursor: not-allowed; opacity: .5; }
+  .primary { background: var(--brand); color: #fff; width: 100%; }
+  .primary:hover:not(:disabled) { background: var(--brand-dark); }
+  .ghost { background: transparent; color: var(--brand-dark); padding: 6px 8px; }
+  .ghost:hover:not(:disabled) { background: var(--brand-tint); }
+  .row-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .count { color: var(--subtle); font-size: 13px; }
+
+  .files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow: auto; }
+  .file { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+  .file.new { animation: arrive .35s ease-out; }
+  @keyframes arrive { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+  .thumb { flex: none; width: 64px; aspect-ratio: 16 / 9; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); object-fit: cover; display: grid; place-items: center; color: var(--subtle); font-size: 11px; }
+  .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .name { font-family: var(--mono); font-size: 12px; color: var(--title); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .size { font-size: 12px; color: var(--subtle); }
+  .open { flex: none; font-size: 12px; }
+
+  fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  legend { padding: 0; margin-bottom: 4px; color: var(--title); font-size: 13px; font-weight: 500; }
+  label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 18px; cursor: pointer; }
+  input { margin: 2px 0 0; accent-color: var(--brand); }
+
+  .progress { height: 6px; border-radius: 99px; background: var(--bg); overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: var(--brand); transition: width .2s; }
+  .status { margin: 0; font-size: 13px; line-height: 18px; padding: 8px 10px; border-radius: 8px; }
+  .status.ok { background: var(--success-tint); color: var(--success); }
+  .status.err { background: var(--danger-tint); color: var(--danger); }
+  .status.info { background: var(--brand-tint); color: var(--brand-dark); }
+  [hidden] { display: none !important; }
+  footer { display: flex; justify-content: space-between; align-items: center; color: var(--subtle); font-size: 12px; }
+  @media (prefers-reduced-motion: reduce) { .file.new { animation: none; } .progress > div { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Compile Lab</h1>
+    <p class="intro">Prototype. Split a deck into one file per slide, then compile those files back into one deck.</p>
+  </header>
+
+  <p id="support" class="status err" hidden></p>
+
+  <section aria-labelledby="split-title">
+    <div class="step"><span class="step-n">1</span><div>
+      <h2 id="split-title">Split this deck into files</h2>
+      <p class="hint">Open the deck you want to split, then click the button. Each slide becomes its own .pptx file, saved in this add-in.</p>
+    </div></div>
+    <button id="split" class="primary">Split into files</button>
+    <div id="split-progress" class="progress" hidden><div></div></div>
+    <p id="split-status" class="status" hidden></p>
+    <div class="row-actions" id="files-head" hidden>
+      <span class="count" id="files-count"></span>
+      <button id="shuffle" class="ghost" title="Mix up the order, like files arriving from different designers">Mix up order</button>
+    </div>
+    <ul id="files" class="files" aria-label="Saved slide files"></ul>
+  </section>
+
+  <section aria-labelledby="compile-title">
+    <div class="step"><span class="step-n">2</span><div>
+      <h2 id="compile-title">Compile into this presentation</h2>
+      <p class="hint">Open a new blank presentation, open Compile Lab there, then click Compile. Files are put back in slide order, whatever order they arrived in.</p>
+    </div></div>
+    <fieldset>
+      <legend>Slide look</legend>
+      <label><input type="radio" name="fmt" value="KeepSourceFormatting" checked> Keep each slide's own look</label>
+      <label><input type="radio" name="fmt" value="UseDestinationTheme"> Use this presentation's theme</label>
+    </fieldset>
+    <label><input type="checkbox" id="remove-first" checked> Remove the empty first slide of a new presentation</label>
+    <button id="compile" class="primary" disabled>Compile</button>
+    <div id="compile-progress" class="progress" hidden><div></div></div>
+    <p id="compile-status" class="status" hidden></p>
+  </section>
+
+  <footer>
+    <span id="api-info"></span>
+    <button id="clear" class="ghost">Clear saved files</button>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let parts = [];          // { n, name, base64, bytes, thumb }
+  let has18 = false;
+
+  /* ---------- storage (IndexedDB, shared between presentations) ---------- */
+  const DB = 'compile-lab', STORE = 'parts';
+  function db() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open(DB, 1);
+      r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'n' });
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+  }
+  async function tx(mode, fn) {
+    const d = await db();
+    return new Promise((res, rej) => {
+      const t = d.transaction(STORE, mode), s = t.objectStore(STORE);
+      const out = fn(s);
+      t.oncomplete = () => res(out && out.result !== undefined ? out.result : undefined);
+      t.onerror = () => rej(t.error);
+    });
+  }
+  const loadAll = () => tx('readonly', (s) => s.getAll());
+  const saveAll = (list) => tx('readwrite', (s) => { s.clear(); list.forEach((p) => s.put(p)); });
+  const clearAll = () => tx('readwrite', (s) => s.clear());
+
+  /* ---------- ui helpers ---------- */
+  function status(el, kind, text) {
+    el.hidden = !text; el.className = 'status ' + kind; el.textContent = text || '';
+  }
+  function progress(el, done, total) {
+    el.hidden = total === 0; el.firstElementChild.style.width = total ? (100 * done / total) + '%' : '0';
+  }
+  const kb = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  const fileName = (n) => 'slide-' + String(n).padStart(2, '0') + '.pptx';
+
+  function fileRow(p, animate) {
+    const li = document.createElement('li');
+    li.className = 'file' + (animate ? ' new' : '');
+    const t = p.thumb ? Object.assign(document.createElement('img'), { src: 'data:image/png;base64,' + p.thumb, alt: '', className: 'thumb' })
+                      : Object.assign(document.createElement('div'), { className: 'thumb', textContent: p.n });
+    const meta = document.createElement('div'); meta.className = 'meta';
+    meta.innerHTML = '<span class="name"></span><span class="size"></span>';
+    meta.children[0].textContent = p.name;
+    meta.children[1].textContent = kb(p.bytes);
+    const open = Object.assign(document.createElement('button'), { className: 'ghost open', textContent: 'Open' });
+    open.title = 'Open ' + p.name + ' as its own presentation';
+    open.onclick = () => openAsFile(p);
+    li.append(t, meta, open);
+    return li;
+  }
+  function renderFiles() {
+    const ul = $('files'); ul.replaceChildren(...parts.map((p) => fileRow(p, false)));
+    $('files-head').hidden = parts.length === 0;
+    $('files-count').textContent = parts.length + (parts.length === 1 ? ' file saved' : ' files saved');
+    $('compile').disabled = parts.length === 0;
+  }
+
+  /* ---------- 1. split ---------- */
+  async function split() {
+    if (!has18) return;
+    $('split').disabled = true; status($('split-status'), '', '');
+    const ul = $('files'); ul.replaceChildren(); parts = []; renderFiles();
+    try {
+      await PowerPoint.run(async (ctx) => {
+        const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
+        const total = slides.items.length;
+        for (let i = 0; i < total; i++) {
+          const s = slides.items[i];
+          const b64 = s.exportAsBase64(); await ctx.sync();
+          let thumb = null;
+          try { const img = s.getImageAsBase64({ width: 256 }); await ctx.sync(); thumb = img.value; } catch (e) { /* thumbnails are optional */ }
+          const p = { n: i + 1, name: fileName(i + 1), base64: b64.value, bytes: Math.round(b64.value.length * 3 / 4), thumb };
+          parts.push(p); ul.append(fileRow(p, true)); ul.lastChild.scrollIntoView({ block: 'nearest' });
+          progress($('split-progress'), i + 1, total);
+        }
+      });
+      await saveAll(parts); renderFiles();
+      const total = parts.reduce((a, p) => a + p.bytes, 0);
+      status($('split-status'), 'ok', 'Split into ' + parts.length + ' files (' + kb(total) + '). Now open a new presentation and compile.');
+    } catch (e) {
+      status($('split-status'), 'err', 'Split stopped: ' + (e.message || e));
+    } finally { $('split').disabled = false; setTimeout(() => progress($('split-progress'), 0, 0), 800); }
+  }
+
+  /* ---------- open one file as its own presentation ---------- */
+  function openAsFile(p) {
+    try { PowerPoint.createPresentation(p.base64); }
+    catch (e) { status($('split-status'), 'err', 'Could not open ' + p.name + ': ' + (e.message || e)); }
+  }
+
+  /* ---------- mix up order (simulate files arriving out of order) ---------- */
+  function shuffle() {
+    for (let i = parts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [parts[i], parts[j]] = [parts[j], parts[i]]; }
+    renderFiles(); status($('split-status'), 'info', 'Order mixed up. Compile still puts slides back in slide order.');
+  }
+
+  /* ---------- 2. compile ---------- */
+  async function compile() {
+    const ordered = [...parts].sort((a, b) => a.n - b.n);
+    const formatting = document.querySelector('input[name="fmt"]:checked').value;
+    const removeFirst = $('remove-first').checked;
+    $('compile').disabled = true; status($('compile-status'), '', '');
+    const t0 = performance.now();
+    try {
+      await PowerPoint.run(async (ctx) => {
+        const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
+        const starterId = removeFirst && slides.items.length === 1 ? slides.items[0].id : null;
+        for (let i = 0; i < ordered.length; i++) {
+          slides.load('items/id'); await ctx.sync();
+          const last = slides.items[slides.items.length - 1];
+          const opts = { formatting };
+          if (last) opts.targetSlideId = last.id;
+          ctx.presentation.insertSlidesFromBase64(ordered[i].base64, opts);
+          await ctx.sync();
+          progress($('compile-progress'), i + 1, ordered.length);
+        }
+        if (starterId) { ctx.presentation.slides.getItem(starterId).delete(); await ctx.sync(); }
+      });
+      const secs = ((performance.now() - t0) / 1000).toFixed(1);
+      status($('compile-status'), 'ok', 'Compiled ' + ordered.length + ' slides in ' + secs + ' s.');
+    } catch (e) {
+      status($('compile-status'), 'err', 'Compile stopped: ' + (e.message || e));
+    } finally { $('compile').disabled = parts.length === 0; setTimeout(() => progress($('compile-progress'), 0, 0), 800); }
+  }
+
+  /* ---------- start ---------- */
+  Office.onReady(async (info) => {
+    if (info.host !== Office.HostType.PowerPoint) {
+      status($('support'), 'err', 'Open Compile Lab inside PowerPoint.'); return;
+    }
+    const req = Office.context.requirements;
+    has18 = req.isSetSupported('PowerPointApi', '1.8');
+    const has12 = req.isSetSupported('PowerPointApi', '1.2');
+    $('api-info').textContent = 'PowerPointApi 1.8: ' + (has18 ? 'yes' : 'no');
+    if (!has18) {
+      $('split').disabled = true;
+      status($('support'), 'err', 'This PowerPoint version can\'t export single slides (needs PowerPointApi 1.8). Update PowerPoint, or test splitting on another computer. Compiling saved files may still work here.');
+    }
+    if (!has12) $('compile').title = 'Needs PowerPointApi 1.2';
+    try { parts = (await loadAll()).sort((a, b) => a.n - b.n); } catch (e) { parts = []; }
+    renderFiles();
+    if (parts.length) status($('split-status'), 'info', parts.length + ' files saved from an earlier split. Compile them here, or split again.');
+  });
+
+  $('split').onclick = split;
+  $('compile').onclick = compile;
+  $('shuffle').onclick = shuffle;
+  $('clear').onclick = async () => { await clearAll(); parts = []; renderFiles(); status($('split-status'), 'info', 'Saved files cleared.'); status($('compile-status'), '', ''); };
+})();
+</script>
+</body>
+</html>

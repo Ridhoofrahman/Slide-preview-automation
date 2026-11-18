@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>692f0c9c-69c2-4b13-bddc-494439c729d9</Id>
+  <Version>0.1.0.0</Version>
+  <ProviderName>24Slides</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Compile Lab"/>
+  <Description DefaultValue="Prototype: split a deck into one file per slide, then compile them back into one deck."/>
+  <IconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/icon-64.png"/>
+  <SupportUrl DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/taskpane.html"/>
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/taskpane.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="CompileLab.Group">
+                <Label resid="CompileLab.GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="CompileLab.Icon16"/>
+                  <bt:Image size="32" resid="CompileLab.Icon32"/>
+                  <bt:Image size="80" resid="CompileLab.Icon80"/>
+                </Icon>
+                <Control xsi:type="Button" id="CompileLab.Open">
+                  <Label resid="CompileLab.ButtonLabel"/>
+                  <Supertip>
+                    <Title resid="CompileLab.ButtonLabel"/>
+                    <Description resid="CompileLab.ButtonTip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="CompileLab.Icon16"/>
+                    <bt:Image size="32" resid="CompileLab.Icon32"/>
+                    <bt:Image size="80" resid="CompileLab.Icon80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>CompileLabPane</TaskpaneId>
+                    <SourceLocation resid="CompileLab.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="CompileLab.Icon16" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/icon-16.png"/>
+        <bt:Image id="CompileLab.Icon32" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/icon-32.png"/>
+        <bt:Image id="CompileLab.Icon80" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="CompileLab.Url" DefaultValue="https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/taskpane.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="CompileLab.GroupLabel" DefaultValue="Compile Lab"/>
+        <bt:String id="CompileLab.ButtonLabel" DefaultValue="Compile Lab"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="CompileLab.ButtonTip" DefaultValue="Split this deck into one file per slide, or compile saved files into this presentation."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
