@@ -2,7 +2,7 @@
 -- public.dm_allowlist is the source of truth. Triggers keep two things in sync with it:
 --   - public.design_managers (what both apps and is_dm() read): a listed email is a DM; removed from the list = no longer a DM
 --   - public.profiles (name + team): a listed DM gets the team from the list and never sees the team step
--- It works for accounts that exist now and for accounts created later (the moment an admin creates the account).
+-- It works for accounts that exist now and for accounts created later (at their first Slack sign-in, see signup-hook.sql).
 -- Manual DMs (rows in design_managers not from this list, e.g. the admin) are left alone.
 -- Edit the list here in the SQL Editor (no client writes). Run after teams-table.sql.
 

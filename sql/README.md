@@ -12,6 +12,7 @@
 | `profiles-team-fk.sql` | Lists `profiles.team` values not in `teams`, then adds the foreign key | **To run after** `teams-table.sql` and cleaning the list (already part of the canonical file) |
 | `login-handoffs.sql` | `login_handoffs` for the add-in's Slack sign-in through the system browser (Edge Function `login-handoff` only) | **To run** (already part of the canonical file) |
 | `dm-allowlist.sql` | `dm_allowlist` (email, name, team): the 24 DMs and the team each leads; triggers keep `design_managers` and `profiles.team` in sync, also for accounts created later | **To run** after `teams-table.sql` (already part of the canonical file) |
+| `signup-hook.sql` | `hook_slideshot_signup`: the Auth hook "Before User Created" that lets only @24slides.com emails sign up (first Slack sign-in creates the account) | Run (already part of the canonical file); hook enabled in Authentication → Hooks |
 | `teams-setup.sql` | A strict per-team RLS design | **Parked, do not run** unless stricter security is wanted |
 
 Add, move or remove a DM later (the list keeps `design_managers` and `profiles.team` in sync):

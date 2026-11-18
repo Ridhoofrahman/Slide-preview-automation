@@ -1821,13 +1821,13 @@ async function signIn() {
   if (!team) { showNameStep(user, false, null); return; }
   enter(user, team);
 }
-// ---- Sign in with Slack (Supabase provider slack_oidc). Sign-ups are off: only accounts an admin created can sign in.
+// ---- Sign in with Slack (Supabase provider slack_oidc). The first sign-in creates the account; the Before User Created hook allows @24slides.com only.
 const SLACK_ERR = {
-  notSetUp: "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you.",
+  notSetUp: "Sign in with your 24Slides Slack account.",
   generic: "Couldn't sign in with Slack. Please try again."
 };
 // Never show raw provider text: map it to one of the two messages
-const slackErrorText = (msg) => /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
+const slackErrorText = (msg) => /24slides account|signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
 // An OAuth error comes back in the query or the hash (?error=…&error_code=…&error_description=…)
 function readAuthError() {
   const q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.replace(/^#/, ""));

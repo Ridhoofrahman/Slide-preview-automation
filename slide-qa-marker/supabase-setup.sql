@@ -326,3 +326,26 @@ order by has_account, l.team;
 --   Add a DM:      insert into public.dm_allowlist (email, name, team) values ('new.dm@24slides.com', 'Full Name', 'Cosmic');
 --   Change team:   update public.dm_allowlist set team = 'Alpha' where email = 'new.dm@24slides.com';
 --   Remove a DM:   delete from public.dm_allowlist where email = 'new.dm@24slides.com';
+
+-- 15. Sign-up through Slack, @24slides.com only (Auth hook "Before User Created"; see sql/signup-hook.sql for the dashboard steps)
+CREATE OR REPLACE FUNCTION public.hook_slideshot_signup(event jsonb)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+AS $function$
+declare
+  domain text := lower(split_part(event->'user'->>'email', '@', 2));
+begin
+  if domain = any (array['24slides.com']) then
+    return '{}'::jsonb;                          -- boleh mendaftar
+  end if;
+  return jsonb_build_object('error', jsonb_build_object(
+    'http_code', 403,
+    'message', 'Only 24Slides accounts can join Slideshot.'));
+end;
+$function$
+;
+
+-- Permissions recommended by Supabase for Auth hooks (not part of pg_get_functiondef; safe to run again):
+-- only the Auth service may call the hook, not signed-in users or the public API.
+grant execute on function public.hook_slideshot_signup(jsonb) to supabase_auth_admin;
+revoke execute on function public.hook_slideshot_signup(jsonb) from authenticated, anon, public;

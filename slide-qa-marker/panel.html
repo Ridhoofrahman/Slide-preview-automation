@@ -524,7 +524,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.35";
+const APP_VERSION = "2.36";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1271,12 +1271,12 @@ function setLoginMode(mode) {
 // The panel makes a one-time code, opens auth-slack.html?code=… in the browser, and polls the Edge Function
 // `login-handoff` until the browser has parked the session under that code (taken once, then deleted).
 const SLACK_ERR = {
-  notSetUp: "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you.",
+  notSetUp: "Sign in with your 24Slides Slack account.",
   generic: "Couldn't sign in with Slack. Please try again.",
   timeout: "Slack sign-in timed out. Please try again."
 };
 // Never show raw provider text: map it to one of the two messages
-const slackErrorText = (msg) => /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
+const slackErrorText = (msg) => /24slides account|signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(msg || "")) ? SLACK_ERR.notSetUp : SLACK_ERR.generic;
 const HANDOFF = { every: 2000, max: 3 * 60 * 1000 };
 function slackBusy(on) {
   const b = $("slackBtn"); b.disabled = on; $("slackLabel").textContent = on ? "Opening your browser…" : "Continue with Slack";

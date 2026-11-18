@@ -51,7 +51,7 @@
       method: "POST", headers: { "Content-Type": "application/json", apikey: cfg.SUPABASE_ANON_KEY }, body: JSON.stringify(body)
     }).then(function (r) { return r.json().catch(function () { return { status: "error" }; }); });
   }
-  var notSetUp = function (m) { return /signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(m || "")); };
+  var notSetUp = function (m) { return /24slides account|signup|sign-up|not allowed|not found|not set up|user.*(missing|does not exist)/i.test(String(m || "")); };
   var again = "Go back to PowerPoint and click Continue with Slack again.";
 
   if (!window.supabase || !cfg.SUPABASE_URL) { show("Couldn't load Slideshot", "Close this tab and try again.", true); return; }
@@ -78,7 +78,7 @@
     var raw = [err, get("error_code"), get("error_description")].filter(Boolean).join(" ");
     try { history.replaceState(null, "", location.pathname); } catch (e) {}
     handoff({ action: "fail", code: code2, error: raw }).catch(function () {});
-    show("Couldn't sign in with Slack", notSetUp(raw) ? "Your Slack account isn't set up in Slideshot yet. Ask your admin to add you." : again, true);
+    show("Couldn't sign in with Slack", notSetUp(raw) ? "Sign in with your 24Slides Slack account." : again, true);
     return;
   }
   sb.auth.getSession().then(function (r) {
