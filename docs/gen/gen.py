@@ -288,6 +288,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.38',('Signing in with email no longer gets stuck on “Signing in…”: if the sign-in fails or gets no answer within 20 seconds, the panel says so. Sign out is quicker and can’t block the next sign-in.','Sign in dengan email tidak lagi tertahan di “Signing in…”: kalau gagal atau tidak ada jawaban dalam 20 detik, panel menampilkan pesannya. Sign out lebih cepat dan tidak lagi menghalangi sign in berikutnya.')],
 ['v2.37',('Only designers and DMs can use Slideshot. Designers come from a designer list (110, from Inner Platform) and get their team automatically; other 24Slides accounts are signed out with “Slideshot is for 24Slides designers and DMs.”','Hanya designer dan DM yang bisa memakai Slideshot. Designer berasal dari daftar designer (110, dari Inner Platform) dan otomatis mendapat timnya; akun 24Slides lain dikeluarkan dengan pesan “Slideshot is for 24Slides designers and DMs.”')],
 ['v2.36',('Your first Slack sign-in now creates your account; an admin no longer has to. Only @24slides.com accounts are accepted; any other account sees “Sign in with your 24Slides Slack account.”','Sign in Slack pertama sekarang membuat akunmu sendiri; admin tidak perlu membuatkannya lagi. Hanya akun @24slides.com yang diterima; akun lain melihat “Sign in with your 24Slides Slack account.”')],
 ['Database',('DM list: the 24 Design Managers and the team each one leads are set in the database (dm_allowlist). They get Dashboard access and their team from their first sign-in, without choosing anything.','Daftar DM: 24 Design Manager dan tim yang dipimpin masing-masing diatur di database (dm_allowlist). Mereka mendapat akses Dashboard dan timnya sejak sign in pertama, tanpa memilih apa pun.')],
@@ -344,11 +345,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.37','Add-in v2.37')}</span><span class="meta">{T('Updated 18 Nov 2026','Diperbarui 18 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.38','Add-in v2.38')}</span><span class="meta">{T('Updated 18 Nov 2026','Diperbarui 18 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.37.','Slideshot untuk 24Slides. Add-in v2.37.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.38.','Slideshot untuk 24Slides. Add-in v2.38.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)

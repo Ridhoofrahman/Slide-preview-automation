@@ -524,7 +524,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.37";
+const APP_VERSION = "2.38";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1106,6 +1106,12 @@ function setFieldError(id, msg) {
   $(id + "Error").textContent = msg || "";
   $(id).setAttribute("aria-invalid", msg ? "true" : "false");
 }
+const SIGNIN_TIMEOUT = 20000;   // ms
+// Sign out of this panel only (no network call), and never wait more than 3 s: a stuck sign-out would hold
+// supabase-js's auth lock and make the next sign-in fail.
+function signOutSafe() {
+  return Promise.race([S.sb.auth.signOut({ scope: "local" }).catch((e) => console.warn("Slideshot sign-out:", e)), new Promise((ok) => setTimeout(ok, 3000))]);
+}
 async function signIn() {
   const email = $("email").value.trim(), password = $("password").value, name = $("nameInput").value.trim();
   setFieldError("email", ""); setFieldError("password", ""); say($("loginMsg"), "");
@@ -1115,8 +1121,20 @@ async function signIn() {
   if (!password) { setFieldError("password", "Enter your password"); ok = false; }
   if (!ok) return;
   const btn = $("signInBtn"); btn.disabled = true; btn.textContent = "Signing in…";
-  const { data, error } = await S.sb.auth.signInWithPassword({ email: email, password: password });
+  // Never leave the button on "Signing in…": supabase-js can throw (e.g. its auth lock times out) or never answer
+  let data = null, error = null;
+  try {
+    const res = await Promise.race([
+      S.sb.auth.signInWithPassword({ email: email, password: password }),
+      new Promise((_, no) => setTimeout(() => no(new Error("timeout")), SIGNIN_TIMEOUT))
+    ]);
+    data = res.data; error = res.error;
+  } catch (e) {
+    console.warn("Slideshot sign-in failed:", e);
+    error = { message: e && e.message === "timeout" ? "" : String((e && e.message) || e), failed: true };
+  }
   btn.disabled = false; btn.textContent = "Sign in";
+  if (error && error.failed) { say($("loginMsg"), "Couldn't sign in. Check your connection and try again." + (error.message ? " (" + error.message + ")" : ""), "err"); return; }
   if (error) {
     if (/invalid login credentials/i.test(error.message)) setFieldError("password", "Email or password is incorrect. Try again.");
     else say($("loginMsg"), "Couldn't sign in: " + error.message, "err");
@@ -1349,7 +1367,7 @@ async function isMember() {
 const NO_ACCESS = "Slideshot is for 24Slides designers and DMs. If you are one, ask your DM to get you added.";
 // After any sign-in: the team is needed once (Slack doesn't know it)
 async function afterSignIn(user) {
-  if (!(await isMember())) { await S.sb.auth.signOut(); showLogin(); say($("slackMsg"), NO_ACCESS, "err"); return; }
+  if (!(await isMember())) { await signOutSafe(); showLogin(); say($("slackMsg"), NO_ACCESS, "err"); return; }
   const team = await profileTeam(user);
   if (team) { say($("slackMsg"), ""); enterApp(user, team); return; }
   S.pendingUser = user; showLogin("team");
@@ -1419,7 +1437,7 @@ Office.onReady(async (info) => {
   try { S.summaryOpen = localStorage.getItem("qa.summaryOpen") === "1"; } catch (e) {}
   $("summaryToggle").onclick = () => { S.summaryOpen = !S.summaryOpen; try { localStorage.setItem("qa.summaryOpen", S.summaryOpen ? "1" : "0"); } catch (e) {} render(); };
   document.querySelectorAll(".foot-top").forEach((b) => { b.onclick = () => setFootOpen(!S.footOpen); });
-  document.querySelectorAll(".foot-signout").forEach((b) => { b.onclick = async () => { setFootOpen(false); await S.sb.auth.signOut(); showLogin(); }; });
+  document.querySelectorAll(".foot-signout").forEach((b) => { b.onclick = async () => { setFootOpen(false); await signOutSafe(); showLogin(); }; });
   hashAsYouType($("projectName"));
   $("projectName").addEventListener("change", (e) => {
     const v = canonicalOrder(e.target.value);
