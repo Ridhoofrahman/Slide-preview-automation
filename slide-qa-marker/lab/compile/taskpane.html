@@ -9,19 +9,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <style>
   :root {
-    --bg: #F6F7F9;
-    --surface: #FFFFFF;
-    --title: #1A1F2E;
-    --body: #454C63;
-    --subtle: #6B7489;
-    --line: #DDE4EE;
-    --brand: #2557D4;
-    --brand-dark: #1C43A5;
-    --brand-tint: #EDF2FF;
-    --success: #3F7A12;
-    --success-tint: #EEF8E6;
-    --danger: #B41A1A;
-    --danger-tint: #FDEDED;
+    --bg: #F6F7F9; --surface: #FFFFFF; --title: #1A1F2E; --body: #454C63; --subtle: #6B7489;
+    --line: #DDE4EE; --brand: #2557D4; --brand-dark: #1C43A5; --brand-tint: #EDF2FF;
+    --success: #3F7A12; --success-tint: #EEF8E6; --danger: #B41A1A; --danger-tint: #FDEDED;
     --font: "Geist", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --mono: "Geist Mono", ui-monospace, "SF Mono", Consolas, monospace;
   }
@@ -35,25 +25,32 @@
   .step-n { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-tint); color: var(--brand-dark); font-weight: 600; font-size: 12px; display: grid; place-items: center; transform: translateY(4px); }
   h2 { margin: 0; color: var(--title); font-size: 15px; line-height: 22px; font-weight: 600; }
   .hint { margin: 0; color: var(--subtle); font-size: 13px; line-height: 18px; }
+  .source { margin: 0; font-size: 13px; }
+  .source b { color: var(--title); font-weight: 500; }
   button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid transparent; padding: 9px 14px; font-weight: 500; }
   button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-  button:disabled { cursor: not-allowed; opacity: .5; }
+  button:disabled { cursor: not-allowed; opacity: .45; }
   .primary { background: var(--brand); color: #fff; width: 100%; }
   .primary:hover:not(:disabled) { background: var(--brand-dark); }
+  .secondary { background: var(--surface); color: var(--brand-dark); border-color: var(--line); width: 100%; }
+  .secondary:hover:not(:disabled) { background: var(--brand-tint); }
   .ghost { background: transparent; color: var(--brand-dark); padding: 6px 8px; }
   .ghost:hover:not(:disabled) { background: var(--brand-tint); }
-  .row-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .count { color: var(--subtle); font-size: 13px; }
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 
-  .files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow: auto; }
-  .file { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
-  .file.new { animation: arrive .35s ease-out; }
+  .pool { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 380px; overflow: auto; }
+  .item { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+  .item.new { animation: arrive .35s ease-out; }
   @keyframes arrive { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
-  .thumb { flex: none; width: 64px; aspect-ratio: 16 / 9; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); object-fit: cover; display: grid; place-items: center; color: var(--subtle); font-size: 11px; }
+  .pos { flex: none; width: 18px; text-align: right; font-size: 12px; color: var(--subtle); }
+  .thumb { flex: none; width: 60px; aspect-ratio: 16 / 9; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); object-fit: cover; display: grid; place-items: center; color: var(--subtle); font-size: 11px; }
   .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-  .name { font-family: var(--mono); font-size: 12px; color: var(--title); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .size { font-size: 12px; color: var(--subtle); }
-  .open { flex: none; font-size: 12px; }
+  .name { font-size: 13px; font-weight: 500; color: var(--title); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .size { font-size: 12px; color: var(--subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tools { flex: none; display: flex; }
+  .tool { background: transparent; border: 0; padding: 4px 6px; color: var(--subtle); font-size: 13px; border-radius: 6px; }
+  .tool:hover:not(:disabled) { background: var(--bg); color: var(--title); }
+  .empty { margin: 0; padding: 14px; text-align: center; color: var(--subtle); font-size: 13px; border: 1px dashed var(--line); border-radius: 8px; }
 
   fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   legend { padding: 0; margin-bottom: 4px; color: var(--title); font-size: 13px; font-weight: 500; }
@@ -67,68 +64,77 @@
   .status.err { background: var(--danger-tint); color: var(--danger); }
   .status.info { background: var(--brand-tint); color: var(--brand-dark); }
   [hidden] { display: none !important; }
-  footer { display: flex; justify-content: space-between; align-items: center; color: var(--subtle); font-size: 12px; }
-  @media (prefers-reduced-motion: reduce) { .file.new { animation: none; } .progress > div { transition: none; } }
+  footer { color: var(--subtle); font-size: 12px; }
+  @media (prefers-reduced-motion: reduce) { .item.new { animation: none; } .progress > div { transition: none; } }
 </style>
 </head>
 <body>
 <main>
   <header>
     <h1>Compile Lab</h1>
-    <p class="intro">Prototype. Split a deck into one file per slide, then compile those files back into one deck.</p>
+    <p class="intro">Prototype. Send slides from any file into one shared pool, then compile the pool into the file you have open.</p>
   </header>
 
   <p id="support" class="status err" hidden></p>
 
-  <section aria-labelledby="split-title">
+  <section aria-labelledby="send-title">
     <div class="step"><span class="step-n">1</span><div>
-      <h2 id="split-title">Split this deck into files</h2>
-      <p class="hint">Open the deck you want to split, then click the button. Each slide becomes its own .pptx file, saved in this add-in.</p>
+      <h2 id="send-title">Send slides to the pool</h2>
+      <p class="hint">Select slides in the thumbnail list on the left (Cmd or Ctrl-click to pick several), then send them. Repeat in other files.</p>
     </div></div>
-    <button id="split" class="primary">Split into files</button>
-    <div id="split-progress" class="progress" hidden><div></div></div>
-    <p id="split-status" class="status" hidden></p>
-    <div class="row-actions" id="files-head" hidden>
-      <span class="count" id="files-count"></span>
-      <button id="shuffle" class="ghost" title="Mix up the order, like files arriving from different designers">Mix up order</button>
+    <p class="source">From: <b id="source-name">this file</b></p>
+    <button id="send-selected" class="primary">Send selected slides</button>
+    <button id="send-all" class="secondary">Send all slides in this file</button>
+    <div id="send-progress" class="progress" hidden><div></div></div>
+    <p id="send-status" class="status" hidden></p>
+  </section>
+
+  <section aria-labelledby="pool-title">
+    <div class="head">
+      <h2 id="pool-title">Pool</h2>
+      <button id="clear" class="ghost" disabled>Clear pool</button>
     </div>
-    <ul id="files" class="files" aria-label="Saved slide files"></ul>
+    <p class="hint" id="pool-hint">Slides are compiled from top to bottom. Use the arrows to change the order.</p>
+    <ul id="pool" class="pool" aria-label="Slides in the pool"></ul>
+    <p id="pool-empty" class="empty">No slides yet. Send some from step 1.</p>
   </section>
 
   <section aria-labelledby="compile-title">
     <div class="step"><span class="step-n">2</span><div>
-      <h2 id="compile-title">Compile into this presentation</h2>
-      <p class="hint">Open a new blank presentation, open Compile Lab there, then click Compile. Files are put back in slide order, whatever order they arrived in.</p>
+      <h2 id="compile-title">Compile into this file</h2>
+      <p class="hint">Open the file that should receive the slides (a new blank one works too), open Compile Lab there, then compile. Slides are added at the end.</p>
     </div></div>
     <fieldset>
       <legend>Slide look</legend>
       <label><input type="radio" name="fmt" value="KeepSourceFormatting" checked> Keep each slide's own look</label>
-      <label><input type="radio" name="fmt" value="UseDestinationTheme"> Use this presentation's theme</label>
+      <label><input type="radio" name="fmt" value="UseDestinationTheme"> Use this file's theme</label>
     </fieldset>
-    <label><input type="checkbox" id="remove-first" checked> Remove the empty first slide of a new presentation</label>
+    <label><input type="checkbox" id="remove-first" checked> If this file only has one empty slide, remove it</label>
     <button id="compile" class="primary" disabled>Compile</button>
     <div id="compile-progress" class="progress" hidden><div></div></div>
     <p id="compile-status" class="status" hidden></p>
   </section>
 
-  <footer>
-    <span id="api-info"></span>
-    <button id="clear" class="ghost">Clear saved files</button>
-  </footer>
+  <footer id="api-info"></footer>
 </main>
 
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
-  let parts = [];          // { n, name, base64, bytes, thumb }
-  let has18 = false;
+  let pool = [];      // { k, order, source, slideNo, base64, bytes, thumb, sentAt }
+  let source = 'Untitled';
+  let canSend = false;
 
-  /* ---------- storage (IndexedDB, shared between presentations) ---------- */
-  const DB = 'compile-lab', STORE = 'parts';
+  /* ---------- storage: one shared pool for every file on this computer ---------- */
+  const DB = 'compile-lab', STORE = 'pool';
   function db() {
     return new Promise((res, rej) => {
-      const r = indexedDB.open(DB, 1);
-      r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'n' });
+      const r = indexedDB.open(DB, 2);
+      r.onupgradeneeded = () => {
+        const d = r.result;
+        if (d.objectStoreNames.contains('parts')) d.deleteObjectStore('parts');
+        if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath: 'k' });
+      };
       r.onsuccess = () => res(r.result);
       r.onerror = () => rej(r.error);
     });
@@ -142,84 +148,111 @@
       t.onerror = () => rej(t.error);
     });
   }
-  const loadAll = () => tx('readonly', (s) => s.getAll());
-  const saveAll = (list) => tx('readwrite', (s) => { s.clear(); list.forEach((p) => s.put(p)); });
-  const clearAll = () => tx('readwrite', (s) => s.clear());
+  const loadPool = async () => ((await tx('readonly', (s) => s.getAll())) || []).sort((a, b) => a.order - b.order);
+  const putItems = (items) => tx('readwrite', (s) => items.forEach((p) => s.put(p)));
+  const deleteItem = (k) => tx('readwrite', (s) => s.delete(k));
+  const clearPool = () => tx('readwrite', (s) => s.clear());
 
   /* ---------- ui helpers ---------- */
-  function status(el, kind, text) {
-    el.hidden = !text; el.className = 'status ' + kind; el.textContent = text || '';
-  }
-  function progress(el, done, total) {
-    el.hidden = total === 0; el.firstElementChild.style.width = total ? (100 * done / total) + '%' : '0';
-  }
+  function status(el, kind, text) { el.hidden = !text; el.className = 'status ' + kind; el.textContent = text || ''; }
+  function progress(el, done, total) { el.hidden = total === 0; el.firstElementChild.style.width = total ? (100 * done / total) + '%' : '0'; }
   const kb = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
-  const fileName = (n) => 'slide-' + String(n).padStart(2, '0') + '.pptx';
 
-  function fileRow(p, animate) {
+  function row(p, i, animate) {
     const li = document.createElement('li');
-    li.className = 'file' + (animate ? ' new' : '');
+    li.className = 'item' + (animate ? ' new' : '');
+    const pos = Object.assign(document.createElement('span'), { className: 'pos', textContent: i + 1 });
     const t = p.thumb ? Object.assign(document.createElement('img'), { src: 'data:image/png;base64,' + p.thumb, alt: '', className: 'thumb' })
-                      : Object.assign(document.createElement('div'), { className: 'thumb', textContent: p.n });
+                      : Object.assign(document.createElement('div'), { className: 'thumb', textContent: p.slideNo });
     const meta = document.createElement('div'); meta.className = 'meta';
-    meta.innerHTML = '<span class="name"></span><span class="size"></span>';
-    meta.children[0].textContent = p.name;
-    meta.children[1].textContent = kb(p.bytes);
-    const open = Object.assign(document.createElement('button'), { className: 'ghost open', textContent: 'Open' });
-    open.title = 'Open ' + p.name + ' as its own presentation';
-    open.onclick = () => openAsFile(p);
-    li.append(t, meta, open);
+    const nm = Object.assign(document.createElement('span'), { className: 'name', textContent: 'Slide ' + p.slideNo });
+    const from = Object.assign(document.createElement('span'), { className: 'size', textContent: p.source + ' · ' + kb(p.bytes) });
+    from.title = p.source;
+    meta.append(nm, from);
+    const tools = document.createElement('div'); tools.className = 'tools';
+    const mk = (txt, label, fn, dis) => { const b = Object.assign(document.createElement('button'), { className: 'tool', textContent: txt, onclick: fn, disabled: !!dis }); b.setAttribute('aria-label', label); b.title = label; return b; };
+    tools.append(
+      mk('↑', 'Move up', () => move(i, -1), i === 0),
+      mk('↓', 'Move down', () => move(i, 1), i === pool.length - 1),
+      mk('↗', 'Open this slide as its own file', () => openAsFile(p)),
+      mk('✕', 'Remove from pool', () => removeAt(i))
+    );
+    li.append(pos, t, meta, tools);
     return li;
   }
-  function renderFiles() {
-    const ul = $('files'); ul.replaceChildren(...parts.map((p) => fileRow(p, false)));
-    $('files-head').hidden = parts.length === 0;
-    $('files-count').textContent = parts.length + (parts.length === 1 ? ' file saved' : ' files saved');
-    $('compile').disabled = parts.length === 0;
+  function render(newKeys = []) {
+    $('pool').replaceChildren(...pool.map((p, i) => row(p, i, newKeys.includes(p.k))));
+    $('pool-empty').hidden = pool.length > 0;
+    $('pool-hint').hidden = pool.length === 0;
+    $('clear').disabled = pool.length === 0;
+    $('compile').disabled = pool.length === 0;
+    $('pool-title').textContent = pool.length ? 'Pool · ' + pool.length + (pool.length === 1 ? ' slide' : ' slides') : 'Pool';
   }
 
-  /* ---------- 1. split ---------- */
-  async function split() {
-    if (!has18) return;
-    $('split').disabled = true; status($('split-status'), '', '');
-    const ul = $('files'); ul.replaceChildren(); parts = []; renderFiles();
+  /* ---------- 1. send slides ---------- */
+  async function send(onlySelected) {
+    if (!canSend) return;
+    $('send-selected').disabled = $('send-all').disabled = true;
+    status($('send-status'), '', '');
+    const added = [], replaced = [];
     try {
       await PowerPoint.run(async (ctx) => {
-        const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
-        const total = slides.items.length;
-        for (let i = 0; i < total; i++) {
-          const s = slides.items[i];
+        const all = ctx.presentation.slides; all.load('items/id'); await ctx.sync();
+        const indexOf = new Map(all.items.map((s, i) => [s.id, i]));
+        let picked = all.items;
+        if (onlySelected) {
+          const sel = ctx.presentation.getSelectedSlides(); sel.load('items/id'); await ctx.sync();
+          picked = sel.items.slice().sort((a, b) => indexOf.get(a.id) - indexOf.get(b.id));
+        }
+        if (!picked.length) throw new Error('No slides selected. Click a slide in the thumbnail list first.');
+        let nextOrder = pool.length ? Math.max(...pool.map((p) => p.order)) + 1 : 1;
+        for (let i = 0; i < picked.length; i++) {
+          const s = picked[i];
           const b64 = s.exportAsBase64(); await ctx.sync();
           let thumb = null;
-          try { const img = s.getImageAsBase64({ width: 256 }); await ctx.sync(); thumb = img.value; } catch (e) { /* thumbnails are optional */ }
-          const p = { n: i + 1, name: fileName(i + 1), base64: b64.value, bytes: Math.round(b64.value.length * 3 / 4), thumb };
-          parts.push(p); ul.append(fileRow(p, true)); ul.lastChild.scrollIntoView({ block: 'nearest' });
-          progress($('split-progress'), i + 1, total);
+          try { const img = s.getImageAsBase64({ width: 240 }); await ctx.sync(); thumb = img.value; } catch (e) { /* optional */ }
+          const k = source + '|' + s.id;
+          const existing = pool.find((p) => p.k === k);
+          const item = { k, order: existing ? existing.order : nextOrder++, source, slideNo: indexOf.get(s.id) + 1,
+                         base64: b64.value, bytes: Math.round(b64.value.length * 3 / 4), thumb, sentAt: Date.now() };
+          (existing ? replaced : added).push(item);
+          progress($('send-progress'), i + 1, picked.length);
         }
       });
-      await saveAll(parts); renderFiles();
-      const total = parts.reduce((a, p) => a + p.bytes, 0);
-      status($('split-status'), 'ok', 'Split into ' + parts.length + ' files (' + kb(total) + '). Now open a new presentation and compile.');
+      const items = [...added, ...replaced];
+      await putItems(items);
+      pool = await loadPool();
+      render(items.map((p) => p.k));
+      const parts = [];
+      if (added.length) parts.push(added.length + ' added');
+      if (replaced.length) parts.push(replaced.length + ' replaced with the newer version');
+      status($('send-status'), 'ok', 'Sent from ' + source + ': ' + parts.join(', ') + '.');
     } catch (e) {
-      status($('split-status'), 'err', 'Split stopped: ' + (e.message || e));
-    } finally { $('split').disabled = false; setTimeout(() => progress($('split-progress'), 0, 0), 800); }
+      status($('send-status'), 'err', e.message || String(e));
+    } finally {
+      $('send-selected').disabled = $('send-all').disabled = !canSend;
+      setTimeout(() => progress($('send-progress'), 0, 0), 800);
+    }
   }
 
-  /* ---------- open one file as its own presentation ---------- */
+  /* ---------- pool editing ---------- */
+  async function move(i, dir) {
+    const j = i + dir; if (j < 0 || j >= pool.length) return;
+    [pool[i].order, pool[j].order] = [pool[j].order, pool[i].order];
+    await putItems([pool[i], pool[j]]);
+    pool = await loadPool(); render();
+  }
+  async function removeAt(i) { await deleteItem(pool[i].k); pool = await loadPool(); render(); }
   function openAsFile(p) {
     try { PowerPoint.createPresentation(p.base64); }
-    catch (e) { status($('split-status'), 'err', 'Could not open ' + p.name + ': ' + (e.message || e)); }
-  }
-
-  /* ---------- mix up order (simulate files arriving out of order) ---------- */
-  function shuffle() {
-    for (let i = parts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [parts[i], parts[j]] = [parts[j], parts[i]]; }
-    renderFiles(); status($('split-status'), 'info', 'Order mixed up. Compile still puts slides back in slide order.');
+    catch (e) { status($('send-status'), 'err', 'Could not open this slide: ' + (e.message || e)); }
   }
 
   /* ---------- 2. compile ---------- */
   async function compile() {
-    const ordered = [...parts].sort((a, b) => a.n - b.n);
+    pool = await loadPool();   // pick up slides sent from other files since this panel opened
+    render();
+    if (!pool.length) return;
     const formatting = document.querySelector('input[name="fmt"]:checked').value;
     const removeFirst = $('remove-first').checked;
     $('compile').disabled = true; status($('compile-status'), '', '');
@@ -227,48 +260,63 @@
     try {
       await PowerPoint.run(async (ctx) => {
         const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
-        const starterId = removeFirst && slides.items.length === 1 ? slides.items[0].id : null;
-        for (let i = 0; i < ordered.length; i++) {
+        let starterId = null;
+        if (removeFirst && slides.items.length === 1) {
+          const shapes = slides.items[0].shapes; shapes.load('items/textFrame/textRange/text'); 
+          try { await ctx.sync(); const blank = shapes.items.every((sh) => { try { return !sh.textFrame.textRange.text.trim(); } catch (e) { return false; } }); if (blank) starterId = slides.items[0].id; }
+          catch (e) { starterId = null; /* can't verify it's empty, so keep it */ }
+        }
+        for (let i = 0; i < pool.length; i++) {
           slides.load('items/id'); await ctx.sync();
           const last = slides.items[slides.items.length - 1];
           const opts = { formatting };
           if (last) opts.targetSlideId = last.id;
-          ctx.presentation.insertSlidesFromBase64(ordered[i].base64, opts);
+          ctx.presentation.insertSlidesFromBase64(pool[i].base64, opts);
           await ctx.sync();
-          progress($('compile-progress'), i + 1, ordered.length);
+          progress($('compile-progress'), i + 1, pool.length);
         }
         if (starterId) { ctx.presentation.slides.getItem(starterId).delete(); await ctx.sync(); }
       });
       const secs = ((performance.now() - t0) / 1000).toFixed(1);
-      status($('compile-status'), 'ok', 'Compiled ' + ordered.length + ' slides in ' + secs + ' s.');
+      const sources = [...new Set(pool.map((p) => p.source))].length;
+      status($('compile-status'), 'ok', 'Compiled ' + pool.length + ' slides from ' + sources + (sources === 1 ? ' file' : ' files') + ' in ' + secs + ' s.');
     } catch (e) {
       status($('compile-status'), 'err', 'Compile stopped: ' + (e.message || e));
-    } finally { $('compile').disabled = parts.length === 0; setTimeout(() => progress($('compile-progress'), 0, 0), 800); }
+    } finally { $('compile').disabled = pool.length === 0; setTimeout(() => progress($('compile-progress'), 0, 0), 800); }
   }
 
   /* ---------- start ---------- */
+  function fileLabel() {
+    const url = (Office.context.document && Office.context.document.url) || '';
+    const base = decodeURIComponent(url.split(/[\\/]/).pop() || '').replace(/\?.*$/, '');
+    return base || 'Untitled';
+  }
+
   Office.onReady(async (info) => {
-    if (info.host !== Office.HostType.PowerPoint) {
-      status($('support'), 'err', 'Open Compile Lab inside PowerPoint.'); return;
-    }
+    if (info.host !== Office.HostType.PowerPoint) { status($('support'), 'err', 'Open Compile Lab inside PowerPoint.'); return; }
     const req = Office.context.requirements;
-    has18 = req.isSetSupported('PowerPointApi', '1.8');
-    const has12 = req.isSetSupported('PowerPointApi', '1.2');
-    $('api-info').textContent = 'PowerPointApi 1.8: ' + (has18 ? 'yes' : 'no');
-    if (!has18) {
-      $('split').disabled = true;
-      status($('support'), 'err', 'This PowerPoint version can\'t export single slides (needs PowerPointApi 1.8). Update PowerPoint, or test splitting on another computer. Compiling saved files may still work here.');
+    const has18 = req.isSetSupported('PowerPointApi', '1.8');
+    const has15 = req.isSetSupported('PowerPointApi', '1.5');
+    canSend = has18 && has15;
+    source = fileLabel();
+    $('source-name').textContent = source;
+    $('api-info').textContent = 'PowerPointApi 1.8: ' + (has18 ? 'yes' : 'no') + ' · 1.5: ' + (has15 ? 'yes' : 'no');
+    if (!canSend) {
+      $('send-selected').disabled = $('send-all').disabled = true;
+      status($('support'), 'err', 'This PowerPoint version can\'t send single slides (needs PowerPointApi 1.8). Update PowerPoint. Compiling the pool may still work here.');
     }
-    if (!has12) $('compile').title = 'Needs PowerPointApi 1.2';
-    try { parts = (await loadAll()).sort((a, b) => a.n - b.n); } catch (e) { parts = []; }
-    renderFiles();
-    if (parts.length) status($('split-status'), 'info', parts.length + ' files saved from an earlier split. Compile them here, or split again.');
+    if (source === 'Untitled') status($('send-status'), 'info', 'Save this file first so its slides show a file name in the pool.');
+    try { pool = await loadPool(); } catch (e) { pool = []; }
+    render();
   });
 
-  $('split').onclick = split;
+  // refresh the pool when the panel comes back into view (slides may have been sent from another file)
+  document.addEventListener('visibilitychange', async () => { if (!document.hidden) { pool = await loadPool(); render(); } });
+
+  $('send-selected').onclick = () => send(true);
+  $('send-all').onclick = () => send(false);
   $('compile').onclick = compile;
-  $('shuffle').onclick = shuffle;
-  $('clear').onclick = async () => { await clearAll(); parts = []; renderFiles(); status($('split-status'), 'info', 'Saved files cleared.'); status($('compile-status'), '', ''); };
+  $('clear').onclick = async () => { await clearPool(); pool = []; render(); status($('compile-status'), '', ''); status($('send-status'), 'info', 'Pool cleared.'); };
 })();
 </script>
 </body>

@@ -21,13 +21,15 @@ $d="$env:LOCALAPPDATA\CompileLab"; New-Item -ItemType Directory -Force $d | Out-
 Close PowerPoint completely, open it, then Home → Add-ins → Compile Lab.
 
 ## 3. Test
-1. Open a deck → Compile Lab → **Split into files**. Each slide appears as `slide-01.pptx`, `slide-02.pptx`, …
-2. Click **Open** on a file to see it as its own presentation.
-3. (Optional) **Mix up order** to simulate parts arriving out of order.
-4. File → New blank presentation → open Compile Lab there → **Compile**.
-5. Compare the result with the original: order, fonts, layouts, images, charts, animations, speaker notes.
+1. Open file A → Compile Lab → select some slides in the thumbnail list (Cmd/Ctrl-click) → **Send selected slides**.
+2. Open file B → Compile Lab → select other slides → **Send selected slides**. They join the same pool.
+3. Check the pool: order (change it with ↑ ↓), remove slides with ✕, open one slide as its own file with ↗.
+4. Open the file that should receive the slides (or a new blank one) → Compile Lab → **Compile**. Slides are added at the end, in pool order.
+5. Compare the result with the originals: order, fonts, layouts, images, charts, animations, speaker notes.
+6. Sending the same slide again replaces the older version in the pool.
 
 ## Notes
 - Splitting needs PowerPointApi 1.8 (recent Microsoft 365). The footer shows if it's supported.
-- Files are stored inside the add-in on this computer only (IndexedDB). Nothing is uploaded.
+- The pool lives inside the add-in on this computer only (IndexedDB), shared by every file you open here. Nothing is uploaded yet.
+- Save files before sending, so the pool shows their file names.
 - Try both "Slide look" options and note which one keeps the design intact.
