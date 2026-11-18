@@ -27,6 +27,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 | `slide-details.js` | Reads fonts, slide size and speaker notes from the exported .pptx (needs JSZip). |
 | `config.js` | Supabase URL + anon key + dashboard URL + `DAYS_TO_SHOW`. |
 | `manifest.xml`, `commands.html`, `assets/` | Add-in install files and icons. |
+| `install/install-mac.sh`, `install/install-windows.ps1` | One-line installers (no admin rights): download the live `manifest.xml`, install it for the current user, remove older Slideshot copies, reopen PowerPoint. Run again to update. |
 | `supabase-setup.sql` | **Canonical full database setup** (tables, RLS, storage, realtime). |
 | `docs/` | Bilingual (EN/ID) documentation page + its generator. |
 | `dev/` | Test server with mock PowerPoint/Supabase, screenshot tool, syntax check. |
@@ -92,7 +93,10 @@ npm run docs                     # regenerate docs/slideshot-docs.html
 1. `npm run check`, then test in the browser with the mocks.
 2. Commit and push to `main` (the repo belongs to the `Ridhoofrahman` account: you need write access, or a fork).
 3. GitHub Pages updates in ~1 minute. Designers close and reopen the panel; the version shows in the footer.
-4. If `manifest.xml` changed: copy it to the add-in shared folder, close PowerPoint, and on Windows delete `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef` before reinstalling. On Mac the manifest lives in `~/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef`.
+4. If `manifest.xml` changed: everyone runs the installer again (it closes PowerPoint, asking to save first):
+   - Mac (Terminal): `curl -fsSL https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/install/install-mac.sh | bash` (puts `slideshot.xml` in `~/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef`).
+   - Windows (PowerShell): `irm https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/install/install-windows.ps1 | iex` (saves `%LOCALAPPDATA%\Slideshot\slideshot.xml`, registers it under `HKCU\Software\Microsoft\Office\16.0\WEF\Developer`, clears `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef`).
+   - Then Insert > Add-ins > My Add-ins > Developer Add-ins > Slideshot. The shared-folder install still works as a fallback.
 5. Update the docs page (see above).
 
 ## Current state (when this package was made)
