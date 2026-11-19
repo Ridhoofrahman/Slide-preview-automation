@@ -169,7 +169,7 @@ p('Many designers build their slides in a fresh presentation instead of the orig
 ul([('Your slides are placed, in order, into the positions your DM assigned you. If your DM gave you slides 6–10, your file’s slides 1–5 go to 6–10.','Slide-mu ditempatkan, berurutan, ke posisi yang ditugaskan DM. Jika DM memberimu slide 6–10, slide 1–5 di filemu masuk ke 6–10.'),
 ('Use <b>Change slide position</b> to correct any of them.','Pakai <b>Change slide position</b> untuk mengoreksinya.')])+
 h3('7. When a slide says “Not to work”','7. Ketika slide bertuliskan “Not to work”')+
-p('The slide wasn’t assigned to anyone, or the order hasn’t been distributed. The panel hides all buttons for these slides so nothing is sent by mistake. Slides assigned to someone else show “Assigned to Name-Team” and are also read-only for you.','Slide itu tidak ditugaskan ke siapa pun, atau order belum dibagi. Panel menyembunyikan semua tombol di slide ini agar tidak ada yang terkirim secara tidak sengaja. Slide yang ditugaskan ke orang lain menampilkan “Assigned to Name-Team” dan juga hanya-baca untukmu.')+
+p('The slide wasn’t assigned to anyone, or the order hasn’t been distributed. The panel hides all buttons for these slides so nothing is sent by mistake. Slides assigned to someone else show “Assigned to Name_Team” and are also read-only for you.','Slide itu tidak ditugaskan ke siapa pun, atau order belum dibagi. Panel menyembunyikan semua tombol di slide ini agar tidak ada yang terkirim secara tidak sengaja. Slide yang ditugaskan ke orang lain menampilkan “Assigned to Name_Team” dan juga hanya-baca untukmu.')+
 h3('8. “Order ID has already been used”','8. “Order ID has already been used”')+
 p('Shown when a different deck already uses this Order ID and you aren’t assigned slides in it. Check the number, or type a different one in the header. Copies of the same deck, and working files for orders you’re assigned to, don’t trigger this.','Muncul jika deck lain sudah memakai Order ID ini dan kamu tidak ditugaskan slide di dalamnya. Periksa nomornya, atau ketik nomor lain di header. Salinan deck yang sama, dan working file untuk order yang ditugaskan kepadamu, tidak memicu pesan ini.')))
 
@@ -200,7 +200,7 @@ callout('tip','Open an order and click <b>Adjust distribution</b> in the header 
 h3('Review slides','Mereview slide','d-review')+
 p('Click an order card to open its review page.','Klik kartu order untuk membuka halaman review-nya.')+
 ul([('<b>Header:</b> the order name and progress, for example “2/3 slides approved”, plus Adjust distribution, Send to customer, zoom, and the slide list toggle.','<b>Header:</b> nama order dan progresnya, misalnya “2/3 slides approved”, plus Adjust distribution, Send to customer, zoom, dan tombol daftar slide.'),
-('<b>Slide strip:</b> thumbnails with their positions. Slides assigned but not sent yet appear as dashed “Not sent yet” placeholders. When two or more designers work on the order, chips let you filter by person (“Name-Team 2/5 sent”).','<b>Strip slide:</b> thumbnail beserta posisinya. Slide yang sudah ditugaskan tapi belum dikirim muncul sebagai placeholder putus-putus “Not sent yet”. Jika dua designer atau lebih mengerjakan order, chip memungkinkan filter per orang (“Name-Team 2/5 sent”).'),
+('<b>Slide strip:</b> thumbnails with their positions. Slides assigned but not sent yet appear as dashed “Not sent yet” placeholders. When two or more designers work on the order, chips let you filter by person (“Name_Team 2/5 sent”).','<b>Strip slide:</b> thumbnail beserta posisinya. Slide yang sudah ditugaskan tapi belum dikirim muncul sebagai placeholder putus-putus “Not sent yet”. Jika dua designer atau lebih mengerjakan order, chip memungkinkan filter per orang (“Name_Team 2/5 sent”).'),
 ('<b>Zoom:</b> Fit, or 25% to 400%.','<b>Zoom:</b> Fit, atau 25% sampai 400%.'),
 ('<b>Review panel</b> (right): the Order ID, the slide number and its status (Waiting for review, Approved, Change needed), the designer’s “Note for DM”, and who sent it, their team and the time.','<b>Panel review</b> (kanan): Order ID, nomor slide dan statusnya (Waiting for review, Approved, Change needed), “Note for DM” dari designer, serta siapa yang mengirim, timnya dan waktunya.'),
 ('<b>Slide details</b> under the slide: the fonts and speaker notes read from the file.','<b>Detail slide</b> di bawah slide: font dan speaker notes yang dibaca dari file.'),
@@ -236,7 +236,7 @@ table([('Tag','Tag'),('Meaning','Arti'),('Your next step','Langkahmu berikutnya'
 h3('Other labels','Label lain')+
 table([('Label','Label'),('Meaning','Arti')],[
 ['<span class="assigned">'+BOOK+'Assigned to you</span>',('The slide is yours.','Slide ini milikmu.')],
-['<span class="plain">Assigned to Kevin-Cascade</span>',('Someone else’s slide. Read-only for you.','Slide milik orang lain. Hanya-baca untukmu.')],
+['<span class="plain">Assigned to Kevin_Cascade</span>',('Someone else’s slide. Read-only for you.','Slide milik orang lain. Hanya-baca untukmu.')],
 ['<span class="plain">Slide 9 → Slide 4</span>',('Your file’s slide 9 is shown to the DM as slide 4.','Slide 9 di filemu dilihat DM sebagai slide 4.')],
 ['<span class="badge">v2 sent, 5 min ago</span>',('Version and time of the last send, on the preview.','Versi dan waktu pengiriman terakhir, di preview.')],
 ['<span class="plain">Tag team</span>',('More than one team works on this order.','Lebih dari satu tim mengerjakan order ini.')]])))
@@ -318,6 +318,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.40',('People are shown as Name_Team (for example Ridho_Titant) instead of Name-Team: in the panel’s “Assigned to” tag, the Dashboard’s designer picker and filter chips, and Slack messages.','Orang ditampilkan sebagai Nama_Tim (misalnya Ridho_Titant), bukan Nama-Tim: di tag “Assigned to” panel, pilihan designer dan chip filter Dashboard, serta pesan Slack.')],
 ['Dashboard',('Links like review.html?order=351164&amp;slide=6 open that order and slide, also after signing in with Slack. Slack notifications are built and running in dry-run (queued, not sent yet).','Link seperti review.html?order=351164&amp;slide=6 membuka order dan slide itu, juga setelah sign in dengan Slack. Notifikasi Slack sudah dibuat dan berjalan dalam dry-run (masuk antrean, belum dikirim).')],
 ['Docs',('Install &amp; update guide added: Windows and Mac install, sign in, updates and troubleshooting.','Panduan instalasi &amp; pembaruan ditambahkan: instalasi di Windows dan Mac, masuk, pembaruan, dan pemecahan masalah.')],
 ['Dashboard',('The review page uses the light grey canvas (#F7F9FC) behind the slide again, and the slide strip is grey (#DDE4EE), as in the design, so white slides stand out.','Halaman review kembali memakai kanvas abu-abu muda (#F7F9FC) di belakang slide, dan strip slide berwarna abu-abu (#DDE4EE) sesuai desain, sehingga slide putih tetap terlihat.')],
@@ -382,11 +383,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.39','Add-in v2.39')}</span><span class="meta">{T('Updated 19 Nov 2026','Diperbarui 19 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.40','Add-in v2.40')}</span><span class="meta">{T('Updated 19 Nov 2026','Diperbarui 19 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.39.','Slideshot untuk 24Slides. Add-in v2.39.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.40.','Slideshot untuk 24Slides. Add-in v2.40.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)

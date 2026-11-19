@@ -55,12 +55,12 @@ Rules for the table:
 - On failure: `attempts + 1` and retry later (1, 5, 15 min). Give up after 5 attempts and keep `last_error`.
 
 ## Message copy (English, like the product)
-Slide lists use the panel's range format (`1–5, 7`). Recipients see `Name-Team` for people.
+Slide lists use the panel's range format (`1–5, 7`). Recipients see `Name_Team` for people.
 
 | Event | Text |
 |---|---|
-| `slide_sent` | Bela-Cascade sent 5 slides for review in #351164 (slides 1–5). |
-| `slide_revised` | Bela-Cascade sent new versions of slides 2 and 4 in #351164 after your feedback. |
+| `slide_sent` | Bela_Cascade sent 5 slides for review in #351164 (slides 1–5). |
+| `slide_revised` | Bela_Cascade sent new versions of slides 2 and 4 in #351164 after your feedback. |
 | `assignment_changed` (new) | Ridho assigned you slides 6–10 in #351164. Open the deck in PowerPoint and type #351164 in Slideshot. |
 | `assignment_changed` (changed) | Your slides in #351164 changed: you now have 6–8. Slides 9–10 moved to Kevin. |
 | `assignment_changed` (removed) | You no longer have slides in #351164. |

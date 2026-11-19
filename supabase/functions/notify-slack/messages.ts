@@ -36,7 +36,7 @@ const plural = (n: number, w: string) => n + " " + w + (n === 1 ? "" : "s");
 function who(ctx: Context, id: string | null, fallback: string | null, withTeam: boolean): string {
   const p = id ? ctx.people.get(id) : undefined;
   const name = (p?.name || fallback || "").trim() || "Someone";
-  return withTeam && p?.team ? name + "-" + p.team : name;
+  return withTeam && p?.team ? name + "_" + p.team : name;
 }
 const actors = (rows: QueueRow[], ctx: Context) =>
   joinAnd([...new Set(rows.map((r) => who(ctx, r.actor_id, r.actor_name || r.payload.reviewer, false)))]);
@@ -53,7 +53,7 @@ export function buildMessage(rows: QueueRow[], ctx: Context): Message | null {
       const nums = uniq(rs.map((r) => Number(r.payload.slide_number)));
       if (!nums.length) return null;
       const p = last.payload;
-      const designer = (p.designer || "A designer") + (p.team ? "-" + p.team : "");
+      const designer = (p.designer || "A designer") + (p.team ? "_" + p.team : "");
       if (first.event === "slide_sent")
         return { text: `${designer} sent ${plural(nums.length, "slide")} for review in ${order} (${slidesText(nums)}).`, url: link(nums) };
       const afterFeedback = rs.every((r) => r.payload.prev_status === "changes");

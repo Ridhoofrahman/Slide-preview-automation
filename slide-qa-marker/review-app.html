@@ -1265,7 +1265,7 @@ function designerSelect(value) {
   sel.append(new Option("Choose a designer", ""));
   const people = (S.profiles || []).filter((p) => p.user_id !== S.user.id || true).slice().sort((a, b) => a.name.localeCompare(b.name));
   const mine = people.filter((p) => S.myTeam && p.team === S.myTeam), others = people.filter((p) => !(S.myTeam && p.team === S.myTeam));
-  const group = (label, list) => { if (!list.length) return; const g = document.createElement("optgroup"); g.label = label; list.forEach((p) => g.append(new Option(p.name + (p.team ? "-" + p.team : ""), p.user_id))); sel.append(g); };
+  const group = (label, list) => { if (!list.length) return; const g = document.createElement("optgroup"); g.label = label; list.forEach((p) => g.append(new Option(p.name + (p.team ? "_" + p.team : ""), p.user_id))); sel.append(g); };
   group(S.myTeam ? "Your team (" + S.myTeam + ")" : "People", mine); group("Other teams", others);
   sel.value = value || "";
   return sel;
@@ -1480,7 +1480,7 @@ function renderFilter(all) {
     chip("all", "All slides");
     rows.forEach((a) => {
       const sent = a.slides.filter((n) => all.some((x) => x.slide_number === n)).length;
-      chip(a.assignee_id, a.assignee_name + (a.assignee_team ? "-" + a.assignee_team : ""), sent + "/" + a.slides.length + " sent");
+      chip(a.assignee_id, a.assignee_name + (a.assignee_team ? "_" + a.assignee_team : ""), sent + "/" + a.slides.length + " sent");
     });
   }
   return f === "all" ? null : rows.find((a) => a.assignee_id === f);
