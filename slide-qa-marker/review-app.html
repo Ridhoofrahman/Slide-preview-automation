@@ -1088,6 +1088,24 @@ function ring(p) {
   if (!r.sent) w.append(el("span", "n", String(r.prog.approvedNums)));
   return w;
 }
+// Deep link from Slack: review.html?order=351164&slide=6 (query string, not the hash: the hash carries auth tokens).
+// Kept in sessionStorage so it survives the Slack sign-in round trip; used once, after the board has loaded.
+function stashDeepLink() {
+  const q = new URLSearchParams(location.search), order = (q.get("order") || "").replace(/\D/g, "");
+  if (!order) return false;
+  const slide = parseInt(q.get("slide") || "", 10);
+  try { sessionStorage.setItem("qa.deeplink", JSON.stringify({ order, slide: slide > 0 ? slide : null })); } catch (e) {}
+  return true;
+}
+function openDeepLink() {
+  let d = null;
+  try { d = JSON.parse(sessionStorage.getItem("qa.deeplink") || "null"); sessionStorage.removeItem("qa.deeplink"); } catch (e) {}
+  if (!d || !d.order) return;
+  const p = Object.values(S.projects || {}).find((x) => orderId(x.name || x.key) === d.order);
+  if (!p) return;                                                     // unknown order: stay on the board
+  const s = d.slide && p.slides.find((x) => Number(x.slide_number) === d.slide);
+  if (s) { S.project = p.key; openReview(keyOf(s)); } else openProject(p);
+}
 function openProject(p) {
   S.project = p.key;
   if (!p.slides.length) { openEmptyOrder(); return; }
@@ -2010,6 +2028,7 @@ async function enter(user, team) {
   $("content").innerHTML = ""; $("boardView").classList.add("solo"); { const e = el("div", "bd-state loading"); e.append(loadingIllo(), el("strong", "", "Loading slides…")); $("content").append(e); }
   try { await loadAll(); } catch (e) { $("content").innerHTML = ""; $("content").append(el("p", "msg err", "Couldn't load slides: " + e.message)); return; }
   renderBoard();
+  openDeepLink();
   const reload = debounce(async () => { try { await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview(); } catch (e) {} }, 500);
   S.sb.channel("review-board")
     .on("postgres_changes", { event: "*", schema: "public", table: "slide_shots" }, reload)
@@ -2023,6 +2042,7 @@ async function enter(user, team) {
   if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { $("configError").hidden = false; return; }
   // Read what Slack/Supabase put in the URL before supabase-js starts and clears the hash
   const authError = readAuthError(), hadAuthParams = hasAuthParams();
+  const hadDeepLink = stashDeepLink();
   S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
   $("loginForm").addEventListener("submit", (e) => { e.preventDefault(); signIn(); });
@@ -2092,7 +2112,7 @@ async function enter(user, team) {
 
   // Back from Slack: supabase-js (implicit flow) reads the tokens from the URL hash while it starts up
   const { data } = await S.sb.auth.getSession();
-  if (hadAuthParams || /#$/.test(location.href)) { try { history.replaceState(null, "", location.pathname); } catch (e) {} }   // tokens or errors out of the address bar
+  if (hadAuthParams || hadDeepLink || /#$/.test(location.href)) { try { history.replaceState(null, "", location.pathname); } catch (e) {} }   // tokens or errors out of the address bar
   const su = data.session && data.session.user;
   if (!su && authError) { showLogin(); $("slackMsg").textContent = slackErrorText(authError); return; }
   // No team yet (e.g. first Slack sign-in): ask for it instead of signing out
