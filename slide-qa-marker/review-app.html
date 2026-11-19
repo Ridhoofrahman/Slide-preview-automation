@@ -823,7 +823,7 @@
   /* ===== Assign order dialog (Figma 483:19630) ===== */
   .as-dialog { width: min(552px, calc(100vw - 32px)); max-height: calc(100vh - 64px); padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); overflow: hidden; }
   .as-dialog[open] { display: flex; }
-  .as-dialog::backdrop { background: rgba(26,31,46,.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .as-dialog::backdrop { background: rgba(26,31,46,.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
   .as-dialog form { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
   .as-dialog h2 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; }
   .as-sub { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; }
@@ -851,7 +851,8 @@
   .as-remove { flex: none; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: none; color: #454C63; cursor: pointer; display: grid; place-items: center; }
   .as-remove svg { width: 20px; height: 20px; }
   .as-remove:hover { background: #F7F9FC; color: #1A1F2E; }
-  .as-remove.off { visibility: hidden; }
+  /* One designer: no ×, the fields use the full width; from two designers on the × column appears */
+  .as-remove.off, .as-list.single .as-xcol { display: none; }
   .as-add { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 0; border-radius: 8px; background: none; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .as-add svg { width: 16px; height: 16px; }
   .as-add span { padding: 0 4px; }
@@ -1318,9 +1319,17 @@ function newOrderBtn() { const b = el("button", "bd-new"); b.type = "button"; b.
 const hhmm = (d) => d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 function dayDiff(d) { const a = new Date(d); a.setHours(0, 0, 0, 0); const b = new Date(); b.setHours(0, 0, 0, 0); return Math.round((a - b) / 864e5); }
 function dueText(d) { const k = dayDiff(d); return k === 0 ? hhmm(d) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ", " + hhmm(d); }
+// Cards: the designers of my team, plus anyone who has slides in my team's orders and isn't in another team
+// (a DM who assigned themselves, or an account whose team is still empty). Other teams' designers stay out.
 function teamDesigners() {
-  const dm = S.dmIds || new Set();
-  return (S.profiles || []).filter((p) => S.myTeam && p.team === S.myTeam && !dm.has(p.user_id)).sort((a, b) => a.name.localeCompare(b.name));
+  const dm = S.dmIds || new Set(), mine = (p) => !!S.myTeam && p.team === S.myTeam;
+  const assigned = new Set();
+  Object.values(S.assignments || {}).flat().forEach((a) => { if (!S.myTeam || a.created_team === S.myTeam || a.assignee_team === S.myTeam) assigned.add(a.assignee_id); });
+  const byId = {}; (S.profiles || []).forEach((p) => { byId[p.user_id] = p; });
+  const list = (S.profiles || []).filter((p) => (mine(p) && !dm.has(p.user_id)) || (assigned.has(p.user_id) && (mine(p) || !p.team)));
+  // Assigned people without a profile row at all: use the name saved with the distribution
+  Object.values(S.assignments || {}).flat().forEach((a) => { if (assigned.has(a.assignee_id) && !byId[a.assignee_id] && !list.some((x) => x.user_id === a.assignee_id) && (!a.assignee_team || a.assignee_team === S.myTeam)) list.push({ user_id: a.assignee_id, name: a.assignee_name, team: a.assignee_team }); });
+  return list.sort((a, b) => a.name.localeCompare(b.name));
 }
 // Status of each slide number in an order (normal slides only; one approved copy counts)
 function statusByNum(p) {
@@ -1476,7 +1485,7 @@ function dueField(iso) {
   return f;
 }
 // The × shows only when there is more than one designer (Figma: one line by default)
-function updateRemoveButtons() { const rows = [...$("asRows").children]; rows.forEach((r) => r.querySelector(".as-remove").classList.toggle("off", rows.length < 2)); }
+function updateRemoveButtons() { const rows = [...$("asRows").children]; rows.forEach((r) => r.querySelector(".as-remove").classList.toggle("off", rows.length < 2)); $("asRows").closest(".as-list").classList.toggle("single", rows.length < 2); }
 function assignRow(a) {
   const r = el("div", "as-row"); const cols = el("div", "as-cols");
   const who = designerSelect(a ? a.assignee_id : "");
