@@ -765,6 +765,105 @@
   @media (prefers-reduced-motion: reduce) { .rv-emptyslide .s { animation: none; opacity: 1; } }
 
   .bd-state .bd-start { margin-top: 16px; }
+
+  /* ===== Board tabs + header (Figma 483:18490: Tab, date line, title, Dropdown s, Button Primary s) ===== */
+  .bd-tabs { align-self: flex-start; display: inline-flex; gap: 4px; padding: 4px; border-radius: 8px; background: #EEF2F8; }
+  .bd-tab { min-width: 80px; padding: 4px 10px; border: 0; border-radius: 6px; background: none; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #6A7389; cursor: pointer; }
+  .bd-tab[aria-selected="true"] { background: #FFFFFF; color: #1C43A5; font-weight: 500; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .bd-tab:hover:not([aria-selected="true"]) { color: #454C63; }
+  .bd-head { align-items: center; }
+  .bd-headl { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .bd-today { margin: 0; display: flex; align-items: center; gap: 8px; height: 20px; font-size: 14px; line-height: 20px; color: #454C63; white-space: nowrap; }
+  .bd-today svg { width: 16px; height: 16px; flex: none; }
+  .bd-head h2 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
+  .bd-headtools { gap: 16px; }
+  .bd-dd { height: 32px; padding: 4px 32px 4px 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 8l4.5 4.5L14.5 8' fill='none' stroke='%23454C63' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 6px center / 20px; appearance: none; -webkit-appearance: none; box-shadow: 0 1px 2px rgba(18,18,23,.05); font-family: inherit; font-size: 14px; line-height: 20px; color: #454C63; cursor: pointer; }
+  .bd-dd:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .bd-new { display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 0; border-radius: 8px; background: #1C43A5; color: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .bd-new svg { width: 16px; height: 16px; flex: none; }
+  .bd-new span { padding: 0 4px; }
+  .bd-new:hover { background: #132D70; }
+
+  /* Board body: 40px sides, as in Figma 483:18468 / 465:14440 (content 1200 wide at 1280) */
+  .bd-body { padding: 32px 40px; max-width: 1360px; }
+  /* ===== Distribution (Figma 465:14440, component "Load distribution" 483:16733) ===== */
+  .dd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 20px; align-items: start; }
+  .dd-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 12px; background: #EEF2F8; }
+  .dd-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 48px; padding: 0 12px; }
+  .dd-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .dd-avatar { flex: none; width: 32px; height: 32px; border: 1px solid #A8C3FF; border-radius: 999px; background: #F7F9FC; display: grid; place-items: center; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; }
+  .dd-name { font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dd-upd { flex: none; display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6A7389; white-space: nowrap; }
+  .dd-upd .ago { display: inline-flex; align-items: center; gap: 4px; }
+  .dd-upd svg { width: 12px; height: 12px; }
+  .dd-box { padding: 16px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .dd-row { display: flex; align-items: flex-start; gap: 20px; padding: 12px 4px 12px 0; }
+  .dd-row > :nth-child(1), .dd-row > :nth-child(2) { flex: 1 1 0; min-width: 0; }
+  .dd-row > :nth-child(3), .dd-row > :nth-child(4) { flex: none; width: 100px; }
+  .dd-head { padding-left: 16px; border-radius: 4px; background: #F7F9FC; font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; }
+  .dd-rows { padding: 0 16px; }
+  .dd-rows .dd-row { border-bottom: 1px solid #DDE4EE; }
+  .dd-rows .dd-row:last-child { border-bottom: 0; }
+  .dd-rows .dd-row.go { cursor: pointer; }
+  .dd-rows .dd-row.go:hover .dd-order { color: #1C43A5; text-decoration: underline; text-underline-position: from-font; }
+  .dd-order { font-size: 14px; line-height: 20px; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dd-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .dd-chip { padding: 2px; min-width: 18px; border: 1px solid #DDE4EE; border-radius: 2px; background: #F7F9FC; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; text-align: center; }
+  .dd-appr, .dd-due { display: flex; align-items: center; gap: 8px; min-height: 22px; font-size: 12px; line-height: 16px; color: #454C63; white-space: nowrap; }
+  .dd-appr svg { width: 16px; height: 16px; flex: none; color: #A3ADC2; }
+  .dd-due svg { width: 16px; height: 16px; flex: none; color: #454C63; }
+  .dd-due.soon, .dd-due.soon svg { color: #AD7300; }
+  .dd-due.soon svg { color: #E09600; }
+  .dd-due.late { color: #A81A1A; }
+  .dd-due.late svg { color: #D62020; }
+  .dd-due.ok { color: #0A6139; }
+  .dd-due.ok svg { color: #0C7F49; }
+  .dd-empty { margin: 0; padding: 12px 0; font-size: 14px; line-height: 20px; color: #6A7389; }
+
+  /* ===== Assign order dialog (Figma 483:19630) ===== */
+  .as-dialog { width: min(552px, calc(100vw - 32px)); max-height: calc(100vh - 64px); padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); overflow: hidden; }
+  .as-dialog[open] { display: flex; }
+  .as-dialog::backdrop { background: rgba(26,31,46,.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .as-dialog form { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+  .as-dialog h2 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; }
+  .as-sub { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; }
+  .as-field { display: flex; flex-direction: column; gap: 8px; }
+  .as-label, .as-head .as-cols span { font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; }
+  .as-dialog input, .as-dialog select { height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; background-color: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; min-width: 0; }
+  .as-dialog input { padding: 8px 12px 8px 8px; }
+  .as-dialog input::placeholder { color: #6A7389; opacity: 1; }
+  .as-dialog input[readonly] { background: #F7F9FC; color: #6A7389; }
+  .as-dialog input:focus, .as-dialog select:focus, .as-due:focus-within { outline: none; border-color: #3D66F5; box-shadow: 0 0 0 1px #3D66F5; }
+  .as-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+  .as-rows { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: -2px; padding: 2px; }
+  .as-line, .as-row { display: flex; align-items: center; gap: 8px; }
+  .as-cols { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .8fr) minmax(0, 1.3fr); gap: 16px; }
+  .as-head .as-xcol { flex: none; width: 32px; }
+  .as-row select { padding: 8px 36px 8px 8px; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.6 9.4l5.4 5.4 5.4-5.4' fill='none' stroke='%23454C63' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center / 24px; cursor: pointer; }
+  .as-row select:invalid, .as-row select.ph { color: #6A7389; }
+  .as-due { position: relative; display: flex; align-items: center; height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; cursor: pointer; min-width: 0; }
+  .as-due svg { flex: none; width: 20px; height: 20px; margin: 0 8px; color: #454C63; }
+  .as-duetxt { flex: 1; min-width: 0; padding: 0 8px; font-size: 14px; line-height: 20px; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .as-duetxt.ph { color: #6A7389; }
+  .as-dialog .as-duein { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+  .as-row.bad select, .as-row.bad input, .as-row.bad .as-due { border-color: #FFB0B0; background-color: #FFF1F1; }
+  .as-remove { flex: none; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: none; color: #454C63; cursor: pointer; display: grid; place-items: center; }
+  .as-remove svg { width: 20px; height: 20px; }
+  .as-remove:hover { background: #F7F9FC; color: #1A1F2E; }
+  .as-remove.off { visibility: hidden; }
+  .as-add { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 0; border-radius: 8px; background: none; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
+  .as-add svg { width: 16px; height: 16px; }
+  .as-add span { padding: 0 4px; }
+  .as-add:hover { background: #EEF4FF; }
+  .as-err { margin: 0; font-size: 14px; line-height: 20px; color: #A81A1A; }
+  .as-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 0; }
+  .as-cancel, .as-save { height: 40px; padding: 8px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .as-cancel { border: 1px solid #DDE4EE; background: #FFFFFF; color: #454C63; }
+  .as-cancel:hover { background: #F7F9FC; }
+  .as-save { border: 0; background: #1C43A5; color: #FFFFFF; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .as-save:hover:not(:disabled) { background: #132D70; }
+  .as-save:disabled { opacity: .6; cursor: progress; }
 </style>
 </head>
 <body>
@@ -896,12 +995,14 @@
   <form id="assignForm" novalidate>
     <h2 id="asTitle">Assign order</h2>
     <p class="as-sub">Split the order between designers. Use slide numbers like 1-5 or 1-3, 7.</p>
-    <label class="s-field"><span class="s-label">Order number</span><input id="asOrder" placeholder="e.g. 351164" autocomplete="off"></label>
-    <div class="as-head" aria-hidden="true"><span>Designer</span><span>Slides</span></div>
-    <div class="as-rows" id="asRows"></div>
-    <button type="button" class="as-add" id="asAdd">+ Add designer</button>
+    <label class="as-field"><span class="as-label">Order number</span><input id="asOrder" placeholder="e.g. 351164" autocomplete="off"></label>
+    <div class="as-list">
+      <div class="as-line as-head" aria-hidden="true"><div class="as-cols"><span>Designer</span><span>Slides to work</span><span>Deadline</span></div><span class="as-xcol"></span></div>
+      <div class="as-rows" id="asRows"></div>
+      <button type="button" class="as-add" id="asAdd"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><g transform="translate(1.6 1.6)"><path d="M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z" fill="currentColor"/></g></svg><span>Add designer</span></button>
+    </div>
     <p class="as-err" id="asErr" role="alert"></p>
-    <div class="as-actions"><button type="button" class="as-cancel" id="asCancel">Cancel</button><button type="submit" class="rv-primary" id="asSave">Save</button></div>
+    <div class="as-actions"><button type="button" class="as-cancel" id="asCancel">Cancel</button><button type="submit" class="as-save" id="asSave">Save</button></div>
   </form>
 </dialog>
 <dialog id="deleteDialog" class="confirm" aria-labelledby="delTitle">
@@ -947,7 +1048,8 @@ async function loadAll() {
   const ps = await S.sb.from("project_status").select("*");
   S.projectStatus = {};
   if (!ps.error) ps.data.forEach((r) => { S.projectStatus[r.key] = r; });
-  const [pr, as] = await Promise.all([S.sb.from("profiles").select("user_id,name,team"), S.sb.from("slide_assignments").select("*")]);
+  const [pr, as, dms] = await Promise.all([S.sb.from("profiles").select("user_id,name,team"), S.sb.from("slide_assignments").select("*"), S.sb.from("design_managers").select("user_id")]);
+  S.dmIds = new Set(dms && !dms.error ? dms.data.map((d) => d.user_id) : []);
   S.profiles = pr && !pr.error ? pr.data : [];
   S.assignments = {};
   if (as && !as.error) as.data.forEach((a) => { (S.assignments[a.order_key] = S.assignments[a.order_key] || []).push(a); });
@@ -1048,10 +1150,11 @@ function visibleProjects() {
   return Object.values(S.projects)
     .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || sent(a) - sent(b) || b.lastAt.localeCompare(a.lastAt));
 }
-const BOARD = { sort: "waiting" };
-try { BOARD.sort = localStorage.getItem("qa.sort") || "waiting"; } catch (e) {}
+const BOARD = { sort: "waiting", view: "orders", designer: "all" };
+try { BOARD.sort = localStorage.getItem("qa.sort") || "waiting"; BOARD.view = localStorage.getItem("qa.view.board") === "distribution" ? "distribution" : "orders"; } catch (e) {}
 const SORTS = { waiting: "Longest waiting", most: "Most waiting", recent: "Recently updated", name: "Name" };
 const CLOCK = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10.2 5.99995C10.2 3.67495 8.32495 1.79995 5.99995 1.79995C3.67495 1.79995 1.79995 3.67495 1.79995 5.99995C1.79995 8.32495 3.67495 10.2 5.99995 10.2C8.32495 10.2 10.2 8.32495 10.2 5.99995ZM1.19995 5.99995C1.19995 3.3562 3.3562 1.19995 5.99995 1.19995C8.6437 1.19995 10.8 3.3562 10.8 5.99995C10.8 8.6437 8.6437 10.8 5.99995 10.8C3.3562 10.8 1.19995 8.6437 1.19995 5.99995ZM5.69995 3.29995C5.69995 3.1312 5.8312 2.99995 5.99995 2.99995C6.1687 2.99995 6.29995 3.1312 6.29995 3.29995V5.8312L7.9687 6.9562C8.09995 7.04995 8.13745 7.23745 8.0437 7.3687C7.94995 7.49995 7.7812 7.53745 7.6312 7.4437L5.8312 6.2437C5.7562 6.18745 5.69995 6.0937 5.69995 5.99995V3.29995Z" fill="currentColor"/></svg>';
+const ICONS = {"clock": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 1.6)\"><path d=\"M12 6.4C12 3.3 9.5 0.8 6.4 0.8C3.3 0.8 0.8 3.3 0.8 6.4C0.8 9.5 3.3 12 6.4 12C9.5 12 12 9.5 12 6.4ZM0 6.4C0 2.875 2.875 0 6.4 0C9.925 0 12.8 2.875 12.8 6.4C12.8 9.925 9.925 12.8 6.4 12.8C2.875 12.8 0 9.925 0 6.4ZM6 2.8C6 2.575 6.175 2.4 6.4 2.4C6.625 2.4 6.8 2.575 6.8 2.8V6.175L9.025 7.675C9.2 7.8 9.25 8.05 9.125 8.225C9 8.4 8.775 8.45 8.575 8.325L6.175 6.725C6.075 6.65 6 6.525 6 6.4V2.8Z\" fill=\"currentColor\"/></g></svg>", "history": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 2.0)\"><path d=\"M12 6.8C12 6.35 11.65 6 11.2 6H1.6C1.15 6 0.8 6.35 0.8 6.8V10.4C0.8 10.85 1.15 11.2 1.6 11.2H11.2C11.65 11.2 12 10.85 12 10.4V6.8ZM11.2 5.2C12.075 5.2 12.8 5.925 12.8 6.8V10.4C12.8 11.275 12.075 12 11.2 12H1.6C0.725 12 0 11.275 0 10.4V6.8C0 5.925 0.725 5.2 1.6 5.2H11.2ZM11.2 2.6C11.425 2.6 11.6 2.775 11.6 3C11.6 3.225 11.425 3.4 11.2 3.4H1.6C1.375 3.4 1.2 3.225 1.2 3C1.2 2.775 1.375 2.6 1.6 2.6H11.2ZM10 0C10.225 0 10.4 0.175 10.4 0.4C10.4 0.625 10.225 0.8 10 0.8H2.8C2.575 0.8 2.4 0.625 2.4 0.4C2.4 0.175 2.575 0 2.8 0H10Z\" fill=\"currentColor\"/></g></svg>", "check": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 1.6)\"><path d=\"M6.4 12.8C2.865 12.8 0 9.935 0 6.4C0 2.865 2.865 0 6.4 0C9.935 0 12.8 2.865 12.8 6.4C12.8 9.935 9.935 12.8 6.4 12.8ZM6.4 0.8C3.3075 0.8 0.8 3.3075 0.8 6.4C0.8 9.4925 3.3075 12 6.4 12C9.4925 12 12 9.4925 12 6.4C12 3.3075 9.4925 0.8 6.4 0.8ZM8.4775 4.165C8.6075 3.9875 8.8575 3.9475 9.035 4.0775C9.2125 4.2075 9.2525 4.4575 9.1225 4.635L5.9225 9.035C5.8525 9.13 5.7475 9.19 5.63 9.1975C5.5125 9.205 5.3975 9.165 5.315 9.0825L3.715 7.4825C3.56 7.3275 3.56 7.0725 3.715 6.9175C3.87 6.7625 4.125 6.7625 4.28 6.9175L5.5475 8.185L8.4725 4.165H8.4775Z\" fill=\"currentColor\"/></g></svg>", "calday": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.0267 1.6)\"><path d=\"M2.98667 0C3.22667 0 3.41333 0.186667 3.41333 0.426667V1.70667H8.53333V0.426667C8.53333 0.186667 8.72 0 8.96 0C9.2 0 9.38667 0.186667 9.38667 0.426667V1.70667H10.24C11.1733 1.70667 11.9467 2.48 11.9467 3.41333V11.0933C11.9467 12.0267 11.1733 12.8 10.24 12.8H1.70667C0.773333 12.8 0 12.0267 0 11.0933V3.41333C0 2.48 0.773333 1.70667 1.70667 1.70667H2.56V0.426667C2.56 0.186667 2.74667 0 2.98667 0ZM10.24 2.56H1.70667C1.22667 2.56 0.853333 2.93333 0.853333 3.41333V11.0933C0.853333 11.5733 1.22667 11.9467 1.70667 11.9467H10.24C10.72 11.9467 11.0933 11.5733 11.0933 11.0933V3.41333C11.0933 2.93333 10.72 2.56 10.24 2.56ZM3.84 6.82667C3.6 6.82667 3.41333 7.01333 3.41333 7.25333V8.96C3.41333 9.2 3.6 9.38667 3.84 9.38667H5.54667C5.78667 9.38667 5.97333 9.2 5.97333 8.96V7.25333C5.97333 7.01333 5.78667 6.82667 5.54667 6.82667H3.84ZM2.56 7.25333C2.56 6.56 3.14667 5.97333 3.84 5.97333H5.54667C6.26667 5.97333 6.82667 6.56 6.82667 7.25333V8.96C6.82667 9.68 6.26667 10.24 5.54667 10.24H3.84C3.14667 10.24 2.56 9.68 2.56 8.96V7.25333Z\" fill=\"currentColor\"/></g></svg>", "plus": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 1.6)\"><path d=\"M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z\" fill=\"currentColor\"/></g></svg>", "calclock": "<svg viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2 2)\"><path d=\"M3.29412 0C3.55882 0 3.76471 0.205882 3.76471 0.470588V1.88235H9.41177V0.470588C9.41177 0.205882 9.61765 0 9.88235 0C10.1471 0 10.3529 0.205882 10.3529 0.470588V1.88235H11.2941C12.3235 1.88235 13.1765 2.73529 13.1765 3.76471V6.29412C12.8824 6.20588 12.5588 6.17647 12.2353 6.14706V5.64706H0.941176V12.2353C0.941176 12.7647 1.35294 13.1765 1.88235 13.1765H6.29412C6.38235 13.5 6.5 13.8235 6.61765 14.1176H1.88235C0.852941 14.1176 0 13.2647 0 12.2353V3.76471C0 2.73529 0.852941 1.88235 1.88235 1.88235H2.82353V0.470588C2.82353 0.205882 3.02941 0 3.29412 0ZM11.2941 2.82353H1.88235C1.35294 2.82353 0.941176 3.23529 0.941176 3.76471V4.70588H12.2353V3.76471C12.2353 3.23529 11.8235 2.82353 11.2941 2.82353ZM11.7647 15.0588C13.5882 15.0588 15.0588 13.5882 15.0588 11.7647C15.0588 9.94118 13.5882 8.47059 11.7647 8.47059C9.94118 8.47059 8.47059 9.94118 8.47059 11.7647C8.47059 13.5882 9.94118 15.0588 11.7647 15.0588ZM11.7647 7.52941C14.1176 7.52941 16 9.41177 16 11.7647C16 14.1176 14.1176 16 11.7647 16C9.41177 16 7.52941 14.1176 7.52941 11.7647C7.52941 9.41177 9.41177 7.52941 11.7647 7.52941ZM11.7647 9.41177C12.0294 9.41177 12.2353 9.61765 12.2353 9.88235V11.2941H13.1765C13.4412 11.2941 13.6471 11.5 13.6471 11.7647C13.6471 12.0294 13.4412 12.2353 13.1765 12.2353H11.7647C11.5 12.2353 11.2941 12.0294 11.2941 11.7647V9.88235C11.2941 9.61765 11.5 9.41177 11.7647 9.41177Z\" fill=\"currentColor\"/></g></svg>", "xmark": "<svg viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(3 3)\"><path d=\"M13.8088 0.966775L7.83745 6.98632L13.8088 13.0059C14.0637 13.2248 14.0637 13.5896 13.8088 13.8085C13.5904 14.0638 13.2263 14.0638 13.0078 13.8085L7 7.82541L0.992198 13.8085C0.773732 14.0638 0.409623 14.0638 0.191157 13.8085C-0.0637191 13.5896 -0.0637191 13.2248 0.191157 13.0059L6.16255 6.98632L0.191157 0.966775C-0.0637191 0.747883 -0.0637191 0.383062 0.191157 0.164169C0.409623 -0.0547231 0.773732 -0.0547231 0.992198 0.164169L7 6.14723L13.0078 0.164169C13.2263 -0.0547231 13.5904 -0.0547231 13.8088 0.164169C14.0637 0.383062 14.0637 0.747883 13.8088 0.966775Z\" fill=\"currentColor\"/></g></svg>"};
 const firstName = (n) => (n || "").split(/\s+/)[0] || "";
 function greeting() { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
 // Loading: "Cards · Stacking motion" (Figma) — mint stays, pink / lavender / peach fly in and settle, loop 2.2587s
@@ -1170,6 +1273,8 @@ async function renderBoard() {
   $("myTeam").textContent = S.myTeam || ""; $("myTeam").hidden = !S.myTeam;
   const c = $("content"); c.innerHTML = "";
   const projects = sortedProjects();
+  c.append(boardTabs());
+  if (BOARD.view === "distribution") { $("boardView").classList.add("solo"); renderDistribution(c); return; }
   $("boardView").classList.toggle("solo", !projects.length);
   if (!projects.length) {
     const e = el("div", "bd-state empty"); e.append(emptyIllo(), el("strong", "", "No slides yet"), el("p", "", "Ready-to-review slides will appear here"));
@@ -1177,19 +1282,13 @@ async function renderBoard() {
     const go = el("button", "rv-primary bd-start", "Assign order"); go.type = "button"; go.onclick = () => openAssign(null); e.append(go);
     c.append(e); renderActivity(); return;
   }
-  const waiting = projects.reduce((n, p) => n + p.waiting, 0), orders = projects.filter((p) => p.waiting > 0).length;
-  const head = el("div", "bd-head"); const hl = el("div");
-  const now = new Date();
-  hl.append(el("p", "bd-date", now.toLocaleDateString("en-GB", { weekday: "long" }) + ", " + now.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })));
-  hl.append(el("h2", "", greeting() + ", " + firstName(me)));
-  hl.append(el("p", "bd-sub", waiting ? waiting + " slide" + (waiting > 1 ? "s are" : " is") + " waiting for your review across " + orders + " order" + (orders > 1 ? "s" : "") : "Nothing is waiting for your review right now."));
-  const sortWrap = el("label", "bd-sort"); sortWrap.append(el("span", "", "Sort :"));
-  const sel = document.createElement("select"); sel.setAttribute("aria-label", "Sort orders");
+  const orders = projects.filter((p) => p.waiting > 0).length;
+  const head = el("div", "bd-head"); const hl = el("div", "bd-headl");
+  hl.append(todayLine(), el("h2", "", orders ? orders + " order" + (orders > 1 ? "s need" : " needs") + " review" : "Nothing is waiting for your review"));
+  const sel = document.createElement("select"); sel.className = "bd-dd"; sel.setAttribute("aria-label", "Sort orders");
   Object.entries(SORTS).forEach(([k, v]) => { const o = el("option", "", v); o.value = k; if (k === BOARD.sort) o.selected = true; sel.append(o); });
   sel.onchange = () => { BOARD.sort = sel.value; try { localStorage.setItem("qa.sort", sel.value); } catch (e) {} renderBoard(); };
-  sortWrap.append(sel);
-  const right = el("div", "bd-headtools"); const ab = el("button", "bd-assignbtn", "Assign order"); ab.type = "button"; ab.onclick = () => openAssign(null);
-  right.append(sortWrap, ab); head.append(hl, right); c.append(head);
+  const right = el("div", "bd-headtools"); right.append(sel, newOrderBtn()); head.append(hl, right); c.append(head);
   const grid = el("div", "bd-grid"); projects.forEach((p) => grid.append(orderCard(p))); c.append(grid);
   c.append(el("p", "bd-retention", "Orders are removed automatically " + RETENTION_DAYS + " days after their last activity."));
   renderActivity();
@@ -1199,6 +1298,99 @@ async function renderBoard() {
   grid.querySelectorAll("img[data-k]").forEach((im) => { const v = S.versions[im.dataset.k]; if (v) { const u = urlFor(v[0]); if (u) im.src = u; } });
 }
 // ---- Activity feed, built from what's already loaded
+// Tabs (Figma: Tab): the order cards, or who works on what
+function boardTabs() {
+  const t = el("div", "bd-tabs"); t.setAttribute("role", "tablist");
+  [["orders", "Assigned orders"], ["distribution", "Distribution"]].forEach(([k, label]) => {
+    const b = el("button", "bd-tab", label); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(BOARD.view === k));
+    b.onclick = () => { if (BOARD.view === k) return; BOARD.view = k; try { localStorage.setItem("qa.view.board", k); } catch (e) {} renderBoard(); };
+    t.append(b);
+  });
+  return t;
+}
+function todayLine() {
+  const p = el("p", "bd-today"); p.innerHTML = ICONS.calday;
+  const d = new Date(); p.append(document.createTextNode(d.toLocaleDateString("en-GB", { weekday: "long" }) + ", " + d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })));
+  return p;
+}
+function newOrderBtn() { const b = el("button", "bd-new"); b.type = "button"; b.innerHTML = ICONS.plus; b.append(el("span", "", "Assign order")); b.onclick = () => openAssign(null); return b; }
+// ---- Distribution: one card per designer of my team with the orders assigned to them
+const hhmm = (d) => d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+function dayDiff(d) { const a = new Date(d); a.setHours(0, 0, 0, 0); const b = new Date(); b.setHours(0, 0, 0, 0); return Math.round((a - b) / 864e5); }
+function dueText(d) { const k = dayDiff(d); return k === 0 ? hhmm(d) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ", " + hhmm(d); }
+function teamDesigners() {
+  const dm = S.dmIds || new Set();
+  return (S.profiles || []).filter((p) => S.myTeam && p.team === S.myTeam && !dm.has(p.user_id)).sort((a, b) => a.name.localeCompare(b.name));
+}
+// Status of each slide number in an order (normal slides only; one approved copy counts)
+function statusByNum(p) {
+  const by = {};
+  (p ? p.slides : []).filter((x) => !x.alternative_of).forEach((x) => { const prev = by[x.slide_number]; by[x.slide_number] = prev === "approved" ? prev : x.status; });
+  return by;
+}
+function renderDistribution(c) {
+  const head = el("div", "bd-head"); const hl = el("div", "bd-headl"); hl.append(el("h2", "", "Order distributions"));
+  const people = teamDesigners();
+  const sel = document.createElement("select"); sel.className = "bd-dd"; sel.setAttribute("aria-label", "Show designers");
+  sel.append(new Option("All designers", "all")); people.forEach((p) => sel.append(new Option(p.name, p.user_id)));
+  if (BOARD.designer !== "all" && !people.some((p) => p.user_id === BOARD.designer)) BOARD.designer = "all";
+  sel.value = BOARD.designer;
+  sel.onchange = () => { BOARD.designer = sel.value; renderBoard(); };
+  const right = el("div", "bd-headtools"); right.append(sel, todayLine()); head.append(hl, right); c.append(head);
+  const grid = el("div", "dd-grid");
+  const list = BOARD.designer === "all" ? people : people.filter((p) => p.user_id === BOARD.designer);
+  if (!list.length) { c.append(el("p", "dd-empty", S.myTeam ? "No designers in " + S.myTeam + " yet." : "Choose your team to see its designers.")); return; }
+  list.forEach((d) => grid.append(designerCard(d)));
+  c.append(grid);
+}
+function designerCard(d) {
+  const card = el("article", "dd-card");
+  const top = el("div", "dd-top"); const who = el("div", "dd-who");
+  const initials = d.name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+  who.append(el("span", "dd-avatar", initials), el("span", "dd-name", d.name)); top.append(who);
+  const last = (S.shots || []).filter((x) => x.designer_id === d.user_id).reduce((m, x) => (x.created_at > m ? x.created_at : m), "");
+  const upd = el("div", "dd-upd");
+  if (last) { upd.append(el("span", "", "Last update")); const a = el("span", "ago"); a.innerHTML = CLOCK; a.append(document.createTextNode(ago(last))); upd.append(a); }
+  else upd.append(el("span", "", "No slides sent yet"));
+  top.append(upd); card.append(top);
+  const box = el("div", "dd-box");
+  const hrow = el("div", "dd-row dd-head"); ["Assigned orders", "Slides to work", "Approved", "Deadline"].forEach((t) => hrow.append(el("span", "", t))); box.append(hrow);
+  const rows = [];
+  Object.entries(S.assignments || {}).forEach(([key, list]) => list.forEach((a) => { if (a.assignee_id === d.user_id) rows.push({ key, a }); }));
+  const now = Date.now();
+  rows.forEach((r) => {
+    const st = statusByNum(S.projects[r.key]); r.done = r.a.slides.filter((n) => st[n] === "approved").length;
+    r.complete = r.a.slides.length > 0 && r.done >= r.a.slides.length;
+    r.t = r.a.deadline ? new Date(r.a.deadline).getTime() : Infinity;
+    r.late = !r.complete && r.t < now;
+  });
+  // Overdue first, then the nearest deadline; finished orders last
+  rows.sort((x, y) => (x.complete - y.complete) || (y.late - x.late) || (x.t - y.t));
+  const body = el("div", "dd-rows");
+  if (!rows.length) body.append(el("p", "dd-empty", "No orders assigned."));
+  rows.forEach((r) => {
+    const row = el("div", "dd-row go"); row.tabIndex = 0; row.setAttribute("role", "link");
+    const p = S.projects[r.key]; const name = p ? p.name : r.a.order_name;
+    const oid = orderId(name); row.append(el("span", "dd-order", /^\d+$/.test(oid) ? "Order #" + oid : name));
+    row.setAttribute("aria-label", "Open " + name);
+    const chips = el("div", "dd-chips"); rangesOf(r.a.slides.slice().sort((x, y) => x - y)).split(", ").forEach((t) => chips.append(el("span", "dd-chip", t.replace("-", "\u2013")))); row.append(chips);
+    const ap = el("div", "dd-appr"); ap.innerHTML = ICONS.history; ap.append(document.createTextNode(r.done + "/" + r.a.slides.length + " slides")); row.append(ap);
+    const due = el("div", "dd-due");
+    if (r.complete) { due.classList.add("ok"); due.innerHTML = ICONS.check; due.append(document.createTextNode("Completed")); }
+    else if (!r.a.deadline) { due.append(document.createTextNode("\u2013")); due.title = "No deadline"; }
+    else {
+      const left = r.t - now; due.classList.toggle("late", left < 0); due.classList.toggle("soon", left >= 0 && left < 2 * 36e5);
+      due.innerHTML = ICONS.clock; due.append(document.createTextNode(dueText(new Date(r.t))));
+      due.title = (left < 0 ? "Overdue: " : "Due ") + new Date(r.t).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    }
+    row.append(due);
+    const open = () => { if (p) openProject(p); };
+    row.onclick = open; row.onkeydown = (e) => { if (e.key === "Enter") open(); };
+    body.append(row);
+  });
+  box.append(body); card.append(box);
+  return card;
+}
 function renderActivity() {
   const box = $("activity"); box.innerHTML = "";
   const me = displayName(S.user); const who = (n) => (n && n === me ? "You" : n || "Someone");
@@ -1270,14 +1462,32 @@ function designerSelect(value) {
   sel.value = value || "";
   return sel;
 }
+// Deadline field: shows "Today, 14:00"; a click opens the browser's date + time picker
+const toLocalInput = (iso) => { if (!iso) return ""; const d = new Date(iso); if (isNaN(d)) return ""; const z = (n) => String(n).padStart(2, "0"); return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()) + "T" + z(d.getHours()) + ":" + z(d.getMinutes()); };
+function dueLabel(d) { const k = dayDiff(d); return (k === 0 ? "Today" : k === 1 ? "Tomorrow" : k === -1 ? "Yesterday" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" })) + ", " + hhmm(d); }
+function dueField(iso) {
+  const f = el("div", "as-due"); f.innerHTML = ICONS.calclock;
+  const txt = el("span", "as-duetxt"); const inp = document.createElement("input");
+  inp.type = "datetime-local"; inp.className = "as-duein"; inp.setAttribute("aria-label", "Deadline"); inp.value = toLocalInput(iso);
+  const show = () => { const v = inp.value; txt.textContent = v ? dueLabel(new Date(v)) : "Today, 14:00"; txt.classList.toggle("ph", !v); f.title = v ? new Date(v).toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "Set a deadline"; };
+  inp.addEventListener("change", show); inp.addEventListener("input", show);
+  f.onclick = () => { try { inp.showPicker(); } catch (e) { inp.focus(); } };
+  f.append(txt, inp); show();
+  return f;
+}
+// The × shows only when there is more than one designer (Figma: one line by default)
+function updateRemoveButtons() { const rows = [...$("asRows").children]; rows.forEach((r) => r.querySelector(".as-remove").classList.toggle("off", rows.length < 2)); }
 function assignRow(a) {
-  const r = el("div", "as-row");
+  const r = el("div", "as-row"); const cols = el("div", "as-cols");
   const who = designerSelect(a ? a.assignee_id : "");
-  const sl = document.createElement("input"); sl.className = "as-slides"; sl.placeholder = "e.g. 1-5"; sl.setAttribute("aria-label", "Slides"); sl.value = a ? rangesOf(a.slides || []) : "";
-  const x = el("button", "as-remove"); x.type = "button"; x.setAttribute("aria-label", "Remove"); x.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
-  x.onclick = () => { r.remove(); if (!$("asRows").children.length) $("asRows").append(assignRow()); };
-  [who, sl].forEach((n) => n.addEventListener("input", () => { $("asErr").textContent = ""; r.classList.remove("bad"); }));
-  r.append(who, sl, x); return r;
+  const syncWho = () => { who.classList.toggle("ph", !who.value); who.title = who.value ? who.selectedOptions[0].textContent : ""; };
+  const sl = document.createElement("input"); sl.className = "as-slides"; sl.placeholder = "e.g. 1-10"; sl.setAttribute("aria-label", "Slides to work"); sl.value = a ? rangesOf(a.slides || []) : "";
+  const due = dueField(a ? a.deadline : null);
+  const x = el("button", "as-remove"); x.type = "button"; x.setAttribute("aria-label", "Remove designer"); x.innerHTML = ICONS.xmark;
+  x.onclick = () => { r.remove(); if (!$("asRows").children.length) $("asRows").append(assignRow()); updateRemoveButtons(); };
+  [who, sl, due.querySelector("input")].forEach((n) => ["input", "change"].forEach((ev) => n.addEventListener(ev, () => { $("asErr").textContent = ""; r.classList.remove("bad"); })));
+  who.addEventListener("change", syncWho); syncWho();
+  cols.append(who, sl, due); r.append(cols, x); return r;
 }
 function openAssign(key) {
   const rows = key ? (S.assignments || {})[key] || [] : [];
@@ -1285,7 +1495,8 @@ function openAssign(key) {
   $("asOrder").value = p ? p.name : rows[0] ? rows[0].order_name : "";
   $("asOrder").readOnly = !!key;
   const box = $("asRows"); box.innerHTML = "";
-  (rows.length ? rows : [null, null]).forEach((a) => box.append(assignRow(a)));
+  (rows.length ? rows : [null]).forEach((a) => box.append(assignRow(a)));
+  updateRemoveButtons();
   $("asErr").textContent = "";
   $("assignDialog").showModal();
   (key ? box.querySelector("select") : $("asOrder")).focus();
@@ -1296,15 +1507,17 @@ async function saveAssign() {
   const key = orderId(name);
   const rows = [], owner = {};
   for (const r of $("asRows").children) {
-    const id = r.querySelector(".as-who").value, txt = r.querySelector(".as-slides").value.trim();
-    if (!id && !txt) continue;
+    const id = r.querySelector(".as-who").value, txt = r.querySelector(".as-slides").value.trim(), due = r.querySelector(".as-duein").value;
+    if (!id && !txt && !due) continue;
     if (!id) { err("Choose a designer for every row.", r); return; }
     const nums = parseSlides(txt); if (!nums) { err("Write slides as numbers or ranges, like 1-5 or 1-3, 7.", r); return; }
+    if (!due) { err("Set a deadline for every designer.", r); return; }
+    const deadline = new Date(due).toISOString();
     const prof = (S.profiles || []).find((x) => x.user_id === id) || {};
     for (const n of nums) { if (owner[n]) { err("Slide " + n + " is given to both " + owner[n] + " and " + prof.name + ".", r); return; } owner[n] = prof.name; }
     const same = rows.find((x) => x.assignee_id === id);
-    if (same) { same.slides = [...new Set(same.slides.concat(nums))].sort((a, b) => a - b); continue; }
-    rows.push({ order_key: key, order_name: name, assignee_id: id, assignee_name: prof.name || "Designer", assignee_team: prof.team || null, slides: nums, created_by: displayName(S.user), created_team: S.myTeam });
+    if (same) { same.slides = [...new Set(same.slides.concat(nums))].sort((a, b) => a - b); if (deadline < same.deadline) same.deadline = deadline; continue; }
+    rows.push({ order_key: key, order_name: name, assignee_id: id, assignee_name: prof.name || "Designer", assignee_team: prof.team || null, slides: nums, deadline: deadline, created_by: displayName(S.user), created_team: S.myTeam });
   }
   if (!rows.length) { err("Add at least one designer and their slides."); return; }
   $("asSave").disabled = true;
@@ -2079,7 +2292,7 @@ async function enter(user, team) {
   $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
   $("rvSendCustomer").onclick = () => { const k = $("rvSendCustomer").dataset.key; if (k) askSendToCustomer(k); };
   $("rvAdjust").onclick = () => openAssign(S.project);
-  $("asAdd").onclick = () => { const r = assignRow(); $("asRows").append(r); r.querySelector("select").focus(); };
+  $("asAdd").onclick = () => { const r = assignRow(); $("asRows").append(r); updateRemoveButtons(); r.querySelector("select").focus(); r.scrollIntoView({ block: "nearest" }); };
   $("asCancel").onclick = () => $("assignDialog").close();
   $("assignForm").addEventListener("submit", (e) => { e.preventDefault(); saveAssign(); });
   $("stripToggle").onclick = () => { VIEW.strip = !VIEW.strip; saveView(); applyView(); if (VIEW.strip) updateRailArrows(); };

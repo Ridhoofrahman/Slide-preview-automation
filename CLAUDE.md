@@ -38,7 +38,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - `slide_shots`: one row per **version** of a sent slide: `file_key, project (order name), slide_id (PowerPoint's internal id), slide_number (position in the order), alternative_of (null, or the slide number it is an alternative of), total_slides, version, designer, designer_id, team, note, image_path, details jsonb, status ready|approved|changes, reviewed_by, reviewed_at, created_at`.
 - `shot_comments`: `shot_id, author, author_id, body, x, y (pin), audio_path, audio_duration, resolved`.
 - `project_status`: `key, name, sent_at, sent_by` (the "sent to customer" marker).
-- `slide_assignments`: the DM's **distribution**: `order_key, order_name, assignee_id, assignee_name, assignee_team, slides int[], created_by, created_team`.
+- `slide_assignments`: the DM's **distribution**: `order_key, order_name, assignee_id, assignee_name, assignee_team, slides int[], deadline timestamptz (per designer per order, required in the dialog; `sql/deadlines.sql`), created_by, created_team`.
 - `profiles` (`user_id, name, team, slack_user_id`), `design_managers` (`user_id, from_allowlist`).
 - `notification_queue`: one row per (event, recipient); RLS on with no policies (service role only). Filled by triggers on `slide_shots` and `slide_assignments` (`sql/notifications.sql`), sent by `notify-slack`. Spec: `docs/specs/slack-notifications.md`.
 - **DMs come from table `dm_allowlist`** (`email, name, team`; 24 DMs, one per team, from Inner Platform; no client access). Triggers on the list and on `auth.users` insert keep `design_managers` and `profiles.team` in sync, so a listed DM is a DM with the right team from the first sign-in and never sees the team step; removing an email removes only `from_allowlist` rows (manual admin DMs stay). SQL: `sql/dm-allowlist.sql`.
@@ -62,6 +62,8 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 
 **Tag team.** An order is tag team when slides or distributions involve more than one team. Each DM can decide (approve / request changes) only on **their own team's** slides (`canReview`); both see the whole deck. Designer filter chips on the review page appear when 2+ designers work on the order.
 
+**Board tabs and Distribution** (Figma 483:18468 board, 465:14440 + component "Load distribution" 483:16733, dialog 483:19733). Tabs "Assigned orders" (the order cards) and "Distribution" (`BOARD.view`, saved in localStorage `qa.view.board`). Distribution: one card per designer of the DM's team (`teamDesigners()`: `profiles.team` = my team, not in `design_managers`), rows = their assignments: order, slide chips, approved/assigned (normal slides only), deadline (red overdue, yellow < 2 h, grey; "Completed" when all approved). Overdue first, then nearest deadline. Assign order dialog: one row by default, × only from the second row, deadline required (browser date-time picker behind a "Today, 14:00" field, `dueField`), blurred scrim backdrop.
+
 **Dashboard access.** DM-only (`isDesignManager`, reads `design_managers`; fails open if the table is missing so nobody is locked out during setup). The add-in footer (Figma 412:11104) shows name and team; a click opens a second row with an **Open dashboard** link (DM accounts only), the version and Sign out. A designer view is planned (see open items).
 
 **Progress.** The ring counts approved vs **sent** slides only. All approved shows a full ring; after "Send to customer" the ring is solid green with a check. "Send to customer" only marks status inside Slideshot; it does not email or notify anyone.
@@ -77,7 +79,7 @@ Figma file: `https://www.figma.com/design/DHcyMFzra5Wi7o18Uy6fW0/Slideshot` (fil
 - Font **Geist** (400/500; 600 for the docs page). Brand blue **#1C43A5** (`background/brand/default`).
 - Text `#1A1F2E` (title) / `#454C63` (body), subtle `#6A7389`; borders `#DDE4EE` (`outline/neutral`), input borders `#C2CCDB` (`divider/default`); canvas `#F7F9FC`; header bar `#EEF2F8` (`elevation/sunken`); keyboard focus ring `#3D66F5` (no DS token).
 - Status chips (Builder DS accent/outline/text): grey `#F7F9FC / #DDE4EE / #454C63`, yellow `#FFF9E6 / #FFE08A / #AD7300`, red `#FFF1F1 / #FFB0B0 / #A81A1A`, green `#E6F7EE / #7ED9A8 / #0A6139` (ring and sent-to-customer circle `#0C7F49` = `icon/success`; Approve button `#12A45F` / hover `#0C7F49` = `background/success/*`; success palette changed in Builder DS on 2026-11-19), purple (Tag team, working-file note) `#F0EBFC / #BDA6EE / #4A2999`. Scrim `overlay/scrim` #1A1F2E 50%. Full list: `design/DESIGN-SYSTEM.md`.
-- Names that were decided: "Assign order" (not "Assign slides" or "Distribute project"; header button at the far right, after Sort), "Adjust distribution" (not "Edit split"), "Dashboard" (footer link; was "Review site"), "Not to work", "Not sent yet", "Upload the latest version", "Send to customer".
+- Names that were decided: "Assign order" (not "Assign slides" or "Distribute project"; primary button with a plus at the far right of the board header, after the sort dropdown), "Assigned orders" / "Distribution" (board tabs), "Adjust distribution" (not "Edit split"), "Dashboard" (footer link; was "Review site"), "Not to work", "Not sent yet", "Upload the latest version", "Send to customer".
 
 ## Develop and test
 ```bash

@@ -574,3 +574,6 @@ create policy "slides: members only" on storage.objects as restrictive for all t
 
 -- 18. Alternative slides (sql/alternatives.sql): the slide number this slide is an alternative of (null = a normal slide)
 alter table public.slide_shots add column if not exists alternative_of int;
+
+-- 19. Deadlines per designer per order (sql/deadlines.sql)
+alter table public.slide_assignments add column if not exists deadline timestamptz;
