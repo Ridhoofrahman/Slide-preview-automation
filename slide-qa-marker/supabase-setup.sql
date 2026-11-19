@@ -570,3 +570,7 @@ create policy "slides: members only" on storage.objects as restrictive for all t
 --   drop policy "members only" on public.slide_shots;      drop policy "members only" on public.shot_comments;
 --   drop policy "members only" on public.project_status;   drop policy "members only" on public.slide_assignments;
 --   drop policy "members only" on public.profiles;         drop policy "slides: members only" on storage.objects;
+
+
+-- 18. Alternative slides (sql/alternatives.sql): the slide number this slide is an alternative of (null = a normal slide)
+alter table public.slide_shots add column if not exists alternative_of int;

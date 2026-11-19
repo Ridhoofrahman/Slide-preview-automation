@@ -956,7 +956,7 @@ async function loadAll() {
 // Everything a project needs to be sent: every slide of the deck sent and approved
 function projectProgress(p) {
   const byNum = {};
-  p.slides.forEach((s) => { const prev = byNum[s.slide_number]; byNum[s.slide_number] = prev && prev !== "approved" ? prev : s.status; });
+  p.slides.filter((s) => !s.alternative_of).forEach((s) => { const prev = byNum[s.slide_number]; byNum[s.slide_number] = prev && prev !== "approved" ? prev : s.status; });
   const approvedNums = Object.values(byNum).filter((st) => st === "approved").length;
   // Progress counts only the slides that were sent for review, not every slide in the PowerPoint file
   const total = Object.keys(byNum).length;
@@ -1028,7 +1028,7 @@ function buildIndex() {
       lastAt: rows.reduce((m, a) => (a.created_at > m ? a.created_at : m), ""), teams: new Set(rows.map((a) => a.assignee_team).filter(Boolean)), assignOnly: true };
   });
   // Every designer works in a full copy of the deck, so slide numbers match the original: sort by them
-  Object.values(S.projects).forEach((p) => p.slides.sort((a, b) => a.slide_number - b.slide_number || a.designer.localeCompare(b.designer)));
+  Object.values(S.projects).forEach((p) => p.slides.sort((a, b) => (a.alternative_of ? 1 : 0) - (b.alternative_of ? 1 : 0) || a.slide_number - b.slide_number || firstSent(a).localeCompare(firstSent(b)) || a.designer.localeCompare(b.designer)));
 }
 async function ensureUrls(shots) {
   const now = Date.now();
@@ -1094,7 +1094,7 @@ function stashDeepLink() {
   const q = new URLSearchParams(location.search), order = (q.get("order") || "").replace(/\D/g, "");
   if (!order) return false;
   const slide = parseInt(q.get("slide") || "", 10);
-  try { sessionStorage.setItem("qa.deeplink", JSON.stringify({ order, slide: slide > 0 ? slide : null })); } catch (e) {}
+  try { sessionStorage.setItem("qa.deeplink", JSON.stringify({ order, slide: slide > 0 ? slide : null, alt: q.get("alt") === "1" })); } catch (e) {}
   return true;
 }
 function openDeepLink() {
@@ -1103,7 +1103,7 @@ function openDeepLink() {
   if (!d || !d.order) return;
   const p = Object.values(S.projects || {}).find((x) => orderId(x.name || x.key) === d.order);
   if (!p) return;                                                     // unknown order: stay on the board
-  const s = d.slide && p.slides.find((x) => Number(x.slide_number) === d.slide);
+  const s = d.slide && p.slides.find((x) => Number(x.slide_number) === d.slide && !!x.alternative_of === !!d.alt);
   if (s) { S.project = p.key; openReview(keyOf(s)); } else openProject(p);
 }
 function openProject(p) {
@@ -1208,7 +1208,7 @@ function renderActivity() {
   const shots = S.shots.filter(onBoard);
   const byId = {}; shots.forEach((x) => { byId[x.id] = x; });
   shots.forEach((x) => {
-    ev.push({ t: x.created_at, kind: "sent", shot: x, text: [[x.designer, 1], [" sent " + (x.version > 1 ? "v" + x.version + " of slide " : "slide ") + x.slide_number + " of ", 0], [x.project, 1], [x.note ? ", with note:" : "", 0]], quote: x.note });
+    ev.push({ t: x.created_at, kind: "sent", shot: x, text: [[x.designer, 1], [" sent " + (x.version > 1 ? "v" + x.version + " of " : "") + (x.alternative_of ? "an alternative of slide " + x.alternative_of : (x.version > 1 ? "slide " : "slide ") + x.slide_number) + " of ", 0], [x.project, 1], [x.note ? ", with note:" : "", 0]], quote: x.note });
     if (x.reviewed_at && (x.status === "approved" || x.status === "changes"))
       ev.push({ t: x.reviewed_at, kind: x.status, shot: x, text: [[who(x.reviewed_by), 1], [x.status === "approved" ? " approved slide " : " requested changes on slide ", 0], [x.slide_number + " of ", 0], [x.project, 1]] });
   });
@@ -1317,6 +1317,14 @@ async function saveAssign() {
   } catch (e) { err("Couldn't save: " + e.message); }
   finally { $("asSave").disabled = false; }
 }
+// Alternative slides: "1a", "1b"… in the order alternatives of a slide were first sent
+const firstSent = (s) => { const v = S.versions[keyOf(s)] || [s]; return v[v.length - 1].created_at || ""; };
+function slideLabel(s) {
+  if (!s || !s.alternative_of) return s ? String(s.slide_number) : "";
+  const p = S.projects[(s.project || "").trim().toLowerCase()];
+  const same = (p ? p.slides : [s]).filter((x) => x.alternative_of === s.alternative_of).sort((a, b) => firstSent(a).localeCompare(firstSent(b)));
+  return s.alternative_of + String.fromCharCode(97 + Math.min(25, Math.max(0, same.findIndex((x) => keyOf(x) === keyOf(s)))));
+}
 function projectSlides() { const p = S.projects[S.project]; return p ? p.slides : []; }
 function openReview(slideKey, shotId) {
   $("reviewView").classList.remove("empty"); $("rvEmpty").hidden = true;
@@ -1424,7 +1432,7 @@ async function renderReview() {
   // Panel title: Order ID, slide number and status
   const oid = orderId(shot.project);
   $("rvOrderId").textContent = /^\d+$/.test(oid) ? "#" + oid : (shot.project || "");
-  $("rvSlideNo").textContent = "Slide " + shot.slide_number;
+  $("rvSlideNo").textContent = "Slide " + slideLabel(shot);
   const tag = $("rvStatus"); tag.className = "rv-tag " + shot.status; tag.textContent = REVIEW_LABEL[shot.status] || shot.status;
   tag.hidden = false;
 
@@ -1448,7 +1456,7 @@ async function renderReview() {
 
   renderRail();
   if (S.lastScrollKey !== S.slideKey) { $("rvWork").scrollTop = 0; $("rvStripWrap").classList.remove("stuck"); S.lastScrollKey = S.slideKey; }
-  const img = $("rvImg"); img.alt = "Slide " + shot.slide_number + ", version " + shot.version;
+  const img = $("rvImg"); img.alt = "Slide " + slideLabel(shot) + ", version " + shot.version;
   try { await ensureUrls([shot]); } catch (e) {}
   if (img.src !== urlFor(shot)) img.src = urlFor(shot);
 
@@ -1486,12 +1494,14 @@ function renderFilter(all) {
   return f === "all" ? null : rows.find((a) => a.assignee_id === f);
 }
 async function renderRail() {
-  const all = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
+  const every = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
+  const all = every.filter((x) => !x.alternative_of), alts = every.filter((x) => x.alternative_of);
   const only = renderFilter(all);
   // With a designer picked: their slide numbers, in order; prefer the copy they sent
   const assigned = [...new Set(((S.assignments || {})[S.project] || []).flatMap((a) => a.slides))];
   const nums = [...new Set(assigned.concat(all.map((x) => x.slide_number)))].sort((a, b) => a - b);
   const list = !only ? (assigned.length ? nums.flatMap((n) => { const sent = all.filter((x) => x.slide_number === n); return sent.length ? sent : [{ placeholder: true, slide_number: n }]; }) : all) : only.slides.map((n) => all.find((x) => x.slide_number === n && x.designer_id === only.assignee_id) || all.find((x) => x.slide_number === n) || { placeholder: true, slide_number: n });
+  list.push(...(only ? alts.filter((x) => x.designer_id === only.assignee_id) : alts));
   list.forEach((s) => {
     if (s.placeholder) {
       const b = el("div", "rv-thumb pending"); b.setAttribute("aria-label", "Slide " + s.slide_number + ", not sent yet");
@@ -1500,8 +1510,8 @@ async function renderRail() {
     }
     const b = el("button", "rv-thumb"); b.type = "button";
     if (keyOf(s) === S.slideKey) b.setAttribute("aria-current", "true");
-    b.setAttribute("aria-label", "Slide " + s.slide_number + (s.designer ? ", " + s.designer : ""));
-    b.append(el("span", "n", s.slide_number));
+    b.setAttribute("aria-label", (s.alternative_of ? "Alternative " + slideLabel(s) + " of slide " + s.alternative_of : "Slide " + s.slide_number) + (s.designer ? ", " + s.designer : ""));
+    b.append(el("span", "n", slideLabel(s)));
     const im = new Image(); im.alt = ""; im.loading = "lazy"; im.dataset.path = s.image_path; b.append(im);
     b.onclick = () => openReview(keyOf(s));
     rail.append(b);
@@ -1754,7 +1764,7 @@ function askDeleteSlide() {
   const vers = S.versions[S.slideKey]; if (!vers) return;
   const l = vers[0]; pendingDelete = deleteSlide; $("delConfirm").className = "danger"; $("delWarn").hidden = false;
   const comments = vers.reduce((n, v) => n + (S.comments[v.id] || []).length, 0);
-  $("delTitle").textContent = "Delete slide " + l.slide_number + " from " + l.designer + "?";
+  $("delTitle").textContent = "Delete slide " + slideLabel(l) + " from " + l.designer + "?";
   $("delBody").textContent = "Removes " + (vers.length === 1 ? "this version" : "all " + vers.length + " versions") + (comments ? " and " + comments + " comment" + (comments === 1 ? "" : "s") : "") + ". The slide goes back to \"Not sent\" in PowerPoint, so a designer can send it again.";
   $("delConfirm").textContent = "Delete slide";
   say($("delMsg"), ""); $("delConfirm").disabled = false;

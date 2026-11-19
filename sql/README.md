@@ -15,6 +15,7 @@
 | `signup-hook.sql` | `hook_slideshot_signup`: the Auth hook "Before User Created" that lets only @24slides.com emails sign up (first Slack sign-in creates the account) | Run (already part of the canonical file); hook enabled in Authentication → Hooks |
 | `designer-allowlist.sql` | `designer_allowlist` (110 designers from Inner Platform) and `is_member()`; listed designers get their team automatically. Its last query lists accounts that would lose access | **To run** after `dm-allowlist.sql` (already part of the canonical file) |
 | `members-only.sql` | Restrictive "members only" policies: only DMs and listed designers read or write data and slide files. Undo statements at the end | **To run after** checking the last query of `designer-allowlist.sql` (already part of the canonical file) |
+| `alternatives.sql` | `slide_shots.alternative_of` for alternative slides (panel v2.42) and the Slack trigger that passes it on | **To run** before using panel v2.42 |
 | `notifications.sql` | Slack notifications: `notification_queue` (RLS, no policies), `profiles.slack_user_id`, triggers on `slide_shots` and `slide_assignments`, sender RPCs (service role only) | Run 19 Nov 2026 |
 | `notifications-cron.sql` | `pg_cron` + `pg_net`: calls the Edge Function `notify-slack` every minute; the secret is read from Vault (`notify_cron_secret`) | Run 19 Nov 2026, after deploying `notify-slack` |
 | `notifications-test.sql` | Test on one DM account with a fake order #999001, plus clean-up | Test only |

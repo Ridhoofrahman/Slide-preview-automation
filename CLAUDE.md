@@ -7,7 +7,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - **Apply Figma designs exactly.** Read the node, measure it, then match px, colors, radius and spacing. Export icons from Figma as SVG; never hand-draw icons. After building, measure DOM positions against the Figma numbers and look at a screenshot. Fonts render ~1px wider in Chrome than in Figma, so give wrapping text 1–2px slack to keep Figma's line breaks.
 - If the design conflicts with how something works (e.g. a hover button covering a tag), do not silently pick: apply the design where possible, explain the conflict, propose one fix.
 - **Never commit or push until she says "commit".** Commit messages are short English imperatives, e.g. `Fix duplicate positions; show Slide x → Slide y in the header`.
-- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.41). The dashboard has no version string.
+- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.42). The dashboard has no version string.
 - **After every shipped change, update the docs**: edit `docs/gen/gen.py` (English and Indonesian together, plus a release-notes row, the version badge and the "Updated" date), run `npm run docs`, and publish/commit `docs/slideshot-docs.html`.
 - For each visual change, save a preview PNG (`npm run shot`) and tell her where it is. Say plainly what was only tested with mock data.
 - Be honest and short. Report what changed, what you verified, and what she needs to decide.
@@ -35,7 +35,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 | `sql/` | Incremental SQL as it was run, plus a parked stricter-security design. |
 
 ## Data model (Supabase)
-- `slide_shots`: one row per **version** of a sent slide: `file_key, project (order name), slide_id (PowerPoint's internal id), slide_number (position in the order), total_slides, version, designer, designer_id, team, note, image_path, details jsonb, status ready|approved|changes, reviewed_by, reviewed_at, created_at`.
+- `slide_shots`: one row per **version** of a sent slide: `file_key, project (order name), slide_id (PowerPoint's internal id), slide_number (position in the order), alternative_of (null, or the slide number it is an alternative of), total_slides, version, designer, designer_id, team, note, image_path, details jsonb, status ready|approved|changes, reviewed_by, reviewed_at, created_at`.
 - `shot_comments`: `shot_id, author, author_id, body, x, y (pin), audio_path, audio_duration, resolved`.
 - `project_status`: `key, name, sent_at, sent_by` (the "sent to customer" marker).
 - `slide_assignments`: the DM's **distribution**: `order_key, order_name, assignee_id, assignee_name, assignee_team, slides int[], created_by, created_team`.
@@ -57,6 +57,8 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 **Working file.** Slides of a new file are mapped, in order, onto the positions the DM assigned (`applyWorkingMap`). Manual picks come first.
 
 **Positions** (`sentPositions`, `applyWorkingMap`, `openMapPop`, `setPosition`). The DM sees a slide at the position of its **latest sent version**. The popup's "Sent as" list contains only the designer's assigned positions; a position held by another sent slide is **disabled** ("Slide 4 · sent"), so two slides can never share a number. A sent slide may move; the new position applies from its next version. Header shows `Slide 9 → Slide 4` when moved. Unsent slides swap with a displaced slide.
+
+**Alternative slides** (v2.42; Figma 478:15576, 479:15630; `sql/alternatives.sql`). A designer marks a slide as an alternative of one of their assigned slides (button `#altBtn` on unassigned or own unsent slides, popup `#altPop`, choice saved in `docStore` key `slideqa.alt` until sent; after that `slide_shots.alternative_of` decides). An alternative holds no position: `applyWorkingMap` takes alternatives out first and numbers the other slides without them (`x.deck` = place in the file, `x.local` = number among normal slides), so an alternative inserted mid-deck does not shift the rest. Alternative rows store `slide_number = alternative_of`. Label `1a`, `1b` = order of first send per slide (`altLabel` in the panel, `slideLabel` on the dashboard). Header "Slide 1a", purple Tag "Alternative of slide 1" with × (only before sending), note button, button "Send as alternative of slide 1". Dashboard: alternatives at the end of the strip; skipped in `projectProgress` (ring, Send to customer). Protocol for designers: put alternatives at the end of the deck. Slack: "sent an alternative of slide 1"; the link adds `&alt=1`.
 
 **Tag team.** An order is tag team when slides or distributions involve more than one team. Each DM can decide (approve / request changes) only on **their own team's** slides (`canReview`); both see the whole deck. Designer filter chips on the review page appear when 2+ designers work on the order.
 

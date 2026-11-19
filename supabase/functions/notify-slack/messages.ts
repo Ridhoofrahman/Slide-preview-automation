@@ -32,6 +32,16 @@ export const joinAnd = (parts: string[]) => parts.length < 2 ? (parts[0] || "") 
 export const listText = (nums: number[]) => joinAnd(ranges(nums));
 export const slidesText = (nums: number[]) => (uniq(nums).length === 1 ? "slide " : "slides ") + listText(nums);
 const plural = (n: number, w: string) => n + " " + w + (n === 1 ? "" : "s");
+// "slides 2 and 4", "an alternative of slide 1", "slides 2 and 4 and alternatives of slides 1 and 3"
+const isAlt = (r: QueueRow) => Number(r.payload.alternative_of) > 0;
+function slidesAndAlts(rows: QueueRow[]): string {
+  const main = uniq(rows.filter((r) => !isAlt(r)).map((r) => Number(r.payload.slide_number)));
+  const alts = rows.filter(isAlt).map((r) => Number(r.payload.alternative_of));
+  const parts: string[] = [];
+  if (main.length) parts.push(slidesText(main));
+  if (alts.length) parts.push(alts.length === 1 ? "an alternative of slide " + alts[0] : "alternatives of " + slidesText(alts));
+  return parts.join(" and ");
+}
 
 function who(ctx: Context, id: string | null, fallback: string | null, withTeam: boolean): string {
   const p = id ? ctx.people.get(id) : undefined;
@@ -54,10 +64,15 @@ export function buildMessage(rows: QueueRow[], ctx: Context): Message | null {
       if (!nums.length) return null;
       const p = last.payload;
       const designer = (p.designer || "A designer") + (p.team ? "_" + p.team : "");
-      if (first.event === "slide_sent")
-        return { text: `${designer} sent ${plural(nums.length, "slide")} for review in ${order} (${slidesText(nums)}).`, url: link(nums) };
+      const main = uniq(rs.filter((r) => !isAlt(r)).map((r) => Number(r.payload.slide_number)));
+      const alts = rs.filter(isAlt);
+      if (first.event === "slide_sent") {
+        if (!main.length) return { text: `${designer} sent ${slidesAndAlts(alts)} for review in ${order}.`, url: link(nums) + "&alt=1" };
+        const extra = alts.length ? `, plus ${slidesAndAlts(alts)}` : "";
+        return { text: `${designer} sent ${plural(main.length, "slide")} for review in ${order} (${slidesText(main)}${extra}).`, url: link(main) };
+      }
       const afterFeedback = rs.every((r) => r.payload.prev_status === "changes");
-      return { text: `${designer} sent new versions of ${slidesText(nums)} in ${order}${afterFeedback ? " after your feedback" : ""}.`, url: link(nums) };
+      return { text: `${designer} sent new versions of ${slidesAndAlts(rs)} in ${order}${afterFeedback ? " after your feedback" : ""}.`, url: link(nums) };
     }
     case "changes_requested":
     case "approved": {
@@ -66,10 +81,10 @@ export function buildMessage(rows: QueueRow[], ctx: Context): Message | null {
       const nums = uniq(still.map((r) => Number(r.payload.slide_number)));
       if (!nums.length) return null;
       const by = actors(still, ctx);
-      if (want === "approved") return { text: `${by} approved ${slidesText(nums)} in ${order}.` };
+      if (want === "approved") return { text: `${by} approved ${slidesAndAlts(still)} in ${order}.` };
       const comments = [...new Set(still.map((r) => String(r.payload.shot_id)))].reduce((n, id) => n + (ctx.openComments.get(id) || 0), 0);
-      const it = nums.length === 1 ? "it" : "them";
-      return { text: `${by} requested changes on ${slidesText(nums)} in ${order}${comments ? " (" + plural(comments, "comment") + ")" : ""}. Open the deck, fix ${it} and upload the latest version.` };
+      const it = still.length === 1 ? "it" : "them";
+      return { text: `${by} requested changes on ${slidesAndAlts(still)} in ${order}${comments ? " (" + plural(comments, "comment") + ")" : ""}. Open the deck, fix ${it} and upload the latest version.` };
     }
     case "assignment_changed": {
       const before = uniq((first.payload.before || []).map(Number)), after = uniq((last.payload.after || []).map(Number));

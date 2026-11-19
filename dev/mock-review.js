@@ -25,6 +25,8 @@ function q(t){let f=[],op='select',payload=null;const o={select(){return o},orde
  then(r,j){let d=db[t].filter(x=>f.every(g=>g(x)));r({data:o._one?(d[0]||null):d,error:null})}};return o}
 const OUT=!!new URLSearchParams(location.search).get('out');
 if(new URLSearchParams(location.search).get('bignum')){db.slide_assignments[0].slides=[2312];}
+// ?alt=1: order #45236 gets two alternatives of slide 1 (1a sent first, 1b later) and one of slide 2
+if(new URLSearchParams(location.search).get('alt')){const a=(sid,base,mins)=>Object.assign(shot('Order #45236',base,sid,'a','ready',mins,'Cascade','Rama'),{alternative_of:base});db.slide_shots.push(a('alt1a',1,120),a('alt1b',1,60),a('alt2a',2,90));}
 if(new URLSearchParams(location.search).get('empty')){db.slide_shots=[];db.slide_assignments=[];db.project_status=[];}
 window.supabase={createClient(){return{auth:{getSession:async()=>({data:{session:OUT?null:{user}}}),signInWithOAuth:async()=>({data:{},error:null}),signOut:async()=>{},updateUser:async()=>({data:{user},error:null}),signInWithPassword:async()=>({data:{user},error:null})},from:q,
  storage:{from(){return{createSignedUrls:async(p)=>({data:p.map(x=>({path:x,signedUrl:IM[x]})),error:null}),createSignedUrl:async(x)=>({data:{signedUrl:IM[x]},error:null}),upload:async()=>({data:{},error:null}),remove:async()=>({data:{},error:null})}}},

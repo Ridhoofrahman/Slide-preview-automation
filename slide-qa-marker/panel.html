@@ -63,7 +63,7 @@
   .slide-topline .assign-tag { margin-right: auto; }
   .meta-label { margin-right: auto; font-size: 14px; line-height: 20px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .slide-hbtns { display: flex; gap: 8px; flex: none; }
-  .hdr-ic { width: 24px; height: 24px; padding: 4px; border: 0.8px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; color: #454C63; display: grid; place-items: center; cursor: pointer; }
+  .hdr-ic { width: 24px; height: 24px; padding: 0; border: 0.8px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; color: #454C63; display: grid; place-items: center; cursor: pointer; }
   .hdr-ic svg { width: 16px; height: 16px; }
   .hdr-ic:hover { background: #F7F9FC; }
   .hdr-ic.on { background: #EEF4FF; border-color: #A8C3FF; color: #1C43A5; }
@@ -332,6 +332,15 @@
   .slide-content { position: relative; }
   .pos-pop { position: absolute; left: -1px; top: 29px; z-index: 20; width: 249px; display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 8px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(18,18,23,.06), 0 4px 6px rgba(18,18,23,.08); }
   .pos-pop[hidden] { display: none; }
+  /* Alternative slide (Figma 478:15576, 479:15630): purple Tag with close, popup under the buttons on the right */
+  .slide-hbtns { margin-left: auto; }
+  .alt-tag { margin-right: auto; display: inline-flex; align-items: center; min-width: 24px; padding: 4px; border: 1px solid #BDA6EE; border-radius: 999px; background: #F0EBFC; color: #4A2999; font-size: 12px; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .alt-tag[hidden] { display: none; }
+  .alt-tag .lbl { padding: 0 4px; }
+  .alt-x { display: grid; place-items: center; width: 16px; height: 16px; padding: 2px; border: 0; border-radius: 999px; background: none; color: #6035C4; cursor: pointer; }
+  .alt-x svg { width: 12px; height: 12px; }
+  .alt-x:hover { background: rgba(96,53,196,.12); }
+  #altPop { left: auto; right: 0; }
   .pp-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #000000; }
   .pp-box { display: flex; border: 1px solid #DDE4EE; border-radius: 6px; }
   .pp-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 8px; }
@@ -467,9 +476,10 @@
         <div class="slide-content">
           <div class="slide-header">
             <div class="slide-topline">
-              <span class="assign-tag" id="assignTag" hidden></span>
+              <span class="assign-tag" id="assignTag" hidden></span><span class="alt-tag" id="altTag" hidden><span class="lbl" id="altTagText"></span><button type="button" class="alt-x" id="altX" aria-label="Not an alternative" title="Not an alternative"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path transform="translate(1.8 1.8)" d="M8.28531 0.580065L4.70247 4.19179L8.28531 7.80352C8.43823 7.93485 8.43823 8.15375 8.28531 8.28508C8.15423 8.43831 7.93576 8.43831 7.80468 8.28508L4.2 4.69524L0.595319 8.28508C0.464239 8.43831 0.245774 8.43831 0.114694 8.28508C-0.0382315 8.15375 -0.0382315 7.93485 0.114694 7.80352L3.69753 4.19179L0.114694 0.580065C-0.0382315 0.44873 -0.0382315 0.229837 0.114694 0.0985016C0.245774 -0.0328339 0.464239 -0.0328339 0.595319 0.0985016L4.2 3.68834L7.80468 0.0985016C7.93576 -0.0328339 8.15423 -0.0328339 8.28531 0.0985016C8.43823 0.229837 8.43823 0.44873 8.28531 0.580065Z" fill="currentColor"/></svg></button></span>
               <span class="meta-label" id="metaLabel">No slide selected</span>
               <div class="slide-hbtns" id="slideHbtns">
+                <button class="hdr-ic" id="altBtn" type="button" hidden aria-label="Alternative slide" aria-expanded="false" aria-controls="altPop" title="Send as an alternative of another slide"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path transform="translate(2.4 2.397)" d="M8.85505 0.114788C8.98623 -0.0382625 9.20487 -0.0382625 9.33606 0.114788L11.0852 1.86393C11.2383 1.99512 11.2383 2.21376 11.0852 2.34495L9.33606 4.09409C9.20487 4.24714 8.98623 4.24714 8.85505 4.09409C8.72386 3.96291 8.72386 3.74426 8.85505 3.61308L9.99199 2.45427H7.7181C7.34641 2.45427 6.99658 2.60732 6.73421 2.86969L4.26354 5.34036C4.15422 5.44968 4.0449 5.53714 3.93558 5.60273C4.0449 5.69019 4.15422 5.77764 4.26354 5.8651L6.73421 8.33577C6.99658 8.59814 7.34641 8.75119 7.7181 8.75119H9.99199L8.85505 7.59238C8.72386 7.4612 8.72386 7.24255 8.85505 7.11137C8.98623 6.98018 9.20487 6.98018 9.33606 7.11137L11.0852 8.86051C11.2383 8.9917 11.2383 9.21034 11.0852 9.34153L9.33606 11.0907C9.20487 11.2437 8.98623 11.2437 8.85505 11.0907C8.72386 10.9595 8.72386 10.7408 8.85505 10.6097L9.99199 9.45085H7.7181C7.17149 9.45085 6.62489 9.23221 6.23133 8.83865L3.76066 6.36798C3.49829 6.10561 3.14846 5.95256 2.77677 5.95256H0.349829C0.15305 5.95256 0 5.79951 0 5.60273C0 5.40595 0.15305 5.2529 0.349829 5.2529H2.77677C3.14846 5.2529 3.49829 5.09985 3.76066 4.83748L6.23133 2.36681C6.62489 1.97325 7.17149 1.75461 7.7181 1.75461H9.99199L8.85505 0.595802C8.72386 0.464617 8.72386 0.245974 8.85505 0.114788Z" fill="currentColor"/></svg></button>
                 <button class="hdr-ic" id="mapSwap" type="button" hidden aria-label="Change slide position" aria-expanded="false" aria-controls="mapPop" title="Change slide position"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10.0998 1.65973C10.3998 1.53493 10.7498 1.60981 10.9748 1.83445L14.9748 5.82808C15.2748 6.15256 15.2748 6.65176 14.9748 6.97624L10.9748 10.9699C10.7498 11.1945 10.3998 11.2694 10.0998 11.1446C9.7998 11.0198 9.5998 10.7203 9.5998 10.3958V8.39897H5.9998C5.8998 8.39897 5.7998 8.34905 5.7248 8.27417C5.6498 8.19929 5.5998 8.09945 5.5998 7.99961V5.60343L1.5998 9.59706L5.5998 13.5907V11.1945C5.5998 10.9699 5.7748 10.7951 5.9998 10.7951H7.5998C7.8248 10.7951 7.9998 10.9699 7.9998 11.1945C7.9998 11.4192 7.8248 11.5939 7.5998 11.5939H6.3998V13.5907C6.3998 13.9152 6.1998 14.2147 5.8998 14.3395C5.5998 14.4643 5.2748 14.3894 5.0248 14.1648L1.0248 10.1711C0.724805 9.84666 0.724805 9.34746 1.0248 9.02298L5.0248 5.02935C5.2748 4.80471 5.5998 4.75479 5.8998 4.87959C6.1998 5.00439 6.3998 5.27895 6.3998 5.60343V7.60025H9.9998C10.0998 7.60025 10.1998 7.65017 10.2748 7.72505C10.3498 7.79993 10.3998 7.89977 10.3998 7.99961V10.3958L14.3998 6.40216L10.3998 2.40853V4.80471C10.3998 5.02935 10.2248 5.20407 9.9998 5.20407H8.39981C8.1748 5.20407 7.9998 5.02935 7.9998 4.80471C7.9998 4.58007 8.1748 4.40535 8.39981 4.40535H9.5998V2.40853C9.5998 2.08405 9.7998 1.78453 10.0998 1.65973Z" fill="currentColor"/></svg></button>
                 <button class="hdr-ic" id="editNoteBtn" type="button" hidden aria-label="Add note for DM" title="Add note for DM"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.8596 2.64413C13.5425 2.32662 13.029 2.32914 12.717 2.64665L12.0525 3.32199L13.4871 4.75835L14.1591 4.08301C14.4737 3.76802 14.4737 3.25647 14.1591 2.944L13.8596 2.64413ZM7.90228 7.52524C7.79405 7.63611 7.71855 7.77471 7.68583 7.92591L7.36116 9.4807L8.90901 9.15563C9.06253 9.12287 9.20347 9.04728 9.31421 8.9364L12.9158 5.32786L11.4837 3.89401L7.90228 7.52524ZM12.1431 2.07966C12.7698 1.44212 13.7967 1.4396 14.4284 2.0721L14.7279 2.3745C15.3571 3.00448 15.3571 4.02505 14.7279 4.65503L9.88302 9.5059C9.66154 9.72766 9.37965 9.87885 9.07512 9.94437L6.92323 10.3954C6.78984 10.4232 6.65142 10.3828 6.55578 10.2871C6.46014 10.1913 6.41735 10.0527 6.44755 9.91917L6.90058 7.75959C6.9635 7.4572 7.11451 7.17749 7.33096 6.95825L12.1431 2.07966ZM0.799805 6.33583C0.799805 5.44629 1.52213 4.72307 2.41057 4.72307H6.84018C7.06166 4.72307 7.24287 4.90451 7.24287 5.12626C7.24287 5.34802 7.06166 5.52945 6.84018 5.52945H2.41057C1.96509 5.52945 1.60519 5.8898 1.60519 6.33583V12.7869C1.60519 13.2329 1.96509 13.5932 2.41057 13.5932H12.0752C12.5206 13.5932 12.8806 13.2329 12.8806 12.7869V8.35177C12.8806 8.13002 13.0618 7.94858 13.2832 7.94858C13.5047 7.94858 13.6859 8.13002 13.6859 8.35177V12.7869C13.6859 13.6764 12.9636 14.3996 12.0752 14.3996H2.41057C1.52213 14.3996 0.799805 13.6764 0.799805 12.7869V6.33583ZM4.02134 9.56134C4.02134 9.22619 4.29064 8.95656 4.62537 8.95656C4.96011 8.95656 5.22941 9.22619 5.22941 9.56134C5.22941 9.89649 4.96011 10.1661 4.62537 10.1661C4.29064 10.1661 4.02134 9.89649 4.02134 9.56134Z" fill="currentColor"/></svg></button>
               </div>
@@ -481,6 +491,11 @@
               <button id="refreshBtn" class="thumb-refresh" hidden aria-label="Refresh preview" title="Refresh preview"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <div id="sentOverlay" class="sent-overlay" hidden role="status"><span class="ok-icon"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="sentOverlayText"></span></div>
             </div>
+          </div>
+          <div class="pos-pop" id="altPop" hidden role="dialog" aria-labelledby="apTitle">
+            <p class="pp-title" id="apTitle">Alternative slide</p>
+            <div class="pp-box"><div class="pp-col"><span class="pp-lab" id="apLab">Send this slide as alternative of</span><span class="pp-select"><select id="apSel" aria-labelledby="apLab"></select><svg class="pp-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L11.6464 14.6464C11.8417 14.8417 12.1583 14.8417 12.3536 14.6464L18 9" stroke="#454C63" stroke-linecap="round"/></svg></span></div></div>
+            <div class="pp-actions"><button type="button" class="pp-save" id="apSave">Save</button></div>
           </div>
           <div class="pos-pop" id="mapPop" hidden role="dialog" aria-labelledby="ppTitle">
             <p class="pp-title" id="ppTitle">Change slide position</p>
@@ -526,7 +541,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.41";
+const APP_VERSION = "2.42";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -635,7 +650,7 @@ async function loadAssignments() {
   if (error) { S.assignLoaded = false; return; }
   // Slides already sent under this order number, to spot a different deck using the same number
   const names = [...new Set([projectName(), "Order #" + id, "#" + id, id, ...data.map((a) => a.order_name)])];
-  const sent = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version").in("project", names).limit(1000);
+  const sent = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,alternative_of,created_at").in("project", names).limit(1000);
   S.orderShots = sent.error ? [] : sent.data;
   S.assignLoaded = true;
   if (data.length && data[0].order_name && data[0].order_name !== projectName()) docStore.set("slideqa.project", data[0].order_name);
@@ -719,7 +734,7 @@ async function loadReviews() {
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
   // Teammates working on the same order, in their own copies of the deck
-  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer,created_at,image_path").eq("project", projectName()).neq("designer_id", S.user.id);
+  const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer,created_at,image_path,alternative_of").eq("project", projectName()).neq("designer_id", S.user.id);
   S.team = {};
   if (!team.error) team.data.forEach((r) => { const k = r.file_key + "|" + r.slide_id; if (!S.team[k] || r.version > S.team[k].version) S.team[k] = r; });
 }
@@ -756,7 +771,7 @@ function makeTag(status, label) {
 }
 // The most recent teammate submission for a slide number (teammates work in full copies of the deck)
 function teamShotFor(n) {
-  return Object.values(S.team || {}).filter((r) => r.slide_number === n)
+  return Object.values(S.team || {}).filter((r) => r.slide_number === n && !r.alternative_of)
     .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0] || null;
 }
 // What the panel is showing for the selected slide
@@ -790,7 +805,8 @@ function render() {
   else if (v.mode === "locked") meta = "Designer: " + shot.designer + ", v" + shot.version;
   $("metaLabel").textContent = meta;
   // Header right: "Slide N" + status chip
-  $("headSlide").textContent = !cur ? "" : (cur.n && cur.n !== cur.local ? "Slide " + cur.local + " \u2192 Slide " + cur.n : "Slide " + cur.local);
+  const alt = cur ? cur.alt || null : null;
+  $("headSlide").textContent = !cur ? "" : alt ? "Slide " + altLabel(cur) : (cur.n && cur.n !== cur.local ? "Slide " + cur.local + " \u2192 Slide " + cur.n : "Slide " + cur.local);
   const tag = $("curStatus"); tag.className = "tag " + (status || "none"); tag.textContent = status ? STATUS_LABEL[status] : "Not sent yet"; tag.hidden = !cur;
 
   // Assignment from the DM for this slide
@@ -798,16 +814,19 @@ function render() {
   var mine = !!as && as.assignee_id === S.user.id;
   var splitOrder = !!S.assignLoaded;
   // Header tag: a slide nobody was assigned reads "Not to work" instead of "Not sent yet"
-  if (cur && splitOrder && !as && !status) { tag.textContent = "Not to work"; tag.className = "tag none"; tag.hidden = false; }
+  if (cur && splitOrder && !as && !status && !alt) { tag.textContent = "Not to work"; tag.className = "tag none"; tag.hidden = false; }
   const at = $("assignTag"); at.hidden = !(cur && splitOrder);
   if (cur && splitOrder) {
     at.className = "assign-tag" + (mine ? " mine" : "");
     if (mine) at.innerHTML = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5.00006 1.79883H11.0001C11.8204 1.79883 12.5001 2.47852 12.5001 3.29883V13.0488C12.5001 13.3301 12.3594 13.5645 12.1251 13.7051C11.8907 13.8457 11.586 13.8223 11.3751 13.6816L8.00006 11.666L4.62506 13.6816C4.41412 13.8223 4.10943 13.8223 3.87506 13.7051C3.64068 13.5645 3.50006 13.3301 3.50006 13.0488V3.29883C3.50006 2.47852 4.17974 1.79883 5.00006 1.79883Z" fill="currentColor"/></svg><span>Assigned to you</span>';
     else at.textContent = as ? "Assigned to " + as.assignee_name + (as.assignee_team ? "_" + as.assignee_team : "") : "Not to work";
-    if (!as) at.hidden = true;   // unassigned: the header tag already says "Not to work"
+    if (!as || alt) at.hidden = true;   // unassigned: the header tag already says "Not to work"; an alternative shows its own tag
     $("metaLabel").hidden = true;
   } else $("metaLabel").hidden = false;
   $("mySlides").hidden = true;
+  // Alternative: purple tag; the × only before it's sent (after that, later versions stay alternatives of the same slide)
+  $("altTag").hidden = !alt;
+  if (alt) { $("altTagText").textContent = "Alternative of slide " + alt; $("altX").hidden = !!S.latest[cur.id]; }
 
   // Preview source changes (live slide vs sent snapshot) re-render the image
   const thumbKey = (cur ? cur.id : "") + "|" + v.mode + "|" + (shot ? shot.image_path : v.team ? v.team.image_path : "");
@@ -822,7 +841,7 @@ function render() {
   $("refreshBtn").hidden = v.mode !== "update";
   const justSent = !!(cur && S.justSent[cur.id] && Date.now() - S.justSent[cur.id] < 2600);
   $("sentOverlay").hidden = !justSent;
-  if (justSent) $("sentOverlayText").textContent = "Slide " + cur.n + " sent for review";
+  if (justSent) $("sentOverlayText").textContent = alt ? "Alternative of slide " + alt + " sent for review" : "Slide " + cur.n + " sent for review";
 
   // Pins from the DM sit on the sent version only
   const tp = $("tpins"); tp.innerHTML = "";
@@ -854,12 +873,12 @@ function render() {
   const canPrimary = v.mode === "notsent" || v.mode === "update";
   btn.hidden = !canPrimary;
   btn.disabled = !canPrimary || S.busy || !S.canImage;
-  btn.textContent = v.mode === "update" ? "Send v" + (shot.version + 1) + " for review" : cur ? "Mark slide " + cur.local + " ready for review" : "Select a slide";
+  btn.textContent = v.mode === "update" ? "Send v" + (shot.version + 1) + " for review" : alt ? "Send as alternative of slide " + alt : cur ? "Mark slide " + cur.local + " ready for review" : "Select a slide";
   cancel.hidden = v.mode !== "update"; cancel.disabled = S.busy;
   upd.hidden = !(locked && shot.status !== "approved");
   // Once the DM has distributed the order, only your own slides can be sent
   const split = !!S.assignLoaded;
-  const blocked = !!cur && split && !(as && as.assignee_id === S.user.id) && (v.mode === "notsent" || v.mode === "update" || (locked && shot.status !== "approved"));
+  const blocked = !!cur && !alt && split && !(as && as.assignee_id === S.user.id) && (v.mode === "notsent" || v.mode === "update" || (locked && shot.status !== "approved"));
   // Different deck, same order number: copies of one deck keep PowerPoint's slide ids, a separate deck doesn't
   const myBase = baseFileKey(), myIds = new Set(S.slides.map((x) => x.id));
   const others = (S.orderShots || []).filter((r) => (r.file_key || "").split(":")[0] !== myBase);
@@ -874,12 +893,15 @@ function render() {
     $("editNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
   }
   // Change slide position: on my own slides, before they're sent
-  $("mapSwap").hidden = !(cur && mine && notesHere) || idClash;
+  $("mapSwap").hidden = !(cur && mine && notesHere) || idClash || !!alt;
   if ($("mapSwap").hidden && S.closeMapPop) S.closeMapPop();
   if (blocked) {
     btn.hidden = true; upd.hidden = true; cancel.hidden = true; $("mapSwap").hidden = true;
     $("editNoteBtn").hidden = true; $("noteField").hidden = true; $("undoNote").hidden = true;
   }
+  // Alternative slide: on an unassigned slide, or one of mine, before it's sent; needs slides of mine to pick from
+  $("altBtn").hidden = !(cur && split && (S.mySlides || []).length && v.mode === "notsent" && !idClash && (alt || !as || mine));
+  if ($("altBtn").hidden && S.closeAltPop) S.closeAltPop();
   $("actions").hidden = btn.hidden && upd.hidden && cancel.hidden && !$("msg").textContent;
 
   // Feedback on the sent version
@@ -910,7 +932,7 @@ function render() {
 
   // Summary: every sent slide in the order, mine and teammates'
   const byNumber = {};
-  S.slides.forEach((s) => { if (S.latest[s.id]) byNumber[s.n] = { status: S.latest[s.id].status, id: s.id }; });
+  S.slides.forEach((s) => { if (S.latest[s.id] && !s.alt) byNumber[s.n] = { status: S.latest[s.id].status, id: s.id }; });
   Object.values(S.team || {}).forEach((r) => { if (!(r.slide_number in byNumber)) byNumber[r.slide_number] = { status: r.status, designer: r.designer }; });
   const nums = Object.keys(byNumber).map(Number).sort((a, b) => a - b);
   const approved = nums.filter((n) => byNumber[n].status === "approved").length;
@@ -982,7 +1004,7 @@ async function renderThumb() {
     if (snapshotPath) { const u = await signedUrl(snapshotPath); src = u; }
     else if (S.canImage) { src = "data:image/png;base64," + await slideImage(cur.id, THUMB_WIDTH); }
     if (token !== S.thumbToken) return;
-    if (!src) { box.innerHTML = "<span>Slide " + cur.n + "</span>"; return; }
+    if (!src) { box.innerHTML = "<span>Slide " + (cur.n || cur.alt) + "</span>"; return; }
     const existing = box.querySelector("img");
     if (existing && existing.getAttribute("src") === src) return;
     box.innerHTML = ""; const img = new Image();
@@ -1000,13 +1022,20 @@ async function refreshDeck() {
 // Where each slide currently sits in the order = the position of its latest sent version (what the DM sees)
 function sentPositions() {
   const latest = {};
-  (S.orderShots || []).forEach((r) => { const k = r.slide_id; if (!latest[k] || (r.version || 0) > (latest[k].version || 0)) latest[k] = r; });
-  Object.values(S.latest || {}).forEach((r) => { const k = r.slide_id; if (!latest[k] || (r.version || 0) >= (latest[k].version || 0)) latest[k] = r; });
+  (S.orderShots || []).filter((r) => !r.alternative_of).forEach((r) => { const k = r.slide_id; if (!latest[k] || (r.version || 0) > (latest[k].version || 0)) latest[k] = r; });
+  Object.values(S.latest || {}).filter((r) => !r.alternative_of).forEach((r) => { const k = r.slide_id; if (!latest[k] || (r.version || 0) >= (latest[k].version || 0)) latest[k] = r; });
   const byId = {}; Object.values(latest).forEach((r) => { if (r.slide_number) byId[r.slide_id] = r.slide_number; });
   return byId;   // slide_id -> position
 }
 function applyWorkingMap() {
   if (!S.slides) return;
+  // Alternatives first: they hold no position, and the slides after them keep their numbers (x.deck = place in the file)
+  let seq = 0;
+  S.slides.forEach((x) => { if (x.deck == null) x.deck = x.local; x.alt = altOf(x); if (!x.alt) x.local = ++seq; });
+  const all = S.slides; S.slides = all.filter((x) => !x.alt);
+  try { mapPositions(); } finally { S.slides = all; S.slides.forEach((x) => { if (x.alt) { x.n = null; x.sentAt = null; } }); }
+}
+function mapPositions() {
   const working = docStore.get("slideqa.workfile") === orderKey();
   const slots = (S.mySlides || []).slice();
   let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
@@ -1041,6 +1070,42 @@ function applyWorkingMap() {
   });
   void mine;
 }
+// ---- alternative slides: an extra slide sent as an alternative of one of my assigned slides
+function savedAlts() { try { return JSON.parse(docStore.get("slideqa.alt") || "{}"); } catch (e) { return {}; } }
+// Once sent, the database decides (alternative_of); before that, the choice saved in this file
+function altOf(x) { if (!x) return null; const sent = (S.latest || {})[x.id]; if (sent) return sent.alternative_of || null; return savedAlts()[x.id] || null; }
+function setAlt(slideId, base) {
+  const a = savedAlts(); if (base) a[slideId] = base; else delete a[slideId];
+  docStore.set("slideqa.alt", JSON.stringify(a));
+  if (base) { let m = {}; try { m = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {} if (m[slideId]) { delete m[slideId]; docStore.set("slideqa.map", JSON.stringify(m)); } }
+  applyWorkingMap(); render();
+}
+// "1a", "1b": in the order alternatives of a slide were first sent (any designer), then my unsent ones in deck order
+function altLabel(x) {
+  const base = x && x.alt; if (!base) return "";
+  const first = {}, me = ((S.latest || {})[x.id] || {}).file_key || fileKey();
+  (S.orderShots || []).concat(Object.values(S.latest || {})).forEach((r) => {
+    if (r.alternative_of !== base) return; const k = r.file_key + "|" + r.slide_id, t = r.created_at || "";
+    if (!(k in first) || t < first[k]) first[k] = t;
+  });
+  const sent = Object.keys(first).sort((a, b) => first[a].localeCompare(first[b]) || a.localeCompare(b));
+  let i = sent.indexOf(me + "|" + x.id);
+  if (i < 0) i = sent.length + Math.max(0, S.slides.filter((y) => y.alt === base && !sent.includes(fileKey() + "|" + y.id)).findIndex((y) => y.id === x.id));
+  return base + String.fromCharCode(97 + Math.min(i, 25));
+}
+// "Alternative slide" popup: pick which of my assigned slides this one is an alternative of
+function openAltPop() {
+  const cur = currentSlide(); if (!cur) return;
+  if (S.closeMapPop) S.closeMapPop();
+  const pop = $("altPop"), sel = $("apSel"); sel.innerHTML = "";
+  (S.mySlides || []).forEach((n) => { const o = document.createElement("option"); o.value = n; o.textContent = "Slide " + n; if (n === cur.alt) o.selected = true; sel.append(o); });
+  pop.hidden = false; $("altBtn").classList.add("open"); $("altBtn").setAttribute("aria-expanded", "true");
+  const close = () => { pop.hidden = true; $("altBtn").classList.remove("open"); $("altBtn").setAttribute("aria-expanded", "false"); document.removeEventListener("click", outside); S.closeAltPop = null; };
+  const outside = (e) => { if (!pop.contains(e.target) && !$("altBtn").contains(e.target)) close(); };
+  $("apSave").onclick = () => { const v = +sel.value; close(); if (v) setAlt(cur.id, v); };
+  setTimeout(() => document.addEventListener("click", outside), 0);
+  S.closeAltPop = close;
+}
 function setPosition(slideId, pos) {
   let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
   Object.keys(saved).forEach((k) => { if (saved[k] === pos && k !== slideId) delete saved[k]; });
@@ -1050,6 +1115,7 @@ function setPosition(slideId, pos) {
 // "Change slide position" popup: Current position (this file) → Sent as (position in the order)
 function openMapPop() {
   const cur = currentSlide(); if (!cur) return;
+  if (S.closeAltPop) S.closeAltPop();
   const pop = $("mapPop");
   $("ppCur").textContent = "Slide " + cur.local;
   const sel = $("ppSel"); sel.innerHTML = "";
@@ -1073,21 +1139,22 @@ function openMapPop() {
 }
 
 async function markReady() {
-  const cur = currentSlide(); if (!cur || !cur.n) return;
+  const cur = currentSlide(); if (!cur || (!cur.n && !cur.alt)) return;
+  const what = cur.alt ? "slide " + altLabel(cur) : "slide " + cur.n;
   const prev = S.latest[cur.id];
   const version = prev ? prev.version + 1 : 1;
   S.busy = true; render();
-  say($("msg"), "Capturing slide " + cur.n + "…");
+  say($("msg"), "Capturing " + what + "…");
   try {
     const b64 = await slideImage(cur.id, IMAGE_WIDTH);
     const details = await readDetails(cur.id);
     const key = fileKey();
     const path = key + "/" + cur.id.replace(/[^a-zA-Z0-9_-]/g, "_") + "/v" + version + "-" + Date.now() + ".png";
-    say($("msg"), "Uploading slide " + cur.n + "…");
+    say($("msg"), "Uploading " + what + "…");
     const up = await S.sb.storage.from("slides").upload(path, b64ToBlob(b64, "image/png"), { contentType: "image/png" });
     if (up.error) throw up.error;
     const ins = await S.sb.from("slide_shots").insert({
-      file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.n, total_slides: S.slides.length,
+      file_key: key, project: projectName(), slide_id: cur.id, slide_number: cur.alt || cur.n, alternative_of: cur.alt || null, total_slides: S.slides.length,
       version: version, designer: displayName(S.user), team: S.myTeam || null, note: (!$("noteField").hidden && $("note").value.trim()) || null, image_path: path, details: details
     }).select().single();
     if (ins.error) throw ins.error;
@@ -1096,7 +1163,7 @@ async function markReady() {
     S.updating[cur.id] = false; S.justSent[cur.id] = Date.now(); say($("msg"), "");
     setTimeout(render, 2700);
   } catch (e) {
-    say($("msg"), "Slide " + cur.n + " wasn't sent: " + (e.message || e) + ". Check your connection and try again.", "err");
+    say($("msg"), what.charAt(0).toUpperCase() + what.slice(1) + " wasn't sent: " + (e.message || e) + ". Check your connection and try again.", "err");
   } finally {
     S.busy = false;
     try { await loadReviews(); } catch (e) {}
@@ -1410,6 +1477,8 @@ Office.onReady(async (info) => {
   $("teamStep").addEventListener("change", () => setFieldError("teamStep", ""));
   ["email", "password"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("markBtn").onclick = markReady;
+  $("altBtn").onclick = (e) => { e.stopPropagation(); if ($("altPop").hidden) openAltPop(); else if (S.closeAltPop) S.closeAltPop(); };
+  $("altX").onclick = () => { const cur = currentSlide(); if (cur) setAlt(cur.id, null); };
   $("mapSwap").onclick = (e) => { e.stopPropagation(); if ($("mapPop").hidden) openMapPop(); else if (S.closeMapPop) S.closeMapPop(); };
   $("editNoteBtn").onclick = () => { S.noteOpen = !($("noteField").hidden === false); render(); if (!$("noteField").hidden) $("note").focus(); };
   $("note").addEventListener("input", () => { if (S.currentId) S.notes[S.currentId] = $("note").value; });

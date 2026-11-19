@@ -24,6 +24,9 @@ update public.profiles p
  where i.user_id = p.user_id and i.provider = 'slack_oidc' and p.slack_user_id is null
    and coalesce(i.identity_data->>'https://slack.com/user_id', i.identity_data->>'sub') ~ '^[UW][A-Z0-9]+$';
 
+-- Alternative slides (sql/alternatives.sql): the trigger below reads this column
+alter table public.slide_shots add column if not exists alternative_of int;
+
 -- 2. The queue
 create table if not exists public.notification_queue (
   id            bigserial primary key,
@@ -91,14 +94,15 @@ begin
                  where p.team = new.team loop                                    -- tag team: own team's DMs only
         perform public.notify_enqueue(ev, dm, actor, ok,
           jsonb_build_object('shot_id', new.id, 'slide_number', new.slide_number, 'version', new.version,
-                             'designer', new.designer, 'team', new.team, 'prev_status', prev),
+                             'designer', new.designer, 'team', new.team, 'prev_status', prev,
+                             'alternative_of', new.alternative_of),
           coalesce(new.designer_id::text, new.designer));
       end loop;
     elsif tg_op = 'UPDATE' and new.status is distinct from old.status and new.status in ('changes', 'approved') then
       perform public.notify_enqueue(case new.status when 'changes' then 'changes_requested' else 'approved' end,
         new.designer_id, auth.uid(), ok,
         jsonb_build_object('shot_id', new.id, 'slide_number', new.slide_number, 'version', new.version,
-                           'reviewer', new.reviewed_by));
+                           'reviewer', new.reviewed_by, 'alternative_of', new.alternative_of));
     end if;
   exception when others then
     raise warning 'notify_slide_shots: %', sqlerrm;
