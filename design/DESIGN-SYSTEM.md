@@ -6,7 +6,7 @@
 - Documentation page (Claude artifact, private until shared): https://claude.ai/artifact/BPEn4Z5f3zEt41WXoEfRym
 - Library key: `lk-76d9bae431e360dd225a71fc8893a838af097617d6d9bf50b6ea70697f6ac365f1960248279e5d59a08d82849de616bad8f412724f1720eb917c6c25b8a2905c`
 - Slideshot-specific components (order card, slide thumbnail, progress ring, review panel…) are on the Slideshot **Components** page (`347:10403`). See `design/FIGMA.md`. **They still use the old token set** (see "Migration status").
-- Catalogue read from the published library on **2026-11-13**, after Uda published the new token setup; success palette and icon/* values re-read later the same day (new green #559B1F). If the DS changes, refresh this file (see the end).
+- Catalogue read from the published library on **2026-11-13**, after Uda published the new token setup; success palette and icon/* values re-read later the same day. **Re-read 2026-11-19:** the success palette changed again (new green, below) and `elevation/secondary` was added; nothing else changed. If the DS changes, refresh this file (see the end).
 
 ## Token structure (new)
 | Collection | What it holds | Use it for |
@@ -46,7 +46,7 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | `text/disabled` | #A3ADC2 |
 | `text/on-color` | #FFFFFF |
 | `text/color/brand` | #1C43A5 |
-| `text/color/success` | #417618 |
+| `text/color/success` | #0A6139 |
 | `text/color/warning` | #AD7300 |
 | `text/color/danger` | #A81A1A |
 | `text/color/information` | #4A2999 |
@@ -59,7 +59,7 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | `icon/subtle` · `icon/disabled` | #A3ADC2 |
 | `icon/on-color` | #FFFFFF |
 | `icon/brand` | #2557D4 |
-| `icon/success` | #559B1F (also the progress ring) |
+| `icon/success` | #0C7F49 (also the progress ring and the sent-to-customer circle) |
 | `icon/warning` | #E09600 |
 | `icon/danger` | #D62020 |
 | `icon/information` | #6035C4 |
@@ -69,21 +69,22 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 |---|---|
 | `background/neutral/*` | #FFFFFF · #F7F9FC · active #DDE4EE · disabled #F7F9FC |
 | `background/brand/*` | #1C43A5 · #132D70 · active #EEF4FF · hover-subtle #EEF4FF · disabled #A8C3FF |
-| `background/success/*` | #559B1F · #417618 · disabled #B3E295 |
+| `background/success/*` | #12A45F · hover #0C7F49 · disabled #7ED9A8 |
 | `background/warning/*` | #E09600 · #AD7300 · disabled #FFE08A |
 | `background/danger/*` | #D62020 · #A81A1A · hover-subtle #FFF1F1 · disabled #FFB0B0 |
 | `background/information/*` | #6035C4 · #4A2999 · disabled #BDA6EE |
 | `background/disabled/disabled` | #EEF2F8 |
-| `background/accent/neutral · brand · success · warning · danger · information` | #F7F9FC · #EEF4FF · #EEF8E6 · #FFF9E6 · #FFF1F1 · #F0EBFC |
+| `background/accent/neutral · brand · success · warning · danger · information` | #F7F9FC · #EEF4FF · #E6F7EE · #FFF9E6 · #FFF1F1 · #F0EBFC |
 
 ### Elevation, outline, divider
 | Token | Value |
 |---|---|
 | `elevation/sunken` (canvas, recessed areas) | #EEF2F8 |
+| `elevation/secondary` (new 2026-11-19) | #F7F9FC |
 | `elevation/default` · `raised` · `overlay` | #FFFFFF |
 | `outline/neutral` | #DDE4EE |
 | `outline/brand` | #A8C3FF |
-| `outline/success` · `warning` · `danger` · `information` | #B3E295 · #FFE08A · #FFB0B0 · #BDA6EE |
+| `outline/success` · `warning` · `danger` · `information` | #7ED9A8 · #FFE08A · #FFB0B0 · #BDA6EE |
 | `outline/on-color` | #FFFFFF |
 | `divider/default` | #C2CCDB |
 | `tooltip/default` | #1A1F2E |
