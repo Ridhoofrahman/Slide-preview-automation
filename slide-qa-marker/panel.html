@@ -595,7 +595,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.47";
+const APP_VERSION = "2.48";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1355,11 +1355,25 @@ async function cmpSelect(it) {
   const cur = currentSlide(); if (!cur) return;
   try {
     await PowerPoint.run(async (ctx) => {
-      const slide = ctx.presentation.slides.getItem(cur.id), shapes = slide.shapes; shapes.load("items/id,items/name,items/type"); await ctx.sync();
-      const byId = it.shape ? shapes.items.find((x) => String(x.id) === String(it.shape.id)) : null;
+      const slide = ctx.presentation.slides.getItem(cur.id);
+      // Every shape, including the ones inside groups (nested groups too); top = the slide-level shape that holds it
+      const items = [];
+      const collect = async (coll, top) => {
+        coll.load("items/id,items/name,items/type"); await ctx.sync();
+        for (const sh of coll.items) {
+          items.push({ sh, top: top || sh });
+          if (/group/i.test(String(sh.type))) { try { await collect(sh.group.shapes, top || sh); } catch (e) { /* groups API missing (older Office): top level only */ } }
+        }
+      };
+      await collect(slide.shapes, null);
+      const byId = it.shape ? items.find((x) => String(x.sh.id) === String(it.shape.id)) : null;
       const loc = it.slideLoc || it.loc;
-      if (loc === "table" || loc === "chart") { const t = byId || shapes.items.find((x) => /table|chart|graphic/i.test(String(x.type))); if (t) { slide.setSelectedShapes([t.id]); await ctx.sync(); } return; }
-      for (const sh of byId ? [byId].concat(shapes.items.filter((x) => x !== byId)) : shapes.items) {
+      if (loc === "table" || loc === "chart") {
+        const t = byId || items.find((x) => /table|chart|graphic/i.test(String(x.sh.type))); if (!t) return;
+        try { slide.setSelectedShapes([t.sh.id]); await ctx.sync(); } catch (e) { slide.setSelectedShapes([t.top.id]); await ctx.sync(); }   // a shape inside a group may not be selectable on its own
+        return;
+      }
+      for (const sh of (byId ? [byId].concat(items.filter((x) => x !== byId)) : items).map((x) => x.sh).filter((x) => !/group/i.test(String(x.type)))) {
         const tr = sh.textFrame.textRange; tr.load("text");
         try { await ctx.sync(); } catch (e) { continue; }
         const pos = locate(tr.text || "", it.slideSentence, it.slide.mid);

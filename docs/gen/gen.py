@@ -337,6 +337,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.48',('Compare with original: the target button also finds text inside grouped shapes.','Bandingkan dengan file asli: tombol target juga menemukan teks di dalam shape yang di-group.')],
 ['v2.47',('Compare with original: “After …” now names the text right above on the slide (reading order, not file order); a lost space (e.g. “EVOLVEsharing”) shows as a changed word, not missing text; cleaner bar header.','Bandingkan dengan file asli: “After …” kini menyebut teks yang tepat di atasnya di slide (urutan baca, bukan urutan file); spasi yang hilang (mis. “EVOLVEsharing”) tampil sebagai kata yang berubah, bukan teks yang hilang; header bar lebih bersih.')],
 ['v2.46',('Compare with original: the list keeps its scroll position after you click a target button.','Bandingkan dengan file asli: daftar tetap di posisi scroll-nya setelah tombol target diklik.')],
 ['v2.45',('Compare with original: missing text now shows where it was (“After …” with a button that selects that spot on your slide), the original is removed with a trash icon, and the bar only shows before a slide is sent.','Bandingkan dengan file asli: teks yang hilang kini menunjukkan letaknya (“After …” dengan tombol yang memilih tempat itu di slide-mu), file asli dilepas dengan ikon tempat sampah, dan bar hanya muncul sebelum slide dikirim.')],
@@ -411,11 +412,11 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.47','Add-in v2.47')}</span><span class="meta">{T('Updated 19 Nov 2026','Diperbarui 19 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.48','Add-in v2.48')}</span><span class="meta">{T('Updated 19 Nov 2026','Diperbarui 19 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
-<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.47.','Slideshot untuk 24Slides. Add-in v2.47.')}</footer></main></div>
+<main>{''.join(S)}<footer class="foot">{T('Slideshot for 24Slides. Add-in v2.48.','Slideshot untuk 24Slides. Add-in v2.48.')}</footer></main></div>
 <script>{JS}</script>
 </body></html>'''
 open(os.path.join(HERE,'..','slideshot-docs.html'),'w').write(page)
