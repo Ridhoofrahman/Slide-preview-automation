@@ -595,7 +595,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.48";
+const APP_VERSION = "2.49";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1241,7 +1241,7 @@ function cmpRemove() { cmpPut(CMP.key, null); CMP.meta = null; CMP.slides = null
 function cmpCollapse() { CMP.open = false; if (CMP.state !== "checking") CMP.state = "idle"; renderCmp(); }
 
 const CMP_LOCS = [["text", ""], ["table", " in table"], ["chart", " in chart"], ["notes", " in speaker notes"]];
-const CMP_CATS = [["numbers", "Numbers changed"], ["missing", "Missing text"], ["words", "Words changed"]];
+const CMP_CATS = [["numbers", "Numbers changed"], ["missing", "Missing text"], ["words", "Words changed"], ["added", "Added text"]];
 function cmpText(part, cls) {
   const p = document.createElement("p");
   if (part.pre) p.append(document.createTextNode(part.pre + " "));
@@ -1278,10 +1278,11 @@ function renderCmp(show) {
       if (CMP.retry === "check") act("Try again", cmpCheck); else if (CMP.retry === "pick") act("Choose file", () => $("cmpFile").click());
       body.append(st);
     } else {
-      const n = CMP.items.length, moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
+      // Added text is information, not a difference: counted apart
+      const all = CMP.items.length, added = CMP.items.filter((it) => it.cat === "added").length, n = all - added, plus = added ? " \u00B7 " + added + " added" : "", moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
       const vs = moved || alt ? " vs original slide " + CMP.base : "";
-      if (!n) { st.classList.add("ok"); msg.textContent = "Text matches the original" + vs; }
-      else msg.textContent = n + " difference" + (n === 1 ? "" : "s") + " found" + vs;
+      if (!n) { st.classList.add("ok"); msg.textContent = "Text matches the original" + vs + plus; }
+      else msg.textContent = n + " difference" + (n === 1 ? "" : "s") + " found" + vs + plus;
       act("Check again", cmpCheck); body.append(st);
       const list = document.createElement("div"); list.className = "cmp-list";
       CMP_LOCS.forEach(([loc, suffix]) => CMP_CATS.forEach(([cat, title]) => {
@@ -1290,10 +1291,15 @@ function renderCmp(show) {
         const h = document.createElement("h3"); h.textContent = title + suffix + " (" + rows.length + ")"; sec.append(h);
         const tb = document.createElement("div"); tb.className = "cmp-table";
         const lab = document.createElement("div"); lab.className = "cmp-row cmp-label";
-        lab.innerHTML = cat === "missing" ? '<div class="cmp-cell">Original</div>' : '<div class="cmp-cell">Original</div><div class="cmp-cell">Your slide</div>';
+        lab.innerHTML = cat === "missing" ? '<div class="cmp-cell">Original</div>' : cat === "added" ? '<div class="cmp-cell">Your slide</div>' : '<div class="cmp-cell">Original</div><div class="cmp-cell">Your slide</div>';
         tb.append(lab);
         rows.forEach((it) => {
           const r = document.createElement("div"); r.className = "cmp-row";
+          if (cat === "added") {   // one column, plain text; bullseye selects it on the slide (not for notes)
+            const c = document.createElement("div"); c.className = "cmp-cell"; c.append(cmpText({ pre: it.text }, ""));
+            if (it.slideLoc !== "notes") { const bb = document.createElement("button"); bb.type = "button"; bb.className = "cmp-btn"; bb.innerHTML = CMP_ICON.bullseye; bb.setAttribute("aria-label", "Select on slide"); bb.onclick = () => cmpSelect({ slideLoc: it.slideLoc, shape: it.shape, slideSentence: it.text, slide: { mid: "" } }); c.append(bb); }
+            r.append(c); tb.append(r); return;
+          }
           const a = document.createElement("div"); a.className = "cmp-cell"; a.append(cat === "missing" ? cmpText({ pre: [it.orig.pre, it.orig.mid, it.orig.post].filter(Boolean).join(" ") }, "") : cmpText(it.orig, "o")); r.append(a);
           const btn = document.createElement("button"); btn.type = "button"; btn.className = "cmp-btn";
           if (cat === "missing") {
@@ -1318,7 +1324,7 @@ function renderCmp(show) {
         });
         sec.append(tb); list.append(sec);
       }));
-      if (n) body.append(list);
+      if (all) body.append(list);
       CMP.drawn = CMP.items;
     }
   }

@@ -258,6 +258,10 @@
       return null;
     };
     allO.forEach((o, k) => { if (!takenO.has(o) && !slideAll.includes(o.t)) items.push({ cat: "missing", loc: o.loc, orig: { pre: "", mid: o.t, post: "" }, anchor: anchorFor(k, o.loc) }); });
+    // Added: slide text with no pair in the original, unless it is a part (3+ words) of a longer original sentence
+    // (one sentence split in two). Short text ("by.", "0000") is always shown: it would match inside almost anything.
+    const origAll = allO.map((x) => x.t).join(" \u0000 ");
+    allS.forEach((x) => { if (!takenS.has(x) && !(words(x.t).length >= 3 && origAll.includes(x.t))) items.push({ cat: "added", loc: x.loc, orig: { pre: "", mid: "", post: "" }, slide: { pre: "", mid: "", post: "" }, text: x.t, slideSentence: x.t, slideLoc: x.loc, shape: x.b.shape, cell: x.b.cell || null }); });
     return items;
   }
 

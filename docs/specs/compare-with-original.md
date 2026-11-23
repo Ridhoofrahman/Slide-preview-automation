@@ -111,7 +111,7 @@ Every text block keeps its location type.
    - a differing token containing a digit → **Numbers changed**;
    - otherwise → **Words changed**;
    - an original segment with no pair → **Missing text**;
-   - slide segments with no pair (added text) are **not shown** in v1.
+   - slide segments with no pair → **Added text** (v2.49; was not shown in v1). One column `Your slide`, plain text, bullseye. Not counted as a difference: status reads e.g. "2 differences found · 3 added". Hidden when it is a 3+ word part of an original sentence (a sentence split in two).
 
 ## 7. Storage and privacy
 - Store the extracted original text as JSON in IndexedDB on the designer's computer. Key it by order, plus the file's name, size and last-modified date.
@@ -160,7 +160,7 @@ Tested with `slide-qa-marker/compare-original.js` (engine) and `slide-qa-marker/
 Matching across locations is decided too (section 6, step 2b).
 
 ## 10. Out of scope for v1
-Ignore; DM visibility of check results; a deck-wide check; choosing a different original slide (split or merged slides); a replacement list (e.g. a renamed company); showing added text.
+Ignore; DM visibility of check results; a deck-wide check; choosing a different original slide (split or merged slides); a replacement list (e.g. a renamed company).
 
 ## 11. Acceptance checks
 - Choose the original on slide 1. Go to slide 2: the bar is closed and the file is still connected. Open it: slide 2 is checked without choosing the file again.
