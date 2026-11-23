@@ -1498,6 +1498,8 @@ Office.onReady(async (info) => {
     S.undo = null; S.noteOpen = true; render(); $("note").focus();
   };
   document.querySelectorAll(".appVersion").forEach((el) => { el.textContent = "v" + APP_VERSION; });
+  // Hidden entry to the "Compare with original" spike page (temporary, docs/specs/compare-with-original.md §9): click the version 5 times
+  document.querySelectorAll(".appVersion").forEach((el) => { let n = 0, t = null; el.addEventListener("click", () => { n++; clearTimeout(t); t = setTimeout(() => { n = 0; }, 1500); if (n >= 5) location.href = "spike-compare.html?v=" + Date.now(); }); });
   // Keep page content clear of the pinned dock as it grows or shrinks
   const syncDock = () => document.documentElement.style.setProperty("--dock-h", $("dock").offsetHeight + "px");
   if (window.ResizeObserver) new ResizeObserver(syncDock).observe($("dock")); else window.addEventListener("resize", syncDock);
