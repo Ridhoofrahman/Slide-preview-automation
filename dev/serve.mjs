@@ -18,7 +18,9 @@ export function startServer(port = 5173) {
       const send = (code, type, body) => { res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-store' }); res.end(body); };
       if (url.pathname === '/panel') return send(200, TYPES['.html'], panelPage());
       if (url.pathname === '/review') return send(200, TYPES['.html'], reviewPage());
-      const file = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));
+      let file = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));
+      // The panel runs at /panel: its relative files (e.g. compare-original.js) live in slide-qa-marker/
+      if (!fs.existsSync(file)) { const alt = path.normalize(path.join(ROOT, 'slide-qa-marker', decodeURIComponent(url.pathname))); if (alt.startsWith(ROOT) && fs.existsSync(alt)) file = alt; }
       if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) return send(404, 'text/plain', 'Not found');
       send(200, TYPES[path.extname(file)] || 'application/octet-stream', fs.readFileSync(file));
     } catch (e) { res.writeHead(500, { 'Content-Type': 'text/plain' }); res.end(String(e.stack || e)); }

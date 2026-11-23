@@ -357,6 +357,50 @@
 
   .foot-link { color: #6A7389; text-decoration: none; }
   .foot-link:hover { color: #1A1F2E; text-decoration: underline; }
+
+  /* ===== Compare with original (Figma 541:4724, component "Slide checker"; spec docs/specs/compare-with-original.md) ===== */
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cmp { display: flex; flex-direction: column; background: #FFFFFF; min-height: 0; }
+  .cmp[hidden] { display: none; }
+  .cmp-head { flex: none; display: flex; align-items: center; gap: 16px; padding: 8px 20px; background: #F7F9FC; }
+  .cmp.open .cmp-head { border-bottom: 1px solid #DDE4EE; }
+  .cmp-toggle { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0; border: 0; background: none; font-family: var(--font); font-size: 12px; line-height: 16px; color: #6A7389; cursor: pointer; text-align: left; }
+  .cmp-title { flex: none; font-weight: 500; }
+  .cmp-file { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
+  .cmp-icon { flex: none; width: 16px; height: 16px; padding: 0; border: 0; background: none; color: #454C63; cursor: pointer; display: grid; place-items: center; border-radius: 4px; }
+  .cmp-icon svg { width: 16px; height: 16px; }
+  .cmp-icon:hover { background: #EEF2F8; }
+  .cmp-toggle:focus-visible, .cmp-icon:focus-visible, .cmp-act:focus-visible, .cmp-btn:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
+  /* Analyzing: background/brand/default with moving diagonal stripes (still under reduced motion) */
+  .cmp-progress { flex: none; height: 6px; background: #1C43A5 repeating-linear-gradient(-45deg, rgba(255,255,255,.28) 0 6px, transparent 6px 12px); background-size: 17px 17px; animation: cmp-stripes .6s linear infinite; }
+  @keyframes cmp-stripes { to { background-position: 17px 0; } }
+  @media (prefers-reduced-motion: reduce) { .cmp-progress { animation: none; } }
+  .cmp-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding: 8px 20px; }
+  .cmp-status { flex: none; display: flex; align-items: center; gap: 8px; min-height: 16px; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; }
+  .cmp-status .cmp-dot { flex: none; width: 8px; height: 8px; border-radius: 999px; background: #E09600; }
+  .cmp-status.ok .cmp-dot { background: #0C7F49; }
+  .cmp-status.err .cmp-dot { background: #D62020; }
+  .cmp-status.err .cmp-msg { color: #D62020; }
+  .cmp-status .cmp-msg { flex: 1; min-width: 0; }
+  .cmp-act { flex: none; padding: 0; border: 0; background: none; font-family: var(--font); font-size: 12px; line-height: 16px; font-weight: 600; color: #454C63; cursor: pointer; white-space: nowrap; }
+  .cmp-act:hover { text-decoration: underline; }
+  .cmp-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
+  .cmp-sec { display: flex; flex-direction: column; gap: 8px; }
+  .cmp-sec h3 { margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; }
+  .cmp-table { border: 1px solid #DDE4EE; border-radius: 4px; }
+  .cmp-row { display: flex; align-items: stretch; }
+  .cmp-row + .cmp-row { border-top: 1px solid #DDE4EE; }
+  .cmp-cell { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px; }
+  .cmp-cell + .cmp-cell { border-left: 1px solid #DDE4EE; }
+  .cmp-cell p { flex: 1; min-width: 0; margin: 0; font-size: 12px; line-height: 16px; color: #454C63; overflow-wrap: anywhere; }
+  .cmp-label .cmp-cell { font-weight: 500; color: #6A7389; font-size: 12px; line-height: 16px; }
+  .cmp-cell mark { border-radius: 2px; color: inherit; mix-blend-mode: multiply; }
+  .cmp-cell mark.o { background: #FFEFBD; }   /* background/accent/strong/warning */
+  .cmp-cell mark.s { background: #FFDADA; }   /* background/accent/strong/danger */
+  .cmp-btn { flex: none; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; background: none; color: #454C63; cursor: pointer; display: grid; place-items: center; }
+  .cmp-btn svg { width: 16px; height: 16px; }
+  .cmp-btn:hover { background: #F7F9FC; }
+  .cmp-btn.done { color: #0C7F49; }
 </style>
 </head>
 <body>
@@ -534,6 +578,13 @@
         <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="summaryGrid"><span id="summaryText"></span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="summary-grid" id="summaryGrid" hidden></div>
       </section>
+      <section class="cmp" id="cmp" hidden aria-label="Compare with original">
+        <div class="cmp-head"><button type="button" class="cmp-toggle" id="cmpToggle"><span class="cmp-title">Compare original</span><span class="cmp-file" id="cmpFileName"></span></button><button type="button" class="cmp-icon" id="cmpIcon"></button></div>
+        <div class="cmp-progress" id="cmpProgress" role="progressbar" aria-label="Checking the slide" hidden></div>
+        <div class="cmp-body" id="cmpBody" hidden></div>
+        <input type="file" id="cmpFile" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
+        <span class="sr" id="cmpLive" aria-live="polite"></span>
+      </section>
       <footer class="foot"><button type="button" class="foot-top" aria-expanded="false"><span class="foot-name"></span><span class="foot-team"></span></button><div class="foot-more" hidden><span class="foot-dash"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout" id="signOutBtn">Sign out</button></span></div></footer>
     </div>
   </section>
@@ -541,7 +592,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.43";
+const APP_VERSION = "2.44";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -661,6 +712,7 @@ async function loadAssignments() {
   }));
   S.mySlides.sort((a, b) => a - b);
   applyWorkingMap();
+  cmpInit();
 }
 // 1,2,3,4,5,8 → "1–5, 8"
 function rangesText(nums) {
@@ -903,6 +955,10 @@ function render() {
   $("altBtn").hidden = !(cur && split && (S.mySlides || []).length && v.mode === "notsent" && !idClash && (alt || !as || mine));
   if ($("altBtn").hidden && S.closeAltPop) S.closeAltPop();
   $("actions").hidden = btn.hidden && upd.hidden && cancel.hidden && !$("msg").textContent;
+  // Compare with original: on my slides; switching slides collapses the bar (the original stays connected)
+  const cmpShow = !!cur && (mine || !!alt) && !idClash;
+  if (CMP.open && cur && CMP.slideId !== cur.id) cmpCollapse();
+  renderCmp(cmpShow);
 
   // Feedback on the sent version
   const fb = $("feedback"), list = $("comments");
@@ -1105,6 +1161,193 @@ function openAltPop() {
   $("apSave").onclick = () => { const v = +sel.value; close(); if (v) setAlt(cur.id, v); };
   setTimeout(() => document.addEventListener("click", outside), 0);
   S.closeAltPop = close;
+}
+
+// ---------- Compare with original (docs/specs/compare-with-original.md) ----------
+// The original .pptx is read once in the panel (compare-original.js, lazy-loaded); only its text is kept, in IndexedDB on
+// this computer, per order. Nothing is uploaded and nothing is stored inside the .pptx. A check never blocks sending.
+const CMP_ICON = {"bullseye": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.4 2.4)\"><path d=\"M10.5 5.6C10.5 2.8875 8.3125 0.7 5.6 0.7C2.8875 0.7 0.7 2.8875 0.7 5.6C0.7 8.3125 2.8875 10.5 5.6 10.5C8.3125 10.5 10.5 8.3125 10.5 5.6ZM0 5.6C0 2.51562 2.51562 0 5.6 0C8.68437 0 11.2 2.51562 11.2 5.6C11.2 8.68437 8.68437 11.2 5.6 11.2C2.51562 11.2 0 8.68437 0 5.6ZM5.6 8.4C7.15312 8.4 8.4 7.15312 8.4 5.6C8.4 4.04687 7.15312 2.8 5.6 2.8C4.04687 2.8 2.8 4.04687 2.8 5.6C2.8 7.15312 4.04687 8.4 5.6 8.4ZM5.6 2.1C7.525 2.1 9.1 3.675 9.1 5.6C9.1 7.525 7.525 9.1 5.6 9.1C3.675 9.1 2.1 7.525 2.1 5.6C2.1 3.675 3.675 2.1 5.6 2.1ZM5.6 6.3C5.99375 6.3 6.3 5.99375 6.3 5.6C6.3 5.20625 5.99375 4.9 5.6 4.9C5.20625 4.9 4.9 5.20625 4.9 5.6C4.9 5.99375 5.20625 6.3 5.6 6.3ZM5.6 4.2C6.36562 4.2 7 4.83437 7 5.6C7 6.36562 6.36562 7 5.6 7C4.83437 7 4.2 6.36562 4.2 5.6C4.2 4.83437 4.83437 4.2 5.6 4.2Z\" fill=\"currentColor\"/></g></svg>", "copy": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(3.1 2.4)\"><path d=\"M3.5 1.4V7C3.5 7.39375 3.80625 7.7 4.2 7.7H8.4C8.79375 7.7 9.1 7.39375 9.1 7V2.7125C9.1 2.51562 9.03438 2.34062 8.90313 2.20937L7.59063 0.896875C7.45938 0.765625 7.28438 0.7 7.0875 0.7H4.2C3.80625 0.7 3.5 1.00625 3.5 1.4ZM4.2 0H7.0875C7.45938 0 7.80938 0.153125 8.07188 0.415625L9.38438 1.72812C9.64688 1.99062 9.8 2.34062 9.8 2.7125V7C9.8 7.76562 9.16563 8.4 8.4 8.4H4.2C3.43438 8.4 2.8 7.76562 2.8 7V1.4C2.8 0.634375 3.43438 0 4.2 0ZM1.4 2.8H1.75V3.5H1.4C1.00625 3.5 0.7 3.80625 0.7 4.2V9.8C0.7 10.1937 1.00625 10.5 1.4 10.5H5.6C5.99375 10.5 6.3 10.1937 6.3 9.8V9.45H7V9.8C7 10.5656 6.36563 11.2 5.6 11.2H1.4C0.634375 11.2 0 10.5656 0 9.8V4.2C0 3.43437 0.634375 2.8 1.4 2.8Z\" fill=\"currentColor\"/></g></svg>", "x16": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.4 2.4)\"><path d=\"M11.0471 0.77342L6.26996 5.58906L11.0471 10.4047C11.251 10.5798 11.251 10.8717 11.0471 11.0468C10.8723 11.2511 10.581 11.2511 10.4062 11.0468L5.6 6.26033L0.793758 11.0468C0.618986 11.2511 0.327698 11.2511 0.152926 11.0468C-0.0509753 10.8717 -0.0509753 10.5798 0.152926 10.4047L4.93004 5.58906L0.152926 0.77342C-0.0509753 0.598306 -0.0509753 0.30645 0.152926 0.131335C0.327698 -0.0437785 0.618986 -0.0437785 0.793758 0.131335L5.6 4.91779L10.4062 0.131335C10.581 -0.0437785 10.8723 -0.0437785 11.0471 0.131335C11.251 0.30645 11.251 0.598306 11.0471 0.77342Z\" fill=\"currentColor\"/></g></svg>", "plus16": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 1.6)\"><path d=\"M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z\" fill=\"currentColor\"/></g></svg>"};
+const CMP_CHECK = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.3l3 3 6-6.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CMP = { meta: null, slides: null, open: false, state: "idle", items: [], base: null, local: null, slideId: null, err: "", retry: null, key: null };
+let cmpEngine = null;
+function loadEngine() {
+  if (window.CompareOriginal) return Promise.resolve(window.CompareOriginal);
+  return cmpEngine || (cmpEngine = new Promise((res, rej) => {
+    const sc = document.createElement("script"); sc.src = "compare-original.js?v=" + APP_VERSION;
+    sc.onload = () => res(window.CompareOriginal); sc.onerror = () => { cmpEngine = null; rej(new Error("engine")); };
+    document.head.append(sc);
+  }));
+}
+function cmpDb() { return new Promise((res, rej) => { const rq = indexedDB.open("slideshot-compare", 1); rq.onupgradeneeded = () => rq.result.createObjectStore("originals"); rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); }); }
+async function cmpGet(key) { try { const db = await cmpDb(); return await new Promise((res) => { const r = db.transaction("originals").objectStore("originals").get(key); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); }); } catch (e) { return null; } }
+async function cmpPut(key, val) { try { const db = await cmpDb(); await new Promise((res) => { const tx = db.transaction("originals", "readwrite"); const st = tx.objectStore("originals"); if (val === null) st.delete(key); else st.put(val, key); tx.oncomplete = res; tx.onerror = res; }); } catch (e) {} }
+// The order's original (if one was chosen on this computer)
+async function cmpInit() {
+  const key = "order:" + orderKey(); if (CMP.key === key) return;
+  CMP.key = key; CMP.open = false; CMP.state = "idle"; CMP.meta = null; CMP.slides = null;
+  const v = await cmpGet(key);
+  if (v && CMP.key === key) { CMP.meta = { name: v.name, size: v.size, lastModified: v.lastModified }; CMP.slides = v.slides; }
+  render();
+}
+async function cmpChoose(file) {
+  $("cmpFile").value = "";
+  if (!file) return;
+  if (!/\.pptx$/i.test(file.name)) { cmpFail("Choose a .pptx file", "pick"); return; }
+  const cur = currentSlide();
+  CMP.open = true; CMP.state = "checking"; CMP.slideId = cur ? cur.id : null; CMP.reading = file.name; renderCmp();
+  try {
+    const head = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+    if (head[0] === 0xD0 && head[1] === 0xCF && head[2] === 0x11 && head[3] === 0xE0) throw Object.assign(new Error("ole"), { code: "password" });   // encrypted .pptx = OLE container
+    const E = await loadEngine(), d = await E.readDeck(file);
+    CMP.meta = { name: file.name, size: file.size, lastModified: file.lastModified };
+    CMP.slides = d.slides.map((x) => x.blocks);
+    cmpPut(CMP.key, Object.assign({ savedAt: Date.now(), slides: CMP.slides }, CMP.meta));
+    CMP.reading = null;
+    await cmpCheck();
+  } catch (e) {
+    CMP.reading = null;
+    if (e.code === "password" || e.code === "encrypted") cmpFail("This file is password-protected. Choose a copy without a password.", "pick");
+    else if (e.code === "not-zip" || e.code === "not-pptx") cmpFail("Choose a .pptx file", "pick");
+    else cmpFail("Couldn't read this file.", "pick");
+  }
+}
+function cmpFail(msg, retry) { CMP.open = true; CMP.state = "error"; CMP.err = msg; CMP.retry = retry; renderCmp(); }
+// Check the active slide against the original slide at its order position (alternatives: the slide they replace)
+async function cmpCheck() {
+  const cur = currentSlide(); if (!cur || !CMP.slides) return;
+  CMP.open = true; CMP.state = "checking"; CMP.slideId = cur.id; renderCmp();
+  const started = Date.now();
+  try {
+    const base = cur.alt || cur.n || cur.local;
+    if (!base || base > CMP.slides.length) { await cmpWait(started); cmpFail("The original has " + CMP.slides.length + " slide" + (CMP.slides.length === 1 ? "" : "s") + ", so there's no slide " + base + " to compare.", null); return; }
+    const E = await loadEngine();
+    let b64 = "";
+    await PowerPoint.run(async (ctx) => { const r = ctx.presentation.slides.getItem(cur.id).exportAsBase64(); await ctx.sync(); b64 = r.value; });
+    const mine = await E.readDeck(b64ToBlob(b64, "application/zip"));
+    const items = E.compare(CMP.slides[base - 1], (mine.slides[0] && mine.slides[0].blocks) || [], { threshold: 0.5 });
+    await cmpWait(started);
+    if (CMP.slideId !== cur.id) return;   // the designer moved on meanwhile
+    CMP.items = items; CMP.base = base; CMP.local = cur.alt ? null : cur.local; CMP.state = "result";
+  } catch (e) { CMP.state = "error"; CMP.err = "Couldn't check this slide."; CMP.retry = "check"; }
+  renderCmp();
+}
+const cmpWait = (t) => new Promise((r) => setTimeout(r, Math.max(0, 350 - (Date.now() - t))));   // let the progress bar be seen
+function cmpRemove() { cmpPut(CMP.key, null); CMP.meta = null; CMP.slides = null; CMP.open = false; CMP.state = "idle"; renderCmp(); }
+function cmpCollapse() { CMP.open = false; if (CMP.state !== "checking") CMP.state = "idle"; renderCmp(); }
+
+const CMP_LOCS = [["text", ""], ["table", " in table"], ["chart", " in chart"], ["notes", " in speaker notes"]];
+const CMP_CATS = [["numbers", "Numbers changed"], ["missing", "Missing text"], ["words", "Words changed"]];
+function cmpText(part, cls) {
+  const p = document.createElement("p");
+  if (part.pre) p.append(document.createTextNode(part.pre + " "));
+  if (part.mid) { const m = document.createElement("mark"); m.className = cls; m.textContent = part.mid; p.append(m); }
+  else if (!part.pre && !part.post) p.append(document.createTextNode("–"));
+  if (part.post) p.append(document.createTextNode(" " + part.post));
+  return p;
+}
+function renderCmp(show) {
+  const box = $("cmp"); if (typeof show === "boolean") box.hidden = !show;
+  if (box.hidden) return;
+  const has = !!CMP.meta, open = CMP.open;
+  box.classList.toggle("open", open);
+  $("cmpFileName").textContent = CMP.reading || (has ? CMP.meta.name : "");
+  $("cmpFileName").title = $("cmpFileName").textContent;
+  const icon = $("cmpIcon");
+  if (!has && !CMP.reading) { icon.hidden = false; icon.innerHTML = CMP_ICON.plus16; icon.setAttribute("aria-label", "Choose the original .pptx"); }
+  else if (open && has) { icon.hidden = false; icon.innerHTML = CMP_ICON.x16; icon.setAttribute("aria-label", "Remove the original"); }
+  else icon.hidden = true;
+  $("cmpToggle").setAttribute("aria-expanded", String(open));
+  $("cmpProgress").hidden = CMP.state !== "checking";
+  const body = $("cmpBody"); body.innerHTML = "";
+  body.hidden = !open || CMP.state === "checking" || CMP.state === "idle";
+  if (!body.hidden) {
+    const st = document.createElement("div"); st.className = "cmp-status";
+    const dot = document.createElement("span"); dot.className = "cmp-dot"; const msg = document.createElement("span"); msg.className = "cmp-msg";
+    st.append(dot, msg);
+    const act = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "cmp-act"; b.textContent = label; b.onclick = fn; st.append(b); };
+    if (CMP.state === "error") {
+      st.classList.add("err"); msg.textContent = CMP.err;
+      if (CMP.retry === "check") act("Try again", cmpCheck); else if (CMP.retry === "pick") act("Choose file", () => $("cmpFile").click());
+      body.append(st);
+    } else {
+      const n = CMP.items.length, moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
+      const vs = moved || alt ? " vs original slide " + CMP.base : "";
+      if (!n) { st.classList.add("ok"); msg.textContent = "Text matches the original" + vs; }
+      else msg.textContent = n + " difference" + (n === 1 ? "" : "s") + " found" + vs;
+      act("Check again", cmpCheck); body.append(st);
+      const list = document.createElement("div"); list.className = "cmp-list";
+      CMP_LOCS.forEach(([loc, suffix]) => CMP_CATS.forEach(([cat, title]) => {
+        const rows = CMP.items.filter((it) => it.loc === loc && it.cat === cat); if (!rows.length) return;
+        const sec = document.createElement("section"); sec.className = "cmp-sec";
+        const h = document.createElement("h3"); h.textContent = title + suffix + " (" + rows.length + ")"; sec.append(h);
+        const tb = document.createElement("div"); tb.className = "cmp-table";
+        const lab = document.createElement("div"); lab.className = "cmp-row cmp-label";
+        lab.innerHTML = cat === "missing" ? '<div class="cmp-cell">Original</div>' : '<div class="cmp-cell">Original</div><div class="cmp-cell">Your slide</div>';
+        tb.append(lab);
+        rows.forEach((it) => {
+          const r = document.createElement("div"); r.className = "cmp-row";
+          const a = document.createElement("div"); a.className = "cmp-cell"; a.append(cmpText(it.orig, "o")); r.append(a);
+          const btn = document.createElement("button"); btn.type = "button"; btn.className = "cmp-btn";
+          if (cat === "missing") {
+            btn.innerHTML = CMP_ICON.copy; btn.setAttribute("aria-label", "Copy original text");
+            btn.onclick = () => cmpCopy(btn, [it.orig.pre, it.orig.mid, it.orig.post].filter(Boolean).join(" "));
+            a.append(btn);
+          } else {
+            const b = document.createElement("div"); b.className = "cmp-cell"; b.append(cmpText(it.slide, "s"));
+            if ((it.slideLoc || it.loc) !== "notes") { btn.innerHTML = CMP_ICON.bullseye; btn.setAttribute("aria-label", "Select on slide"); btn.onclick = () => cmpSelect(it); b.append(btn); }
+            r.append(b);
+          }
+          tb.append(r);
+        });
+        sec.append(tb); list.append(sec);
+      }));
+      if (n) body.append(list);
+    }
+  }
+  cmpSize();
+}
+// Open bar: from below the send button down to the footer; status row pinned, the list scrolls
+function cmpSize() {
+  const box = $("cmp");
+  if (box.hidden || !CMP.open || CMP.state === "checking" || !CMP.items.length || CMP.state !== "result") { box.style.height = ""; return; }
+  const anchor = !$("actions").hidden ? $("actions") : document.querySelector(".thumb");
+  const rest = $("dock").offsetHeight - box.offsetHeight;
+  const top = anchor ? anchor.getBoundingClientRect().bottom + window.scrollY + 16 : 0;
+  box.style.height = Math.max(180, window.innerHeight - top - rest) + "px";
+}
+async function cmpCopy(btn, text) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; }
+  catch (e) { const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.append(ta); ta.select(); try { ok = document.execCommand("copy"); } catch (x) {} ta.remove(); }
+  if (!ok) return;
+  btn.innerHTML = CMP_CHECK; btn.classList.add("done"); $("cmpLive").textContent = "Copied";
+  setTimeout(() => { btn.innerHTML = CMP_ICON.copy; btn.classList.remove("done"); $("cmpLive").textContent = ""; }, 1500);
+}
+// Bullseye: select the changed characters on the slide (tables and charts: the whole shape; notes can't be selected)
+function locate(raw, sentence, mid) {
+  const map = [], chars = [];
+  for (let i = 0; i < raw.length; i++) { const ws = /\s/.test(raw[i]); if (ws && chars[chars.length - 1] === " ") continue; chars.push(ws ? " " : raw[i]); map.push(i); }
+  const norm = chars.join(""), at = norm.indexOf(sentence); if (at < 0) return null;
+  if (!mid) return { start: map[at], length: map[at + sentence.length - 1] + 1 - map[at] };
+  const m = norm.indexOf(mid, at); if (m < 0 || m > at + sentence.length) return null;
+  return { start: map[m], length: map[m + mid.length - 1] + 1 - map[m] };
+}
+async function cmpSelect(it) {
+  const cur = currentSlide(); if (!cur) return;
+  try {
+    await PowerPoint.run(async (ctx) => {
+      const slide = ctx.presentation.slides.getItem(cur.id), shapes = slide.shapes; shapes.load("items/id,items/name,items/type"); await ctx.sync();
+      const byId = it.shape ? shapes.items.find((x) => String(x.id) === String(it.shape.id)) : null;
+      const loc = it.slideLoc || it.loc;
+      if (loc === "table" || loc === "chart") { const t = byId || shapes.items.find((x) => /table|chart|graphic/i.test(String(x.type))); if (t) { slide.setSelectedShapes([t.id]); await ctx.sync(); } return; }
+      for (const sh of byId ? [byId].concat(shapes.items.filter((x) => x !== byId)) : shapes.items) {
+        const tr = sh.textFrame.textRange; tr.load("text");
+        try { await ctx.sync(); } catch (e) { continue; }
+        const pos = locate(tr.text || "", it.slideSentence, it.slide.mid);
+        if (pos) { tr.getSubstring(pos.start, pos.length).setSelected(); await ctx.sync(); return; }
+      }
+    });
+  } catch (e) { /* selection is a convenience: never show an error for it */ }
 }
 function setPosition(slideId, pos) {
   let saved = {}; try { saved = JSON.parse(docStore.get("slideqa.map") || "{}"); } catch (e) {}
@@ -1477,6 +1720,10 @@ Office.onReady(async (info) => {
   $("teamStep").addEventListener("change", () => setFieldError("teamStep", ""));
   ["email", "password"].forEach((id) => $(id).addEventListener("input", () => setFieldError(id, "")));
   $("markBtn").onclick = markReady;
+  $("cmpToggle").onclick = () => { if (!CMP.meta) { if (!CMP.reading) $("cmpFile").click(); return; } if (CMP.open) cmpCollapse(); else { window.scrollTo(0, 0); cmpCheck(); } };
+  $("cmpIcon").onclick = () => { if (!CMP.meta) $("cmpFile").click(); else cmpRemove(); };
+  $("cmpFile").onchange = () => cmpChoose($("cmpFile").files[0]);
+  window.addEventListener("resize", () => { if (CMP.open) cmpSize(); });
   $("altBtn").onclick = (e) => { e.stopPropagation(); if ($("altPop").hidden) openAltPop(); else if (S.closeAltPop) S.closeAltPop(); };
   $("altX").onclick = () => { const cur = currentSlide(); if (cur) setAlt(cur.id, null); };
   $("mapSwap").onclick = (e) => { e.stopPropagation(); if ($("mapPop").hidden) openMapPop(); else if (S.closeMapPop) S.closeMapPop(); };
@@ -1498,8 +1745,6 @@ Office.onReady(async (info) => {
     S.undo = null; S.noteOpen = true; render(); $("note").focus();
   };
   document.querySelectorAll(".appVersion").forEach((el) => { el.textContent = "v" + APP_VERSION; });
-  // Hidden entry to the "Compare with original" spike page (temporary, docs/specs/compare-with-original.md §9): click the version 5 times
-  document.querySelectorAll(".appVersion").forEach((el) => { let n = 0, t = null; el.addEventListener("click", () => { n++; clearTimeout(t); t = setTimeout(() => { n = 0; }, 1500); if (n >= 5) location.href = "spike-compare.html?v=" + Date.now(); }); });
   // Keep page content clear of the pinned dock as it grows or shrinks
   const syncDock = () => document.documentElement.style.setProperty("--dock-h", $("dock").offsetHeight + "px");
   if (window.ResizeObserver) new ResizeObserver(syncDock).observe($("dock")); else window.addEventListener("resize", syncDock);

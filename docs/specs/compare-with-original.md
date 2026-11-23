@@ -102,9 +102,10 @@ Every text block keeps its location type.
 - Ignore only layout: line breaks, repeated spaces, bullet characters.
 - Everything else counts: punctuation, decimal separators, capitals, quotes, and customer typos the designer fixed.
 
-**Matching**, per location type:
-1. Split into sentences or lines.
-2. Pair each original segment with its most similar segment on the slide, above a similarity threshold tuned in the spike.
+**Matching**, per location type first, then across locations:
+1. Split into sentences or lines (soft line breaks count as spaces).
+2. Pair each original segment with its most similar segment on the slide in the same location, above the similarity threshold (0.5, from the spike).
+2b. Segments still unpaired are then paired across slide text, table and chart (a redesign often turns a table into text boxes or the other way round). Speaker notes only pair with speaker notes. A finding keeps the original's location in its section title. (Decided 23 Nov 2026.)
 3. Diff the paired segments word by word.
 4. Classify:
    - a differing token containing a digit → **Numbers changed**;
@@ -130,6 +131,33 @@ Every text block keeps its location type.
 4. Selection: can a table **cell's** text be selected, or only the table? Does `setSelected` on a substring work on both platforms?
 5. Clipboard copy from the task pane on both platforms.
 6. False positives on real decks: tune the similarity threshold until differences are real.
+
+## 9b. Spike results (23 Nov 2026)
+Tested with `slide-qa-marker/compare-original.js` (engine) and `slide-qa-marker/spike-compare.html` (temporary test page, opened by clicking the panel version 5 times), on PowerPoint for Mac 16.115 and Windows 16.0.20527 (WebView2, Edge 157), plus 9 customer decks and a 131 MB test deck locally.
+
+| # | Question | Mac | Windows |
+|---|---|---|---|
+| 1 | `.pptx` file picker in the task pane | works | works |
+| 2 | Read the original | 188 slides / 15 MB in 388 ms | same deck in 2.2 s, JS heap flat (8 MB) |
+| 2 | 131 MB deck (local, Chromium) | range reader 24 ms, heap 2 → 4 MB; JSZip whole file 141 ms, heap 139 MB | — |
+| — | Per-slide check (export + read + compare) | 96–141 ms | 151–270 ms |
+| 3 | Coverage | slide text, grouped shapes, `mc:AlternateContent`, tables, charts (titles, axes, series, categories), SmartArt, notes; order from `sldIdLst` (verified with a reordered copy) | same engine |
+| 4 | `setSelected` on a substring | exactly the characters | exactly the characters |
+| 4 | Table cell text | not selectable (`TableCell` has no `textFrame`); the table shape is | same |
+| 5 | Clipboard | `navigator.clipboard` and `execCommand` both work | both work |
+| — | IndexedDB survives closing the panel | yes | yes |
+| — | `DecompressionStream`, PowerPointApi 1.9 | available | available |
+
+**Decisions from the spike:**
+- Zip: read only the central directory and the XML parts with `Blob.slice()` + `DecompressionStream('deflate-raw')`; never JSZip on the whole original. Media are never decompressed.
+- Read time grows with the number of slides, not the file size; Windows reads about 6× slower than Mac, so the first read needs the striped progress bar.
+- Similarity threshold **0.5** (0.3–0.5 give the same result on the test pair; 0.6+ turns small changes into "Missing").
+- Soft line breaks (Shift+Enter) count as spaces; two original sentences merged into one slide sentence are not "Missing".
+- Tables: the bullseye selects the table shape.
+- False positives on Kingfish v4 vs its revision: 22 → 6 after matching across locations (all 6 real); a deck against itself gives 0.
+
+**Decided (Uda, 23 Nov 2026):** spacing changes are shown (`Value(1)(3)` → `Value (1)(3)` is a difference, as "everything counts"). The limits go in the docs: text inside embedded Excel/OLE objects and chart data values are not checked.
+Matching across locations is decided too (section 6, step 2b).
 
 ## 10. Out of scope for v1
 Ignore; DM visibility of check results; a deck-wide check; choosing a different original slide (split or merged slides); a replacement list (e.g. a renamed company); showing added text.
