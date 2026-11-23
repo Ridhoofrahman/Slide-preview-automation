@@ -163,9 +163,15 @@ $("idb").onclick = () => {
     const rq = indexedDB.open("slideshot-spike", 1);
     rq.onupgradeneeded = () => rq.result.createObjectStore("t");
     rq.onerror = () => log("IndexedDB open failed: " + rq.error, "bad");
-    rq.onsuccess = () => { const db = rq.result, tx = db.transaction("t", "readwrite"); tx.objectStore("t").put({ at: Date.now(), text: "x".repeat(200000) }, "k");
-      tx.oncomplete = () => { const r = db.transaction("t").objectStore("t").get("k"); r.onsuccess = () => log("IndexedDB write + read OK (" + r.result.text.length + " chars). Close and reopen the panel and run again: it should still read.", "ok"); };
-      tx.onerror = () => log("IndexedDB write failed: " + tx.error, "bad"); };
+    rq.onsuccess = () => { const db = rq.result;
+      // First: is there data from an earlier run? (proves it survives closing the panel)
+      const old = db.transaction("t").objectStore("t").get("k");
+      old.onsuccess = () => {
+        if (old.result) log("Found data saved earlier: " + new Date(old.result.at).toLocaleString() + " (" + Math.round((Date.now() - old.result.at) / 60000) + " min ago). Storage survives.", "ok");
+        else log("No earlier data found (first run, or it was cleared). Writing now; close and reopen the panel, then press this button again.");
+        const tx = db.transaction("t", "readwrite"); tx.objectStore("t").put({ at: Date.now(), text: "x".repeat(200000) }, "k");
+      tx.oncomplete = () => { const r = db.transaction("t").objectStore("t").get("k"); r.onsuccess = () => log("IndexedDB write + read OK (" + r.result.text.length + " chars).", "ok"); };
+      tx.onerror = () => log("IndexedDB write failed: " + tx.error, "bad"); }; };
   } catch (e) { log("IndexedDB: " + e.message, "bad"); }
 };
 
