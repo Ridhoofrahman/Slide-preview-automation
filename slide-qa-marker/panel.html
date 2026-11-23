@@ -363,7 +363,6 @@
   .cmp { display: flex; flex-direction: column; background: #FFFFFF; min-height: 0; }
   .cmp[hidden] { display: none; }
   .cmp-head { flex: none; display: flex; align-items: center; gap: 16px; padding: 8px 20px; background: #F7F9FC; }
-  .cmp.open .cmp-head { border-bottom: 1px solid #DDE4EE; }
   .cmp-toggle { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0; border: 0; background: none; font-family: var(--font); font-size: 12px; line-height: 16px; color: #6A7389; cursor: pointer; text-align: left; }
   .cmp-title { flex: none; font-weight: 500; }
   .cmp-file { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
@@ -403,7 +402,8 @@
   .cmp-btn.done { color: #0C7F49; }
   .cmp-cell.stack { flex-direction: column; align-items: stretch; gap: 4px; }
   .cmp-line, .cmp-clue { display: flex; align-items: center; gap: 4px; min-width: 0; }
-  .cmp-clue span { flex: 1; min-width: 0; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }   /* text-xs/Regular, text/subtle */
+  .cmp-clue { padding-left: 4px; }   /* Figma 687:12163 */
+  .cmp-clue span { flex: 1; min-width: 0; font-size: 12px; line-height: 16px; color: #454C63; overflow-wrap: anywhere; }   /* text-xs/Regular, text/body */
 </style>
 </head>
 <body>
@@ -595,7 +595,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.46";
+const APP_VERSION = "2.47";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1305,7 +1305,7 @@ function renderCmp(show) {
             if (it.anchor) {
               const w = it.anchor.text.split(" "), short = it.anchor.dir === "after" ? (w.length > 5 ? "\u2026" : "") + w.slice(-5).join(" ") : w.slice(0, 5).join(" ") + (w.length > 5 ? "\u2026" : "");
               const clue = document.createElement("div"); clue.className = "cmp-clue";
-              const t = document.createElement("span"); t.textContent = (it.anchor.loc === "notes" ? "In speaker notes, " + it.anchor.dir : it.anchor.dir === "after" ? "After" : "Before") + " \u201C" + short + "\u201D"; clue.append(t);
+              const t = document.createElement("span"); t.textContent = "\u2937 " + (it.anchor.loc === "notes" ? "In speaker notes, " + it.anchor.dir : it.anchor.dir === "after" ? "After" : "Before") + " \u201C" + short + "\u201D"; clue.append(t);
               if (it.anchor.loc !== "notes") { const bb = document.createElement("button"); bb.type = "button"; bb.className = "cmp-btn"; bb.innerHTML = CMP_ICON.bullseye; bb.setAttribute("aria-label", "Select where it goes"); bb.onclick = () => cmpSelect({ slideLoc: it.anchor.loc, shape: it.anchor.shape, slideSentence: it.anchor.text, slide: { mid: "" } }); clue.append(bb); }
               a.append(clue);
             }

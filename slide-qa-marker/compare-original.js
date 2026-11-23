@@ -112,7 +112,12 @@
     const srels = rels(await zip.text(relsPath(part)), part);
     const blocks = [];
     const tree = all(doc, "spTree")[0];
-    if (tree) await walk(tree, blocks, zip, srels);
+    if (tree) await walk(tree, blocks, zip, srels, null);
+    // Reading order on the slide (top to bottom, then left to right), not the order of the shapes in the file,
+    // so "After …" for missing text names the text that is really above it. Paragraphs of one shape keep their order.
+    // Placeholders that inherit their position from the layout have none: then the file order stays.
+    if (blocks.every((b) => b.y != null)) { blocks.forEach((b, i) => { b.i = i; }); blocks.sort((a, b) => a.y - b.y || a.x - b.x || a.i - b.i); }
+    blocks.forEach((b) => { delete b.i; delete b.x; delete b.y; });
     // Speaker notes: the body placeholder of the notes slide only (not the slide number or the slide image)
     const notesRel = Object.values(srels).find((r) => /\/notesSlide$/.test(r.type));
     if (notesRel && zip.has(notesRel.target)) {
@@ -124,20 +129,44 @@
     }
     return { blocks };
   }
-  async function walk(container, blocks, zip, srels) {
+  // Top-left of a shape in slide coordinates (map = the enclosing groups' child-to-slide transform)
+  function xfrmOf(el) {
+    const pr = kids(el, "spPr")[0] || kids(el, "grpSpPr")[0];
+    const xf = pr ? kids(pr, "xfrm")[0] : kids(el, "xfrm")[0];
+    if (!xf) return null;
+    const v = (name, a, b) => { const n = kids(xf, name)[0]; return n ? [+n.getAttribute(a) || 0, +n.getAttribute(b) || 0] : null; };
+    return { off: v("off", "x", "y"), ext: v("ext", "cx", "cy"), chOff: v("chOff", "x", "y"), chExt: v("chExt", "cx", "cy") };
+  }
+  const place = (map, x, y) => (map ? map(x, y) : [x, y]);
+  async function walk(container, blocks, zip, srels, map) {
     for (const el of container.children) {
       const ln = el.localName;
-      if (ln === "grpSp") { await walk(el, blocks, zip, srels); continue; }
-      if (ln === "AlternateContent") { const alt = kids(el, "Choice")[0] || kids(el, "Fallback")[0]; if (alt) await walk(alt, blocks, zip, srels); continue; }
+      if (ln === "grpSp") {
+        const g = xfrmOf(el); let inner = map;
+        if (g && g.off && g.chOff) {
+          const sx = g.ext && g.chExt && g.chExt[0] ? g.ext[0] / g.chExt[0] : 1, sy = g.ext && g.chExt && g.chExt[1] ? g.ext[1] / g.chExt[1] : 1;
+          inner = (x, y) => place(map, g.off[0] + (x - g.chOff[0]) * sx, g.off[1] + (y - g.chOff[1]) * sy);
+        }
+        await walk(el, blocks, zip, srels, inner); continue;
+      }
+      if (ln === "AlternateContent") { const alt = kids(el, "Choice")[0] || kids(el, "Fallback")[0]; if (alt) await walk(alt, blocks, zip, srels, map); continue; }
       const nv = all(el, "cNvPr")[0]; const shape = nv ? { id: nv.getAttribute("id"), name: nv.getAttribute("name") } : null;
-      if (ln === "sp") { const tb = kids(el, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "text", text: t, shape })); continue; }
+      const xf = xfrmOf(el), at = xf && xf.off ? place(map, xf.off[0], xf.off[1]) : null;
+      const from = blocks.length;
+      await shapeBlocks(el, ln, shape, blocks, zip, srels);
+      if (at) for (let i = from; i < blocks.length; i++) { blocks[i].x = at[0]; blocks[i].y = at[1]; }
+    }
+  }
+  async function shapeBlocks(el, ln, shape, blocks, zip, srels) {
+    {
+      if (ln === "sp") { const tb = kids(el, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "text", text: t, shape })); return; }
       if (ln === "graphicFrame") {
         const tbl = all(el, "tbl")[0];
-        if (tbl) { all(tbl, "tr").forEach((tr, r) => kids(tr, "tc").forEach((tc, c) => { const tb = kids(tc, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "table", text: t, shape, cell: [r, c] })); })); continue; }
+        if (tbl) { all(tbl, "tr").forEach((tr, r) => kids(tr, "tc").forEach((tc, c) => { const tb = kids(tc, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "table", text: t, shape, cell: [r, c] })); })); return; }
         const dm = all(el, "relIds")[0];   // SmartArt: the text lives in the diagram data part
-        if (dm) { const rel = srels[dm.getAttributeNS(RNS, "dm") || dm.getAttribute("r:dm")]; if (rel && zip.has(rel.target)) { const dd = xml(await zip.text(rel.target)); all(dd, "pt").forEach((pt) => { const t = kids(pt, "t")[0]; if (t) all(t, "p").map(paraText).filter((x) => x.trim()).forEach((x) => blocks.push({ loc: "text", text: x, shape })); }); } continue; }
+        if (dm) { const rel = srels[dm.getAttributeNS(RNS, "dm") || dm.getAttribute("r:dm")]; if (rel && zip.has(rel.target)) { const dd = xml(await zip.text(rel.target)); all(dd, "pt").forEach((pt) => { const t = kids(pt, "t")[0]; if (t) all(t, "p").map(paraText).filter((x) => x.trim()).forEach((x) => blocks.push({ loc: "text", text: x, shape })); }); } return; }
         const ch = all(el, "chart")[0];
-        if (ch) { const rid = ch.getAttributeNS(RNS, "id") || ch.getAttribute("r:id"); const rel = srels[rid]; if (rel && zip.has(rel.target)) (await chartTexts(zip, rel.target)).forEach((t) => blocks.push({ loc: "chart", text: t, shape })); continue; }
+        if (ch) { const rid = ch.getAttributeNS(RNS, "id") || ch.getAttribute("r:id"); const rel = srels[rid]; if (rel && zip.has(rel.target)) (await chartTexts(zip, rel.target)).forEach((t) => blocks.push({ loc: "chart", text: t, shape })); return; }
       }
     }
   }
@@ -165,7 +194,16 @@
     if (!A.length || !B.length) return 0;
     const m = new Map(); A.forEach((w) => m.set(w, (m.get(w) || 0) + 1));
     let inter = 0; B.forEach((w) => { const c = m.get(w); if (c) { inter++; m.set(w, c - 1); } });
-    return (2 * inter) / (A.length + B.length);
+    return Math.max((2 * inter) / (A.length + B.length), joined(A.join(""), B.join("")));
+  }
+  // Letters only (spaces ignored), character pairs: catches a lost or added space ("EVOLVE monthly sharing" →
+  // "EVOLVEsharing"), where whole words no longer match. Short lines are left to the word measure.
+  function joined(a, b) {
+    if (a.length < 8 || b.length < 8) return 0;
+    const pairs = (s) => { const m = new Map(); for (let i = 0; i < s.length - 1; i++) { const k = s.slice(i, i + 2); m.set(k, (m.get(k) || 0) + 1); } return m; };
+    const A = pairs(a), B = pairs(b); let inter = 0;
+    B.forEach((c, k) => { inter += Math.min(c, A.get(k) || 0); });
+    return (2 * inter) / (a.length - 1 + b.length - 1);
   }
   function lcsDiff(a, b) {   // token diff → list of hunks {ai, aj, bi, bj}
     const n = a.length, m = b.length, dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
