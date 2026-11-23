@@ -189,7 +189,7 @@
   function compare(origBlocks, slideBlocks, opts) {
     const threshold = (opts && opts.threshold) || 0.5, items = [];
     const seg = (blocks) => blocks.flatMap((b) => segments(b.text).map((t) => ({ t, b, loc: b.loc })));
-    const allO = seg(origBlocks), allS = seg(slideBlocks), takenO = new Set(), takenS = new Set();
+    const allO = seg(origBlocks), allS = seg(slideBlocks), takenO = new Set(), takenS = new Set(), partner = new Map();
     // Pass 1 per location (slide text, table, chart, notes); pass 2 across locations for what is left, because a
     // redesign often turns a table into text boxes (or the other way round): the text is still there, just elsewhere.
     for (const loc of ["text", "table", "chart", "notes", "*"]) {
@@ -197,10 +197,10 @@
       const S = allS.filter((x) => !takenS.has(x) && (loc === "*" || x.loc === loc) && (loc !== "*" || x.loc !== "notes"));
       const usedO = new Set(), usedS = new Set(), pairs = [];
       // exact matches first, then the most similar pairs above the threshold
-      O.forEach((o, i) => { const j = S.findIndex((s, k) => !usedS.has(k) && s.t === o.t); if (j >= 0) { usedO.add(i); usedS.add(j); } });
+      O.forEach((o, i) => { const j = S.findIndex((s, k) => !usedS.has(k) && s.t === o.t); if (j >= 0) { usedO.add(i); usedS.add(j); partner.set(o, S[j]); } });
       const cand = [];
       O.forEach((o, i) => { if (usedO.has(i)) return; S.forEach((s, j) => { if (usedS.has(j)) return; const sim = similarity(o.t, s.t); if (sim >= threshold) cand.push([sim, i, j]); }); });
-      cand.sort((x, y) => y[0] - x[0]).forEach(([sim, i, j]) => { if (usedO.has(i) || usedS.has(j)) return; usedO.add(i); usedS.add(j); pairs.push([O[i], S[j], sim]); });
+      cand.sort((x, y) => y[0] - x[0]).forEach(([sim, i, j]) => { if (usedO.has(i) || usedS.has(j)) return; usedO.add(i); usedS.add(j); partner.set(O[i], S[j]); pairs.push([O[i], S[j], sim]); });
       O.forEach((o, i) => { if (usedO.has(i)) takenO.add(o); }); S.forEach((x, j) => { if (usedS.has(j)) takenS.add(x); });
       for (const [o, s] of pairs) {
         const a = words(o.t), b = words(s.t);
@@ -212,7 +212,14 @@
     }
     // Still unpaired: missing, unless the text sits inside a longer slide sentence (two sentences merged into one)
     const slideAll = allS.map((x) => x.t).join(" \u0000 ");
-    allO.forEach((o) => { if (!takenO.has(o) && !slideAll.includes(o.t)) items.push({ cat: "missing", loc: o.loc, orig: { pre: "", mid: o.t, post: "" } }); });
+    // Anchor for missing text: the slide text that matches the original text right before it (or right after it),
+    // so the designer knows where to paste it
+    const anchorFor = (k, loc) => {
+      for (let i = k - 1; i >= 0; i--) { const p = partner.get(allO[i]); if (p && allO[i].loc === loc) return { dir: "after", text: p.t, loc: p.loc, shape: p.b.shape }; }
+      for (let i = k + 1; i < allO.length; i++) { const p = partner.get(allO[i]); if (p && allO[i].loc === loc) return { dir: "before", text: p.t, loc: p.loc, shape: p.b.shape }; }
+      return null;
+    };
+    allO.forEach((o, k) => { if (!takenO.has(o) && !slideAll.includes(o.t)) items.push({ cat: "missing", loc: o.loc, orig: { pre: "", mid: o.t, post: "" }, anchor: anchorFor(k, o.loc) }); });
     return items;
   }
 

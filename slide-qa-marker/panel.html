@@ -401,6 +401,9 @@
   .cmp-btn svg { width: 16px; height: 16px; }
   .cmp-btn:hover { background: #F7F9FC; }
   .cmp-btn.done { color: #0C7F49; }
+  .cmp-cell.stack { flex-direction: column; align-items: stretch; gap: 4px; }
+  .cmp-line, .cmp-clue { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .cmp-clue span { flex: 1; min-width: 0; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }   /* text-xs/Regular, text/subtle */
 </style>
 </head>
 <body>
@@ -592,7 +595,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.44";
+const APP_VERSION = "2.46";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -956,7 +959,8 @@ function render() {
   if ($("altBtn").hidden && S.closeAltPop) S.closeAltPop();
   $("actions").hidden = btn.hidden && upd.hidden && cancel.hidden && !$("msg").textContent;
   // Compare with original: on my slides; switching slides collapses the bar (the original stays connected)
-  const cmpShow = !!cur && (mine || !!alt) && !idClash;
+  // Only before sending (new slide, or preparing the next version); once sent, the bar is hidden
+  const cmpShow = !!cur && (mine || !!alt) && !idClash && (v.mode === "notsent" || v.mode === "update");
   if (CMP.open && cur && CMP.slideId !== cur.id) cmpCollapse();
   renderCmp(cmpShow);
 
@@ -1167,6 +1171,7 @@ function openAltPop() {
 // The original .pptx is read once in the panel (compare-original.js, lazy-loaded); only its text is kept, in IndexedDB on
 // this computer, per order. Nothing is uploaded and nothing is stored inside the .pptx. A check never blocks sending.
 const CMP_ICON = {"bullseye": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.4 2.4)\"><path d=\"M10.5 5.6C10.5 2.8875 8.3125 0.7 5.6 0.7C2.8875 0.7 0.7 2.8875 0.7 5.6C0.7 8.3125 2.8875 10.5 5.6 10.5C8.3125 10.5 10.5 8.3125 10.5 5.6ZM0 5.6C0 2.51562 2.51562 0 5.6 0C8.68437 0 11.2 2.51562 11.2 5.6C11.2 8.68437 8.68437 11.2 5.6 11.2C2.51562 11.2 0 8.68437 0 5.6ZM5.6 8.4C7.15312 8.4 8.4 7.15312 8.4 5.6C8.4 4.04687 7.15312 2.8 5.6 2.8C4.04687 2.8 2.8 4.04687 2.8 5.6C2.8 7.15312 4.04687 8.4 5.6 8.4ZM5.6 2.1C7.525 2.1 9.1 3.675 9.1 5.6C9.1 7.525 7.525 9.1 5.6 9.1C3.675 9.1 2.1 7.525 2.1 5.6C2.1 3.675 3.675 2.1 5.6 2.1ZM5.6 6.3C5.99375 6.3 6.3 5.99375 6.3 5.6C6.3 5.20625 5.99375 4.9 5.6 4.9C5.20625 4.9 4.9 5.20625 4.9 5.6C4.9 5.99375 5.20625 6.3 5.6 6.3ZM5.6 4.2C6.36562 4.2 7 4.83437 7 5.6C7 6.36562 6.36562 7 5.6 7C4.83437 7 4.2 6.36562 4.2 5.6C4.2 4.83437 4.83437 4.2 5.6 4.2Z\" fill=\"currentColor\"/></g></svg>", "copy": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(3.1 2.4)\"><path d=\"M3.5 1.4V7C3.5 7.39375 3.80625 7.7 4.2 7.7H8.4C8.79375 7.7 9.1 7.39375 9.1 7V2.7125C9.1 2.51562 9.03438 2.34062 8.90313 2.20937L7.59063 0.896875C7.45938 0.765625 7.28438 0.7 7.0875 0.7H4.2C3.80625 0.7 3.5 1.00625 3.5 1.4ZM4.2 0H7.0875C7.45938 0 7.80938 0.153125 8.07188 0.415625L9.38438 1.72812C9.64688 1.99062 9.8 2.34062 9.8 2.7125V7C9.8 7.76562 9.16563 8.4 8.4 8.4H4.2C3.43438 8.4 2.8 7.76562 2.8 7V1.4C2.8 0.634375 3.43438 0 4.2 0ZM1.4 2.8H1.75V3.5H1.4C1.00625 3.5 0.7 3.80625 0.7 4.2V9.8C0.7 10.1937 1.00625 10.5 1.4 10.5H5.6C5.99375 10.5 6.3 10.1937 6.3 9.8V9.45H7V9.8C7 10.5656 6.36563 11.2 5.6 11.2H1.4C0.634375 11.2 0 10.5656 0 9.8V4.2C0 3.43437 0.634375 2.8 1.4 2.8Z\" fill=\"currentColor\"/></g></svg>", "x16": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.4 2.4)\"><path d=\"M11.0471 0.77342L6.26996 5.58906L11.0471 10.4047C11.251 10.5798 11.251 10.8717 11.0471 11.0468C10.8723 11.2511 10.581 11.2511 10.4062 11.0468L5.6 6.26033L0.793758 11.0468C0.618986 11.2511 0.327698 11.2511 0.152926 11.0468C-0.0509753 10.8717 -0.0509753 10.5798 0.152926 10.4047L4.93004 5.58906L0.152926 0.77342C-0.0509753 0.598306 -0.0509753 0.30645 0.152926 0.131335C0.327698 -0.0437785 0.618986 -0.0437785 0.793758 0.131335L5.6 4.91779L10.4062 0.131335C10.581 -0.0437785 10.8723 -0.0437785 11.0471 0.131335C11.251 0.30645 11.251 0.598306 11.0471 0.77342Z\" fill=\"currentColor\"/></g></svg>", "plus16": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 1.6)\"><path d=\"M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z\" fill=\"currentColor\"/></g></svg>"};
+const CMP_TRASH = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.47273 2.64242L6.20606 3.53939H9.81818L9.55152 2.64242C9.50303 2.49697 9.33333 2.37576 9.16364 2.37576H6.83636C6.66667 2.37576 6.52121 2.49697 6.47273 2.64242ZM5.38182 3.53939L5.72121 2.42424C5.86667 1.93939 6.32727 1.6 6.83636 1.6H9.16364C9.67273 1.6 10.1333 1.93939 10.2788 2.42424L10.6182 3.53939H13.0424C13.2606 3.53939 13.4303 3.70909 13.4303 3.92727C13.4303 4.14545 13.2606 4.31515 13.0424 4.31515H2.95758C2.73939 4.31515 2.5697 4.14545 2.5697 3.92727C2.5697 3.70909 2.73939 3.53939 2.95758 3.53939H5.38182ZM3.34545 5.47879H4.12121V12.8485C4.12121 13.2848 4.46061 13.6242 4.89697 13.6242H11.103C11.5394 13.6242 11.8788 13.2848 11.8788 12.8485V5.47879H12.6545V12.8485C12.6545 13.697 11.9515 14.4 11.103 14.4H4.89697C4.04848 14.4 3.34545 13.697 3.34545 12.8485V5.47879ZM6.06061 7.0303V11.6848C6.06061 11.903 5.89091 12.0727 5.67273 12.0727C5.45455 12.0727 5.28485 11.903 5.28485 11.6848V7.0303C5.28485 6.81212 5.45455 6.64242 5.67273 6.64242C5.89091 6.64242 6.06061 6.81212 6.06061 7.0303ZM8.38788 7.0303V11.6848C8.38788 11.903 8.21818 12.0727 8 12.0727C7.78182 12.0727 7.61212 11.903 7.61212 11.6848V7.0303C7.61212 6.81212 7.78182 6.64242 8 6.64242C8.21818 6.64242 8.38788 6.81212 8.38788 7.0303ZM10.7152 7.0303V11.6848C10.7152 11.903 10.5455 12.0727 10.3273 12.0727C10.1091 12.0727 9.93939 11.903 9.93939 11.6848V7.0303C9.93939 6.81212 10.1091 6.64242 10.3273 6.64242C10.5455 6.64242 10.7152 6.81212 10.7152 7.0303Z" fill="currentColor"/></svg>';   // Builder DS Icon/regular/trash-can
 const CMP_CHECK = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.3l3 3 6-6.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const CMP = { meta: null, slides: null, open: false, state: "idle", items: [], base: null, local: null, slideId: null, err: "", retry: null, key: null };
 let cmpEngine = null;
@@ -1254,11 +1259,14 @@ function renderCmp(show) {
   $("cmpFileName").title = $("cmpFileName").textContent;
   const icon = $("cmpIcon");
   if (!has && !CMP.reading) { icon.hidden = false; icon.innerHTML = CMP_ICON.plus16; icon.setAttribute("aria-label", "Choose the original .pptx"); }
-  else if (open && has) { icon.hidden = false; icon.innerHTML = CMP_ICON.x16; icon.setAttribute("aria-label", "Remove the original"); }
+  else if (open && has) { icon.hidden = false; icon.innerHTML = CMP_TRASH; icon.setAttribute("aria-label", "Remove the original"); }
   else icon.hidden = true;
   $("cmpToggle").setAttribute("aria-expanded", String(open));
   $("cmpProgress").hidden = CMP.state !== "checking";
-  const body = $("cmpBody"); body.innerHTML = "";
+  const body = $("cmpBody");
+  // render() runs again on every selection change (e.g. after a bullseye): keep the list where the designer scrolled it
+  const old = body.querySelector(".cmp-list"), keep = old && CMP.drawn === CMP.items ? old.scrollTop : 0;
+  body.innerHTML = "";
   body.hidden = !open || CMP.state === "checking" || CMP.state === "idle";
   if (!body.hidden) {
     const st = document.createElement("div"); st.className = "cmp-status";
@@ -1286,12 +1294,21 @@ function renderCmp(show) {
         tb.append(lab);
         rows.forEach((it) => {
           const r = document.createElement("div"); r.className = "cmp-row";
-          const a = document.createElement("div"); a.className = "cmp-cell"; a.append(cmpText(it.orig, "o")); r.append(a);
+          const a = document.createElement("div"); a.className = "cmp-cell"; a.append(cat === "missing" ? cmpText({ pre: [it.orig.pre, it.orig.mid, it.orig.post].filter(Boolean).join(" ") }, "") : cmpText(it.orig, "o")); r.append(a);
           const btn = document.createElement("button"); btn.type = "button"; btn.className = "cmp-btn";
           if (cat === "missing") {
             btn.innerHTML = CMP_ICON.copy; btn.setAttribute("aria-label", "Copy original text");
             btn.onclick = () => cmpCopy(btn, [it.orig.pre, it.orig.mid, it.orig.post].filter(Boolean).join(" "));
-            a.append(btn);
+            a.classList.add("stack"); const line = document.createElement("div"); line.className = "cmp-line";
+            line.append(a.firstChild, btn); a.append(line);
+            // Clue: where it was, as the slide text right before (or after) it; the bullseye selects that text
+            if (it.anchor) {
+              const w = it.anchor.text.split(" "), short = it.anchor.dir === "after" ? (w.length > 5 ? "\u2026" : "") + w.slice(-5).join(" ") : w.slice(0, 5).join(" ") + (w.length > 5 ? "\u2026" : "");
+              const clue = document.createElement("div"); clue.className = "cmp-clue";
+              const t = document.createElement("span"); t.textContent = (it.anchor.loc === "notes" ? "In speaker notes, " + it.anchor.dir : it.anchor.dir === "after" ? "After" : "Before") + " \u201C" + short + "\u201D"; clue.append(t);
+              if (it.anchor.loc !== "notes") { const bb = document.createElement("button"); bb.type = "button"; bb.className = "cmp-btn"; bb.innerHTML = CMP_ICON.bullseye; bb.setAttribute("aria-label", "Select where it goes"); bb.onclick = () => cmpSelect({ slideLoc: it.anchor.loc, shape: it.anchor.shape, slideSentence: it.anchor.text, slide: { mid: "" } }); clue.append(bb); }
+              a.append(clue);
+            }
           } else {
             const b = document.createElement("div"); b.className = "cmp-cell"; b.append(cmpText(it.slide, "s"));
             if ((it.slideLoc || it.loc) !== "notes") { btn.innerHTML = CMP_ICON.bullseye; btn.setAttribute("aria-label", "Select on slide"); btn.onclick = () => cmpSelect(it); b.append(btn); }
@@ -1302,9 +1319,11 @@ function renderCmp(show) {
         sec.append(tb); list.append(sec);
       }));
       if (n) body.append(list);
+      CMP.drawn = CMP.items;
     }
   }
   cmpSize();
+  const list = body.querySelector(".cmp-list"); if (list && keep) list.scrollTop = keep;
 }
 // Open bar: from below the send button down to the footer; status row pinned, the list scrolls
 function cmpSize() {
