@@ -129,6 +129,9 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | **Tab** | Tab group: 2, 3, 4 · Size: m, s (track `elevation/sunken`, radius xl) |
 | **Icons** | `Icon/regular/*` (check, check-circle, circle-info, circle-stop, chevrons/chevron-down, plus, bell, bookmark, user, user-tag, Gear, image, message-lines, arrow-up-from-line, square-dashed …). Find them with `search_design_system`; export as SVG with `currentColor`. |
 
+## Audit 2026-11-20
+Active frames (Add in: v3, Frame 52, Not sent yet, Footer, Sign in/up, Alternative options; Review page: 1 · Sign in, 2 · Board, 3 · Review slide, Distributions, Dialogs 483:*, Board / Waiting; Components page) were checked and fixed: ~1,500 spacing values and ~120 radii bound to `scale/*` / `radii/*`, circles → `radii/full`, comment cards 10 → `radii/l` (8), dialogs 14 → `radii/xl`, `Shadow/xs` applied to Button Icons, black popup titles → `text/title`, raw white surfaces → `elevation/default`, text styles applied to 12/14/24 px Geist text. Left on purpose: logo, illustrations, pixel animals, sticky notes, old v1/v2 frames and "4 · Dialogs". Known leftovers: negative gaps used for overlaps (Sign up −43, Frame 23), scaled `Slide preview` gap 3.84, empty-state `Body` bottom padding 80, `List` padding 46/9, `Message` gap 25, `Review panel` gap 30, the 10 px Geist Mono timer (no DS style for 10 px).
+
 ## Migration status (what is not finished yet in the DS)
 Found while reading on 2026-11-13. Check with Uda before relying on these:
 1. Alias is unpublished by design (see above). Note: two primitive families appear in the alias chains, `neutral/*` and `color/grey/*` (same values, e.g. 700 = #454C63).

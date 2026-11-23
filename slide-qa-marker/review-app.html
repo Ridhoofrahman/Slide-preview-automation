@@ -89,7 +89,7 @@
   .s-msg { margin: -8px 0 0; font-size: 14px; line-height: 20px; color: #A81A1A; }
   .s-msg:empty { display: none; }
   @media (prefers-reduced-motion: reduce) { .s-spinner { animation-duration: 2s; } }
-  .login { max-width: 360px; margin: 12vh auto; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .login { max-width: 360px; margin: 12vh auto; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
   .login p { color: var(--muted); margin: 6px 0 18px; }
   .login .primary { width: 100%; }
 
@@ -114,7 +114,7 @@
   .projects .del svg { width: 16px; height: 16px; }
   @media (hover: none) { .projects .del { opacity: 1; } .projects .proj { padding-right: 44px; } }
   @media (prefers-reduced-motion: reduce) { .projects .proj { transition: none; } }
-  dialog.confirm { border: 0; border-radius: 14px; padding: 22px; width: min(420px, calc(100vw - 32px)); box-shadow: 0 12px 40px rgba(24,32,43,.22); }
+  dialog.confirm { border: 0; border-radius: 12px; padding: 20px; width: min(420px, calc(100vw - 32px)); box-shadow: 0 12px 40px rgba(24,32,43,.22); }
   dialog.confirm::backdrop { background: rgba(24,32,43,.35); }
   dialog.confirm h2 { font-size: 17px; margin: 0 0 8px; }
   dialog.confirm p { margin: 0 0 8px; color: var(--muted); }
@@ -169,7 +169,7 @@
   .stage { display: flex; justify-content: center; align-items: flex-start; padding: 24px; overflow: auto; min-width: 0; }
   .stage-inner { display: inline-flex; flex-direction: column; gap: 16px; max-width: 100%; }
   .details { width: 0; min-width: 100%; display: grid; grid-template-columns: 3fr 2fr; gap: 12px; }
-  .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; min-width: 0; }
   .dhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
   .dhead h3 { margin: 0; color: var(--ink); font-size: 13px; }
   .dmeta { font-size: 12px; color: var(--muted); }
@@ -206,7 +206,7 @@
   .decision-state { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
   .thread { padding: 16px; overflow: auto; }
   .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .comment { display: grid; grid-template-columns: 26px 1fr; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .comment { display: grid; grid-template-columns: 26px 1fr; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
   .comment.hot { border-color: var(--fix); }
   .comment.resolved { opacity: .55; }
   .num { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
@@ -214,7 +214,7 @@
   .comment p { margin: 0 0 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .comment .meta { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
   .comments .empty { color: var(--muted); font-size: 13px; }
-  .closed-note { margin: 0; border-top: 1px solid var(--line); padding: 14px 16px 18px; font-size: 13px; color: var(--muted); }
+  .closed-note { margin: 0; border-top: 1px solid var(--line); padding: 12px 16px 16px; font-size: 13px; color: var(--muted); }
   figure.slide.readonly { cursor: default; }
   .composer { border-top: 1px solid var(--line); padding: 12px 16px 16px; }
   .composer p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
@@ -265,7 +265,7 @@
   .rv-thumb img, .rv-thumb .ph { width: 133px; aspect-ratio: 16 / 9; border-radius: 4px; object-fit: cover; background: #FFFFFF; display: block; }
   .rv-center { flex: 1; min-width: 0; max-width: 960px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
   .rv-older { align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 8px; background: #F0EBFC; color: #4A2999; font-size: 13px; line-height: 20px; }
-  .rv-tag { display: inline-flex; padding: 4px 12px; border-radius: 20px; border: 1px solid; font-size: 16px; line-height: 24px; }
+  .rv-tag { display: inline-flex; padding: 4px 12px; border-radius: 999px; border: 1px solid; font-size: 16px; line-height: 24px; }
   .rv-tag.ready { background: #FFF9E6; border-color: #FFE08A; color: #AD7300; }
   .rv-tag.approved { background: #E6F7EE; border-color: #7ED9A8; color: #0A6139; }
   .rv-tag.changes { background: #FFF1F1; border-color: #FFB0B0; color: #A81A1A; }
@@ -284,7 +284,7 @@
   .rv-details .row > span { min-width: 0; }
   .rv-details .row .sample { display: block; font-family: "Geist", system-ui, sans-serif; color: #A3ADC2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rv-details p { margin: 0; font-size: 12px; line-height: 16px; color: #6A7389; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .rv-details .warn { font-size: 11px; line-height: 16px; padding: 0 6px; border-radius: 10px; background: #FFF1F1; color: #A81A1A; font-weight: 500; }
+  .rv-details .warn { font-size: 11px; line-height: 16px; padding: 0 6px; border-radius: 999px; background: #FFF1F1; color: #A81A1A; font-weight: 500; }
   .rv-details .dnote { margin-top: 6px; color: #A3ADC2; }
   .rv-panel { background: #FFFFFF; border-left: 1px solid #DDE4EE; display: flex; flex-direction: column; min-height: 0; }
   .rv-decision { padding: 16px; border-bottom: 1px solid #DDE4EE; display: flex; flex-direction: column; gap: 16px; }
@@ -305,11 +305,11 @@
   .rv-thread h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
   .rv-comments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
   .rv-comments .empty { font-size: 12px; color: #6A7389; }
-  .rv-comment { display: flex; gap: 8px; padding: 10px; border: 1px solid #DDE4EE; border-radius: 10px; background: #FFFFFF; cursor: default; }
+  .rv-comment { display: flex; gap: 8px; padding: 10px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; cursor: default; }
   .rv-comment.hot { background: #EEF2F8; }
   .rv-comment.active { border-color: #A8C3FF; background: #FFFFFF; }
   .rv-comment.resolved { border-color: #7ED9A8; }
-  .rv-comment .pinno { flex: none; width: 22px; height: 22px; border-radius: 11px; background: #1C43A5; color: #FFFFFF; font-size: 12px; font-weight: 500; display: grid; place-items: center; }
+  .rv-comment .pinno { flex: none; width: 22px; height: 22px; border-radius: 999px; background: #1C43A5; color: #FFFFFF; font-size: 12px; font-weight: 500; display: grid; place-items: center; }
   .rv-comment.resolved .pinno { background: #A3ADC2; }
   .rv-comment .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
   .rv-comment p { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -326,7 +326,7 @@
   .wave i { width: 2px; border-radius: 2px; background: #6A7389; display: block; }
   .wave.live i { animation: wave 1s ease-in-out infinite; }
   @keyframes wave { 50% { transform: scaleY(.45); } }
-  .rv-closed { margin: 0; padding: 14px 16px 18px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 18px; color: #6A7389; }
+  .rv-closed { margin: 0; padding: 12px 16px 16px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 18px; color: #6A7389; }
   .rv-link { border: 0; background: none; padding: 0; font-family: inherit; font-size: 12px; line-height: 18px; font-weight: 500; color: #1A1F2E; cursor: pointer; text-decoration: underline; text-underline-position: from-font; }
   .rv-older .rv-link { font-size: 13px; color: #4A2999; }
   .rv-composer { padding: 12px 16px 16px; border-top: 1px solid #DDE4EE; display: flex; flex-direction: column; gap: 8px; }
@@ -414,7 +414,7 @@
   .rv-comment .dot::before { content: ""; display: block; width: 3px; height: 3px; border-radius: 50%; background: #C2CCDB; }
   .rv-comment .act:hover { text-decoration: underline; }
   /* Older version: comments closed */
-  .rv-closed { flex: none; margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px 16px 18px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 16px; color: #6A7389; }
+  .rv-closed { flex: none; margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 16px 16px; border-top: 1px solid #DDE4EE; font-size: 12px; line-height: 16px; color: #6A7389; }
   .rv-closed p { margin: 0; }
   .rv-latest { margin: 0; border: 0; background: none; padding: 0; font-family: inherit; font-size: 12px; line-height: 16px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .rv-latest:hover { text-decoration: underline; }
@@ -430,7 +430,7 @@
   .rv-icon { color: #454C63; }
   .rv-icon:hover { background: #F7F9FC; color: #1A1F2E; }
   .rv-send { background: #1C43A5; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
-  .rv-send:not(:disabled):hover { background: #163584; }
+  .rv-send:not(:disabled):hover { background: #132D70; }
   #recDiscard { width: 24px; height: 24px; }
   #recDiscard svg { width: 16px; height: 16px; }
   /* Recording: stop, live waveform and timer in one pill; the mic button hides */
@@ -506,7 +506,7 @@
   .bd-thumbs .back { left: -5.1px; top: -3px; transform: rotate(-3deg); transform-origin: 0 0; }
   .bd-thumbs .nsy { border-radius: 11.2px; background: transparent; overflow: visible; box-shadow: none; }
   .bd-thumbs .nsy .nsy-svg { display: block; width: 112px; height: 63.5px; }
-  .bd-tt { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px solid #BDA6EE; border-radius: 20px; background: #F0EBFC; color: #4A2999; font-size: 12px; line-height: 16px; white-space: nowrap; }
+  .bd-tt { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px solid #BDA6EE; border-radius: 999px; background: #F0EBFC; color: #4A2999; font-size: 12px; line-height: 16px; white-space: nowrap; }
   .bd-ring { position: absolute; left: 94px; top: -8px; width: 30px; height: 30px; }
   .bd-ring svg { position: absolute; inset: 0; width: 30px; height: 30px; }
   .bd-ring .n { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #1A1F2E; }
@@ -516,7 +516,7 @@
   .bd-when { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6A7389; flex-wrap: wrap; }
   .bd-ago { display: inline-flex; align-items: center; gap: 4px; }
   .bd-when svg { width: 12px; height: 12px; }
-  .bd-tag { margin-left: 4px; padding: 0 6px; border-radius: 10px; font-size: 11px; line-height: 16px; font-weight: 500; }
+  .bd-tag { margin-left: 4px; padding: 0 6px; border-radius: 999px; font-size: 11px; line-height: 16px; font-weight: 500; }
   .bd-tag.ok { background: #E6F7EE; color: #0A6139; }
   .bd-tag.sent { background: #EEF4FF; color: #1C43A5; }
   .bd-more { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #6A7389; font-size: 18px; line-height: 1; cursor: pointer; opacity: 0; }
@@ -552,7 +552,7 @@
   .bd-act { display: flex; gap: 12px; border-radius: 6px; }
   .bd-act.go { cursor: pointer; }
   .bd-act.go:hover .line strong:last-of-type { text-decoration: underline; text-underline-position: from-font; }
-  .bd-act .ic { flex: none; width: 20px; height: 20px; border-radius: 14px; border: 1px solid #A8C3FF; background: #EEF4FF; color: #1C43A5; font-size: 11px; line-height: 18px; text-align: center; font-weight: 600; }
+  .bd-act .ic { flex: none; width: 20px; height: 20px; border-radius: 999px; border: 1px solid #A8C3FF; background: #EEF4FF; color: #1C43A5; font-size: 11px; line-height: 18px; text-align: center; font-weight: 600; }
   .bd-act.k-approved .ic { background: #E6F7EE; border-color: #7ED9A8; color: #0A6139; }
   .bd-act.k-changes .ic { background: #FFF1F1; border-color: #FFB0B0; color: #A81A1A; }
   .bd-act.k-comment .ic, .bd-act.k-voice .ic { background: #F0EBFC; border-color: #BDA6EE; color: #4A2999; }
