@@ -21,6 +21,8 @@ Pages: **Review page**, **Review page (as built)**, **From Paper** (copies of tw
 | 156:8747 | **Board order card**: stacked slide thumbnail (variants Amount =1 / >1 / Not sent yet), ring states 0 / Some / All approved / Sent to customer, Tag team chip, hover and List variants |
 | 112:895 | Board loading state (motion "Cards · Stacking motion", 2258.699 ms loop) |
 | 112:1499 | Board frames |
+| 701:7378 | **Activity event** component set (page Review page): Type = Sent / Approved / Changes requested / Comment / Voice note / Sent to customer × State Default / Hover; booleans Note (Sent), Quote, Pin. Built 2026-11-23 from the code as the base for Uda's redesign |
+| 702:7251 | Activity · all states: every sentence variation, panel normal (day groups), panel empty, behaviour notes |
 | 113:1730 | Review slide section (strip, header, panel states, banners) |
 | 211:4315 | Review panel component (Waiting, Approved, No comment, Recording, Full, Older version) |
 | 211:5187 | Slide list panel (bg `#F6F7F9`, border `#E3E6EB`; Uda keeps 104 px thumbnails, not Figma's 133 px) |
