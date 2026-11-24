@@ -265,6 +265,17 @@
 
   /* First-run order step */
   .order-gate { padding: 24px 20px; }
+  /* Compile an order (phase 2): starter file from the dashboard */
+  .compile-gate { padding: 0; }
+  .cp-state { margin: 0; display: flex; gap: 4px; font-size: 14px; line-height: 20px; color: #454C63; }
+  .cp-state svg { flex: none; width: 16px; height: 16px; margin-top: 2px; }
+  .cp-state.ok { color: #0A6139; }        /* text/color/success */
+  .cp-state.err { color: #A81A1A; }       /* text/color/danger */
+  .cp-list { margin: -8px 0 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; line-height: 16px; color: #454C63; }
+  .cp-list li::marker { color: #A3ADC2; }
+  .cp-progress { margin-top: -8px; }
+  .cp-progress .cfile-bar { height: 4px; }
+  .cp-recheck { height: 40px; border-radius: 8px; margin-top: -12px; }
   .order-gate form { display: flex; flex-direction: column; gap: 20px; }
   .order-gate h1 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
   .order-gate .order-sub { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: #6A7389; }
@@ -520,6 +531,19 @@
 </svg></div>
     <footer class="foot og-foot"><button type="button" class="foot-top" aria-expanded="false"><span class="foot-name"></span><span class="foot-team"></span></button><div class="foot-more" hidden><span class="foot-dash"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout">Sign out</button></span></div></footer>
   </section>
+  <section id="compileView" class="order-gate compile-gate" hidden aria-labelledby="cpTitle">
+    <div class="og-body">
+      <div class="og-text">
+        <h1 id="cpTitle">Compile order</h1>
+        <p class="order-sub" id="cpSub">All slides of this order go into this file, in the order of the review page.</p>
+      </div>
+      <p class="cp-state" id="cpState" role="status" aria-live="polite"></p>
+      <ul class="cp-list" id="cpList" hidden></ul>
+      <div class="cp-progress" id="cpProgress" hidden><div class="cfile-bar"><span id="cpFill"></span></div></div>
+      <button id="cpBtn" class="primary og-btn" type="button" hidden></button>
+      <button id="cpRecheck" class="secondary cp-recheck" type="button" hidden>Check again</button>
+    </div>
+  </section>
   <section id="appView" hidden>
     <div class="container">
       <header class="head">
@@ -610,7 +634,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.50";
+const APP_VERSION = "2.51";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1621,6 +1645,8 @@ async function signIn() {
 async function enterApp(user, team) {
   S.user = user; S.myTeam = team || null;
   $("loginView").hidden = true;
+  const comp = await detectCompile();   // a starter file from the dashboard's "Compile order"
+  if (comp) { enterCompile(comp); return; }
   if (!docStore.get("slideqa.orderSet")) await askOrder();
   $("orderView").hidden = true; $("appView").hidden = false;
   if (!S.handlerAdded) {
@@ -1849,6 +1875,126 @@ async function saveTeam() {
   if (!ok) { say($("teamMsg"), "Couldn't save your team. Please try again.", "err"); return; }
   S.pendingUser = null; $("teamStep").value = "";
   enterApp(u, team);
+}
+
+/* ---------- Compile an order (phase 2) ----------
+   The dashboard's "Compile order" gives the DM a starter .pptx: one slide whose title shape is named "Slideshot compile"
+   and reads "Compile Order #N" (the slide text works on every platform; the add-in setting slideshot.compile is only a hint).
+   Here the panel checks that every slide is approved and saved, then inserts the saved one-slide files (bucket slide-files)
+   in the review page's order: normal slides by number, then alternatives (1a, 1b…). The starter slide goes at the end. */
+const CP = { order: null, starterId: null, plan: null, done: 0, lastId: null, busy: false };
+async function detectCompile() {
+  try {
+    let found = null;
+    await PowerPoint.run(async (ctx) => {
+      const slides = ctx.presentation.slides; slides.load("items/id"); await ctx.sync();
+      if (!slides.items.length) return;
+      const first = slides.items[0], shapes = slides.getItem(first.id).shapes; shapes.load("items/id,items/name"); await ctx.sync();
+      const sh = shapes.items.find((x) => /^slideshot compile$/i.test(x.name || "")); if (!sh) return;
+      const tr = sh.textFrame.textRange; tr.load("text"); await ctx.sync();
+      const m = (tr.text || "").match(/Compile Order #(\d+)/i);
+      if (m) found = { order: m[1], starterId: first.id };
+    });
+    return found;
+  } catch (e) { return null; }
+}
+const CP_ICON = { ok: FILE_ICONS.saved, err: FILE_ICONS.failed };
+function cpSay(text, kind) { const el = $("cpState"); el.className = "cp-state" + (kind ? " " + kind : ""); el.innerHTML = kind && CP_ICON[kind] ? CP_ICON[kind] : ""; el.append(document.createTextNode(text || "")); }
+function cpList(lines) { const ul = $("cpList"); ul.innerHTML = ""; ul.hidden = !lines.length; lines.forEach((t) => { const li = document.createElement("li"); li.textContent = t; ul.append(li); }); }
+async function enterCompile(comp) {
+  CP.order = comp.order; CP.starterId = comp.starterId; CP.done = 0; CP.lastId = comp.starterId;
+  $("orderView").hidden = true; $("appView").hidden = true; $("compileView").hidden = false;
+  $("cpTitle").textContent = "Compile Order #" + CP.order;
+  showDashboardLink(S.user);
+  $("cpRecheck").onclick = () => compileCheck();
+  $("cpBtn").onclick = () => runCompile();
+  let dm = false;
+  try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); dm = !r.error && !!r.data; } catch (e) {}
+  if (!dm) { cpSay("Only a DM can compile an order. Ask your DM to open this file.", "err"); return; }
+  compileCheck();
+}
+const STATUS_TEXT = { ready: "waiting for review", changes: "changes requested" };
+// Everything that must be true before compiling; returns { items, problems }
+async function compilePlan(order) {
+  const [sh, fi, as] = await Promise.all([
+    S.sb.from("slide_shots").select("id,file_key,slide_id,slide_number,alternative_of,version,status,created_at,designer,project").ilike("project", "%" + order + "%").limit(3000),
+    S.sb.from("slide_files").select("file_key,slide_id,version,storage_path,size_bytes").eq("order_key", order),
+    S.sb.from("slide_assignments").select("order_key,slides,assignee_name").ilike("order_key", "%" + order + "%")]);
+  if (sh.error) throw sh.error;
+  const shots = (sh.data || []).filter((r) => orderId(r.project) === order);
+  const latest = {}, first = {};
+  shots.forEach((r) => { const k = r.file_key + "|" + r.slide_id;
+    if (!latest[k] || r.version > latest[k].version) latest[k] = r;
+    if (!first[k] || String(r.created_at) < first[k]) first[k] = String(r.created_at); });
+  const files = {}; if (!fi.error) (fi.data || []).forEach((f) => { files[f.file_key + "|" + f.slide_id] = f; });
+  const all = Object.entries(latest).map(([k, r]) => Object.assign({ key: k, first: first[k], file: files[k] }, r));
+  const normal = all.filter((r) => !r.alternative_of).sort((a, b) => a.slide_number - b.slide_number || a.first.localeCompare(b.first));
+  const alts = all.filter((r) => r.alternative_of).sort((a, b) => a.alternative_of - b.alternative_of || a.first.localeCompare(b.first));
+  const altCount = {}; alts.forEach((r) => { const n = (altCount[r.alternative_of] = (altCount[r.alternative_of] || 0) + 1); r.label = r.alternative_of + String.fromCharCode(96 + Math.min(26, n)); });
+  normal.forEach((r) => { r.label = String(r.slide_number); });
+  const problems = [];
+  if (!all.length) problems.push("No slides were sent for this order yet.");
+  const seen = {}; normal.forEach((r) => { (seen[r.slide_number] = seen[r.slide_number] || []).push(r.designer); });
+  Object.entries(seen).forEach(([n, who]) => { if (who.length > 1) problems.push("Slide " + n + " was sent twice (" + who.join(", ") + "). Delete one on the dashboard."); });
+  const sent = new Set(normal.map((r) => r.slide_number));
+  ((as.error ? [] : as.data) || []).filter((a) => orderId(a.order_key) === order).forEach((a) => (a.slides || []).forEach((n) => { if (!sent.has(n)) problems.push("Slide " + n + " (" + a.assignee_name + ") isn't sent yet."); }));
+  const items = normal.concat(alts);
+  items.forEach((r) => {
+    if (r.status !== "approved") problems.push("Slide " + r.label + " (" + r.designer + ") is " + (STATUS_TEXT[r.status] || r.status) + ".");
+    else if (!r.file) problems.push("Slide " + r.label + " (" + r.designer + ") isn't saved for compile. Ask them to open it in Slideshot and click Retry.");
+    else if (r.file.version < r.version) problems.push("Slide " + r.label + " (" + r.designer + "): the saved file is v" + r.file.version + ", the approved slide is v" + r.version + ". Ask them to open it in Slideshot and click Retry.");
+  });
+  return { items, problems: [...new Set(problems)] };
+}
+async function compileCheck() {
+  $("cpBtn").hidden = true; $("cpRecheck").hidden = true; $("cpProgress").hidden = true; cpList([]);
+  cpSay("Checking the slides\u2026");
+  try { CP.plan = await compilePlan(CP.order); }
+  catch (e) { cpSay("Couldn't load this order: " + (e.message || e) + ".", "err"); $("cpRecheck").hidden = false; return; }
+  const { items, problems } = CP.plan, n = items.length, alts = items.filter((r) => r.alternative_of).length;
+  if (problems.length) {
+    cpSay("Not ready yet. Every slide must be approved and saved for compile.", "err");
+    cpList(problems.length > 8 ? problems.slice(0, 8).concat(["\u2026and " + (problems.length - 8) + " more."]) : problems);
+    $("cpRecheck").hidden = false; return;
+  }
+  cpSay(n + " slide" + (n === 1 ? "" : "s") + " approved and saved" + (alts ? ", including " + alts + " alternative" + (alts === 1 ? "" : "s") + " at the end" : "") + ".", "ok");
+  $("cpBtn").textContent = "Compile " + n + " slide" + (n === 1 ? "" : "s"); $("cpBtn").hidden = false; $("cpBtn").disabled = false;
+}
+const blobToB64 = (blob) => new Promise((ok, fail) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1] || ""); r.onerror = () => fail(r.error); r.readAsDataURL(blob); });
+async function runCompile() {
+  if (CP.busy || !CP.plan) return;
+  CP.busy = true; $("cpBtn").hidden = true; $("cpRecheck").hidden = true; cpList([]); $("cpProgress").hidden = false;
+  const items = CP.plan.items, n = items.length;
+  try {
+    for (let i = CP.done; i < n; i++) {
+      const it = items[i];
+      cpSay("Adding slide " + it.label + " (" + (i + 1) + " of " + n + ")\u2026");
+      $("cpFill").style.width = Math.max(4, Math.round((i / n) * 100)) + "%";
+      const dl = await S.sb.storage.from("slide-files").download(it.file.storage_path);
+      if (dl.error) throw new Error("couldn't download slide " + it.label + " (" + (dl.error.message || dl.error) + ")");
+      const b64 = await blobToB64(dl.data);
+      await PowerPoint.run(async (ctx) => {
+        ctx.presentation.insertSlidesFromBase64(b64, { formatting: "KeepSourceFormatting", targetSlideId: CP.lastId });
+        await ctx.sync();
+        const sl = ctx.presentation.slides; sl.load("items/id"); await ctx.sync();
+        const at = sl.items.findIndex((x) => x.id === CP.lastId);
+        if (at < 0 || !sl.items[at + 1]) throw new Error("slide " + it.label + " wasn't added");
+        CP.lastId = sl.items[at + 1].id;
+      });
+      CP.done = i + 1;
+    }
+    $("cpFill").style.width = "100%";
+    await PowerPoint.run(async (ctx) => { ctx.presentation.slides.getItem(CP.starterId).delete(); await ctx.sync(); });
+    try { const st = Office.context.document.settings; st.remove("Office.AutoShowTaskpaneWithDocument"); st.remove("slideshot.compile"); st.saveAsync(() => {}); } catch (e) {}
+    $("cpProgress").hidden = true;
+    cpSay("Done: " + n + " slide" + (n === 1 ? "" : "s") + " added. Save this file (File > Save As) and check it before sending.", "ok");
+    $("cpSub").textContent = "The starter slide was removed. Reopen this file any time: it opens like any other deck.";
+  } catch (e) {
+    console.warn("Slideshot compile:", e);
+    $("cpProgress").hidden = true;
+    cpSay("Stopped after " + CP.done + " of " + n + ": " + (e.message || e) + ".", "err");
+    $("cpBtn").textContent = "Try again (continue from slide " + (items[CP.done] ? items[CP.done].label : "") + ")"; $("cpBtn").hidden = false; $("cpBtn").disabled = false;
+  } finally { CP.busy = false; }
 }
 
 /* ---------- start ---------- */
