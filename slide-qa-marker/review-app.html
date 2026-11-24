@@ -1959,12 +1959,31 @@ function step(dir) {
 /* ---------- delete a project ---------- */
 let deleteKey = null, pendingDelete = null;
 // Remove rows (comments go with them) first, then their image and audio files
+// Slide files for compile (table slide_files + bucket slide-files): rows and files go together. Problems are only
+// logged: deleting slides or orders must never fail because of these, and the sweep below catches leftovers.
+async function dropSlideFiles(rows) {
+  if (!rows || !rows.length) return;
+  for (let i = 0; i < rows.length; i += 150) {
+    const d = await S.sb.from("slide_files").delete().in("id", rows.slice(i, i + 150).map((r) => r.id));
+    if (d.error) console.warn("Slideshot: slide_files rows not deleted:", d.error);
+  }
+  const paths = rows.map((r) => r.storage_path).filter(Boolean);
+  for (let i = 0; i < paths.length; i += 500) {
+    const r = await S.sb.storage.from("slide-files").remove(paths.slice(i, i + 500));
+    if (r.error) console.warn("Slideshot: slide files not removed from Storage:", r.error);
+  }
+}
+// Files whose slide is gone (shot_id was cleared when the slide was deleted, e.g. by an older dashboard). Every load.
+async function sweepSlideFiles() {
+  const f = await S.sb.from("slide_files").select("id,storage_path").is("shot_id", null).limit(500);
+  if (!f.error) await dropSlideFiles(f.data || []);
+}
 async function removeShots(ids, imagePaths) {
-  let files = imagePaths.slice(), pptx = [];
-  // Slide files for compile (bucket slide-files) of these slides go too; skipped quietly if the table isn't there
+  let files = imagePaths.slice();
+  // Their slide files first (afterwards shot_id is cleared and the link is lost)
   for (let i = 0; i < ids.length; i += 150) {
     const f = await S.sb.from("slide_files").select("id,storage_path").in("shot_id", ids.slice(i, i + 150));
-    if (!f.error && f.data.length) { pptx = pptx.concat(f.data.map((x) => x.storage_path)); await S.sb.from("slide_files").delete().in("id", f.data.map((x) => x.id)); }
+    if (!f.error) await dropSlideFiles(f.data || []);
   }
   for (let i = 0; i < ids.length; i += 150) {
     const c = await S.sb.from("shot_comments").select("audio_path").in("shot_id", ids.slice(i, i + 150)).not("audio_path", "is", null);
@@ -1976,7 +1995,6 @@ async function removeShots(ids, imagePaths) {
     if (!d.data.length && ids.length) throw new Error("not allowed. Run the delete permissions SQL in Supabase first");
   }
   for (let i = 0; i < files.length; i += 500) await S.sb.storage.from("slides").remove(files.slice(i, i + 500));
-  for (let i = 0; i < pptx.length; i += 500) await S.sb.storage.from("slide-files").remove(pptx.slice(i, i + 500));
 }
 function askSendToCustomer(key) {
   const p = S.projects[key]; if (!p) return;
@@ -2033,6 +2051,10 @@ async function deleteProject() {
       if (error) throw error;
       const rows = (all || []).filter((r) => canReview(r));
       await removeShots(rows.map((r) => r.id), rows.map((r) => r.image_path));
+    }
+    { // and every slide file of this order (by order number), my team's on a tag-team order
+      const f = await S.sb.from("slide_files").select("id,storage_path,team").eq("order_key", orderId((S.projects[key] || {}).name || key));
+      if (!f.error) await dropSlideFiles((f.data || []).filter((r) => canReview(r)));
     }
     await S.sb.from("project_status").delete().eq("key", key);
     { const p = S.projects[key] || {}; const id = orderId(p.name || key); await S.sb.from("slide_assignments").delete().in("order_key", [...new Set([key, id, "order #" + id])]); }
@@ -2274,6 +2296,7 @@ async function enter(user, team) {
     .on("postgres_changes", { event: "*", schema: "public", table: "project_status" }, reload)
     .subscribe();
   cleanupOldProjects().then(() => reload()).catch(() => {});
+  sweepSlideFiles().catch(() => {});
 }
 
 (async function start() {

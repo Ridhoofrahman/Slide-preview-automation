@@ -337,6 +337,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['Dashboard',('Deleting an order also deletes its saved slide files; leftovers are cleaned up when the dashboard opens.','Menghapus order juga menghapus file slide yang tersimpan; sisa file dibersihkan saat dashboard dibuka.')],
 ['v2.50',('Each sent slide is also saved as its own .pptx in a private store, for compiling an order later (“Saved for compile” under the button). Never blocks sending.','Setiap slide yang dikirim juga disimpan sebagai .pptx tersendiri di penyimpanan privat, untuk meng-compile order nanti (“Saved for compile” di bawah tombol). Tidak pernah menahan pengiriman.')],
 ['v2.49',('Compare with original: new section “Added text” for text on your slide that isn’t in the original (shown, not counted as a difference).','Bandingkan dengan file asli: section baru “Added text” untuk teks di slide-mu yang tidak ada di file asli (ditampilkan, tidak dihitung sebagai perbedaan).')],
 ['v2.48',('Compare with original: the target button also finds text inside grouped shapes.','Bandingkan dengan file asli: tombol target juga menemukan teks di dalam shape yang di-group.')],
