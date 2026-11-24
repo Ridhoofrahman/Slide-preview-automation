@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drive upload test</title>
+<!-- Technical test for phase 3 (final file to the Shared Drive). Uses the dashboard's sign-in (same site). Not linked from the app. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="../../config.js"></script>
+<style>
+  body { margin: 0; padding: 32px 20px; background: #F7F9FC; color: #454C63; font: 14px/20px Geist, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  h1 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
+  section { background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  h2 { margin: 0; font-size: 14px; font-weight: 600; color: #1A1F2E; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #6A7389; }
+  input, select { height: 36px; padding: 0 8px; border: 1px solid #C2CCDB; border-radius: 6px; font: inherit; color: #1A1F2E; background: #FFFFFF; }
+  input[type=file] { padding: 6px 8px; height: auto; }
+  .row { display: flex; gap: 8px; } .row > * { flex: 1; }
+  button { height: 36px; padding: 0 14px; border: 0; border-radius: 8px; background: #1C43A5; color: #FFFFFF; font: 500 14px/20px inherit; cursor: pointer; align-self: flex-start; }
+  button.secondary { background: #FFFFFF; color: #454C63; border: 1px solid #DDE4EE; }
+  button:disabled { opacity: .5; cursor: default; }
+  .bar { height: 4px; border-radius: 999px; background: #EEF2F8; overflow: hidden; } .bar span { display: block; height: 100%; width: 0; background: #1C43A5; }
+  pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: 12px/16px ui-monospace, Menlo, monospace; color: #454C63; }
+  .ok { color: #0A6139; } .err { color: #A81A1A; }
+  a { color: #1C43A5; word-break: break-all; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Drive upload test</h1>
+  <p id="who">Checking sign-in…</p>
+  <section>
+    <h2>1. Setup</h2>
+    <button id="check" type="button" class="secondary">Check setup</button>
+    <pre id="checkOut"></pre>
+  </section>
+  <section>
+    <h2>2. Upload a .pptx</h2>
+    <input id="file" type="file" accept=".pptx">
+    <div class="row">
+      <label>Order number<input id="order" inputmode="numeric" placeholder="351164"></label>
+      <label>Stage<select id="stage"><option>First Draft</option><option>Revision 1</option><option>Revision 2</option><option>Revision 3</option></select></label>
+    </div>
+    <label>File name<input id="name" placeholder="Kingfish Group IS"></label>
+    <p id="preview" style="margin:0;font-size:12px;color:#6A7389"></p>
+    <button id="go" type="button">Upload to Drive</button>
+    <div class="bar" id="bar" hidden><span id="fill"></span></div>
+    <pre id="out"></pre>
+  </section>
+</main>
+<script>
+const cfg = window.SLIDE_REVIEW_CONFIG, sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+const $ = (id) => document.getElementById(id);
+const log = (el, t, cls) => { el.className = cls || ""; el.textContent += t + "\n"; };
+let token = null;
+async function call(action, body) {
+  const r = await fetch(cfg.SUPABASE_URL + "/functions/v1/drive-upload", { method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, apikey: cfg.SUPABASE_ANON_KEY },
+    body: JSON.stringify(Object.assign({ action }, body || {})) });
+  const j = await r.json().catch(() => ({ error: "HTTP " + r.status }));
+  if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status);
+  return j;
+}
+(async () => {
+  const { data } = await sb.auth.getSession();
+  if (!data.session) { $("who").innerHTML = 'Not signed in. Open the <a href="../../review.html">dashboard</a>, sign in, then reload this page.'; return; }
+  token = data.session.access_token; $("who").textContent = "Signed in as " + data.session.user.email;
+})();
+const preview = () => { $("preview").textContent = ($("order").value || "000000") + "_" + ($("name").value || "Name") + "_" + $("stage").value + ".pptx"; };
+["order", "name", "stage"].forEach((id) => $(id).addEventListener("input", preview)); preview();
+$("check").onclick = async () => {
+  $("checkOut").textContent = "";
+  try { const j = await call("check"); log($("checkOut"), "OK. Shared Drive: " + j.drive + "\nOrder folders go in: " + j.parent, "ok"); }
+  catch (e) { log($("checkOut"), "Failed: " + e.message, "err"); }
+};
+$("go").onclick = async () => {
+  const f = $("file").files[0], out = $("out"); out.textContent = "";
+  if (!f) { log(out, "Choose a .pptx first.", "err"); return; }
+  $("go").disabled = true; $("bar").hidden = false; $("fill").style.width = "0";
+  const t0 = performance.now();
+  try {
+    log(out, "File: " + f.name + " (" + (f.size / 1048576).toFixed(1) + " MB)");
+    const s = await call("start", { order: $("order").value.trim(), stage: $("stage").value, name: $("name").value.trim(), size: f.size });
+    log(out, (s.replacing ? "Replacing " : "Creating ") + s.path + "  (" + Math.round(performance.now() - t0) + " ms)");
+    const up = await new Promise((ok, fail) => {
+      const x = new XMLHttpRequest(); x.open("PUT", s.uploadUrl);
+      x.setRequestHeader("Content-Type", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+      x.upload.onprogress = (e) => { if (e.lengthComputable) $("fill").style.width = Math.round((e.loaded / e.total) * 100) + "%"; };
+      x.onload = () => (x.status >= 200 && x.status < 300 ? ok(JSON.parse(x.responseText)) : fail(new Error("Upload " + x.status + ": " + x.responseText.slice(0, 200))));
+      x.onerror = () => fail(new Error("Upload blocked (network or CORS). Check the browser console."));
+      x.send(f);
+    });
+    log(out, "Uploaded in " + ((performance.now() - t0) / 1000).toFixed(1) + " s");
+    const fin = await call("finish", { fileId: up.id });
+    out.className = "ok"; out.append("Shared with everyone at 24Slides:\n");
+    const a = document.createElement("a"); a.href = fin.link; a.target = "_blank"; a.rel = "noopener"; a.textContent = fin.link; out.append(a);
+  } catch (e) { log(out, "Failed: " + e.message, "err"); }
+  finally { $("go").disabled = false; }
+};
+</script>
+</body>
+</html>
