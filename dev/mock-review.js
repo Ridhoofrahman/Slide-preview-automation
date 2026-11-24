@@ -5,7 +5,7 @@ const now=Date.now(), iso=(m)=>new Date(now-m*60000).toISOString();
 const user={id:'dm1',email:'ridho@24slides.com',user_metadata:{name:'Ridho',team:'Cascade'}};
 let n=0;
 function shot(project,num,sid,img,status,mins,team,designer){return {id:'s'+(++n),file_key:'fk'+project.replace(/\W/g,''),project:project,slide_id:sid,slide_number:num,total_slides:10,version:1,designer:designer||'Bela',designer_id:'u'+designer,note:'',image_path:img,details:{fonts:[],notes:{present:false,text:''},size:{w:13.33,h:7.5}},status:status,reviewed_by:null,reviewed_at:null,created_at:iso(mins),team:team||'Cascade'};}
-const db={slide_files:[],
+const db={slide_files:[],deliveries:[{order_key:"45236",stage:"Revision 1",file_name:"45236_Kingfish Group IS_Revision 1.pptx",link:"https://drive.google.com/file/d/mock2/view",uploaded_at:new Date().toISOString(),uploaded_by_name:"Uda"}],
  slide_shots:[
   // order A: tag team, 3 slides, 1 approved
   shot('Order #351265',1,'a1','a','approved',120,'Cascade','Thomas'),shot('Order #351265',2,'a2','b','ready',60,'Cascade','Thomas'),shot('Order #351265',3,'a3','c','ready',30,'Trident','Syarif'),

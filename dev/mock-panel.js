@@ -11,7 +11,7 @@ const now=Date.now(),iso=(m)=>new Date(now-m*60000).toISOString();
 const db={design_managers:new URLSearchParams(location.search).get('dm')?[{user_id:'u-bela'}]:[],slide_shots:[],shot_comments:[],
  teams:[...'Ablaze Alpha Avvenger Bright Cascade Clementine Clover Cosmic Fortis Fourtastic Horme Hustle Jackdaw Magnetic Meraki Nucleonz Phoenix Radiant Sirius Titant Vincero'.split(' ').map(n=>({name:n,office:'Indonesia',active:true})),...'Alpaka Kaleido Polaris'.split(' ').map(n=>({name:n,office:'Peru',active:true}))],
  profiles:[{user_id:'u-bela',name:'Bela',team:new URLSearchParams(location.search).get('team')==='none'?null:(new URLSearchParams(location.search).get('team')||'Cascade')}],
- slide_files:[],slide_assignments:[{order_key:'45236',order_name:'Order #45236',assignee_id:'u-bela',assignee_name:'Bela',assignee_team:'Cascade',slides:[1,2,3,4,5,6,7,8,9,10]},
+ slide_files:[],deliveries:[],slide_assignments:[{order_key:'45236',order_name:'Order #45236',assignee_id:'u-bela',assignee_name:'Bela',assignee_team:'Cascade',slides:[1,2,3,4,5,6,7,8,9,10]},
                     {order_key:'45236',order_name:'Order #45236',assignee_id:'u-kevin',assignee_name:'Kevin',assignee_team:'Cascade',slides:[11]}]};
 // ?alt=free: Bela has slides 1-8, so 9 and 10 are unassigned · ?alt=sent: slide 10 was sent as an alternative of slide 1
 // ?alt=mid: slide 2 of the file is marked as an alternative of slide 1 (inserted mid-deck), the rest must keep their numbers
@@ -30,6 +30,14 @@ if(st==='waiting'||st==='update') db.slide_shots.push({id:'s1',file_key:'fk-1234
  db.slide_assignments=[{order_key:'Order #45236',order_name:'Order #45236',assignee_id:'u-bela',assignee_name:'Bela',assignee_team:'Cascade',slides:cm==='blocked'?[1,3,6]:[1,3]},{order_key:'Order #45236',order_name:'Order #45236',assignee_id:'u-rio',assignee_name:'Rio',assignee_team:'Cascade',slides:[2]}];
  db.slide_shots.forEach(r=>{if(!(cm==='blocked'&&r.slide_id==='slide-2'))db.slide_files.push({order_key:'45236',file_key:r.file_key,slide_id:r.slide_id,version:r.version,storage_path:'45236/'+r.designer_id+'/'+r.slide_id+'.pptx',size_bytes:900000})});
 }}
+// Drive (phase 3): ?drive=fail makes the upload fail; ?delivery=1 = a compiled file opened again (needs dm=1)
+{const dm=qs.get('drive'),files={};
+ if(qs.get('delivery')){ids.splice(3);settings['slideshot.delivery']=JSON.stringify({order:'45236',stage:'First Draft',name:'Kingfish Group IS',link:'https://drive.google.com/file/d/mock1/view'});settings['slideqa.orderSet']='';db.deliveries.push({order_key:'45236',stage:'First Draft',name:'Kingfish Group IS',link:'https://drive.google.com/file/d/mock1/view',uploaded_at:iso(60)});}
+ window.__readFile=(onPct)=>new Promise(ok=>{let i=0;const iv=setInterval(()=>{onPct(++i/4);if(i===4){clearInterval(iv);ok(new Blob([new Uint8Array(3*1048576)]))}},120)});
+ window.__driveCall=async(action,b)=>{await new Promise(r=>setTimeout(r,150));
+  if(action==='start'){const fn=b.order+'_'+b.name+'_'+b.stage+'.pptx',k=b.order+'/'+b.stage;const rep=!!files[k]&&files[k].fn===fn;files[k]=files[k]&&rep?files[k]:{id:'mock'+Math.random().toString(36).slice(2,8),fn};return{uploadUrl:'mock:'+k,fileName:fn,path:k+'/'+fn,replacing:rep}}
+  if(action==='finish'){const f=Object.values(files).find(x=>x.id===b.fileId);const link='https://drive.google.com/file/d/'+b.fileId+'/view';const i=db.deliveries.findIndex(d=>d.order_key===b.order&&d.stage===b.stage);const row={order_key:b.order,stage:b.stage,name:b.name,link,uploaded_at:new Date().toISOString()};if(i>=0)db.deliveries[i]=row;else db.deliveries.push(row);return{link,name:f.fn}}};
+ window.__drivePut=(url,blob,onPct)=>new Promise((ok,fail)=>{let i=0;const iv=setInterval(()=>{onPct(++i/5);if(i===5){clearInterval(iv);if(dm==='fail')fail(new Error('the upload was interrupted (check your connection)'));else ok({id:files[url.slice(5)].id})}},150)});}
 // Slide files: seeded shots count as saved unless ?file=missing; uploads take ~1.5 s (?file=slow: 6 s, ?file=fail: always fail)
 {const fm=qs.get('file');if(fm!=='missing')db.slide_shots.forEach(r=>db.slide_files.push({file_key:r.file_key,slide_id:r.slide_id,version:r.version,size_bytes:2400000}));
  window.__slidePut=(path,blob,onPct,job)=>new Promise((ok,fail)=>{const total=fm==='slow'?6000:1500;let t=0;const iv=setInterval(()=>{if(job.aborted){clearInterval(iv);const e=new Error('aborted');e.aborted=true;return fail(e)}t+=150;onPct(Math.min(99,Math.round(t/total*100)));if(t>=total){clearInterval(iv);if(fm==='fail'){const e=new Error('Storage 500: mock');e.status=500;fail(e)}else ok()}},150)});}

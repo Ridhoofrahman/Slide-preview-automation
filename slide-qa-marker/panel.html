@@ -279,6 +279,14 @@
   .cp-progress { margin-top: -8px; }
   .cp-progress .cfile-bar { height: 4px; }
   .cp-recheck { height: 40px; border-radius: 8px; margin-top: -12px; }
+  /* Final file on Google Drive (phase 3) */
+  .dv { display: flex; flex-direction: column; gap: 16px; padding-top: 20px; border-top: 1px solid #DDE4EE; }
+  .dv-title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; }
+  .dv .field { gap: 8px; } .dv .field-label { font-size: 14px; line-height: 20px; color: #1A1F2E; }
+  .dv-preview { margin: -8px 0 0; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }
+  .dv-link { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 8px; background: #E6F7EE; }   /* background/accent/soft/success */
+  .dv-link a { font-size: 12px; line-height: 16px; color: #1C43A5; overflow-wrap: anywhere; }
+  .dv-copy { height: 32px; border-radius: 8px; align-self: flex-start; padding: 0 12px; }
   .order-gate form { display: flex; flex-direction: column; gap: 20px; }
   .order-gate h1 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
   .order-gate .order-sub { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: #6A7389; }
@@ -549,6 +557,16 @@
       <div class="cp-progress" id="cpProgress" hidden><div class="cfile-bar"><span id="cpFill"></span></div></div>
       <button id="cpBtn" class="primary og-btn" type="button" hidden></button>
       <button id="cpRecheck" class="secondary cp-recheck" type="button" hidden>Check again</button>
+      <div class="dv" id="dv" hidden>
+        <h2 class="dv-title">Final file on Google Drive</h2>
+        <label class="field"><span class="field-label">Stage</span><select id="dvStage"></select></label>
+        <label class="field"><span class="field-label">File name</span><input id="dvName" autocomplete="off" placeholder="e.g. Kingfish Group IS" aria-describedby="dvNameError"><span class="field-error" id="dvNameError" aria-live="polite"></span></label>
+        <p class="dv-preview" id="dvPreview"></p>
+        <button id="dvBtn" class="primary og-btn" type="button">Upload to Drive</button>
+        <p class="cp-state" id="dvState" role="status" aria-live="polite"></p>
+        <div class="cp-progress" id="dvProgress" hidden><div class="cfile-bar"><span id="dvFill"></span></div></div>
+        <div class="dv-link" id="dvLinkRow" hidden><a id="dvLink" target="_blank" rel="noopener"></a><button id="dvCopy" class="secondary dv-copy" type="button">Copy link</button></div>
+      </div>
     </div>
   </section>
   <section id="appView" hidden>
@@ -641,7 +659,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.52";
+const APP_VERSION = "2.53";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1654,6 +1672,8 @@ async function enterApp(user, team) {
   $("loginView").hidden = true;
   const comp = await detectCompile();   // a starter file from the dashboard's "Compile order"
   if (comp) { enterCompile(comp); return; }
+  const dvSaved = deliverySaved();   // a compiled file opened again: straight to its Drive upload (DMs)
+  if (dvSaved && await isDm()) { enterCompile({ order: dvSaved.order, starterId: null, delivery: true }); return; }
   if (!docStore.get("slideqa.orderSet")) await askOrder();
   doneLoading(); $("orderView").hidden = true; $("appView").hidden = false;
   if (!S.handlerAdded) {
@@ -1926,6 +1946,7 @@ async function enterCompile(comp) {
   let dm = false;
   try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); dm = !r.error && !!r.data; } catch (e) {}
   if (!dm) { cpSay("Only a DM can compile an order. Ask your DM to open this file.", "err"); return; }
+  if (comp.delivery) { $("cpTitle").textContent = "Order #" + CP.order + " final file"; $("cpSub").textContent = "Upload this file to the order's folder on Google Drive. Uploading the same stage again keeps the link."; cpSay(""); enterDelivery(CP.order); return; }
   compileCheck();
 }
 const STATUS_TEXT = { ready: "waiting for review", changes: "changes requested" };
@@ -2003,13 +2024,112 @@ async function runCompile() {
     try { const st = Office.context.document.settings; st.remove("Office.AutoShowTaskpaneWithDocument"); st.remove("slideshot.compile"); st.saveAsync(() => {}); } catch (e) {}
     $("cpProgress").hidden = true;
     cpSay("Done: " + n + " slide" + (n === 1 ? "" : "s") + " added. Save this file (File > Save As) and check it before sending.", "ok");
-    $("cpSub").textContent = "The starter slide was removed. Reopen this file any time: it opens like any other deck.";
+    $("cpSub").textContent = "The starter slide was removed. Check the slides, then upload the final file below.";
+    enterDelivery(CP.order);
   } catch (e) {
     console.warn("Slideshot compile:", e);
     $("cpProgress").hidden = true;
     cpSay("Stopped after " + CP.done + " of " + n + ": " + (e.message || e) + ".", "err");
     $("cpBtn").textContent = "Try again (continue from slide " + (items[CP.done] ? items[CP.done].label : "") + ")"; $("cpBtn").hidden = false; $("cpBtn").disabled = false;
   } finally { CP.busy = false; }
+}
+
+/* ---------- Final file on Google Drive (phase 3) ----------
+   After compiling (or when a compiled file is opened again) the DM picks the stage and the file name; the panel reads the
+   whole open file (getFileAsync, 4 MB slices) and sends it to the Edge Function drive-upload's one-time upload URL.
+   Drive: <order>/<stage>/<order>_<name>_<stage>.pptx, shared with everyone at 24Slides. The same stage again replaces it. */
+const STAGES = ["First Draft"].concat([...Array(10)].map((_, i) => "Revision " + (i + 1)));
+const DV = { order: null, busy: false };
+function deliverySaved() { try { const v = docStore.get("slideshot.delivery"); const o = typeof v === "string" ? (v ? JSON.parse(v) : null) : v; return o && /^\d+$/.test(String(o.order || "")) ? o : null; } catch (e) { return null; } }
+async function isDm() { try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); return !r.error && !!r.data; } catch (e) { return false; } }
+function dvSay(text, kind) { const el = $("dvState"); el.className = "cp-state" + (kind ? " " + kind : ""); el.innerHTML = kind && CP_ICON[kind] ? CP_ICON[kind] : ""; el.append(document.createTextNode(text || "")); }
+const dvFileName = () => DV.order + "_" + ($("dvName").value.trim() || "Name") + "_" + $("dvStage").value + ".pptx";
+function dvPreview() { $("dvPreview").textContent = "Saved as " + DV.order + " / " + $("dvStage").value + " / " + dvFileName(); }
+function dvShowLink(link) { $("dvLinkRow").hidden = !link; if (link) { $("dvLink").href = link; $("dvLink").textContent = link; } }
+async function enterDelivery(order) {
+  DV.order = order; $("dv").hidden = false;
+  const saved = deliverySaved() || {};
+  if (!saved.order) docStore.set("slideshot.delivery", JSON.stringify({ order }));
+  let list = [];
+  try { const r = await S.sb.from("deliveries").select("stage,name,link,uploaded_at").eq("order_key", order).order("uploaded_at", { ascending: false }).limit(50); if (!r.error) list = r.data || []; } catch (e) {}
+  const done = new Set(list.map((d) => d.stage)), top = Math.max(-1, ...list.map((d) => STAGES.indexOf(d.stage)));
+  const sel = $("dvStage"); sel.innerHTML = "";
+  STAGES.forEach((st) => { const o = document.createElement("option"); o.value = st; o.textContent = st + (done.has(st) ? " \u00B7 uploaded" : ""); sel.append(o); });
+  sel.value = saved.stage || STAGES[Math.min(STAGES.length - 1, top + 1)];   // this file's stage, or the next one for the order
+  $("dvName").value = saved.name || (list[0] && list[0].name) || "";
+  dvShowLink(saved.link && saved.stage === sel.value ? saved.link : "");
+  $("dvBtn").textContent = saved.link ? "Upload again" : "Upload to Drive";
+  $("dvStage").onchange = () => { const s2 = deliverySaved() || {}; dvShowLink(s2.link && s2.stage === $("dvStage").value ? s2.link : ""); dvPreview(); };
+  $("dvName").oninput = () => { setFieldError("dvName", ""); dvPreview(); };
+  $("dvBtn").onclick = uploadFinal;
+  $("dvCopy").onclick = () => copyLink($("dvLink").href);
+  dvPreview();
+}
+function copyLink(text) {
+  const done = () => { $("dvCopy").textContent = "Copied"; setTimeout(() => { $("dvCopy").textContent = "Copy link"; }, 1500); };
+  const fallback = () => { const t = document.createElement("textarea"); t.value = text; t.style.position = "fixed"; t.style.opacity = "0"; document.body.append(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) {} t.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+}
+// The whole open file as a Blob (what PowerPoint would save), read in 4 MB slices
+function readWholeFile(onPct) {
+  if (window.__readFile) return window.__readFile(onPct);   // dev mock
+  return new Promise((ok, fail) => {
+    Office.context.document.getFileAsync(Office.FileType.Compressed, { sliceSize: 4194304 }, (res) => {
+      if (res.status !== Office.AsyncResultStatus.Succeeded) return fail(new Error((res.error && res.error.message) || "couldn't read the file"));
+      const file = res.value, n = file.sliceCount, parts = new Array(n);
+      const next = (i) => file.getSliceAsync(i, (sr) => {
+        if (sr.status !== Office.AsyncResultStatus.Succeeded) { file.closeAsync(); return fail(new Error((sr.error && sr.error.message) || "couldn't read the file")); }
+        parts[i] = new Uint8Array(sr.value.data); onPct((i + 1) / n);
+        if (i + 1 < n) next(i + 1); else { file.closeAsync(); ok(new Blob(parts, { type: PPTX_MIME })); }
+      });
+      next(0);
+    });
+  });
+}
+async function driveCall(action, body) {
+  if (window.__driveCall) return window.__driveCall(action, body);   // dev mock
+  const cfg = window.SLIDE_REVIEW_CONFIG || {}, { data } = await S.sb.auth.getSession();
+  const token = data && data.session && data.session.access_token; if (!token) throw new Error("you're signed out");
+  const r = await fetch(cfg.SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/drive-upload", { method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token, apikey: cfg.SUPABASE_ANON_KEY }, body: JSON.stringify(Object.assign({ action }, body || {})) });
+  const j = await r.json().catch(() => ({ error: "HTTP " + r.status }));
+  if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status);
+  return j;
+}
+function drivePut(url, blob, onPct) {
+  if (window.__drivePut) return window.__drivePut(url, blob, onPct);   // dev mock
+  return new Promise((ok, fail) => {
+    const x = new XMLHttpRequest(); x.open("PUT", url); x.setRequestHeader("Content-Type", PPTX_MIME);
+    x.upload.onprogress = (e) => { if (e.lengthComputable) onPct(e.loaded / e.total); };
+    x.onload = () => { if (x.status >= 200 && x.status < 300) { try { return ok(JSON.parse(x.responseText)); } catch (e) {} } fail(new Error("Drive upload " + x.status)); };
+    x.onerror = () => fail(new Error("the upload was interrupted (check your connection)"));
+    x.send(blob);
+  });
+}
+async function uploadFinal() {
+  if (DV.busy) return;
+  const name = $("dvName").value.trim(), stage = $("dvStage").value;
+  if (!name) { setFieldError("dvName", "Enter the file name"); $("dvName").focus(); return; }
+  if (/[\\/:*?"<>|]/.test(name) || name.length > 120) { setFieldError("dvName", "Don't use \\ / : * ? \" < > |"); $("dvName").focus(); return; }
+  DV.busy = true; $("dvBtn").disabled = true; $("dvStage").disabled = true; $("dvName").disabled = true; $("dvProgress").hidden = false; dvShowLink("");
+  const bar = (f) => { $("dvFill").style.width = Math.max(4, Math.round(f * 100)) + "%"; };
+  try {
+    dvSay("Reading the file\u2026"); bar(0);
+    const blob = await readWholeFile((f) => { dvSay("Reading the file\u2026 " + Math.round(f * 100) + "%"); bar(f * 0.2); });
+    const mb = (blob.size / 1048576).toFixed(1) + " MB";
+    const st = await driveCall("start", { order: DV.order, stage, name, size: blob.size });
+    const up = await drivePut(st.uploadUrl, blob, (f) => { dvSay((st.replacing ? "Replacing" : "Uploading") + " " + mb + "\u2026 " + Math.round(f * 100) + "%"); bar(0.2 + f * 0.75); });
+    const fin = await driveCall("finish", { fileId: up.id, order: DV.order, stage, name });
+    bar(1); $("dvProgress").hidden = true;
+    docStore.set("slideshot.delivery", JSON.stringify({ order: DV.order, stage, name, link: fin.link }));
+    dvSay((st.replacing ? "Replaced " : "Uploaded ") + fin.name + ". Everyone at 24Slides can open the link.", "ok");
+    dvShowLink(fin.link); $("dvBtn").textContent = "Upload again";
+    const opt = [...$("dvStage").options].find((o) => o.value === stage); if (opt) opt.textContent = stage + " \u00B7 uploaded";
+  } catch (e) {
+    console.warn("Slideshot drive upload:", e);
+    $("dvProgress").hidden = true;
+    dvSay("Not uploaded: " + (e.message || e) + ". Try again.", "err");
+  } finally { DV.busy = false; $("dvBtn").disabled = false; $("dvStage").disabled = false; $("dvName").disabled = false; }
 }
 
 /* ---------- start ---------- */

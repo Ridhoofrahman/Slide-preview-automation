@@ -5,12 +5,12 @@
 //
 // Folder layout: <parent>/<order>/<stage>/<order>_<name>_<stage>.pptx   e.g. 351164/First Draft/351164_Kingfish IS_First Draft.pptx
 // Uploading again to the same stage replaces the file's content (same file, same link).
-// Link: "Anyone at 24Slides with the link" (domain reader, not discoverable).
+// Link: "Anyone at 24Slides with the link" (domain reader, not discoverable), as a Drive preview link (…/file/d/<id>/view).
 //
 // POST (Authorization: Bearer <the DM's Slideshot access token>) { action, ... }
 //   check                                   is everything set up? returns the Shared Drive's name
 //   start  {order, stage, name, size}       returns {uploadUrl, fileName, path, replacing}
-//   finish {fileId}                         shares the file and returns {link, name}
+//   finish {fileId, order, stage, name}     shares the file, records it in public.deliveries, returns {link, name}
 //
 // Secrets (Supabase → Edge Functions → Secrets):
 //   GOOGLE_SA_KEY     the whole service-account JSON key (paste it as is)
@@ -138,11 +138,21 @@ Deno.serve(async (req) => {
       case "finish": {
         const id = String(b.fileId || "");
         if (!/^[A-Za-z0-9_-]{10,}$/.test(id)) return reply({ error: "bad file id" }, 400);
-        const f = await (await drive(`/files/${id}?${ALL}&fields=id,name,driveId,webViewLink`)).json();
+        const f = await (await drive(`/files/${id}?${ALL}&fields=id,name,driveId,size`)).json();
         if (f.driveId !== DRIVE_ID) return reply({ error: "That file isn't in the Slideshot Shared Drive." }, 403);
         await drive(`/files/${id}/permissions?${ALL}`, { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ type: "domain", domain: DOMAIN, role: "reader", allowFileDiscovery: false }) });
-        return reply({ link: f.webViewLink, name: f.name });
+        const link = `https://drive.google.com/file/d/${id}/view`;
+        // Record it (one row per order + stage; uploading the same stage again updates the row). The test page sends no order.
+        const order = String(b.order || ""), stage = String(b.stage || ""), name = String(b.name || "").trim();
+        if (/^\d{3,9}$/.test(order) && /^(First Draft|Revision \d{1,2})$/.test(stage) && name) {
+          const meta = (u.user.user_metadata || {}) as Record<string, unknown>;
+          const { error } = await admin.from("deliveries").upsert({ order_key: order, stage, name, file_name: f.name, file_id: id, link,
+            size_bytes: Number(f.size) || null, uploaded_by: u.user.id, uploaded_by_name: String(meta.name || u.user.email || ""), uploaded_at: new Date().toISOString() },
+            { onConflict: "order_key,stage" });
+          if (error) console.error("drive-upload: deliveries not recorded:", error);
+        }
+        return reply({ link, name: f.name });
       }
       default: return reply({ error: "unknown action" }, 400);
     }
