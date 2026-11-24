@@ -29,7 +29,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 | `compare-original.js` | **Compare with original** engine, lazy-loaded by the panel: range-based zip reader (only the XML parts, `Blob.slice` + `DecompressionStream`), text reader (slide text, groups, `mc:AlternateContent`, tables, charts, SmartArt, notes; order from `sldIdLst`) and the comparison (exact, threshold 0.5, per location then across locations). |
 | `slide-details.js` | Reads fonts, slide size and speaker notes from the exported .pptx (needs JSZip). |
 | `sql/slide-files.sql` | **Slide files for compile** (phase 1): table `slide_files`, private bucket `slide-files` (50 MB, .pptx only), policies; also section 20 of `supabase-setup.sql`. |
-| `assets/compile-starter.pptx` | Starter template for **Compile order** (`{{ORDER}}` placeholders in slide 1 and the add-in part); made from the Compile Lab starter. |
+| `assets/compile-starter.pptx` | Starter template for **Compile order** (`{{ORDER}}` placeholders in slide 1 and the add-in part); made from the Compile Lab starter. Its theme and master are named **"Slideshot compile starter"** on purpose: with the default name "Office Theme", PowerPoint merged customer slides whose theme had the same name into the starter's theme (wrong fonts and colours, found 2026-11-24). The unused starter master stays in the compiled file. |
 | `config.js` | Supabase URL + anon key + dashboard URL + `DAYS_TO_SHOW`. |
 | `manifest.xml`, `commands.html`, `assets/` | Add-in install files and icons. |
 | `install/install-mac.sh`, `install/install-windows.ps1` | One-line installers (no admin rights): download the live `manifest.xml`, install it for the current user, remove older Slideshot copies, reopen PowerPoint. Run again to update. |
