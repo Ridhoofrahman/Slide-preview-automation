@@ -63,6 +63,16 @@
   .status.ok { background: var(--success-tint); color: var(--success); }
   .status.err { background: var(--danger-tint); color: var(--danger); }
   .status.info { background: var(--brand-tint); color: var(--brand-dark); }
+  .auto { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .auto .ghost { flex: none; padding: 4px 8px; }
+
+  .result { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); }
+  .result h3 { margin: 0; color: var(--title); font-size: 13px; line-height: 18px; font-weight: 600; }
+  .stats { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; line-height: 18px; }
+  .stats dt { color: var(--subtle); }
+  .stats dd { margin: 0; color: var(--title); font-weight: 500; text-align: right; }
+  .result-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .result-actions button { flex: 1; padding: 7px 10px; font-size: 13px; }
   [hidden] { display: none !important; }
   footer { color: var(--subtle); font-size: 12px; }
   @media (prefers-reduced-motion: reduce) { .item.new { animation: none; } .progress > div { transition: none; } }
@@ -76,6 +86,10 @@
   </header>
 
   <p id="support" class="status err" hidden></p>
+  <div id="auto" class="status info auto" hidden role="status">
+    <span id="auto-text"></span>
+    <button id="auto-cancel" class="ghost">Cancel</button>
+  </div>
 
   <section aria-labelledby="send-title">
     <div class="step"><span class="step-n">1</span><div>
@@ -113,6 +127,33 @@
     <button id="compile" class="primary" disabled>Compile</button>
     <div id="compile-progress" class="progress" hidden><div></div></div>
     <p id="compile-status" class="status" hidden></p>
+
+    <div id="result" class="result" hidden>
+      <h3>Result</h3>
+      <dl class="stats">
+        <dt>Started</dt><dd id="r-trigger"></dd>
+        <dt>Slides in this file</dt><dd id="r-slides"></dd>
+        <dt>Slide masters</dt><dd id="r-masters"></dd>
+        <dt>Layouts</dt><dd id="r-layouts"></dd>
+        <dt>File read back</dt><dd id="r-file"></dd>
+      </dl>
+      <p class="hint" id="r-note">This is the file that would be saved to the order folder. Saving to a folder isn't connected yet in this prototype.</p>
+      <div class="result-actions">
+        <button id="read-again" class="secondary">Read file again</button>
+        <button id="open-copy" class="secondary">Open this copy</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="starter-title">
+    <div class="step"><span class="step-n">3</span><div>
+      <h2 id="starter-title">Starter file (auto-compile test)</h2>
+      <p class="hint">In a new blank presentation, tag it as a starter and save it. When you open that saved file later, Compile Lab opens by itself and compiles the pool after a 3-second countdown.</p>
+    </div></div>
+    <p id="starter-state" class="status info" hidden>This file is a starter. Compile Lab opens by itself when it opens.</p>
+    <button id="make-starter" class="secondary">Make this file a starter</button>
+    <button id="remove-starter" class="ghost" hidden>Remove the starter tag</button>
+    <p id="starter-status" class="status" hidden></p>
   </section>
 
   <footer id="api-info"></footer>
@@ -121,9 +162,13 @@
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
+  const AUTO_KEY = 'Office.AutoShowTaskpaneWithDocument';
+  const STARTER_KEY = 'compileLab.starter';
   let pool = [];      // { k, order, source, slideNo, base64, bytes, thumb, sentAt }
   let source = 'Untitled';
   let canSend = false;
+  let lastExport = null;       // { base64, bytes }
+  let countdownTimer = null;
 
   /* ---------- storage: one shared pool for every file on this computer ---------- */
   const DB = 'compile-lab', STORE = 'pool';
@@ -248,24 +293,87 @@
     catch (e) { status($('send-status'), 'err', 'Could not open this slide: ' + (e.message || e)); }
   }
 
-  /* ---------- 2. compile ---------- */
-  async function compile() {
-    pool = await loadPool();   // pick up slides sent from other files since this panel opened
-    render();
-    if (!pool.length) return;
-    const formatting = document.querySelector('input[name="fmt"]:checked').value;
-    const removeFirst = $('remove-first').checked;
-    $('compile').disabled = true; status($('compile-status'), '', '');
-    const t0 = performance.now();
+  /* ---------- reading the open deck ---------- */
+  async function deckIsBlank() {
+    try {
+      return await PowerPoint.run(async (ctx) => {
+        const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
+        if (slides.items.length === 0) return true;
+        if (slides.items.length > 1) return false;
+        const shapes = slides.items[0].shapes; shapes.load('items/id'); await ctx.sync();
+        if (!shapes.items.length) return true;
+        const ranges = shapes.items.map((sh) => { const tr = sh.textFrame.textRange; tr.load('text'); return tr; });
+        await ctx.sync();
+        return ranges.every((tr) => !String(tr.text || '').trim());
+      });
+    } catch (e) { return false; }   // can't verify it's empty, so treat it as not empty
+  }
+  async function deckInfo() {
+    const info = { slides: null, masters: null, layouts: null };
     try {
       await PowerPoint.run(async (ctx) => {
         const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
-        let starterId = null;
-        if (removeFirst && slides.items.length === 1) {
-          const shapes = slides.items[0].shapes; shapes.load('items/textFrame/textRange/text'); 
-          try { await ctx.sync(); const blank = shapes.items.every((sh) => { try { return !sh.textFrame.textRange.text.trim(); } catch (e) { return false; } }); if (blank) starterId = slides.items[0].id; }
-          catch (e) { starterId = null; /* can't verify it's empty, so keep it */ }
-        }
+        info.slides = slides.items.length;
+        try {
+          const ms = ctx.presentation.slideMasters; ms.load('items/id'); await ctx.sync();
+          const ls = ms.items.map((m) => { m.layouts.load('items/id'); return m.layouts; });
+          await ctx.sync();
+          info.masters = ms.items.length; info.layouts = ls.reduce((a, l) => a + l.items.length, 0);
+        } catch (e) { /* masters need PowerPointApi 1.3 */ }
+      });
+    } catch (e) { /* leave blanks */ }
+    return info;
+  }
+
+  /* ---------- read the whole file back (what would be saved to the order folder) ---------- */
+  function readFile() {
+    return new Promise((resolve, reject) => {
+      Office.context.document.getFileAsync(Office.FileType.Compressed, { sliceSize: 4194304 }, (res) => {
+        if (res.status !== Office.AsyncResultStatus.Succeeded) return reject(new Error(res.error && res.error.message || 'Could not read the file'));
+        const file = res.value, n = file.sliceCount, chunks = new Array(n);
+        let got = 0;
+        const next = (i) => file.getSliceAsync(i, (sr) => {
+          if (sr.status !== Office.AsyncResultStatus.Succeeded) { file.closeAsync(); return reject(new Error(sr.error && sr.error.message || 'Could not read a slice')); }
+          chunks[i] = sr.value.data; got++;
+          if (got === n) {
+            file.closeAsync();
+            let bin = '', bytes = 0;
+            for (const c of chunks) { const u8 = Uint8Array.from(c); bytes += u8.length; for (let o = 0; o < u8.length; o += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(o, o + 0x8000)); }
+            resolve({ base64: btoa(bin), bytes });
+          } else next(i + 1);
+        });
+        next(0);
+      });
+    });
+  }
+
+  function showResult(trigger, before, after, fileResult, fileError) {
+    $('result').hidden = false;
+    $('r-trigger').textContent = trigger;
+    $('r-slides').textContent = after.slides == null ? '–' : after.slides;
+    const pair = (a, b) => (a == null || b == null) ? '–' : (a === b ? String(b) : a + ' → ' + b);
+    $('r-masters').textContent = pair(before.masters, after.masters);
+    $('r-layouts').textContent = pair(before.layouts, after.layouts);
+    $('r-file').textContent = fileResult ? kb(fileResult.bytes) : (fileError ? 'Could not read' : '–');
+    $('read-again').disabled = false; $('open-copy').disabled = !fileResult;
+    if (fileError) status($('compile-status'), 'err', 'Compiled, but reading the file back failed: ' + fileError);
+  }
+
+  /* ---------- 2. compile ---------- */
+  async function compile(auto = false) {
+    clearCountdown();
+    pool = await loadPool(); render();
+    if (!pool.length) { status($('compile-status'), 'info', 'The pool is empty. Send slides from another file first.'); return; }
+    const formatting = document.querySelector('input[name="fmt"]:checked').value;
+    const removeFirst = $('remove-first').checked;
+    $('compile').disabled = true; status($('compile-status'), '', ''); $('result').hidden = true;
+    const t0 = performance.now();
+    const before = await deckInfo();
+    try {
+      const removeStarter = removeFirst && await deckIsBlank();
+      await PowerPoint.run(async (ctx) => {
+        const slides = ctx.presentation.slides; slides.load('items/id'); await ctx.sync();
+        const starterId = removeStarter && slides.items.length === 1 ? slides.items[0].id : null;
         for (let i = 0; i < pool.length; i++) {
           slides.load('items/id'); await ctx.sync();
           const last = slides.items[slides.items.length - 1];
@@ -280,9 +388,67 @@
       const secs = ((performance.now() - t0) / 1000).toFixed(1);
       const sources = [...new Set(pool.map((p) => p.source))].length;
       status($('compile-status'), 'ok', 'Compiled ' + pool.length + ' slides from ' + sources + (sources === 1 ? ' file' : ' files') + ' in ' + secs + ' s.');
+      const after = await deckInfo();
+      let f = null, ferr = null;
+      try { f = await readFile(); } catch (e) { ferr = e.message || String(e); }
+      lastExport = f;
+      showResult(auto ? 'Automatically' : 'With the button', before, after, f, ferr);
     } catch (e) {
       status($('compile-status'), 'err', 'Compile stopped: ' + (e.message || e));
     } finally { $('compile').disabled = pool.length === 0; setTimeout(() => progress($('compile-progress'), 0, 0), 800); }
+  }
+
+  async function readAgain() {
+    $('read-again').disabled = true;
+    try {
+      lastExport = await readFile();
+      $('r-file').textContent = kb(lastExport.bytes) + ' · just now';
+      const info = await deckInfo(); $('r-slides').textContent = info.slides == null ? '–' : info.slides;
+      $('open-copy').disabled = false;
+    } catch (e) { status($('compile-status'), 'err', 'Could not read the file: ' + (e.message || e)); }
+    finally { $('read-again').disabled = false; }
+  }
+  function openCopy() {
+    if (!lastExport) return;
+    try { PowerPoint.createPresentation(lastExport.base64); }
+    catch (e) { status($('compile-status'), 'err', 'Could not open the copy: ' + (e.message || e)); }
+  }
+
+  /* ---------- auto-compile countdown ---------- */
+  function clearCountdown() { clearTimeout(countdownTimer); countdownTimer = null; $('auto').hidden = true; }
+  function startCountdown(n) {
+    let left = n; $('auto').hidden = false;
+    const tick = () => {
+      if (left === 0) { clearCountdown(); compile(true); return; }
+      $('auto-text').textContent = 'Starter file opened. Compiling ' + pool.length + (pool.length === 1 ? ' slide' : ' slides') + ' in ' + left + '…';
+      left--; countdownTimer = setTimeout(tick, 1000);
+    };
+    tick();
+  }
+
+  /* ---------- 3. starter file (tags this document so the pane opens by itself) ---------- */
+  const saveSettings = () => new Promise((res, rej) => Office.context.document.settings.saveAsync((r) =>
+    r.status === Office.AsyncResultStatus.Succeeded ? res() : rej(new Error((r.error && r.error.message) || 'Could not save the tag'))));
+  function showStarterState(on) {
+    $('starter-state').hidden = !on; $('make-starter').hidden = on; $('remove-starter').hidden = !on;
+  }
+  async function makeStarter() {
+    try {
+      const s = Office.context.document.settings;
+      s.set(AUTO_KEY, true); s.set(STARTER_KEY, true);
+      await saveSettings();
+      showStarterState(true);
+      status($('starter-status'), 'ok', 'Tagged. Now save this file (for example compile-starter.pptx) and close it. When you open it again, Compile Lab opens by itself.');
+    } catch (e) { status($('starter-status'), 'err', e.message || String(e)); }
+  }
+  async function removeStarter() {
+    try {
+      const s = Office.context.document.settings;
+      s.remove(AUTO_KEY); s.remove(STARTER_KEY);
+      await saveSettings();
+      showStarterState(false);
+      status($('starter-status'), 'info', 'Tag removed. Save the file to keep this change.');
+    } catch (e) { status($('starter-status'), 'err', e.message || String(e)); }
   }
 
   /* ---------- start ---------- */
@@ -300,7 +466,7 @@
     canSend = has18 && has15;
     source = fileLabel();
     $('source-name').textContent = source;
-    $('api-info').textContent = 'PowerPointApi 1.8: ' + (has18 ? 'yes' : 'no') + ' · 1.5: ' + (has15 ? 'yes' : 'no');
+    $('api-info').textContent = 'PowerPointApi 1.8: ' + (has18 ? 'yes' : 'no') + ' · 1.5: ' + (has15 ? 'yes' : 'no') + ' · v0.2';
     if (!canSend) {
       $('send-selected').disabled = $('send-all').disabled = true;
       status($('support'), 'err', 'This PowerPoint version can\'t send single slides (needs PowerPointApi 1.8). Update PowerPoint. Compiling the pool may still work here.');
@@ -308,6 +474,15 @@
     if (source === 'Untitled') status($('send-status'), 'info', 'Save this file first so its slides show a file name in the pool.');
     try { pool = await loadPool(); } catch (e) { pool = []; }
     render();
+
+    let starter = false;
+    try { starter = Office.context.document.settings.get(STARTER_KEY) === true; } catch (e) { /* settings unavailable */ }
+    showStarterState(starter);
+    if (starter) {
+      if (!pool.length) status($('compile-status'), 'info', 'Starter file opened, but the pool is empty. Send slides from another file first.');
+      else if (await deckIsBlank()) startCountdown(3);
+      else status($('compile-status'), 'info', 'Starter file opened. It already has slides, so auto-compile was skipped to avoid duplicates. Press Compile to add the pool anyway.');
+    }
   });
 
   // refresh the pool when the panel comes back into view (slides may have been sent from another file)
@@ -315,7 +490,12 @@
 
   $('send-selected').onclick = () => send(true);
   $('send-all').onclick = () => send(false);
-  $('compile').onclick = compile;
+  $('compile').onclick = () => compile(false);
+  $('auto-cancel').onclick = () => { clearCountdown(); status($('compile-status'), 'info', 'Auto-compile cancelled. Press Compile when you are ready.'); };
+  $('read-again').onclick = readAgain;
+  $('open-copy').onclick = openCopy;
+  $('make-starter').onclick = makeStarter;
+  $('remove-starter').onclick = removeStarter;
   $('clear').onclick = async () => { await clearPool(); pool = []; render(); status($('compile-status'), '', ''); status($('send-status'), 'info', 'Pool cleared.'); };
 })();
 </script>
