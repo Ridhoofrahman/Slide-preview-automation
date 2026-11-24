@@ -1090,6 +1090,20 @@ async function downloadCompileStarter(p) {
     const res = await fetch("assets/compile-starter.pptx?v=" + Date.now()); if (!res.ok) throw new Error("starter file " + res.status);
     const zip = await JSZip.loadAsync(await res.arrayBuffer());
     for (const part of ["ppt/slides/slide1.xml", "ppt/webextensions/webextension1.xml"]) { const t = await zip.file(part).async("string"); zip.file(part, t.split("{{ORDER}}").join(id)); }
+    // Same slide size as the order's slides: with a different size PowerPoint scales every inserted slide and writes
+    // its text formatting into the slide (white titles turned black on a 20 x 11.25 in deck, found 2026-11-24)
+    try {
+      const f = await S.sb.from("slide_files").select("storage_path").eq("order_key", id).limit(1);
+      const path = !f.error && f.data[0] && f.data[0].storage_path;
+      if (path) {
+        const dl = await S.sb.storage.from("slide-files").download(path);
+        if (!dl.error) {
+          const one = await JSZip.loadAsync(await dl.data.arrayBuffer());
+          const size = ((await one.file("ppt/presentation.xml").async("string")).match(/<p:sldSz\b[^>]*\/>/) || [])[0];
+          if (size) { const pres = await zip.file("ppt/presentation.xml").async("string"); zip.file("ppt/presentation.xml", pres.replace(/<p:sldSz\b[^>]*\/>/, size)); }
+        }
+      }
+    } catch (e) { console.warn("Slideshot: starter keeps the default slide size:", e); }
     const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "Order " + id + " - compile.pptx";
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 15000);

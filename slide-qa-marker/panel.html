@@ -287,6 +287,11 @@
   .dv-link { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 8px; background: #E6F7EE; }   /* background/accent/soft/success */
   .dv-link a { font-size: 12px; line-height: 16px; color: #1C43A5; overflow-wrap: anywhere; }
   .dv-copy { height: 32px; border-radius: 8px; align-self: flex-start; padding: 0 12px; }
+  .dv-fonts { display: flex; flex-direction: column; gap: 4px; }
+  .dv-label { margin: 0; font-size: 14px; line-height: 20px; color: #1A1F2E; }
+  .dv-hint { margin: 0 0 4px; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }
+  .dv-hint.ok { color: #0A6139; } .dv-hint.err { color: #A81A1A; }
+  .dv-fontrow { display: flex; align-items: center; gap: 12px; }
   .order-gate form { display: flex; flex-direction: column; gap: 20px; }
   .order-gate h1 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
   .order-gate .order-sub { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: #6A7389; }
@@ -562,6 +567,12 @@
         <label class="field"><span class="field-label">Stage</span><select id="dvStage"></select></label>
         <label class="field"><span class="field-label">File name</span><input id="dvName" autocomplete="off" placeholder="e.g. Kingfish Group IS" aria-describedby="dvNameError"><span class="field-error" id="dvNameError" aria-live="polite"></span></label>
         <p class="dv-preview" id="dvPreview"></p>
+        <div class="dv-fonts">
+          <p class="dv-label">Embedded fonts</p>
+          <p class="dv-hint" id="dvFontsText"></p>
+          <div class="dv-fontrow"><button id="dvFontsPick" class="secondary dv-copy" type="button">Choose customer's original</button><button id="dvFontsRemove" class="cfile-retry" type="button" hidden>Remove</button></div>
+          <input type="file" id="dvFontsFile" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
+        </div>
         <button id="dvBtn" class="primary og-btn" type="button">Upload to Drive</button>
         <p class="cp-state" id="dvState" role="status" aria-live="polite"></p>
         <div class="cp-progress" id="dvProgress" hidden><div class="cfile-bar"><span id="dvFill"></span></div></div>
@@ -659,7 +670,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.53";
+const APP_VERSION = "2.54";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -2039,7 +2050,7 @@ async function runCompile() {
    whole open file (getFileAsync, 4 MB slices) and sends it to the Edge Function drive-upload's one-time upload URL.
    Drive: <order>/<stage>/<order>_<name>_<stage>.pptx, shared with everyone at 24Slides. The same stage again replaces it. */
 const STAGES = ["First Draft"].concat([...Array(10)].map((_, i) => "Revision " + (i + 1)));
-const DV = { order: null, busy: false };
+const DV = { order: null, busy: false, fonts: null };
 function deliverySaved() { try { const v = docStore.get("slideshot.delivery"); const o = typeof v === "string" ? (v ? JSON.parse(v) : null) : v; return o && /^\d+$/.test(String(o.order || "")) ? o : null; } catch (e) { return null; } }
 async function isDm() { try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); return !r.error && !!r.data; } catch (e) { return false; } }
 function dvSay(text, kind) { const el = $("dvState"); el.className = "cp-state" + (kind ? " " + kind : ""); el.innerHTML = kind && CP_ICON[kind] ? CP_ICON[kind] : ""; el.append(document.createTextNode(text || "")); }
@@ -2062,6 +2073,10 @@ async function enterDelivery(order) {
   $("dvStage").onchange = () => { const s2 = deliverySaved() || {}; dvShowLink(s2.link && s2.stage === $("dvStage").value ? s2.link : ""); dvPreview(); };
   $("dvName").oninput = () => { setFieldError("dvName", ""); dvPreview(); };
   $("dvBtn").onclick = uploadFinal;
+  DV.fonts = await cmpGet("fonts:" + order); dvFontsShow();
+  $("dvFontsPick").onclick = () => $("dvFontsFile").click();
+  $("dvFontsFile").onchange = () => dvFontsChoose($("dvFontsFile").files[0]);
+  $("dvFontsRemove").onclick = () => { DV.fonts = null; cmpPut("fonts:" + order, null); dvFontsShow(); };
   $("dvCopy").onclick = () => copyLink($("dvLink").href);
   dvPreview();
 }
@@ -2106,6 +2121,82 @@ function drivePut(url, blob, onPct) {
     x.send(blob);
   });
 }
+// ---- Embedded fonts: exported slides don't carry the fonts a customer's deck embeds (e.g. brand fonts that aren't
+// installed), so the compiled deck falls back to other fonts. The DM chooses the customer's original once per order;
+// only its font parts are read (range reader in compare-original.js) and kept on this computer (IndexedDB
+// "fonts:<order>"). At upload they are added to the final file (JSZip): ppt/fonts/*, relationships, content type,
+// <p:embeddedFontLst> and embedTrueTypeFonts. The open deck in PowerPoint is not changed.
+const FONT_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/font";
+const xattr = (tag, a) => ((tag || "").match(new RegExp("\\b" + a + '="([^"]*)"')) || [])[1] || "";
+async function readEmbeddedFonts(file) {
+  const eng = await loadEngine(), zip = await eng.openZip(file);
+  if (!zip.has("ppt/presentation.xml")) throw new Error("that isn't a PowerPoint file");
+  const pres = await zip.text("ppt/presentation.xml"), rels = (await zip.text("ppt/_rels/presentation.xml.rels")) || "";
+  const ct = (await zip.text("[Content_Types].xml")) || "";
+  const lst = (pres.match(/<p:embeddedFontLst>([\s\S]*?)<\/p:embeddedFontLst>/) || [])[1] || "";
+  const target = {}; for (const m of rels.matchAll(/<Relationship\b[^>]*>/g)) if (xattr(m[0], "Type") === FONT_REL) target[xattr(m[0], "Id")] = xattr(m[0], "Target");
+  const fonts = [];
+  for (const m of lst.matchAll(/<p:embeddedFont>[\s\S]*?<\/p:embeddedFont>/g)) {
+    const xml = m[0], typeface = xattr((xml.match(/<p:font\b[^>]*>/) || [])[0], "typeface"), parts = [];
+    for (const r of xml.matchAll(/r:id="([^"]+)"/g)) {
+      const t = target[r[1]]; if (!t) continue;
+      const path = t.startsWith("/") ? t.slice(1) : "ppt/" + t.replace(/^\.\//, "");
+      const b = await zip.bytes(path); if (b) parts.push({ rid: r[1], data: b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) });
+    }
+    if (typeface && parts.length) fonts.push({ typeface, xml, parts });
+  }
+  return { name: file.name, ctype: (ct.match(/<Default Extension="fntdata" ContentType="([^"]+)"/i) || [])[1] || "application/x-fontdata", fonts };
+}
+function needJSZip() {
+  if (window.JSZip) return Promise.resolve();
+  return new Promise((ok, fail) => { const t = document.createElement("script"); t.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; t.onload = ok; t.onerror = () => fail(new Error("couldn't load the zip tool")); document.head.append(t); });
+}
+async function addFonts(blob, F) {
+  await needJSZip();
+  const zip = await JSZip.loadAsync(blob);
+  let pres = await zip.file("ppt/presentation.xml").async("string"), rels = await zip.file("ppt/_rels/presentation.xml.rels").async("string"), ct = await zip.file("[Content_Types].xml").async("string");
+  const lst = (pres.match(/<p:embeddedFontLst>[\s\S]*?<\/p:embeddedFontLst>/) || [""])[0];
+  const have = new Set([...lst.matchAll(/typeface="([^"]+)"/g)].map((m) => m[1]));
+  let n = 0, add = ""; const added = [];
+  for (const f of F.fonts) {
+    if (have.has(f.typeface)) continue;
+    let x = f.xml;
+    for (const p of f.parts) {
+      do { n++; } while (zip.file("ppt/fonts/slideshot" + n + ".fntdata"));
+      const id = "rIdSsFont" + n;
+      zip.file("ppt/fonts/slideshot" + n + ".fntdata", p.data, { createFolders: false });
+      rels = rels.replace("</Relationships>", '<Relationship Id="' + id + '" Type="' + FONT_REL + '" Target="fonts/slideshot' + n + '.fntdata"/></Relationships>');
+      x = x.split('r:id="' + p.rid + '"').join('r:id="' + id + '"');
+    }
+    x = x.replace(/<p:(regular|bold|italic|boldItalic) r:id="(?!rIdSsFont)[^"]*"\/>/g, "");   // styles whose data wasn't found
+    add += x; added.push(f.typeface);
+  }
+  if (!add) return { blob, added };
+  if (lst) pres = pres.replace("</p:embeddedFontLst>", add + "</p:embeddedFontLst>");
+  else if (/<p:notesSz\b[^>]*\/>/.test(pres)) pres = pres.replace(/(<p:notesSz\b[^>]*\/>(?:<p:smartTags\b[^>]*\/>)?)/, "$1<p:embeddedFontLst>" + add + "</p:embeddedFontLst>");
+  else throw new Error("couldn't add the fonts to this file");
+  if (!/embedTrueTypeFonts=/.test(pres)) pres = pres.replace(/<p:presentation\b/, '<p:presentation embedTrueTypeFonts="1"');
+  if (!/Extension="fntdata"/i.test(ct)) ct = ct.replace(/<Types\b[^>]*>/, (m) => m + '<Default Extension="fntdata" ContentType="' + F.ctype + '"/>');
+  zip.file("ppt/presentation.xml", pres); zip.file("ppt/_rels/presentation.xml.rels", rels); zip.file("[Content_Types].xml", ct);
+  return { blob: await zip.generateAsync({ type: "blob", compression: "DEFLATE", mimeType: PPTX_MIME }), added };
+}
+function dvFontsShow(kind, msg) {
+  const el = $("dvFontsText"), F = DV.fonts;
+  el.className = "dv-hint" + (kind ? " " + kind : "");
+  if (msg) el.textContent = msg;
+  else if (F && F.fonts && F.fonts.length) { el.className = "dv-hint ok"; el.textContent = F.fonts.map((f) => f.typeface).join(", ") + " (from " + F.name + ") will be added to the uploaded file."; }
+  else if (F) el.textContent = "No embedded fonts in " + F.name + ". Nothing to add.";
+  else el.textContent = "If the customer's deck has its own fonts embedded (often brand fonts), choose it so they go into the final file.";
+  $("dvFontsRemove").hidden = !F; $("dvFontsPick").textContent = F ? "Choose another file" : "Choose customer's original";
+}
+async function dvFontsChoose(file) {
+  $("dvFontsFile").value = "";
+  if (!file) return;
+  if (!/\.pptx$/i.test(file.name)) { dvFontsShow("err", "Choose a .pptx file."); return; }
+  dvFontsShow("", "Reading the fonts in " + file.name + "\u2026");
+  try { DV.fonts = await readEmbeddedFonts(file); await cmpPut("fonts:" + DV.order, DV.fonts); dvFontsShow(); }
+  catch (e) { dvFontsShow("err", "Couldn't read " + file.name + ": " + (e.message || e) + "."); }
+}
 async function uploadFinal() {
   if (DV.busy) return;
   const name = $("dvName").value.trim(), stage = $("dvStage").value;
@@ -2115,7 +2206,8 @@ async function uploadFinal() {
   const bar = (f) => { $("dvFill").style.width = Math.max(4, Math.round(f * 100)) + "%"; };
   try {
     dvSay("Reading the file\u2026"); bar(0);
-    const blob = await readWholeFile((f) => { dvSay("Reading the file\u2026 " + Math.round(f * 100) + "%"); bar(f * 0.2); });
+    let blob = await readWholeFile((f) => { dvSay("Reading the file\u2026 " + Math.round(f * 100) + "%"); bar(f * 0.2); });
+    if (DV.fonts && DV.fonts.fonts && DV.fonts.fonts.length) { dvSay("Adding the embedded fonts\u2026"); blob = (await addFonts(blob, DV.fonts)).blob; }
     const mb = (blob.size / 1048576).toFixed(1) + " MB";
     const st = await driveCall("start", { order: DV.order, stage, name, size: blob.size });
     const up = await drivePut(st.uploadUrl, blob, (f) => { dvSay((st.replacing ? "Replacing" : "Uploading") + " " + mb + "\u2026 " + Math.round(f * 100) + "%"); bar(0.2 + f * 0.75); });

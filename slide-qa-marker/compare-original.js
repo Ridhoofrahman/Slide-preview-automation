@@ -33,19 +33,22 @@
       entries.set(name, { name, method, flags, comp, unc, off });
       p += 46 + nl + xl + cl;
     }
-    return {
-      names: () => [...entries.keys()],
-      has: (n) => entries.has(n),
-      async text(name) {
+    // Raw bytes of one entry (e.g. embedded fonts, ppt/fonts/*.fntdata): only that entry is read from the file
+    const bytes = async (name) => {
         const e = entries.get(name); if (!e) return null;
         if (e.flags & 1) throw codeErr("encrypted", "Encrypted entry");
         const lh = await u8(blob, e.off, e.off + 30);
         const start = e.off + 30 + le16(lh, 26) + le16(lh, 28);
         const data = await u8(blob, start, start + e.comp);
-        if (e.method === 0) return td.decode(data);
+        if (e.method === 0) return data;
         if (e.method !== 8) throw codeErr("method", "Unsupported compression " + e.method);
-        return td.decode(await inflateRaw(data));
-      }
+        return inflateRaw(data);
+    };
+    return {
+      names: () => [...entries.keys()],
+      has: (n) => entries.has(n),
+      bytes,
+      async text(name) { const b = await bytes(name); return b ? td.decode(b) : null; }
     };
   }
   async function inflateRaw(data) {
