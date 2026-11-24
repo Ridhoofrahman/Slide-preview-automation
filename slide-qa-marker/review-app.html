@@ -1960,7 +1960,12 @@ function step(dir) {
 let deleteKey = null, pendingDelete = null;
 // Remove rows (comments go with them) first, then their image and audio files
 async function removeShots(ids, imagePaths) {
-  let files = imagePaths.slice();
+  let files = imagePaths.slice(), pptx = [];
+  // Slide files for compile (bucket slide-files) of these slides go too; skipped quietly if the table isn't there
+  for (let i = 0; i < ids.length; i += 150) {
+    const f = await S.sb.from("slide_files").select("id,storage_path").in("shot_id", ids.slice(i, i + 150));
+    if (!f.error && f.data.length) { pptx = pptx.concat(f.data.map((x) => x.storage_path)); await S.sb.from("slide_files").delete().in("id", f.data.map((x) => x.id)); }
+  }
   for (let i = 0; i < ids.length; i += 150) {
     const c = await S.sb.from("shot_comments").select("audio_path").in("shot_id", ids.slice(i, i + 150)).not("audio_path", "is", null);
     if (!c.error) files = files.concat(c.data.map((x) => x.audio_path));
@@ -1971,6 +1976,7 @@ async function removeShots(ids, imagePaths) {
     if (!d.data.length && ids.length) throw new Error("not allowed. Run the delete permissions SQL in Supabase first");
   }
   for (let i = 0; i < files.length; i += 500) await S.sb.storage.from("slides").remove(files.slice(i, i + 500));
+  for (let i = 0; i < pptx.length; i += 500) await S.sb.storage.from("slide-files").remove(pptx.slice(i, i + 500));
 }
 function askSendToCustomer(key) {
   const p = S.projects[key]; if (!p) return;

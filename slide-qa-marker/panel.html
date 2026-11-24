@@ -108,6 +108,20 @@
   .cancel { border: 0; background: none; color: var(--red-fg); }
   .primary:disabled, .cancel:disabled { opacity: .5; cursor: not-allowed; }
   .msg { margin: 16px 0 0; font-size: 14px; line-height: 20px; }
+  /* Slide file for compile: a quiet status row under the actions (text-xs/Regular, text/subtle) */
+  .cfile { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .cfile-row { display: flex; align-items: center; gap: 4px; min-height: 16px; font-size: 12px; line-height: 16px; color: #6A7389; }
+  .cfile-ic { flex: none; display: flex; width: 16px; height: 16px; }
+  .cfile-ic:empty { display: none; }
+  .cfile-ic svg { width: 16px; height: 16px; }
+  .cfile.saved .cfile-ic { color: #0C7F49; }   /* icon/success */
+  .cfile-tx { min-width: 0; }
+  .cfile-retry { padding: 0; border: 0; background: none; font: inherit; font-weight: 500; color: #1C43A5; cursor: pointer; }   /* text/color/brand */
+  .cfile-retry:hover { text-decoration: underline; }
+  .cfile-retry:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; border-radius: 2px; }
+  .cfile-bar { height: 4px; border-radius: 999px; background: #EEF2F8; overflow: hidden; }   /* elevation/sunken */
+  .cfile-bar span { display: block; height: 100%; width: 0; background: #1C43A5; border-radius: 999px; transition: width .2s ease-out; }   /* background/brand/default */
+  @media (prefers-reduced-motion: reduce) { .cfile-bar span { transition: none; } }
   .msg.err { color: var(--red-fg); background: var(--red-bg); padding: 8px 10px; border-radius: 8px; }
   .msg:empty { display: none; }
   .notice { background: var(--red-bg); color: var(--red-fg); padding: 10px 12px; border-radius: 8px; font-size: 13px; }
@@ -566,6 +580,7 @@
           <button id="cancelUpdateBtn" class="cancel" hidden>Cancel</button>
           <p id="msg" class="msg" role="status" aria-live="polite"></p>
         </div>
+        <div class="cfile" id="cfile" hidden><div class="cfile-row"><span class="cfile-ic" id="cfileIc"></span><span class="cfile-tx" id="cfileTx" role="status" aria-live="polite"></span><button type="button" class="cfile-retry" id="cfileRetry" hidden>Retry</button></div><div class="cfile-bar" id="cfileBar" hidden><span id="cfileFill"></span></div></div>
       </section>
 
       <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
@@ -595,9 +610,9 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.49";
+const APP_VERSION = "2.50";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
-const S = { noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
+const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
 
 /* ---------- helpers ---------- */
@@ -674,13 +689,14 @@ async function slideExport(id) {
   return v;
 }
 // Fonts, sizes and speaker notes for the DM. Never blocks sending if it fails.
-async function readDetails(id) {
+async function readDetails(id, keep) {
   let stage = "load";
   try {
     if (!window.JSZip || !window.SlideDetails) throw new Error("inspector scripts did not load");
     stage = "export";
     const b64 = await slideExport(id);
     if (!b64) throw new Error("PowerPoint returned an empty export");
+    if (keep) keep.b64 = b64;   // the same one-slide .pptx is saved for compile after sending
     stage = "parse";
     return await window.SlideDetails.fromBase64(b64);
   } catch (e) {
@@ -788,6 +804,10 @@ async function loadReviews() {
     if (res.error) throw res.error;
     res.data.forEach((c) => { (S.comments[c.shot_id] = S.comments[c.shot_id] || []).push(c); });
   }
+  // Slide files saved for compile (this file, mine); skipped quietly if the table isn't there yet
+  const sf = await S.sb.from("slide_files").select("slide_id,version,size_bytes").eq("file_key", fileKey());
+  S.filesLoaded = !sf.error; S.savedFiles = {};
+  if (!sf.error) (sf.data || []).forEach((r) => { S.savedFiles[r.slide_id] = r; });
   // Teammates working on the same order, in their own copies of the deck
   const team = await S.sb.from("slide_shots").select("file_key,slide_id,slide_number,version,status,designer,created_at,image_path,alternative_of").eq("project", projectName()).neq("designer_id", S.user.id);
   S.team = {};
@@ -963,6 +983,7 @@ function render() {
   const cmpShow = !!cur && (mine || !!alt) && !idClash && (v.mode === "notsent" || v.mode === "update");
   if (CMP.open && cur && CMP.slideId !== cur.id) cmpCollapse();
   renderCmp(cmpShow);
+  renderFile();
 
   // Feedback on the sent version
   const fb = $("feedback"), list = $("comments");
@@ -1420,6 +1441,98 @@ function openMapPop() {
   S.closeMapPop = close;
 }
 
+// ---- Slide files for compile (phase 1): each sent slide is also kept as its own one-slide .pptx in the private
+// bucket `slide-files` (sql/slide-files.sql). Runs after sending, never blocks it; one job per slide, newest wins.
+const PPTX_MIME = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+const FILE_MAX = 50 * 1024 * 1024;              // bucket limit (Supabase Free plan)
+const FILES_SINCE = "2026-11-24T00:00:00Z";      // slides sent before this never had a file: no "Not saved" for them
+const FILE_ICONS = { saved: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 14.4C4.465 14.4 1.6 11.535 1.6 8C1.6 4.465 4.465 1.6 8 1.6C11.535 1.6 14.4 4.465 14.4 8C14.4 11.535 11.535 14.4 8 14.4ZM8 2.4C4.9075 2.4 2.4 4.9075 2.4 8C2.4 11.0925 4.9075 13.6 8 13.6C11.0925 13.6 13.6 11.0925 13.6 8C13.6 4.9075 11.0925 2.4 8 2.4ZM10.0775 5.765C10.2075 5.5875 10.4575 5.5475 10.635 5.6775C10.8125 5.8075 10.8525 6.0575 10.7225 6.235L7.5225 10.635C7.4525 10.73 7.3475 10.79 7.23 10.7975C7.1125 10.805 6.9975 10.765 6.915 10.6825L5.315 9.0825C5.16 8.9275 5.16 8.6725 5.315 8.5175C5.47 8.3625 5.725 8.3625 5.88 8.5175L7.1475 9.785L10.0725 5.765H10.0775Z" fill="currentColor"/></svg>', failed: '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.4C4.9 2.4 2.4 4.9 2.4 8C2.4 11.1 4.9 13.6 8 13.6C11.1 13.6 13.6 11.1 13.6 8C13.6 4.9 11.1 2.4 8 2.4ZM8 14.4C4.475 14.4 1.6 11.525 1.6 8C1.6 4.475 4.475 1.6 8 1.6C11.525 1.6 14.4 4.475 14.4 8C14.4 11.525 11.525 14.4 8 14.4ZM8 5.2C8.225 5.2 8.4 5.375 8.4 5.6V8.8C8.4 9.025 8.225 9.2 8 9.2C7.775 9.2 7.6 9.025 7.6 8.8V5.6C7.6 5.375 7.775 5.2 8 5.2ZM8.5 10.425C8.5 10.7 8.275 10.925 8 10.925C7.725 10.925 7.5 10.7 7.5 10.425C7.5 10.15 7.725 9.925 8 9.925C8.275 9.925 8.5 10.15 8.5 10.425Z" fill="currentColor"/></svg>' };
+const fileSlug = (s) => String(s).replace(/[^a-zA-Z0-9_-]/g, "_");
+const filePath = (shot) => orderId(shot.project) + "/" + S.user.id + "/" + fileSlug(shot.file_key) + "_" + fileSlug(shot.slide_id) + ".pptx";
+function stopFileUploads() {
+  Object.values(S.files).forEach((j) => { j.aborted = true; clearTimeout(j.timer); if (j.xhr) try { j.xhr.abort(); } catch (e) {} });
+  S.files = {}; S.savedFiles = {}; S.filesLoaded = false;
+}
+// Upload with progress (supabase-js has none): POST to Storage with upsert, so a new version replaces the file
+function putFile(path, blob, onPct, job) {
+  if (window.__slidePut) return window.__slidePut(path, blob, onPct, job);   // dev mock
+  return new Promise(async (ok, fail) => {
+    const { data } = await S.sb.auth.getSession(); const token = data && data.session && data.session.access_token;
+    if (!token || job.aborted) { const e = new Error("signed out"); e.aborted = true; return fail(e); }
+    const cfg = window.SLIDE_REVIEW_CONFIG || {}, x = new XMLHttpRequest(); job.xhr = x;
+    x.open("POST", cfg.SUPABASE_URL.replace(/\/$/, "") + "/storage/v1/object/slide-files/" + path.split("/").map(encodeURIComponent).join("/"));
+    x.setRequestHeader("Authorization", "Bearer " + token); x.setRequestHeader("apikey", cfg.SUPABASE_ANON_KEY);
+    x.setRequestHeader("x-upsert", "true"); x.setRequestHeader("Content-Type", PPTX_MIME);
+    x.upload.onprogress = (e) => { if (e.lengthComputable) onPct(Math.min(99, Math.round((e.loaded / e.total) * 100))); };
+    x.onload = () => { job.xhr = null; if (x.status >= 200 && x.status < 300) return ok(); const e = new Error("Storage " + x.status + ": " + String(x.responseText || "").slice(0, 200)); e.status = x.status; fail(e); };
+    x.onerror = () => { job.xhr = null; fail(new Error("network error")); };
+    x.onabort = () => { job.xhr = null; const e = new Error("aborted"); e.aborted = true; fail(e); };
+    x.send(blob);
+  });
+}
+// Worth retrying: network, server, auth refresh, rate limit. Not: a rule that says no, or a file that's too big.
+const retryable = (e) => !e.status || e.status >= 500 || e.status === 401 || e.status === 408 || e.status === 429;
+async function saveForCompile(shot, b64, tries) {
+  if (!S.user || !shot) return;
+  tries = tries || 0;
+  const id = shot.slide_id, prev = S.files[id];
+  if (prev) { prev.aborted = true; clearTimeout(prev.timer); if (prev.xhr) try { prev.xhr.abort(); } catch (e) {} }
+  const job = S.files[id] = { state: "saving", pct: 0, shot, b64, tries };
+  renderFile();
+  try {
+    if (!job.b64) job.b64 = await slideExport(id);   // the export failed while sending, or this is a manual retry
+    if (job.aborted) return;
+    if (!job.b64) throw new Error("PowerPoint returned an empty export");
+    const blob = await (await fetch("data:" + PPTX_MIME + ";base64," + job.b64)).blob();   // async decode: no freeze on big slides
+    job.size = blob.size;
+    if (blob.size > FILE_MAX) { job.state = "big"; job.b64 = null; renderFile(); return; }
+    const path = filePath(shot);
+    await putFile(path, blob, (p) => { if (S.files[id] === job) { job.pct = p; renderFile(); } }, job);
+    if (job.aborted) return;
+    const row = { order_key: orderId(shot.project), project: shot.project, file_key: shot.file_key, slide_id: id, slide_number: shot.slide_number,
+      alternative_of: shot.alternative_of || null, shot_id: shot.id, version: shot.version, storage_path: path, size_bytes: blob.size,
+      team: shot.team || S.myTeam || null, uploaded_by: S.user.id, uploaded_at: new Date().toISOString() };
+    const r = await S.sb.from("slide_files").upsert(row, { onConflict: "file_key,slide_id" });
+    if (r.error) throw r.error;
+    if (job.aborted) return;
+    job.state = "saved"; job.pct = 100; job.b64 = null;
+    S.savedFiles[id] = { slide_id: id, version: shot.version, size_bytes: blob.size };
+  } catch (e) {
+    if (job.aborted || e.aborted || S.files[id] !== job) return;
+    console.warn("Slideshot: slide file not saved for compile:", e);
+    if (job.tries < 2 && retryable(e)) {   // two quiet retries (4 s, then 12 s), then the Retry button
+      job.state = "waiting";
+      job.timer = setTimeout(() => { if (S.files[id] === job && !job.aborted) saveForCompile(shot, job.b64, job.tries + 1); }, job.tries ? 12000 : 4000);
+    } else job.state = "failed";
+  }
+  renderFile();
+}
+// The status row for the slide that's open: a job from this session, or what's stored from earlier
+function renderFile() {
+  const box = $("cfile"); if (!box) return;
+  const cur = currentSlide(), shot = cur && S.latest[cur.id];
+  let j = cur && S.files[cur.id];
+  if (j && shot && j.shot.version < shot.version) j = null;   // an older send; the newer one has its own job
+  if (!j && shot) {
+    const f = S.savedFiles[cur.id];
+    if (f && f.version >= shot.version) j = { state: "saved" };
+    else if (S.filesLoaded && String(shot.created_at) >= FILES_SINCE && !S.updating[cur.id]) j = { state: "failed", shot };
+  }
+  const mode = cur ? viewFor(cur).mode : "";
+  box.hidden = !j || mode === "notsent" || mode === "update";
+  if (box.hidden) return;
+  box.className = "cfile " + j.state;
+  const mb = (n) => (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + " MB";
+  const text = { saving: "Saving for compile\u2026" + (j.pct ? " " + j.pct + "%" : ""), waiting: "Saving for compile\u2026", saved: "Saved for compile",
+    failed: "Not saved for compile.", big: "Too big to save for compile" + (j.size ? " (" + mb(j.size) + ")" : "") }[j.state];
+  $("cfileTx").textContent = text;
+  $("cfileIc").innerHTML = FILE_ICONS[j.state === "big" ? "failed" : j.state] || "";
+  $("cfileRetry").hidden = j.state !== "failed";
+  $("cfileRetry").onclick = () => saveForCompile(j.shot || shot, null, 0);
+  $("cfileBar").hidden = !(j.state === "saving" || j.state === "waiting");
+  $("cfileFill").style.width = (j.state === "saving" ? Math.max(4, j.pct || 0) : 4) + "%";
+}
+
 async function markReady() {
   const cur = currentSlide(); if (!cur || (!cur.n && !cur.alt)) return;
   const what = cur.alt ? "slide " + altLabel(cur) : "slide " + cur.n;
@@ -1429,7 +1542,8 @@ async function markReady() {
   say($("msg"), "Capturing " + what + "…");
   try {
     const b64 = await slideImage(cur.id, IMAGE_WIDTH);
-    const details = await readDetails(cur.id);
+    const keep = {};
+    const details = await readDetails(cur.id, keep);
     const key = fileKey();
     const path = key + "/" + cur.id.replace(/[^a-zA-Z0-9_-]/g, "_") + "/v" + version + "-" + Date.now() + ".png";
     say($("msg"), "Uploading " + what + "…");
@@ -1441,6 +1555,7 @@ async function markReady() {
     }).select().single();
     if (ins.error) throw ins.error;
     S.latest[cur.id] = ins.data;
+    saveForCompile(ins.data, keep.b64);   // in the background: never blocks or fails sending
     $("note").value = ""; S.noteOpen = false; delete S.notes[cur.id];
     S.updating[cur.id] = false; S.justSent[cur.id] = Date.now(); say($("msg"), "");
     setTimeout(render, 2700);
@@ -1461,6 +1576,7 @@ const SIGNIN_TIMEOUT = 20000;   // ms
 // Sign out of this panel only (no network call), and never wait more than 3 s: a stuck sign-out would hold
 // supabase-js's auth lock and make the next sign-in fail.
 function signOutSafe() {
+  stopFileUploads();
   return Promise.race([S.sb.auth.signOut({ scope: "local" }).catch((e) => console.warn("Slideshot sign-out:", e)), new Promise((ok) => setTimeout(ok, 3000))]);
 }
 async function signIn() {
