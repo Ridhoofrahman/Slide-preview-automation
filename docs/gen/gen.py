@@ -339,6 +339,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.52',('While Slideshot loads, the panel shows “Loading Slideshot…” with the sign-in slides animation on a loop, instead of an empty panel.','Selama Slideshot dimuat, panel menampilkan “Loading Slideshot…” dengan animasi slide dari halaman sign in yang berulang, bukan panel kosong.')],
 ['v2.51',('Compile an order: the dashboard’s Compile order gives a file that Slideshot fills with every approved slide, in the review page’s order (alternatives at the end).','Compile order: tombol Compile order di dashboard memberi file yang diisi Slideshot dengan semua slide yang sudah approved, sesuai urutan halaman review (alternatif di akhir).')],
 ['Dashboard',('Deleting an order also deletes its saved slide files; leftovers are cleaned up when the dashboard opens.','Menghapus order juga menghapus file slide yang tersimpan; sisa file dibersihkan saat dashboard dibuka.')],
 ['v2.50',('Each sent slide is also saved as its own .pptx in a private store, for compiling an order later (“Saved for compile” under the button). Never blocks sending.','Setiap slide yang dikirim juga disimpan sebagai .pptx tersendiri di penyimpanan privat, untuk meng-compile order nanti (“Saved for compile” di bawah tombol). Tidak pernah menahan pengiriman.')],
@@ -418,7 +419,7 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.51','Add-in v2.48')}</span><span class="meta">{T('Updated 19 Nov 2026','Diperbarui 19 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.52','Add-in v2.48')}</span><span class="meta">{T('Updated 19 Nov 2026','Diperbarui 19 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>

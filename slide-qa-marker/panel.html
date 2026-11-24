@@ -213,6 +213,9 @@
   .bs-badge { position: absolute; left: 71%; top: 50.11%; width: 22%; height: 39.11%; }
   .bs-badge svg { display: block; width: 100%; height: 100%; }
   .login-word { font-family: "Vampiro One", cursive; font-weight: 400; }
+  /* Loading: same band as sign-in, looping (also in taskpane.html, the loader) */
+  .loading { justify-content: center; align-items: center; }
+  .load-text { position: relative; z-index: 1; margin: 0 0 96px; font-size: 14px; line-height: 20px; color: #6A7389; }   /* text-s/Regular, text/subtle */
   .slack-block { gap: 12px; }
   .slack-btn { gap: 0; padding: 8px 12px; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
   .slack-btn > span { padding: 0 8px; }
@@ -436,6 +439,10 @@
   <div id="configError" class="notice" hidden>Supabase isn't set up yet. Fill in config.js (see the setup guide).</div>
 
   <!-- Sign in (Figma: Frame 23 — hero + panel) -->
+  <section id="loadView" class="login loading" aria-live="polite">
+    <p class="load-text">Loading Slideshot…</p>
+    <div class="login-band" id="loadBand" aria-hidden="true"></div>
+  </section>
   <section id="loginView" class="login" hidden>
     <div class="login-panel">
       <div class="login-head">
@@ -634,7 +641,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.51";
+const APP_VERSION = "2.52";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1648,7 +1655,7 @@ async function enterApp(user, team) {
   const comp = await detectCompile();   // a starter file from the dashboard's "Compile order"
   if (comp) { enterCompile(comp); return; }
   if (!docStore.get("slideqa.orderSet")) await askOrder();
-  $("orderView").hidden = true; $("appView").hidden = false;
+  doneLoading(); $("orderView").hidden = true; $("appView").hidden = false;
   if (!S.handlerAdded) {
     Office.context.document.addHandlerAsync(Office.EventType.DocumentSelectionChanged, debounce(refreshDeck, 250));
     S.handlerAdded = true;
@@ -1680,7 +1687,7 @@ function hashAsYouType(input) {
 }
 function askOrder() {
   return new Promise((resolve) => {
-    $("appView").hidden = true; $("orderView").hidden = false;
+    doneLoading(); $("appView").hidden = true; $("orderView").hidden = false;
     document.querySelectorAll(".foot-name").forEach((el) => { el.textContent = displayName(S.user); });
     document.querySelectorAll(".foot-team").forEach((el) => { el.textContent = S.myTeam || ""; });
     const input = $("orderInput"), err = (m) => { $("orderInputError").textContent = m || ""; input.setAttribute("aria-invalid", m ? "true" : "false"); };
@@ -1723,7 +1730,7 @@ function askOrder() {
   });
 }
 function showLogin(mode) {
-  S.user = null;
+  S.user = null; doneLoading();
   $("appView").hidden = true; $("orderView").hidden = true; $("loginView").hidden = false;
   setLoginMode(mode || "slack");
   playLoginBand();
@@ -1744,8 +1751,8 @@ const LOGIN_BAND = [
     ty: [[0, 137.322159], [0.78624, 137.322159, BAND_EASE.land], [0.9999, -2, "ease-in-out"], [1, 0]] }
 ];
 const BAND_BADGE = '<svg viewBox="0 0 25.7763 26.0627" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M12.8882 26.0627C20.0061 26.0627 25.7763 20.2284 25.7763 13.0314C25.7763 5.83434 20.0061 0 12.8882 0C5.77023 0 0 5.83434 0 13.0314C0 20.2284 5.77023 26.0627 12.8882 26.0627Z" fill="#00308D"/><path d="M7.02991 13.0314L11.1307 17.1777L19.3322 8.29269" stroke-width="1.41189" stroke-linecap="round" stroke-linejoin="round" stroke="white"/></svg>';
-function buildLoginBand() {
-  const band = $("loginBand"); if (band.childElementCount) return;
+function buildLoginBand(band) {
+  band = band || $("loginBand"); if (band.childElementCount) return;
   LOGIN_BAND.forEach((b) => {
     const d = document.createElement("div"); d.className = "band-slide";
     d.style.left = "calc(50% + " + b.x + "px)"; d.style.top = b.y + "px";
@@ -1753,20 +1760,28 @@ function buildLoginBand() {
     band.append(d);
   });
 }
-// Plays once each time the sign-in screen opens and holds the last frame (the Figma prototype loops)
-function playLoginBand() {
-  buildLoginBand();
+// Sign-in: plays once each time the screen opens and holds the last frame. Loading (loop): the same 2 s rise, then a
+// 0.6 s hold and a 0.2 s fade, over and over (2.8 s per round), so the restart never jumps.
+function playLoginBand(band, loop) {
+  band = band || $("loginBand"); buildLoginBand(band);
   const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const run = (el, track, fn) => {
-    el.getAnimations().forEach((a) => a.cancel());
-    if (!track || still || !el.animate) return;
-    el.animate(track.map(([o, v, e]) => ({ offset: o, transform: fn(v), easing: e || "linear" })), { duration: 2000, fill: "both" });
-  };
-  [...$("loginBand").children].forEach((d, i) => {
+  const D = loop ? 2800 : 2000, k = 2000 / D;
+  const run = (el, frames) => { el.getAnimations().forEach((a) => a.cancel()); if (frames && !still && el.animate) el.animate(frames, { duration: D, fill: "both", iterations: loop ? Infinity : 1 }); };
+  const track = (t, fn) => t && t.map(([o, v, e]) => ({ offset: o * k, transform: fn(v), easing: e || "linear" })).concat(loop ? [{ offset: 1, transform: fn(t[t.length - 1][1]) }] : []);
+  [...band.children].forEach((d, i) => {
     const b = LOGIN_BAND[i];
-    run(d.querySelector(".bs-y"), b.ty, (v) => "translateY(" + v + "px)");
-    run(d.querySelector(".bs-x"), b.tx, (v) => "translateX(" + v + "px)");
+    run(d.querySelector(".bs-y"), track(b.ty, (v) => "translateY(" + v + "px)"));
+    run(d.querySelector(".bs-x"), track(b.tx, (v) => "translateX(" + v + "px)"));
+    if (loop) run(d.querySelector(".bs-body"), [{ offset: 0, opacity: 1 }, { offset: 0.93, opacity: 1 }, { offset: 1, opacity: 0 }]);
   });
+  // Loading: carry on from where the loader's loop was, so the switch from taskpane.html to this page doesn't restart it
+  if (loop) { let t0 = 0; try { t0 = +sessionStorage.getItem("slideshot.loadT0") || 0; } catch (e) {}
+    if (t0) band.querySelectorAll(".bs-y,.bs-x,.bs-body").forEach((el) => el.getAnimations().forEach((a) => { a.currentTime = (Date.now() - t0) % D; })); }
+}
+// Loading screen until the first real view shows (sign-in, order step, app or compile)
+function doneLoading() {
+  const l = $("loadView"); if (!l || l.hidden) return;
+  l.hidden = true; l.querySelectorAll(".bs-y,.bs-x,.bs-body").forEach((e) => e.getAnimations && e.getAnimations().forEach((a) => a.cancel()));
 }
 // Sign-in screen: Slack (default), email (fallback), or the one-time team step
 function setLoginMode(mode) {
@@ -1903,7 +1918,7 @@ function cpSay(text, kind) { const el = $("cpState"); el.className = "cp-state" 
 function cpList(lines) { const ul = $("cpList"); ul.innerHTML = ""; ul.hidden = !lines.length; lines.forEach((t) => { const li = document.createElement("li"); li.textContent = t; ul.append(li); }); }
 async function enterCompile(comp) {
   CP.order = comp.order; CP.starterId = comp.starterId; CP.done = 0; CP.lastId = comp.starterId;
-  $("orderView").hidden = true; $("appView").hidden = true; $("compileView").hidden = false;
+  doneLoading(); $("orderView").hidden = true; $("appView").hidden = true; $("compileView").hidden = false;
   $("cpTitle").textContent = "Compile Order #" + CP.order;
   showDashboardLink(S.user);
   $("cpRecheck").onclick = () => compileCheck();
@@ -1998,9 +2013,10 @@ async function runCompile() {
 }
 
 /* ---------- start ---------- */
+try { playLoginBand($("loadBand"), true); } catch (e) {}
 Office.onReady(async (info) => {
   const cfg = window.SLIDE_REVIEW_CONFIG || {};
-  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { $("configError").hidden = false; return; }
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) { doneLoading(); $("configError").hidden = false; return; }
   S.sb = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
   S.canImage = Office.context.requirements.isSetSupported("PowerPointApi", "1.8");
   $("unsupported").hidden = S.canImage;

@@ -4,10 +4,63 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Slideshot</title>
-<style>body{margin:0;padding:24px 16px;background:#F6F7F9;color:#5A6575;font:13px/1.45 "Segoe UI",system-ui,-apple-system,sans-serif}a{color:#1F3A93}</style>
+<style>
+body{margin:0;background:#F7F9FC;color:#6A7389;font:14px/20px Geist,"Segoe UI",system-ui,-apple-system,sans-serif}
+a{color:#1C43A5}
+/* Same loading screen as panel.html (#loadView): the sign-in band, looping */
+.load{position:relative;overflow:hidden;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.load p{position:relative;z-index:1;margin:0 24px 96px;text-align:center}
+.band{position:absolute;left:-56px;right:-47.6px;bottom:-34.88px;height:153.877px;overflow:hidden;pointer-events:none}
+.band-slide{position:absolute;transform:translate(-50%,-50%)}
+.bs-body{position:relative}
+.bs-bg{position:absolute;inset:0;border-radius:var(--r);background:var(--fill);opacity:var(--op)}
+.bs-content{position:absolute;left:.11%;top:18.56%;width:81.25%;height:44.44%;opacity:var(--op)}
+.bs-content i{position:absolute;left:11.54%;background:var(--line);border-radius:calc(var(--r)*.246)}
+.bs-content i:nth-child(1){top:0;width:51.69%;height:22.5%;border-radius:calc(var(--r)*.3516)}
+.bs-content i:nth-child(2){top:41.25%;width:76.92%;height:15.75%}
+.bs-content i:nth-child(3){top:75.75%;width:44.31%;height:15.75%}
+.bs-badge{position:absolute;left:71%;top:50.11%;width:22%;height:39.11%}
+.bs-badge svg{display:block;width:100%;height:100%}
+</style>
 </head>
 <body>
-<p id="loaderMsg">Loading…</p>
+<div class="load"><p id="loaderMsg">Loading Slideshot…</p><div class="band" id="band" aria-hidden="true"></div></div>
+<script>
+/* Loading band: a copy of panel.html's LOGIN_BAND and playLoginBand(…, loop), so the motion starts before the app arrives */
+(function () {
+var BAND_EASE = { land: "cubic-bezier(0.22, 1, 0.36, 1)" };
+var LOGIN_BAND = [
+  { x: -139.92, y: 79.96, w: 117.16, h: 66.64, rot: -42.33, fill: "#E6E0FF", op: 0.88, line: "179,166,236", badge: 1, r: 4.034,   // Lavender
+    ty: [[0, 150.163757], [0.03069, 150.163757, BAND_EASE.land], [0.28692, -6.589184, "ease-in-out"], [0.37233, 0], [1, 0]],
+    tx: [[0, 0], [0.01059, 0], [0.28692, -6.424858], [1, -6.424858]] },
+  { x: 50.09, y: 67.88, w: 163.34, h: 110.05, rot: 3.71, fill: "#FFE5D6", op: 0.78, line: "237,178,150", badge: 0, r: 3.356,   // Peach
+    ty: [[0, 165.876984], [0.50377, 165.876984, BAND_EASE.land], [0.89547, -2, "ease-in-out"], [0.985, 0], [1, 0]] },
+  { x: -53, y: 97.69, w: 136.96, h: 76.78, rot: -16.43, fill: "#FBDDE8", op: 0.8, line: "231,161,187", badge: 1, r: 3.493,   // Pink
+    ty: [[0, 124.375694], [0.30456, 124.375694, BAND_EASE.land], [0.51456, -2, "ease-in-out"], [0.58456, 0], [1, 0]] },
+  { x: 147.06, y: 71.57, w: 122.99, h: 69.53, rot: 6.01, fill: "#D6F1E6", op: 0.87, line: "143,205,180", badge: 1, r: 6.204,   // Mint
+    ty: [[0, 137.322159], [0.78624, 137.322159, BAND_EASE.land], [0.9999, -2, "ease-in-out"], [1, 0]] }
+];
+var BAND_BADGE = '<svg viewBox="0 0 25.7763 26.0627" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M12.8882 26.0627C20.0061 26.0627 25.7763 20.2284 25.7763 13.0314C25.7763 5.83434 20.0061 0 12.8882 0C5.77023 0 0 5.83434 0 13.0314C0 20.2284 5.77023 26.0627 12.8882 26.0627Z" fill="#00308D"/><path d="M7.02991 13.0314L11.1307 17.1777L19.3322 8.29269" stroke-width="1.41189" stroke-linecap="round" stroke-linejoin="round" stroke="white"/></svg>';
+  try { sessionStorage.setItem("slideshot.loadT0", String(Date.now())); } catch (e) {}   // panel.html continues the loop from here
+  var band = document.getElementById("band");
+  LOGIN_BAND.forEach(function (b) {
+    var d = document.createElement("div"); d.className = "band-slide";
+    d.style.left = "calc(50% + " + b.x + "px)"; d.style.top = b.y + "px";
+    d.innerHTML = '<div class="bs-y"><div class="bs-x"><div class="bs-body" style="width:' + b.w + "px;height:" + b.h + "px;transform:rotate(" + b.rot + "deg);--r:" + b.r + "px;--fill:" + b.fill + ";--op:" + b.op + ";--line:rgba(" + b.line + ',.75)"><span class="bs-bg"></span><span class="bs-content"><i></i><i></i><i></i></span>' + (b.badge ? '<span class="bs-badge">' + BAND_BADGE + "</span>" : "") + "</div></div></div>";
+    band.appendChild(d);
+  });
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var D = 2800, k = 2000 / D;
+  function run(el, frames) { if (frames && el && el.animate) el.animate(frames, { duration: D, fill: "both", iterations: Infinity }); }
+  function track(t, fn) { if (!t) return null; var f = t.map(function (x) { return { offset: x[0] * k, transform: fn(x[1]), easing: x[2] || "linear" }; }); f.push({ offset: 1, transform: fn(t[t.length - 1][1]) }); return f; }
+  Array.prototype.forEach.call(band.children, function (d, i) {
+    var b = LOGIN_BAND[i];
+    run(d.querySelector(".bs-y"), track(b.ty, function (v) { return "translateY(" + v + "px)"; }));
+    run(d.querySelector(".bs-x"), track(b.tx, function (v) { return "translateX(" + v + "px)"; }));
+    run(d.querySelector(".bs-body"), [{ offset: 0, opacity: 1 }, { offset: 0.93, opacity: 1 }, { offset: 1, opacity: 0 }]);
+  });
+})();
+</script>
 <script>
 /* Loader: always fetches the latest version of the app, bypassing GitHub Pages' 10-minute cache.
    The real app lives in panel.html — edit that file, not this one. */
