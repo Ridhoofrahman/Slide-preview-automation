@@ -18,8 +18,10 @@ Quit PowerPoint (Cmd+Q) and open it again. The panel footer should say **v0.2**.
 
 **Windows** (PowerShell, no admin). First time:
 ```
-$d="$env:LOCALAPPDATA\CompileLab"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/manifest.xml -OutFile "$d\compile-lab.xml"; New-Item -Path "HKCU:\Software\Microsoft\Office\16.0\WEF\Developer" -Force | Out-Null; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\16.0\WEF\Developer" -Name "692f0c9c-69c2-4b13-bddc-494439c729d9" -Value "$d\compile-lab.xml"
+$d="$env:LOCALAPPDATA\CompileLab"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/manifest.xml -OutFile "$d\compile-lab.xml"; $k="HKCU:\Software\Microsoft\Office\16.0\WEF\Developer"; if (-not (Test-Path $k)) { New-Item -Path $k | Out-Null }; Set-ItemProperty -Path $k -Name "692f0c9c-69c2-4b13-bddc-494439c729d9" -Value "$d\compile-lab.xml"
 ```
+(Never use `New-Item ... -Force` on that key: it empties it and removes other add-ins such as Slideshot.)
+
 Already installed? Only re-download the manifest:
 ```
 Invoke-WebRequest https://ridhoofrahman.github.io/Slide-preview-automation/slide-qa-marker/lab/compile/manifest.xml -OutFile "$env:LOCALAPPDATA\CompileLab\compile-lab.xml"
