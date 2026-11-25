@@ -109,6 +109,21 @@
   .primary:disabled, .cancel:disabled { opacity: .5; cursor: not-allowed; }
   .msg { margin: 16px 0 0; font-size: 14px; line-height: 20px; }
   /* Slide file for compile: a quiet status row under the actions (text-xs/Regular, text/subtle) */
+  /* Sending the slide file (Figma 864:18880 sending, 864:19086 failed): a bar at the top of the dock */
+  .sbar { background: #F7F9FC; transition: opacity .4s ease-out; }   /* elevation/secondary */
+  .sbar[hidden] { display: none; }
+  .sbar.fade { opacity: 0; }
+  .sbar-row { display: flex; align-items: center; gap: 8px; padding: 8px 20px; font-size: 12px; line-height: 16px; font-weight: 500; color: #6A7389; }   /* text-xs/Medium, text/caption */
+  .sbar-tx { flex: 1; min-width: 0; }
+  .sbar-dot { display: none; flex: none; width: 8px; height: 8px; border-radius: 999px; background: #F23B3B; }   /* icon/danger */
+  .sbar.err .sbar-dot { display: block; }
+  .sbar.err .sbar-tx { color: #F23B3B; }
+  .sbar-retry { flex: none; padding: 0; border: 0; background: none; font: 500 12px/16px var(--font); color: #6A7389; cursor: pointer; }
+  .sbar-retry:hover { text-decoration: underline; text-underline-position: from-font; }
+  .sbar-retry:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; border-radius: 2px; }
+  .sbar-strip { height: 6px; background: #2557D4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M10 0H5.5L0 6H4.5L10 0Z' fill='%236D9BFF'/%3E%3C/svg%3E") repeat-x 0 0 / 10px 6px; animation: dvstripes .5s linear infinite; }
+  .sbar-strip[hidden] { display: none; }
+  @media (prefers-reduced-motion: reduce) { .sbar { transition: none; } .sbar-strip { animation-duration: 2s; } }
   .cfile { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
   .cfile-row { display: flex; align-items: center; gap: 4px; min-height: 16px; font-size: 12px; line-height: 16px; color: #6A7389; }
   .cfile-ic { flex: none; display: flex; width: 16px; height: 16px; }
@@ -751,7 +766,6 @@
           <button id="cancelUpdateBtn" class="cancel" hidden>Cancel</button>
           <p id="msg" class="msg" role="status" aria-live="polite"></p>
         </div>
-        <div class="cfile" id="cfile" hidden><div class="cfile-row"><span class="cfile-ic" id="cfileIc"></span><span class="cfile-tx" id="cfileTx" role="status" aria-live="polite"></span><button type="button" class="cfile-retry" id="cfileRetry" hidden>Retry</button></div><div class="cfile-bar" id="cfileBar" hidden><span id="cfileFill"></span></div></div>
       </section>
 
       <section class="feedback" id="feedback" hidden aria-labelledby="feedbackTitle">
@@ -762,6 +776,7 @@
     </div>
 
     <div class="dock" id="dock">
+      <div class="sbar" id="cfile" hidden><div class="sbar-row"><span class="sbar-dot" aria-hidden="true"></span><span class="sbar-tx" id="cfileTx" role="status" aria-live="polite"></span><button type="button" class="sbar-retry" id="cfileRetry" hidden>Retry</button></div><div class="sbar-strip" id="cfileBar" role="progressbar" aria-label="Sending the file" hidden></div></div>
       <p class="my-slides" id="mySlides" hidden></p>
       <section class="summary" id="summary" hidden aria-label="Order progress">
         <button class="summary-toggle" id="summaryToggle" aria-expanded="false" aria-controls="summaryGrid"><span id="summaryText"></span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -781,7 +796,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.61";
+const APP_VERSION = "2.62";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1730,7 +1745,7 @@ async function saveForCompile(shot, b64, tries) {
     const r = await S.sb.from("slide_files").upsert(row, { onConflict: "file_key,slide_id" });
     if (r.error) throw r.error;
     if (job.aborted) return;
-    job.state = "saved"; job.pct = 100; job.b64 = null;
+    job.state = "saved"; job.pct = 100; job.b64 = null; job.sentAt = Date.now();
     S.savedFiles[id] = { slide_id: id, version: shot.version, size_bytes: blob.size };
   } catch (e) {
     if (job.aborted || e.aborted || S.files[id] !== job) return;
@@ -1742,30 +1757,32 @@ async function saveForCompile(shot, b64, tries) {
   }
   renderFile();
 }
-// The status row for the slide that's open: a job from this session, or what's stored from earlier
+// The bar at the top of the dock for the slide that's open: sending (from the click on Mark ready until the file is
+// stored), "File sent!" for 3 s then it fades, or an error with Retry that stays until the file is sent
+const SENT_SHOW = 3000;
 function renderFile() {
   const box = $("cfile"); if (!box) return;
   const cur = currentSlide(), shot = cur && S.latest[cur.id];
   let j = cur && S.files[cur.id];
   if (j && shot && j.shot.version < shot.version) j = null;   // an older send; the newer one has its own job
+  if (!j && cur && S.sending === cur.id) j = { state: "saving", pct: 0 };   // still sending the slide itself
   if (!j && shot) {
     const f = S.savedFiles[cur.id];
-    if (f && f.version >= shot.version) j = { state: "saved" };
-    else if (S.filesLoaded && String(shot.created_at) >= FILES_SINCE && !S.updating[cur.id]) j = { state: "failed", shot };
+    if (!(f && f.version >= shot.version) && S.filesLoaded && String(shot.created_at) >= FILES_SINCE && !S.updating[cur.id]) j = { state: "failed", shot };
   }
+  if (j && j.state === "saved" && !(j.sentAt && Date.now() - j.sentAt < SENT_SHOW + 400)) j = null;   // stored earlier: nothing to say
   const mode = cur ? viewFor(cur).mode : "";
-  box.hidden = !j || mode === "notsent" || mode === "update";
-  if (box.hidden) return;
-  box.className = "cfile " + j.state;
+  box.hidden = !j || ((mode === "notsent" || mode === "update") && S.sending !== cur.id);
+  if (box.hidden) { box.classList.remove("fade"); return; }
+  const err = j.state === "failed" || j.state === "big";
+  box.className = "sbar" + (err ? " err" : "") + (j.state === "saved" && Date.now() - j.sentAt >= SENT_SHOW ? " fade" : "");
   const mb = (n) => (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + " MB";
-  const text = { saving: "Saving for compile\u2026" + (j.pct ? " " + j.pct + "%" : ""), waiting: "Saving for compile\u2026", saved: "Saved for compile",
-    failed: "Not saved for compile.", big: "Too big to save for compile" + (j.size ? " (" + mb(j.size) + ")" : "") }[j.state];
-  $("cfileTx").textContent = text;
-  $("cfileIc").innerHTML = FILE_ICONS[j.state === "big" ? "failed" : j.state] || "";
+  $("cfileTx").textContent = { saving: "Sending file\u2026" + (j.pct ? " " + j.pct + "%" : ""), waiting: "Sending file\u2026", saved: "File sent!",
+    failed: "Couldn't send the file", big: "File too big to send" + (j.size ? " (" + mb(j.size) + ")" : "") }[j.state];
   $("cfileRetry").hidden = j.state !== "failed";
   $("cfileRetry").onclick = () => saveForCompile(j.shot || shot, null, 0);
   $("cfileBar").hidden = !(j.state === "saving" || j.state === "waiting");
-  $("cfileFill").style.width = (j.state === "saving" ? Math.max(4, j.pct || 0) : 4) + "%";
+  if (j.state === "saved" && !j.fadeTimers) j.fadeTimers = [setTimeout(renderFile, SENT_SHOW), setTimeout(renderFile, SENT_SHOW + 450)];
 }
 
 async function markReady() {
@@ -1773,15 +1790,13 @@ async function markReady() {
   const what = cur.alt ? "slide " + altLabel(cur) : "slide " + cur.n;
   const prev = S.latest[cur.id];
   const version = prev ? prev.version + 1 : 1;
-  S.busy = true; render();
-  say($("msg"), "Capturing " + what + "…");
+  S.busy = true; S.sending = cur.id; render(); renderFile();
   try {
     const b64 = await slideImage(cur.id, IMAGE_WIDTH);
     const keep = {};
     const details = await readDetails(cur.id, keep);
     const key = fileKey();
     const path = key + "/" + cur.id.replace(/[^a-zA-Z0-9_-]/g, "_") + "/v" + version + "-" + Date.now() + ".png";
-    say($("msg"), "Uploading " + what + "…");
     const up = await S.sb.storage.from("slides").upload(path, b64ToBlob(b64, "image/png"), { contentType: "image/png" });
     if (up.error) throw up.error;
     const ins = await S.sb.from("slide_shots").insert({
@@ -1797,7 +1812,7 @@ async function markReady() {
   } catch (e) {
     say($("msg"), what.charAt(0).toUpperCase() + what.slice(1) + " wasn't sent: " + (e.message || e) + ". Check your connection and try again.", "err");
   } finally {
-    S.busy = false;
+    S.busy = false; if (S.sending === cur.id) S.sending = null;
     try { await loadReviews(); } catch (e) {}
     render(); renderThumb();
   }
