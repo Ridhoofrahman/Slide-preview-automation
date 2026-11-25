@@ -898,7 +898,11 @@
   .rv-clink[hidden] { display: none; }
   .rv-clink svg { width: 20px; height: 20px; }
   .rv-cbtn:hover, .rv-clink:hover { background: #1C43A5; }   /* background/brand/hover */
-  .rv-clink.copied { background: #0C7F49; }
+  /* Toast (no Builder DS component yet): tooltip/default background, bottom centre, fades after 2.5 s */
+  .toast { position: fixed; left: 50%; bottom: 24px; z-index: 100; transform: translate(-50%, 8px); padding: 8px 12px; border-radius: 8px; background: #1A1F2E; color: #FFFFFF; font: 400 14px/20px "Geist", system-ui, sans-serif;
+    box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); opacity: 0; pointer-events: none; transition: opacity .2s ease-out, transform .2s ease-out; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; transform: translate(-50%, 0); } }
   .rv-cbtn:focus-visible, .rv-clink:focus-visible, .rv-ibtn:focus-visible, .rv-toggle:focus-visible, .rv-thumbdel:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
   .rv-tools { gap: 12px; }
   .rv-ibtn { width: 32px; height: 32px; padding: 0; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #6D7395; display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
@@ -1161,6 +1165,14 @@ function projectProgress(p) {
 }
 // Final file on Google Drive for an order (latest stage uploaded), if any
 const finalFile = (p) => (S.deliveries || {})[orderId(p.name || p.key)] || null;
+// Short message at the bottom of the page (role=status, so screen readers hear it too)
+function toast(msg) {
+  let t = document.getElementById("toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); t.setAttribute("aria-live", "polite"); document.body.append(t); }
+  t.textContent = msg; clearTimeout(toast.timer);
+  requestAnimationFrame(() => t.classList.add("show"));
+  toast.timer = setTimeout(() => t.classList.remove("show"), 2500);
+}
 function copyText(text, onDone) {
   const fallback = () => { const t = document.createElement("textarea"); t.value = text; t.style.position = "fixed"; t.style.opacity = "0"; document.body.append(t); t.select(); try { document.execCommand("copy"); if (onDone) onDone(); } catch (e) {} t.remove(); };
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => { if (onDone) onDone(); }, fallback); else fallback();
@@ -1357,7 +1369,7 @@ function cardMenu(p, anchor) {
   const prog = projectProgress(p);
   const item = (label, fn, opts = {}) => { const b = el("button", "bd-menuitem" + (opts.danger ? " danger" : ""), label); b.setAttribute("role", "menuitem"); b.disabled = !!opts.disabled; if (opts.title) b.title = opts.title; b.onclick = (e) => { e.stopPropagation(); m.remove(); fn(); }; m.append(b); };
   const fin = finalFile(p);
-  if (fin) item("Copy final file link (" + fin.stage + ")", () => copyText(fin.link), { title: fin.file_name });
+  if (fin) item("Copy final file link (" + fin.stage + ")", () => copyText(fin.link, () => toast("Link to " + (fin.stage === "First Draft" ? "the First Draft" : fin.stage) + " copied")), { title: fin.file_name });
   item("Compile order", () => downloadCompileStarter(p), { disabled: !allSlidesApproved(p), title: allSlidesApproved(p) ? "Download a file that compiles this order in PowerPoint" : "Available when every slide is approved" });
   item("Assign order", () => openAssign(p.key));
   item("Delete order", () => askDeleteProject(p.key), { danger: true });
@@ -1752,7 +1764,7 @@ function renderHeaderState(proj) {
   if (proj) $("rvCompile").dataset.key = proj.key;
   $("rvCompile").title = "Download a file that compiles this order in PowerPoint";
   $("rvFinal").hidden = !fin;
-  if (fin) { $("rvFinal").dataset.link = fin.link; $("rvFinal").title = "Copy final link \u2014 " + fin.stage + ": " + fin.file_name + (fin.uploaded_by_name ? " (uploaded by " + fin.uploaded_by_name + ")" : ""); }
+  if (fin) { $("rvFinal").dataset.link = fin.link; $("rvFinal").dataset.stage = fin.stage; $("rvFinal").title = "Copy final link \u2014 " + fin.stage + ": " + fin.file_name + (fin.uploaded_by_name ? " (uploaded by " + fin.uploaded_by_name + ")" : ""); }
   if (proj && !done) {
     const r = projectRingState(proj); const pr = $("rvProgress");
     pr.innerHTML = '<span class="ic">' + ringSvg(r.frac) + "</span>";
@@ -2467,7 +2479,7 @@ async function enter(user, team) {
   $("railPrev").onclick = () => { $("rvRail").scrollBy({ left: -3 * 165 }); };
   $("railNext").onclick = () => { $("rvRail").scrollBy({ left: 3 * 165 }); };
   $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
-  $("rvFinal").onclick = () => { const b = $("rvFinal"); copyText(b.dataset.link, () => { b.classList.add("copied"); b.setAttribute("aria-label", "Link copied"); setTimeout(() => { b.classList.remove("copied"); b.setAttribute("aria-label", "Copy final link"); }, 1500); }); };
+  $("rvFinal").onclick = () => { const b = $("rvFinal"); copyText(b.dataset.link, () => toast("Link to " + (b.dataset.stage === "First Draft" ? "the First Draft" : b.dataset.stage || "the final file") + " copied")); };
   $("rvCompile").onclick = () => { const p = S.projects[$("rvCompile").dataset.key]; if (p) downloadCompileStarter(p); };
   $("rvAdjust").onclick = () => openAssign(S.project, "Adjust slide distribution");
   // Zoom: the magnifier shows or hides the zoom control
