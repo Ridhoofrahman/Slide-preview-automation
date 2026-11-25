@@ -869,7 +869,7 @@
   /* ===== Review page v2 (Figma 113:1730, R1-R8; Builder DS palette of 2026-11-25) ===== */
   .review { grid-template-rows: 72px 1fr; }
   /* the panel runs the full height on the right; the header covers the left column only */
-  .review { grid-template-columns: minmax(0, 1fr) 337px; grid-template-rows: 72px minmax(0, 1fr); }   /* panel 337px (Figma component "Review panel") */
+  .review { grid-template-columns: minmax(0, 1fr) clamp(337px, 28vw, 400px); grid-template-rows: 72px minmax(0, 1fr); }   /* panel 337px on small screens, up to 400px from ~1430px wide */
   .review > .rv-head { grid-column: 1; grid-row: 1; min-width: 0; }
   .review .rv-main { display: contents; }
   .review .rv-work { grid-column: 1; grid-row: 2; min-height: 0; }
