@@ -796,7 +796,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.62";
+const APP_VERSION = "2.63";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1542,8 +1542,8 @@ function renderCmp(show) {
       body.append(st);
     } else {
       // Added text is information, not a difference: counted apart
-      const shown = cmpVisible(CMP.items), all = shown.length, added = shown.filter((it) => it.cat === "added").length, fmts = shown.filter((it) => it.cat === "format").length, n = all - added - fmts,
-        plus = (fmts ? " \u00B7 " + fmts + " formatting" : "") + (added ? " \u00B7 " + added + " added" : ""), moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
+      const shown = cmpVisible(CMP.items), all = shown.length, added = shown.filter((it) => it.cat === "added").length, n = all - added,   // formatting differences count as differences: the text doesn't match
+        plus = added ? " \u00B7 " + added + " added" : "", moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
       const vs = moved || alt ? " vs original slide " + CMP.base : "";
       if (!n) { st.classList.add("ok"); msg.textContent = "Text matches the original" + vs + plus; }
       else msg.textContent = n + " difference" + (n === 1 ? "" : "s") + " found" + vs + plus;

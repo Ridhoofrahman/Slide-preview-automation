@@ -182,7 +182,7 @@ Bump `APP_VERSION`, then update `CLAUDE.md`, the docs page (EN + ID) and the rel
 - **Source:** only formatting set on the run itself (`a:rPr` attributes `b`, `i`, `u`, `strike`, `baseline`). Formatting inherited from the shape, layout or master is not resolved. Slide text, tables and notes are checked; charts and SmartArt are not.
 - **UI:**
   - Section "Formatting changed" shows the original words styled as they look.
-  - Counted apart in the status line (e.g. "· 2 formatting").
+  - Counted as differences in the status line (since v2.63).
   - The feather icon opens a popover with only the toggles B, I, U, S (v2.59). Tooltips read "Check bold" etc. so they are not mistaken for formatting buttons.
   - Off by default. A toggle applies at once: the engine always computes every difference and the panel filters, so there is no new export.
   - The feather is blue while any toggle is on.
