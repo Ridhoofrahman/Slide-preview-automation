@@ -237,9 +237,10 @@
     }
     return out;
   }
-  // Formatting differences between two paired sentences (same words, other formatting). Bold, italic, underline and
-  // strikethrough count only as emphasis: some words of the original sentence have it, others not (a sentence that is
-  // all bold is a design choice). Superscript and subscript always count. Only formatting the slide lost is reported.
+  // Formatting differences between two paired sentences (same words, other formatting), both ways: formatting the
+  // slide lost ("lost") and formatting the slide added ("added"). Bold, italic, underline and strikethrough count only
+  // as emphasis: some words of that side's sentence have it, others not (a sentence that is all bold is a design
+  // choice). Superscript and subscript always count.
   const FMT = [[1, "b", "bold"], [2, "i", "italic"], [4, "u", "underline"], [8, "s", "strikethrough"]];
   function lcsPairs(a, b) {
     const n = a.length, m = b.length, dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
@@ -254,26 +255,35 @@
     const a = words(o.t), b = words(s.t), out = [];
     if (!o.wf || !s.wf || o.wf.length !== a.length || s.wf.length !== b.length) return out;
     const pairs = lcsPairs(a, b), found = [];
+    const partial = (wf, bit) => { const n = wf.filter((f) => wordHas(f, bit)).length; return n > 0 && n < wf.length; };
     for (const [bit, key, name] of FMT) {
       if (enabled && enabled[key] === false) continue;
-      const n = o.wf.filter((f) => wordHas(f, bit)).length;
-      if (!n || n === a.length) continue;   // none, or the whole sentence: not emphasis
-      pairs.forEach(([i, j]) => { if (wordHas(o.wf[i], bit) && !wordHas(s.wf[j], bit)) found.push({ i, j, name }); });
+      const po = partial(o.wf, bit), ps = partial(s.wf, bit);
+      pairs.forEach(([i, j]) => {
+        const ho = wordHas(o.wf[i], bit), hs = wordHas(s.wf[j], bit);
+        if (ho && !hs && po) found.push({ i, j, name, dir: "lost" });
+        else if (hs && !ho && ps) found.push({ i, j, name, dir: "added" });
+      });
     }
     for (const [bit, name] of [[16, "superscript"], [32, "subscript"]]) {
       pairs.forEach(([i, j]) => {
         const fo = o.wf[i], fs = s.wf[j];
-        for (let k = 0; k < fo.length; k++) if ((fl(fo[k]) & bit) && !(fl(fs[k] || "@") & bit)) { found.push({ i, j, name }); break; }
+        for (let k = 0; k < Math.max(fo.length, fs.length); k++) {
+          const ho = !!(fl(fo[k] || "@") & bit), hs = !!(fl(fs[k] || "@") & bit);
+          if (ho !== hs) { found.push({ i, j, name, dir: ho ? "lost" : "added" }); break; }
+        }
       });
     }
-    // neighbouring words with the same lost formatting become one row
-    found.sort((x, y) => x.name.localeCompare(y.name) || x.i - y.i);
+    // neighbouring words with the same difference become one row
+    found.sort((x, y) => x.name.localeCompare(y.name) || x.dir.localeCompare(y.dir) || x.i - y.i);
     for (const f of found) {
       const last = out[out.length - 1];
-      if (last && last.name === f.name && last.i1 === f.i - 1 && last.j1 === f.j - 1) { last.i1 = f.i; last.j1 = f.j; }
-      else out.push({ name: f.name, i0: f.i, i1: f.i, j0: f.j, j1: f.j });
+      if (last && last.name === f.name && last.dir === f.dir && last.i1 === f.i - 1 && last.j1 === f.j - 1) { last.i1 = f.i; last.j1 = f.j; }
+      else out.push({ name: f.name, dir: f.dir, i0: f.i, i1: f.i, j0: f.j, j1: f.j });
     }
-    return out.map((g) => ({ fmt: g.name, orig: windowed(a, g.i0, g.i1 + 1), slide: windowed(b, g.j0, g.j1 + 1), ofm: o.wf.slice(g.i0, g.i1 + 1).join("@") }));
+    out.sort((x, y) => x.i0 - y.i0);
+    return out.map((g) => ({ fmt: g.name, dir: g.dir, orig: windowed(a, g.i0, g.i1 + 1), slide: windowed(b, g.j0, g.j1 + 1),
+      ofm: o.wf.slice(g.i0, g.i1 + 1).join("@"), sfm: s.wf.slice(g.j0, g.j1 + 1).join("@") }));
   }
   const loose = (w) => w.toLowerCase().replace(/[^\p{L}\p{N}%]+/gu, "");
   // Similarity for pairing (loose: case and punctuation ignored); the diff itself is exact
