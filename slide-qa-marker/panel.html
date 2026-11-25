@@ -530,6 +530,7 @@
   .cmp-tip { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 4px 8px; border-radius: 6px; background: #1A1F2E; color: #FFFFFF; font: 400 12px/16px var(--font); white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease-out; z-index: 6; }   /* tooltip/default */
   .cmp-ib:hover > .cmp-tip, .cmp-ib:focus-visible > .cmp-tip, .fmt-tg:hover > .cmp-tip, .fmt-tg:focus-visible > .cmp-tip { opacity: 1; visibility: visible; }
   .cmp-ib.on > .cmp-tip { display: none; }
+  .cmp-ib.end > .cmp-tip { left: auto; right: 0; transform: none; }   /* rightmost button: keep the tooltip inside the panel */
   @media (prefers-reduced-motion: reduce) { .cmp-tip { transition: none; } }
   .fmt-pop { position: absolute; right: 26px; top: calc(100% + 9px); z-index: 5; display: flex; padding: 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF;
     box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); font-weight: 400; }   /* Shadow/m */
@@ -780,7 +781,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.60";
+const APP_VERSION = "2.61";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1534,7 +1535,7 @@ function renderCmp(show) {
       const ib = (svg, label, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "cmp-ib"; b.innerHTML = svg + '<span class="cmp-tip">' + label + "</span>"; b.setAttribute("aria-label", label); b.onclick = fn; st.append(b); return b; };
       const fb = ib(FMT_SVG.feather, "Formatting check", () => fmtPopover(fb, st)); fb.setAttribute("aria-haspopup", "true"); fb.setAttribute("aria-expanded", "false");
       const fset = fmtSettings(); fb.classList.toggle("active", FMT_KEYS.some(([k]) => fset[k]));
-      ib(FMT_SVG.rotate, "Check again", cmpCheck);
+      ib(FMT_SVG.rotate, "Check again", cmpCheck).classList.add("end");
       body.append(st);
       // An original chosen before v2.57 has no formatting stored: say so once, with a way to fix it
       if (CMP.fmtOld) { const note = document.createElement("div"); note.className = "cmp-note"; const t = document.createElement("span"); t.textContent = "Formatting isn't checked: choose the original again."; note.append(t);
