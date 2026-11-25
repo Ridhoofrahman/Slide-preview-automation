@@ -23,6 +23,7 @@ Pages: **Review page**, **Review page (as built)**, **From Paper** (copies of tw
 | 112:1499 | Board frames |
 | 701:7378 | **Activity event** component set (page Review page): Type = Sent / Approved / Changes requested / Comment / Voice note / Sent to customer × State Default / Hover; booleans Note (Sent), Quote, Pin. Built 2026-11-23 from the code as the base for Uda's redesign |
 | 702:7251 | Activity · all states: every sentence variation, panel normal (day groups), panel empty, behaviour notes |
+| 784:2369 | **Compile order · all states** (page Add in): C1–C8 compile panel (checking, not a DM, couldn't load, not ready, ready, compiling, stopped, done), D1–D12 Final file on Google Drive (form, name error, embedded fonts reading/found/none/error, uploading, uploaded, copied, replaced, failed, reopened file), E1–E3 dashboard card menu and review header, E4 starter slide, E5 behaviour notes. Built 2026-11-24 from the code (v2.54) as the base for Uda's redesign |
 | 113:1730 | Review slide section (strip, header, panel states, banners) |
 | 211:4315 | Review panel component (Waiting, Approved, No comment, Recording, Full, Older version) |
 | 211:5187 | Slide list panel (bg `#F6F7F9`, border `#E3E6EB`; Uda keeps 104 px thumbnails, not Figma's 133 px) |

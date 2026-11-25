@@ -1083,6 +1083,21 @@ const allSlidesApproved = (p) => !!p && p.slides.length > 0 && p.slides.every((s
 // "Compile order": a starter .pptx (assets/compile-starter.pptx with the order number filled in). Opened in PowerPoint,
 // Slideshot reads "Compile Order #N" from its first slide and adds the saved slide files (panel: enterCompile).
 function loadScript(src) { return new Promise((ok, fail) => { const t = document.createElement("script"); t.src = src; t.onload = ok; t.onerror = () => fail(new Error("couldn't load " + src)); document.head.append(t); }); }
+// The starter slide is laid out for 13.333 x 7.5 in (12192000 x 6858000 EMU). For another slide size, scale its shapes
+// and text by the same factor (the gradient background fills any size); the illustration stays in the bottom-left corner.
+async function scaleStarterSlide(zip, size) {
+  const cx = Number((size.match(/\bcx="(\d+)"/) || [])[1]), cy = Number((size.match(/\bcy="(\d+)"/) || [])[1]);
+  if (!cx || !cy || (cx === 12192000 && cy === 6858000)) return;
+  const r = Math.min(cx / 12192000, cy / 6858000), n = (v) => Math.round(Number(v) * r);
+  let xml = await zip.file("ppt/slides/slide1.xml").async("string");
+  xml = xml.replace(/<a:off x="(-?\d+)" y="(-?\d+)"\/>/g, (m, x, y) => '<a:off x="' + n(x) + '" y="' + n(y) + '"/>')
+    .replace(/<a:ext cx="(\d+)" cy="(\d+)"\/>/g, (m, a, b) => '<a:ext cx="' + n(a) + '" cy="' + n(b) + '"/>')
+    .replace(/\bsz="(\d+)"/g, (m, v) => 'sz="' + Math.max(100, Math.round((Number(v) * r) / 50) * 50) + '"')
+    .replace(/<a:spcPts val="(\d+)"\/>/g, (m, v) => '<a:spcPts val="' + n(v) + '"/>');
+  // keep the illustration on the bottom edge
+  xml = xml.replace(/(name="Slideshot art"[\s\S]*?<a:off x="-?\d+" y=")(\d+)("\/><a:ext cx="\d+" cy=")(\d+)/, (m, a, y, b, h) => a + Math.max(0, cy - Number(h) + n(19050)) + b + h);
+  zip.file("ppt/slides/slide1.xml", xml);
+}
 async function downloadCompileStarter(p) {
   const id = orderId(p.name || p.key);
   try {
@@ -1100,7 +1115,10 @@ async function downloadCompileStarter(p) {
         if (!dl.error) {
           const one = await JSZip.loadAsync(await dl.data.arrayBuffer());
           const size = ((await one.file("ppt/presentation.xml").async("string")).match(/<p:sldSz\b[^>]*\/>/) || [])[0];
-          if (size) { const pres = await zip.file("ppt/presentation.xml").async("string"); zip.file("ppt/presentation.xml", pres.replace(/<p:sldSz\b[^>]*\/>/, size)); }
+          if (size) {
+            const pres = await zip.file("ppt/presentation.xml").async("string"); zip.file("ppt/presentation.xml", pres.replace(/<p:sldSz\b[^>]*\/>/, size));
+            await scaleStarterSlide(zip, size);
+          }
         }
       }
     } catch (e) { console.warn("Slideshot: starter keeps the default slide size:", e); }

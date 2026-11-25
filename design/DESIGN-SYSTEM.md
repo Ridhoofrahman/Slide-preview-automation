@@ -37,6 +37,8 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 
 ## Colour: Mapped tokens
 ### Text
+Palette read from the library on 2026-11-25 (Mapped collection; outline tokens are now `outline/soft/*`, plus `outline/strong/*` and `background/accent/soft|strong/*`). The add-in uses it since v2.55; the dashboard still has the previous values.
+
 | Token | Value |
 |---|---|
 | `text/title` | #1A1F2E |
@@ -45,30 +47,30 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 | `text/caption` · `text/subtle` · `text/placeholder` | #6A7389 |
 | `text/disabled` | #A3ADC2 |
 | `text/on-color` | #FFFFFF |
-| `text/color/brand` | #1C43A5 |
-| `text/color/success` | #0A6139 |
-| `text/color/warning` | #AD7300 |
-| `text/color/danger` | #A81A1A |
-| `text/color/information` | #4A2999 |
+| `text/color/brand` | #2557D4 |
+| `text/color/success` | #0C7F49 |
+| `text/color/warning` | #E09600 |
+| `text/color/danger` | #D62020 |
+| `text/color/information` | #6035C4 |
 | `text/disabled/brand · success · warning · danger · information` | #3B74F5 · #6EC22F · #FFB800 · #F23B3B · #7D4FE0 |
 
 ### Icon
 | Token | Value |
 |---|---|
-| `icon/neutral` | #454C63 |
-| `icon/subtle` · `icon/disabled` | #A3ADC2 |
+| `icon/neutral` | #5C6480 |
+| `icon/subtle` · `icon/disabled` | #C2CCDB · #DDE4EE |
 | `icon/on-color` | #FFFFFF |
-| `icon/brand` | #2557D4 |
-| `icon/success` | #0C7F49 (also the progress ring and the sent-to-customer circle) |
+| `icon/brand` | #3B74F5 |
+| `icon/success` | #12A45F |
 | `icon/warning` | #E09600 |
-| `icon/danger` | #D62020 |
-| `icon/information` | #6035C4 |
+| `icon/danger` | #F23B3B |
+| `icon/information` | #7D4FE0 |
 
 ### Background
 | Token | default · hover · active / hover-subtle · disabled |
 |---|---|
 | `background/neutral/*` | #FFFFFF · #F7F9FC · active #DDE4EE · disabled #F7F9FC |
-| `background/brand/*` | #1C43A5 · #132D70 · active #EEF4FF · hover-subtle #EEF4FF · disabled #A8C3FF |
+| `background/brand/*` | #2557D4 · hover #1C43A5 · active #EEF4FF · hover-subtle #EEF4FF · disabled #6D9BFF |
 | `background/success/*` | #12A45F · hover #0C7F49 · disabled #7ED9A8 |
 | `background/warning/*` | #E09600 · #AD7300 · disabled #FFE08A |
 | `background/danger/*` | #D62020 · #A81A1A · hover-subtle #FFF1F1 · disabled #FFB0B0 |

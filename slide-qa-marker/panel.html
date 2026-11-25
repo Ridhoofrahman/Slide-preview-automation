@@ -16,12 +16,12 @@
   :root {
     /* Colours: Builder DS Mapped tokens (design/DESIGN-SYSTEM.md). --focus is the keyboard focus ring; the DS has no token for it. */
     --canvas: #F7F9FC; --surface: #FFFFFF; --ink: #1A1F2E; --title: #1A1F2E; --body: #454C63; --muted: #6A7389; --secondary: #6A7389; --disabled: #A3ADC2;
-    --link: #1C43A5; --primary: #1C43A5; --primary-hover: #132D70; --focus: #3D66F5;
+    --link: #2557D4; --primary: #2557D4; --primary-hover: #1C43A5; --focus: #3D66F5;
     --outline: #DDE4EE; --line: #DDE4EE; --input: #C2CCDB; --input-focus: #A8C3FF; /* Builder DS: outline/neutral, divider/default, outline/brand */
     --grey-bg: #EEF2F8; --grey-bd: #DDE4EE;
     --yellow-bg: #FFF9E6; --yellow-bd: #FFE08A; --yellow-fg: #AD7300;
-    --red-bg: #FFF1F1; --red-bd: #FFB0B0; --red-fg: #A81A1A;
-    --green-bg: #E6F7EE; --green-bd: #7ED9A8; --green-fg: #0A6139; --success: #7ED9A8; --success-solid: #12A45F; --danger-solid: #D62020;
+    --red-bg: #FFF1F1; --red-bd: #FFB0B0; --red-fg: #D62020;
+    --green-bg: #E6F7EE; --green-bd: #7ED9A8; --green-fg: #0C7F49; --success: #7ED9A8; --success-solid: #12A45F; --danger-solid: #D62020;
     --pin-bd: #A8C3FF; --scrim: rgba(26, 31, 46, .5); --overlay: rgba(26, 31, 46, .5); /* Builder DS: overlay/scrim */
     --font: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
@@ -63,10 +63,10 @@
   .slide-topline .assign-tag { margin-right: auto; }
   .meta-label { margin-right: auto; font-size: 14px; line-height: 20px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .slide-hbtns { display: flex; gap: 8px; flex: none; }
-  .hdr-ic { width: 24px; height: 24px; padding: 0; border: 0.8px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; color: #454C63; display: grid; place-items: center; cursor: pointer; }
+  .hdr-ic { width: 24px; height: 24px; padding: 0; border: 0.8px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; color: #5C6480; display: grid; place-items: center; cursor: pointer; }
   .hdr-ic svg { width: 16px; height: 16px; }
   .hdr-ic:hover { background: #F7F9FC; }
-  .hdr-ic.on { background: #EEF4FF; border-color: #A8C3FF; color: #1C43A5; }
+  .hdr-ic.on { background: #EEF4FF; border-color: #A8C3FF; color: #2557D4; }
   .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #EEF2F8; }
   .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -114,13 +114,13 @@
   .cfile-ic { flex: none; display: flex; width: 16px; height: 16px; }
   .cfile-ic:empty { display: none; }
   .cfile-ic svg { width: 16px; height: 16px; }
-  .cfile.saved .cfile-ic { color: #0C7F49; }   /* icon/success */
+  .cfile.saved .cfile-ic { color: #12A45F; }   /* icon/success */
   .cfile-tx { min-width: 0; }
-  .cfile-retry { padding: 0; border: 0; background: none; font: inherit; font-weight: 500; color: #1C43A5; cursor: pointer; }   /* text/color/brand */
+  .cfile-retry { padding: 0; border: 0; background: none; font: inherit; font-weight: 500; color: #2557D4; cursor: pointer; }   /* text/color/brand */
   .cfile-retry:hover { text-decoration: underline; }
   .cfile-retry:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; border-radius: 2px; }
   .cfile-bar { height: 4px; border-radius: 999px; background: #EEF2F8; overflow: hidden; }   /* elevation/sunken */
-  .cfile-bar span { display: block; height: 100%; width: 0; background: #1C43A5; border-radius: 999px; transition: width .2s ease-out; }   /* background/brand/default */
+  .cfile-bar span { display: block; height: 100%; width: 0; background: #2557D4; border-radius: 999px; transition: width .2s ease-out; }   /* background/brand/default */
   @media (prefers-reduced-motion: reduce) { .cfile-bar span { transition: none; } }
   .msg.err { color: var(--red-fg); background: var(--red-bg); padding: 8px 10px; border-radius: 8px; }
   .msg:empty { display: none; }
@@ -186,7 +186,7 @@
   .login .field input { height: 40px; padding: 8px; font-size: 14px; line-height: 20px; color: var(--body); }
   .login .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
   .login .field input[aria-invalid="true"] { border-color: var(--red-bd); }
-  .field-error { font-size: 13px; line-height: 18px; color: #A81A1A; }
+  .field-error { font-size: 13px; line-height: 18px; color: #D62020; }
   .field-error:empty { display: none; }
   .login .msg { margin: 0; }
   /* Sign in with Slack: primary button with the Slack mark in white; email stays as a fallback link */
@@ -223,7 +223,7 @@
   .text-link { width: 100%; height: 40px; padding: 8px 12px; border: 0; border-radius: 8px; background: #FFFFFF; font-family: var(--font); font-size: 14px; line-height: 20px; font-weight: 500; color: var(--link); cursor: pointer; }
   .text-link:hover { background: #F7F9FC; }
   .slack-wait { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; line-height: 20px; color: var(--body); text-align: center; }
-  .slack-wait .spin { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid #DDE4EE; border-top-color: #1C43A5; animation: slackspin .8s linear infinite; }
+  .slack-wait .spin { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid #DDE4EE; border-top-color: #2557D4; animation: slackspin .8s linear infinite; }
   @keyframes slackspin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .slack-wait .spin { animation-duration: 2s; } }
   .login-lead { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); }
@@ -238,8 +238,8 @@
 
   /* Assignment tag (who the DM gave this slide to) */
   .assign-tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; border: 1px solid #DDE4EE; background: #EEF2F8; color: #454C63; font-size: 12px; line-height: 16px; }
-  .assign-tag.mine { background: #EEF4FF; border-color: #A8C3FF; color: #1C43A5; font-weight: 500; }
-  .my-slides { margin: 0; padding: 8px 20px; font-size: 12px; line-height: 16px; color: #1C43A5; font-weight: 500; }
+  .assign-tag.mine { background: #EEF4FF; border-color: #A8C3FF; color: #2557D4; font-weight: 500; }
+  .my-slides { margin: 0; padding: 8px 20px; font-size: 12px; line-height: 16px; color: #2557D4; font-weight: 500; }
 
   /* Slide that isn't yours (the DM distributed the order) */
   .not-mine { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: #F7F9FC; border: 1px solid #DDE4EE; }
@@ -248,12 +248,12 @@
 
   /* Assignment tag (Figma: Slide status / Tag, size s) */
   .assign-tag { display: inline-flex; align-items: center; height: 24px; padding: 4px 8px; border-radius: 999px; border: 1px solid #DDE4EE; background: #EEF2F8; color: #454C63; font-size: 12px; line-height: 16px; font-weight: 400; white-space: nowrap; }
-  .assign-tag.mine { background: #EEF4FF; border-color: #A8C3FF; color: #1C43A5; font-weight: 400; }
+  .assign-tag.mine { background: #EEF4FF; border-color: #A8C3FF; color: #2557D4; font-weight: 400; }
   .meta .assign-tag { margin-right: auto; }
 
   /* Assignment marker as plain text (Figma: Add in — other designer / me / not to work) */
   .assign-tag, .assign-tag.mine { height: auto; padding: 0; border: 0; border-radius: 0; background: none; font-size: 12px; line-height: 16px; font-weight: 400; color: #6A7389; }
-  .assign-tag.mine { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; color: #0A6139; }
+  .assign-tag.mine { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; color: #0C7F49; }
   .assign-tag.mine svg { width: 16px; height: 16px; flex: none; }
   #reviewLinkWrap { display: none; }
 
@@ -263,35 +263,107 @@
   .not-mine.warn p { color: #AD7300; }
 
   /* Order ID already used by another deck (Figma: Error message) */
-  .id-error { margin: 4px 0 0; padding: 8px 10px; border-radius: 8px; background: #FFF1F1; color: #A81A1A; font-size: 14px; line-height: 20px; font-weight: 400; }
+  .id-error { margin: 4px 0 0; padding: 8px 10px; border-radius: 8px; background: #FFF1F1; color: #D62020; font-size: 14px; line-height: 20px; font-weight: 400; }
   .id-error strong { font-weight: 500; }
 
   /* First-run order step */
   .order-gate { padding: 24px 20px; }
-  /* Compile an order (phase 2): starter file from the dashboard */
-  .compile-gate { padding: 0; }
-  .cp-state { margin: 0; display: flex; gap: 4px; font-size: 14px; line-height: 20px; color: #454C63; }
-  .cp-state svg { flex: none; width: 16px; height: 16px; margin-top: 2px; }
-  .cp-state.ok { color: #0A6139; }        /* text/color/success */
-  .cp-state.err { color: #A81A1A; }       /* text/color/danger */
-  .cp-list { margin: -8px 0 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; line-height: 16px; color: #454C63; }
-  .cp-list li::marker { color: #A3ADC2; }
-  .cp-progress { margin-top: -8px; }
-  .cp-progress .cfile-bar { height: 4px; }
-  .cp-recheck { height: 40px; border-radius: 8px; margin-top: -12px; }
-  /* Final file on Google Drive (phase 3) */
-  .dv { display: flex; flex-direction: column; gap: 16px; padding-top: 20px; border-top: 1px solid #DDE4EE; }
+  /* Compile an order (phase 2) + final file on Google Drive (phase 3). Figma 784:2369 (C1-C8, D1-D11).
+     Builder DS palette of 2026-11-25 (same as the rest of the panel since v2.55). */
+  #compileView { min-height: 100vh; display: flex; flex-direction: column; background: #F7F9FC; }   /* elevation/secondary */
+  .cp-head { display: flex; flex-direction: column; padding: 12px 20px; background: #EEF2F8; }   /* elevation/sunken */
+  .cp-kicker { margin: 0; font-size: 12px; line-height: 16px; color: #6A7389; }
+  .cp-order { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
+  .cp-body { flex: 1; display: flex; flex-direction: column; gap: 20px; padding: 20px 20px 72px; }
+  .cp-flow { display: flex; flex-direction: column; gap: 16px; }
+  .cp-flow[hidden], .dv[hidden], .dv-done[hidden] { display: none; }
+  .cp-steps { display: flex; flex-direction: column; gap: 2px; }
+  .cp-step { display: flex; gap: 10px; align-items: stretch; }
+  .cp-rail { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .cp-ico { width: 24px; height: 24px; flex: none; display: grid; place-items: center; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 6px; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .cp-ico svg { width: 16px; height: 16px; display: block; }
+  .cp-line { flex: 1; min-height: 20px; width: 1px; background: #DDE4EE; }   /* outline/soft/neutral */
+  .cp-txt { flex: 1; min-width: 0; padding-top: 2px; display: flex; flex-direction: column; align-items: flex-start; }
+  .cp-step.has-line .cp-txt { padding-bottom: 24px; }
+  .cp-txt p { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; overflow-wrap: anywhere; }
+  .cp-step.err .cp-txt p { color: #D62020; }   /* text/color/danger */
+  .cp-step.ok .cp-txt p { color: #0C7F49; }    /* text/color/success */
+  .cp-act { height: 32px; padding: 0; border: 0; background: none; cursor: pointer; font: 500 14px/20px var(--font); color: #D62020; }
+  .cp-act:hover { text-decoration: underline; text-underline-position: from-font; }
+  .cp-problems { margin: 2px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .cp-problems li { display: flex; gap: 8px; padding-left: 36px; font-size: 14px; line-height: 20px; color: #6A7389; overflow-wrap: anywhere; }
+  .cp-problems li svg { flex: none; width: 8px; height: 11px; }
+  .cp-spin { animation: cpspin 1.2s linear infinite; }
+  @keyframes cpspin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .cp-spin { animation-duration: 3s; } }
+  .cp-primary, .cp-secondary { width: 100%; height: 40px; border-radius: 8px; padding: 8px 20px; display: inline-flex; align-items: center; justify-content: center; font: 500 14px/20px var(--font); cursor: pointer; }
+  .cp-primary { border: 0; background: #2557D4; color: #FFFFFF; box-shadow: 0 1px 2px rgba(18,18,23,.05); }   /* background/brand/default */
+  .cp-primary:hover:not(:disabled) { background: #1C43A5; }   /* background/brand/hover */
+  .cp-primary:disabled { cursor: default; }
+  .cp-primary svg { width: 20px; height: 20px; }
+  .cp-secondary { border: 1px solid #DDE4EE; background: #FFFFFF; color: #454C63; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .cp-secondary:hover { background: #F7F9FC; }   /* background/neutral/hover */
+  .cp-primary:focus-visible, .cp-secondary:focus-visible, .cp-act:focus-visible, .dv-icobtn:focus-visible, .dv-info:focus-visible, .dv-small:focus-visible, .dv-ghost:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* Drive form (D1-D7, D10, D11) */
+  .dv { display: flex; flex-direction: column; gap: 20px; }
   .dv-title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; }
-  .dv .field { gap: 8px; } .dv .field-label { font-size: 14px; line-height: 20px; color: #1A1F2E; }
-  .dv-preview { margin: -8px 0 0; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }
-  .dv-link { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 8px; background: #E6F7EE; }   /* background/accent/soft/success */
-  .dv-link a { font-size: 12px; line-height: 16px; color: #1C43A5; overflow-wrap: anywhere; }
-  .dv-copy { height: 32px; border-radius: 8px; align-self: flex-start; padding: 0 12px; }
-  .dv-fonts { display: flex; flex-direction: column; gap: 4px; }
-  .dv-label { margin: 0; font-size: 14px; line-height: 20px; color: #1A1F2E; }
-  .dv-hint { margin: 0 0 4px; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }
-  .dv-hint.ok { color: #0A6139; } .dv-hint.err { color: #A81A1A; }
-  .dv-fontrow { display: flex; align-items: center; gap: 12px; }
+  .dv-fields { display: flex; flex-direction: column; gap: 20px; }
+  .dv-field { display: flex; flex-direction: column; gap: 4px; }
+  .dv-field label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 20px; color: #1A1F2E; }
+  .dv-field input, .dv-field select { width: 100%; height: 40px; padding: 8px 12px 8px 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; font: 14px/20px var(--font); color: #454C63; }
+  .dv-field input::placeholder { color: #6A7389; opacity: 1; }
+  .dv-field input:focus, .dv-field select:focus { outline: none; border-color: #2557D4; box-shadow: 0 0 0 1px #2557D4; }
+  .dv-field input[aria-invalid="true"] { background: #FFF1F1; border-color: #FFB0B0; }   /* background/accent/soft/danger, outline/soft/danger */
+  .dv-field input[aria-invalid="true"]:focus { border-color: #FFB0B0; box-shadow: 0 0 0 1px #FFB0B0; }
+  .dv-field input[aria-invalid="true"]::placeholder { color: #D62020; }
+  .dv-field select { -webkit-appearance: none; appearance: none; padding-right: 36px; cursor: pointer;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M13.1337 4.96184C13.3494 4.74612 13.6991 4.74612 13.9148 4.96184C14.1305 5.17757 14.1305 5.52725 13.9148 5.74298L8.78135 10.8764C8.34991 11.3078 7.65053 11.3078 7.21909 10.8764L2.08562 5.74298C1.8699 5.52725 1.8699 5.17757 2.08562 4.96184C2.30135 4.74612 2.65103 4.74612 2.86676 4.96184L8.00022 10.0953L13.1337 4.96184Z' fill='%235C6480'/%3E%3C/svg%3E") no-repeat right 12px center; }
+  .dv-field input:disabled, .dv-field select:disabled { opacity: .6; cursor: default; }
+  .dv-err { margin: 0; font-size: 14px; line-height: 20px; color: #D62020; }
+  .dv-err:empty { display: none; }
+  .dv-preview { margin: 0; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }
+  .dv-preview:empty { display: none; }
+  .dv-fonts { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .dv-fonts-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .dv-fonts-head { position: relative; display: flex; align-items: center; gap: 4px; }
+  .dv-fonts-label { font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; }
+  .dv-info { width: 16px; height: 16px; padding: 0; border: 0; background: none; cursor: help; display: grid; place-items: center; border-radius: 4px; }
+  .dv-info svg, .dv-icobtn svg, .dv-fline svg { width: 16px; height: 16px; display: block; }
+  .dv-tip { position: absolute; left: 120px; bottom: calc(100% + 5px); transform: translateX(-50%); width: 160px; padding: 8px; border-radius: 8px; background: #1A1F2E; color: #FFFFFF; font-size: 14px; line-height: 20px; z-index: 5;   /* tooltip/default, centred on the info icon */
+    filter: drop-shadow(0 4px 3px rgba(18,18,23,.08)) drop-shadow(0 2px 2px rgba(18,18,23,.06)); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .12s ease-out; }
+  .dv-tip::after { content: ""; position: absolute; top: 100%; left: calc(50% - 1px); transform: translateX(-50%); border: 6px solid transparent; border-top: 7px solid #1A1F2E; border-bottom: 0; }
+  .dv-info:hover + .dv-tip, .dv-info:focus-visible + .dv-tip { opacity: 1; visibility: visible; }
+  @media (prefers-reduced-motion: reduce) { .dv-tip { transition: none; } }
+  .dv-fline { margin: 0; display: flex; gap: 4px; align-items: flex-start; font-size: 12px; line-height: 16px; color: #6A7389; overflow-wrap: anywhere; }
+  .dv-fline[hidden] { display: none; }
+  .dv-fline svg { flex: none; }
+  .dv-fline.err { color: #D62020; }
+  .dv-icobtn { flex: none; width: 24px; height: 24px; padding: 4px; border: 0; border-radius: 6px; background: none; cursor: pointer; display: grid; place-items: center; }
+  .dv-icobtn:hover:not(:disabled) { background: #F7F9FC; }
+  .dv-icobtn:disabled { opacity: .5; cursor: default; }
+  .dv-actions { display: flex; flex-direction: column; gap: 12px; }
+  .dv-fail { display: flex; gap: 4px; align-items: flex-start; margin: 0; font-size: 14px; line-height: 20px; color: #D62020; }
+  .dv-fail svg { flex: none; width: 16px; height: 16px; margin-top: 2px; }
+  .dv-fail[hidden] { display: none; }
+  /* Bottom progress while uploading (D7) */
+  .dv-bar { position: fixed; left: 0; right: 0; bottom: 0; background: #F7F9FC; z-index: 4; }
+  .dv-bar[hidden] { display: none; }
+  .dv-bar-row { display: flex; justify-content: space-between; padding: 8px; font-size: 14px; line-height: 20px; color: #6A7389; }
+  .dv-bar-track { height: 6px; background: #EEF2F8; }
+  .dv-bar-track span { display: block; height: 100%; width: 0; background: #2557D4; transition: width .2s ease-out; }
+  @media (prefers-reduced-motion: reduce) { .dv-bar-track span { transition: none; } }
+  /* Uploaded (D8-D10a) */
+  .dv-done { display: flex; flex-direction: column; gap: 20px; }
+  .dv-done-text { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; overflow-wrap: anywhere; }
+  .dv-done-text strong { font-weight: 500; }
+  .dv-banner { padding: 10px 12px; border: 1px solid #7ED9A8; border-radius: 8px; background: #E6F7EE; }   /* outline/soft/success, background/accent/soft/success */
+  .dv-banner a { font-size: 14px; line-height: 20px; color: #0C7F49; text-decoration: none; overflow-wrap: anywhere; }
+  .dv-banner a:hover { text-decoration: underline; text-underline-position: from-font; }
+  .dv-row { display: flex; gap: 12px; align-items: center; }
+  .dv-small { height: 32px; padding: 6px 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 1px rgba(18,18,23,.05); font: 500 14px/20px var(--font); color: #454C63; cursor: pointer; }
+  .dv-small:hover { background: #F7F9FC; }
+  .dv-ghost { height: 32px; padding: 0; border: 0; background: none; font: 500 14px/20px var(--font); color: #454C63; cursor: pointer; }
+  .dv-ghost:hover { text-decoration: underline; text-underline-position: from-font; }
   .order-gate form { display: flex; flex-direction: column; gap: 20px; }
   .order-gate h1 { margin: 0; font-size: 20px; line-height: 32px; font-weight: 500; color: #1A1F2E; }
   .order-gate .order-sub { margin: -12px 0 0; font-size: 14px; line-height: 20px; color: #6A7389; }
@@ -307,21 +379,21 @@
 
   /* Working-file confirm (Figma: "Is this your working file for …") */
   .work-confirm { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border-radius: 8px; background: #F0EBFC; }
-  .wc-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #4A2999; }
+  .wc-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #6035C4; }
   .wc-body { margin: 0; font-size: 12px; line-height: 16px; color: #454C63; }
   .wc-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
   .wc-actions .primary { height: 36px; border-radius: 8px; font: 500 14px/20px var(--font); }
-  .wc-no { height: 32px; border: 0; background: none; font: 500 13px/20px var(--font); color: #4A2999; cursor: pointer; border-radius: 6px; }
+  .wc-no { height: 32px; border: 0; background: none; font: 500 13px/20px var(--font); color: #6035C4; cursor: pointer; border-radius: 6px; }
   .wc-no:hover { background: rgba(71,60,144,.08); }
   /* Mapped-position swap button + popover */
   .map-pop { position: absolute; right: 20px; top: 40px; z-index: 20; min-width: 180px; padding: 4px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
   .map-opt { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 6px; font: 13px/18px var(--font); color: #1A1F2E; cursor: pointer; }
   .map-opt:hover { background: #F7F9FC; }
-  .map-opt.on { background: #EEF4FF; color: #1C43A5; font-weight: 500; }
+  .map-opt.on { background: #EEF4FF; color: #2557D4; font-weight: 500; }
   .map-used { font-size: 12px; color: #A3ADC2; }
 
   .work-note { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 8px; background: #F0EBFC; }
-  .work-note .wc-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #4A2999; }
+  .work-note .wc-title { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #6035C4; }
   .work-note .wc-body { margin: 0; font-size: 12px; line-height: 16px; color: #454C63; }
 
   /* ===== Order step (Figma: Add in / Order ID confirmation) ===== */
@@ -338,7 +410,7 @@
   .order-gate .og-field .field-label { font-size: 14px; line-height: 20px; color: #1A1F2E; }
   .order-gate .og-field input { height: 40px; padding: 8px; border: 1px solid #C2CCDB; border-radius: 8px; background: #FFFFFF; font-size: 14px; line-height: 20px; color: #1A1F2E; }
   .order-gate .og-field input::placeholder { color: #6A7389; }
-  .order-gate .og-btn { height: 40px; border-radius: 8px; background: #1C43A5; color: #FFFFFF; font: 500 14px/20px var(--font); box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .order-gate .og-btn { height: 40px; border-radius: 8px; background: #2557D4; color: #FFFFFF; font: 500 14px/20px var(--font); box-shadow: 0 1px 2px rgba(18,18,23,.05); }
   .og-band { margin-top: auto; height: 117px; line-height: 0; overflow: hidden; }
   .og-band-svg { width: 100%; height: 152px; display: block; }
   .og-wordmark { width: 79px; height: 13px; display: block; }
@@ -375,10 +447,10 @@
   .pos-pop[hidden] { display: none; }
   /* Alternative slide (Figma 478:15576, 479:15630): purple Tag with close, popup under the buttons on the right */
   .slide-hbtns { margin-left: auto; }
-  .alt-tag { margin-right: auto; display: inline-flex; align-items: center; min-width: 24px; padding: 4px; border: 1px solid #BDA6EE; border-radius: 999px; background: #F0EBFC; color: #4A2999; font-size: 12px; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .alt-tag { margin-right: auto; display: inline-flex; align-items: center; min-width: 24px; padding: 4px; border: 1px solid #BDA6EE; border-radius: 999px; background: #F0EBFC; color: #6035C4; font-size: 12px; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
   .alt-tag[hidden] { display: none; }
   .alt-tag .lbl { padding: 0 4px; }
-  .alt-x { display: grid; place-items: center; width: 16px; height: 16px; padding: 2px; border: 0; border-radius: 999px; background: none; color: #6035C4; cursor: pointer; }
+  .alt-x { display: grid; place-items: center; width: 16px; height: 16px; padding: 2px; border: 0; border-radius: 999px; background: none; color: #7D4FE0; cursor: pointer; }
   .alt-x svg { width: 12px; height: 12px; }
   .alt-x:hover { background: rgba(96,53,196,.12); }
   #altPop { left: auto; right: 0; }
@@ -393,7 +465,7 @@
   .pp-select select:focus-visible { outline: 2px solid #3D66F5; outline-offset: 1px; border-radius: 4px; }
   .pp-chev { position: absolute; right: 0; top: 0; width: 24px; height: 24px; pointer-events: none; }
   .pp-actions { display: flex; justify-content: flex-end; }
-  .pp-save { height: 20px; padding: 0 4px; border: 0; border-radius: 4px; background: none; font: 500 14px/20px var(--font); color: #1C43A5; cursor: pointer; }
+  .pp-save { height: 20px; padding: 0 4px; border: 0; border-radius: 4px; background: none; font: 500 14px/20px var(--font); color: #2557D4; cursor: pointer; }
   .pp-save:hover { text-decoration: underline; }
 
   .foot-link { color: #6A7389; text-decoration: none; }
@@ -407,19 +479,19 @@
   .cmp-toggle { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0; border: 0; background: none; font-family: var(--font); font-size: 12px; line-height: 16px; color: #6A7389; cursor: pointer; text-align: left; }
   .cmp-title { flex: none; font-weight: 500; }
   .cmp-file { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
-  .cmp-icon { flex: none; width: 16px; height: 16px; padding: 0; border: 0; background: none; color: #454C63; cursor: pointer; display: grid; place-items: center; border-radius: 4px; }
+  .cmp-icon { flex: none; width: 16px; height: 16px; padding: 0; border: 0; background: none; color: #5C6480; cursor: pointer; display: grid; place-items: center; border-radius: 4px; }
   .cmp-icon svg { width: 16px; height: 16px; }
   .cmp-icon:hover { background: #EEF2F8; }
   .cmp-toggle:focus-visible, .cmp-icon:focus-visible, .cmp-act:focus-visible, .cmp-btn:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
   /* Analyzing: background/brand/default with moving diagonal stripes (still under reduced motion) */
-  .cmp-progress { flex: none; height: 6px; background: #1C43A5 repeating-linear-gradient(-45deg, rgba(255,255,255,.28) 0 6px, transparent 6px 12px); background-size: 17px 17px; animation: cmp-stripes .6s linear infinite; }
+  .cmp-progress { flex: none; height: 6px; background: #2557D4 repeating-linear-gradient(-45deg, rgba(255,255,255,.28) 0 6px, transparent 6px 12px); background-size: 17px 17px; animation: cmp-stripes .6s linear infinite; }
   @keyframes cmp-stripes { to { background-position: 17px 0; } }
   @media (prefers-reduced-motion: reduce) { .cmp-progress { animation: none; } }
   .cmp-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding: 8px 20px; }
   .cmp-status { flex: none; display: flex; align-items: center; gap: 8px; min-height: 16px; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; }
   .cmp-status .cmp-dot { flex: none; width: 8px; height: 8px; border-radius: 999px; background: #E09600; }
-  .cmp-status.ok .cmp-dot { background: #0C7F49; }
-  .cmp-status.err .cmp-dot { background: #D62020; }
+  .cmp-status.ok .cmp-dot { background: #12A45F; }
+  .cmp-status.err .cmp-dot { background: #F23B3B; }
   .cmp-status.err .cmp-msg { color: #D62020; }
   .cmp-status .cmp-msg { flex: 1; min-width: 0; }
   .cmp-act { flex: none; padding: 0; border: 0; background: none; font-family: var(--font); font-size: 12px; line-height: 16px; font-weight: 600; color: #454C63; cursor: pointer; white-space: nowrap; }
@@ -459,7 +531,7 @@
   <section id="loginView" class="login" hidden>
     <div class="login-panel">
       <div class="login-head">
-      <svg class="logo" viewBox="0 0 88 88" fill="none" aria-hidden="true"><g clip-path="url(#pl-clip0)"><rect width="88" height="88" rx="20.1667" fill="url(#pl-paint0)"/><g filter="url(#pl-filter0)"><rect width="88" height="88" rx="20.1667" fill="url(#pl-paint1)"/></g><path d="M78.1028 40.7909L-2.54209 18.8863C-7.26592 17.6032 -12.1355 20.3925 -13.4186 25.1163L-25.3665 69.1045C-26.6496 73.8283 -23.8603 78.6978 -19.1365 79.9809L61.5084 101.886C66.2322 103.169 71.1018 100.379 72.3849 95.6555L84.3328 51.6674C85.6159 46.9435 82.8266 42.074 78.1028 40.7909Z" fill="white"/><path d="M33.4055 41.1147L0.414455 32.1537C-1.61004 31.6038 -3.69699 32.7992 -4.24688 34.8237C-4.79677 36.8482 -3.60137 38.9352 -1.57687 39.4851L31.4142 48.4461C33.4387 48.9959 35.5257 47.8005 36.0756 45.776C36.6254 43.7515 35.43 41.6646 33.4055 41.1147Z" fill="#B9CCFF"/><path d="M50.3874 59.5037L-3.9868 44.7347C-5.50517 44.3223 -7.07038 45.2188 -7.4828 46.7372C-7.89522 48.2556 -6.99866 49.8208 -5.48029 50.2332L48.8939 65.0022C50.4123 65.4146 51.9775 64.5181 52.3899 62.9997C52.8023 61.4813 51.9058 59.9161 50.3874 59.5037Z" fill="#DCE6FF"/><path d="M21.9066 62.9201L-6.80787 55.1208C-8.32624 54.7083 -9.89146 55.6049 -10.3039 57.1233C-10.7163 58.6416 -9.81974 60.2069 -8.30137 60.6193L20.4131 68.4186C21.9315 68.8311 23.4967 67.9345 23.9091 66.4161C24.3215 64.8978 23.425 63.3325 21.9066 62.9201Z" fill="#DCE6FF"/><path d="M21.9066 76.0128L-6.80787 68.2134C-8.32624 67.801 -9.89146 68.6975 -10.3039 70.2159C-10.7163 71.7343 -9.81974 73.2995 -8.30137 73.7119L20.4131 81.5113C21.9315 81.9237 23.4967 81.0271 23.9091 79.5088C24.3215 77.9904 23.425 76.4252 21.9066 76.0128Z" fill="#DCE6FF"/><path d="M62.2906 74.1794L33.5761 66.3801C32.0577 65.9677 30.4925 66.8642 30.0801 68.3826C29.6677 69.901 30.5642 71.4662 32.0826 71.8786L60.7971 79.678C62.3154 80.0904 63.8807 79.1938 64.2931 77.6754C64.7055 76.1571 63.8089 74.5919 62.2906 74.1794Z" fill="#DCE6FF"/><path d="M23.6675 9.36636C22.7033 20.5986 24.8286 24.3113 35.0026 29.1675C23.7704 28.2033 20.0577 30.3286 15.2015 40.5026C16.1656 29.2704 14.0403 25.5577 3.86637 20.7014C15.0986 21.6656 18.8113 19.5403 23.6675 9.36636Z" fill="url(#pl-paint2)"/><path d="M66.5 57C76.165 57 84 49.165 84 39.5C84 29.835 76.165 22 66.5 22C56.835 22 49 29.835 49 39.5C49 49.165 56.835 57 66.5 57Z" fill="#2BAF85"/><path d="M66.4288 52.5355C73.5386 52.5355 79.3021 46.7719 79.3021 39.6622C79.3021 32.5524 73.5386 26.7888 66.4288 26.7888C59.3191 26.7888 53.5555 32.5524 53.5555 39.6622C53.5555 46.7719 59.3191 52.5355 66.4288 52.5355Z" fill="#34D3A0"/><path d="M60.1998 40.0774L64.7677 44.6454L73.0731 35.0942" stroke="white" stroke-width="1.628" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="pl-filter0" x="0" y="0" width="88" height="88" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feTurbulence type="fractalNoise" baseFrequency="2.7272727489471436 2.7272727489471436" stitchTiles="stitch" numOctaves="3" result="noise" seed="6543"/><feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/><feComponentTransfer in="alphaNoise" result="coloredNoise1"><feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/></feComponentTransfer><feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/><feFlood flood-color="#00308D" result="color1Flood"/><feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/><feMerge result="pl-effect1"><feMergeNode in="shape"/><feMergeNode in="color1"/></feMerge></filter><linearGradient id="pl-paint0" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="pl-paint1" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="pl-paint2" x1="23.6675" y1="9.36636" x2="15.2015" y2="40.5026" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD028"/><stop offset="1" stop-color="#FFD749"/></linearGradient><clipPath id="pl-clip0"><rect width="88" height="88" rx="20.1667" fill="white"/></clipPath></defs></svg>
+      <svg class="logo" viewBox="0 0 88 88" fill="none" aria-hidden="true"><g clip-path="url(#pl-clip0)"><rect width="88" height="88" rx="20.1667" fill="url(#pl-paint0)"/><g filter="url(#pl-filter0)"><rect width="88" height="88" rx="20.1667" fill="url(#pl-paint1)"/></g><path d="M78.1028 40.7909L-2.54209 18.8863C-7.26592 17.6032 -12.1355 20.3925 -13.4186 25.1163L-25.3665 69.1045C-26.6496 73.8283 -23.8603 78.6978 -19.1365 79.9809L61.5084 101.886C66.2322 103.169 71.1018 100.379 72.3849 95.6555L84.3328 51.6674C85.6159 46.9435 82.8266 42.074 78.1028 40.7909Z" fill="white"/><path d="M33.4055 41.1147L0.414455 32.1537C-1.61004 31.6038 -3.69699 32.7992 -4.24688 34.8237C-4.79677 36.8482 -3.60137 38.9352 -1.57687 39.4851L31.4142 48.4461C33.4387 48.9959 35.5257 47.8005 36.0756 45.776C36.6254 43.7515 35.43 41.6646 33.4055 41.1147Z" fill="#B9CCFF"/><path d="M50.3874 59.5037L-3.9868 44.7347C-5.50517 44.3223 -7.07038 45.2188 -7.4828 46.7372C-7.89522 48.2556 -6.99866 49.8208 -5.48029 50.2332L48.8939 65.0022C50.4123 65.4146 51.9775 64.5181 52.3899 62.9997C52.8023 61.4813 51.9058 59.9161 50.3874 59.5037Z" fill="#DCE6FF"/><path d="M21.9066 62.9201L-6.80787 55.1208C-8.32624 54.7083 -9.89146 55.6049 -10.3039 57.1233C-10.7163 58.6416 -9.81974 60.2069 -8.30137 60.6193L20.4131 68.4186C21.9315 68.8311 23.4967 67.9345 23.9091 66.4161C24.3215 64.8978 23.425 63.3325 21.9066 62.9201Z" fill="#DCE6FF"/><path d="M21.9066 76.0128L-6.80787 68.2134C-8.32624 67.801 -9.89146 68.6975 -10.3039 70.2159C-10.7163 71.7343 -9.81974 73.2995 -8.30137 73.7119L20.4131 81.5113C21.9315 81.9237 23.4967 81.0271 23.9091 79.5088C24.3215 77.9904 23.425 76.4252 21.9066 76.0128Z" fill="#DCE6FF"/><path d="M62.2906 74.1794L33.5761 66.3801C32.0577 65.9677 30.4925 66.8642 30.0801 68.3826C29.6677 69.901 30.5642 71.4662 32.0826 71.8786L60.7971 79.678C62.3154 80.0904 63.8807 79.1938 64.2931 77.6754C64.7055 76.1571 63.8089 74.5919 62.2906 74.1794Z" fill="#DCE6FF"/><path d="M23.6675 9.36636C22.7033 20.5986 24.8286 24.3113 35.0026 29.1675C23.7704 28.2033 20.0577 30.3286 15.2015 40.5026C16.1656 29.2704 14.0403 25.5577 3.86637 20.7014C15.0986 21.6656 18.8113 19.5403 23.6675 9.36636Z" fill="url(#pl-paint2)"/><path d="M66.5 57C76.165 57 84 49.165 84 39.5C84 29.835 76.165 22 66.5 22C56.835 22 49 29.835 49 39.5C49 49.165 56.835 57 66.5 57Z" fill="#2BAF85"/><path d="M66.4288 52.5355C73.5386 52.5355 79.3021 46.7719 79.3021 39.6622C79.3021 32.5524 73.5386 26.7888 66.4288 26.7888C59.3191 26.7888 53.5555 32.5524 53.5555 39.6622C53.5555 46.7719 59.3191 52.5355 66.4288 52.5355Z" fill="#34D3A0"/><path d="M60.1998 40.0774L64.7677 44.6454L73.0731 35.0942" stroke="white" stroke-width="1.628" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="pl-filter0" x="0" y="0" width="88" height="88" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feTurbulence type="fractalNoise" baseFrequency="2.7272727489471436 2.7272727489471436" stitchTiles="stitch" numOctaves="3" result="noise" seed="6543"/><feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/><feComponentTransfer in="alphaNoise" result="coloredNoise1"><feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/></feComponentTransfer><feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/><feFlood flood-color="#00308D" result="color1Flood"/><feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/><feMerge result="pl-effect1"><feMergeNode in="shape"/><feMergeNode in="color1"/></feMerge></filter><linearGradient id="pl-paint0" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#2557D4"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="pl-paint1" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#2557D4"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="pl-paint2" x1="23.6675" y1="9.36636" x2="15.2015" y2="40.5026" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD028"/><stop offset="1" stop-color="#FFD749"/></linearGradient><clipPath id="pl-clip0"><rect width="88" height="88" rx="20.1667" fill="white"/></clipPath></defs></svg>
       <h1 id="loginTitle">Sign in to  <span class="login-word">Slideshot</span></h1>
       </div>
       <div class="login-form slack-block" id="slackBlock">
@@ -494,7 +566,7 @@
   <!-- Main -->
   <!-- First time a deck is opened: the designer types the order number (so it matches the DM's list) -->
   <section id="orderView" class="order-gate" hidden>
-    <div class="og-bar"><span class="og-logo"><svg class="og-mark" viewBox="0 0 88 88" fill="none" aria-hidden="true"><g clip-path="url(#po-clip0)"><rect width="88" height="88" rx="20.1667" fill="url(#po-paint0)"/><g filter="url(#po-filter0)"><rect width="88" height="88" rx="20.1667" fill="url(#po-paint1)"/></g><path d="M78.1028 40.7909L-2.54209 18.8863C-7.26592 17.6032 -12.1355 20.3925 -13.4186 25.1163L-25.3665 69.1045C-26.6496 73.8283 -23.8603 78.6978 -19.1365 79.9809L61.5084 101.886C66.2322 103.169 71.1018 100.379 72.3849 95.6555L84.3328 51.6674C85.6159 46.9435 82.8266 42.074 78.1028 40.7909Z" fill="white"/><path d="M33.4055 41.1147L0.414455 32.1537C-1.61004 31.6038 -3.69699 32.7992 -4.24688 34.8237C-4.79677 36.8482 -3.60137 38.9352 -1.57687 39.4851L31.4142 48.4461C33.4387 48.9959 35.5257 47.8005 36.0756 45.776C36.6254 43.7515 35.43 41.6646 33.4055 41.1147Z" fill="#B9CCFF"/><path d="M50.3874 59.5037L-3.9868 44.7347C-5.50517 44.3223 -7.07038 45.2188 -7.4828 46.7372C-7.89522 48.2556 -6.99866 49.8208 -5.48029 50.2332L48.8939 65.0022C50.4123 65.4146 51.9775 64.5181 52.3899 62.9997C52.8023 61.4813 51.9058 59.9161 50.3874 59.5037Z" fill="#DCE6FF"/><path d="M21.9066 62.9201L-6.80787 55.1208C-8.32624 54.7083 -9.89146 55.6049 -10.3039 57.1233C-10.7163 58.6416 -9.81974 60.2069 -8.30137 60.6193L20.4131 68.4186C21.9315 68.8311 23.4967 67.9345 23.9091 66.4161C24.3215 64.8978 23.425 63.3325 21.9066 62.9201Z" fill="#DCE6FF"/><path d="M21.9066 76.0128L-6.80787 68.2134C-8.32624 67.801 -9.89146 68.6975 -10.3039 70.2159C-10.7163 71.7343 -9.81974 73.2995 -8.30137 73.7119L20.4131 81.5113C21.9315 81.9237 23.4967 81.0271 23.9091 79.5088C24.3215 77.9904 23.425 76.4252 21.9066 76.0128Z" fill="#DCE6FF"/><path d="M62.2906 74.1794L33.5761 66.3801C32.0577 65.9677 30.4925 66.8642 30.0801 68.3826C29.6677 69.901 30.5642 71.4662 32.0826 71.8786L60.7971 79.678C62.3154 80.0904 63.8807 79.1938 64.2931 77.6754C64.7055 76.1571 63.8089 74.5919 62.2906 74.1794Z" fill="#DCE6FF"/><path d="M23.6675 9.36636C22.7033 20.5986 24.8286 24.3113 35.0026 29.1675C23.7704 28.2033 20.0577 30.3286 15.2015 40.5026C16.1656 29.2704 14.0403 25.5577 3.86637 20.7014C15.0986 21.6656 18.8113 19.5403 23.6675 9.36636Z" fill="url(#po-paint2)"/><path d="M66.5 57C76.165 57 84 49.165 84 39.5C84 29.835 76.165 22 66.5 22C56.835 22 49 29.835 49 39.5C49 49.165 56.835 57 66.5 57Z" fill="#2BAF85"/><path d="M66.4288 52.5355C73.5386 52.5355 79.3021 46.7719 79.3021 39.6622C79.3021 32.5524 73.5386 26.7888 66.4288 26.7888C59.3191 26.7888 53.5555 32.5524 53.5555 39.6622C53.5555 46.7719 59.3191 52.5355 66.4288 52.5355Z" fill="#34D3A0"/><path d="M60.1998 40.0774L64.7677 44.6454L73.0731 35.0942" stroke="white" stroke-width="1.628" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="po-filter0" x="0" y="0" width="88" height="88" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feTurbulence type="fractalNoise" baseFrequency="2.7272727489471436 2.7272727489471436" stitchTiles="stitch" numOctaves="3" result="noise" seed="6543"/><feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/><feComponentTransfer in="alphaNoise" result="coloredNoise1"><feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/></feComponentTransfer><feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/><feFlood flood-color="#00308D" result="color1Flood"/><feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/><feMerge result="po-effect1"><feMergeNode in="shape"/><feMergeNode in="color1"/></feMerge></filter><linearGradient id="po-paint0" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="po-paint1" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#1C43A5"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="po-paint2" x1="23.6675" y1="9.36636" x2="15.2015" y2="40.5026" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD028"/><stop offset="1" stop-color="#FFD749"/></linearGradient><clipPath id="po-clip0"><rect width="88" height="88" rx="20.1667" fill="white"/></clipPath></defs></svg><svg class="og-wordmark" viewBox="0 0 79 13" fill="none" role="img" aria-label="Slideshot"><path d="M8.57589 2.7037C7.43456 3.3117 6.39989 4.12237 5.47189 5.1357C5.58922 5.50904 5.75989 5.90904 5.98389 6.3357C6.20789 6.7517 6.44256 7.1997 6.68789 7.6797C7.33856 8.8957 7.80256 9.9357 8.07989 10.7997L6.73589 12.9437C4.74122 12.421 2.97056 11.6904 1.42389 10.7517C0.943891 10.453 0.469224 10.1437 -0.000109434 9.8237L1.07189 7.8717C2.69322 8.9917 4.17589 9.81304 5.51989 10.3357C5.26389 9.70637 4.87989 8.94904 4.36789 8.0637C3.85589 7.1677 3.48256 6.4957 3.24789 6.0477C3.02389 5.58904 2.84789 5.1357 2.71989 4.6877C3.38122 3.86637 4.22389 3.0557 5.24789 2.2557C6.18656 1.5197 7.08256 0.949036 7.93589 0.543702L11.0239 2.6077C10.8212 3.51437 10.3572 4.6397 9.63189 5.9837C9.45056 6.32504 9.29056 6.59704 9.15189 6.7997L7.23189 5.6957C7.65856 5.01304 8.10656 4.0157 8.57589 2.7037ZM9.87677 10.6877C10.3354 9.03437 11.1514 7.16237 12.3248 5.0717C13.1034 3.68504 13.9781 2.45304 14.9488 1.3757C15.4394 0.831703 15.9461 0.373036 16.4688 -0.000297546L19.1728 1.9037C18.8101 4.8157 17.4874 6.86904 15.2048 8.0637C14.4688 8.4477 13.6474 8.7517 12.7408 8.9757C12.4848 9.60504 12.2874 10.1437 12.1488 10.5917C13.4714 10.4104 14.5008 10.2077 15.2368 9.9837C16.6768 9.55704 17.8768 9.0237 18.8368 8.3837L19.1728 9.9997C17.6048 11.0877 15.8234 11.845 13.8288 12.2717C13.1674 12.4104 12.5114 12.4957 11.8608 12.5277L9.87677 10.6877ZM13.6688 6.9757C14.6394 6.51704 15.4128 5.8557 15.9888 4.9917C16.5648 4.1277 16.9488 3.11437 17.1408 1.9517C16.2981 2.70904 15.3968 3.91437 14.4368 5.5677C14.1594 6.03704 13.9034 6.50637 13.6688 6.9757ZM22.6478 3.0397C22.4024 2.7837 22.2798 2.47437 22.2798 2.1117C22.2798 1.74904 22.4024 1.44504 22.6478 1.1997C22.9038 0.943702 23.2131 0.815702 23.5758 0.815702C23.9384 0.815702 24.2424 0.943702 24.4878 1.1997C24.7438 1.44504 24.8718 1.74904 24.8718 2.1117C24.8718 2.47437 24.7438 2.7837 24.4878 3.0397C24.2424 3.28504 23.9384 3.4077 23.5758 3.4077C23.2131 3.4077 22.9038 3.28504 22.6478 3.0397ZM20.2318 10.0797C21.3198 9.74904 22.6264 9.1837 24.1518 8.3837L24.4878 9.9997C23.4531 10.6717 22.2051 11.3277 20.7438 11.9677C20.2531 12.181 19.7731 12.3677 19.3038 12.5277L17.4638 10.8317C17.9864 9.40237 18.9251 7.62104 20.2798 5.4877C20.6851 4.8477 21.0798 4.2877 21.4638 3.8077L23.0478 4.9757C22.2691 6.04237 21.5118 7.3277 20.7758 8.8317C20.5624 9.2797 20.3811 9.6957 20.2318 10.0797ZM28.4243 11.0877C27.5816 11.749 26.6109 12.229 25.5123 12.5277L23.5283 10.6877C23.5283 9.84504 23.6563 9.01837 23.9123 8.2077C24.1683 7.39704 24.5469 6.66637 25.0483 6.0157C25.5496 5.36504 26.1683 4.82637 26.9043 4.3997C27.6509 3.96237 28.5096 3.70104 29.4803 3.6157L30.3603 4.9597C31.1923 3.34904 32.0669 1.9197 32.9843 0.671702L34.5363 2.0157C33.4803 3.3597 32.3869 5.26904 31.2563 7.7437C30.9149 8.49037 30.6109 9.22104 30.3443 9.9357C31.4856 9.59437 32.6803 9.07704 33.9283 8.3837L34.2803 9.9997C33.5549 10.5437 32.3816 11.2104 30.7603 11.9997C30.3016 12.213 29.9336 12.3677 29.6563 12.4637L28.4243 11.0877ZM25.7683 10.2237C26.9096 9.91437 27.9496 9.15704 28.8883 7.9517C29.1656 7.3437 29.3736 6.58637 29.5123 5.6797C28.4136 5.78637 27.5123 6.2717 26.8083 7.1357C26.1149 7.98904 25.7683 9.01837 25.7683 10.2237ZM37.0695 9.0077C36.5682 9.0077 36.1735 8.97037 35.8855 8.8957C35.7148 9.3117 35.6082 9.82904 35.5655 10.4477C37.4002 10.341 39.1708 9.93037 40.8775 9.2157C41.4535 8.98104 42.0082 8.7037 42.5415 8.3837L42.8775 9.9997C41.8855 10.629 40.7122 11.1837 39.3575 11.6637C37.9175 12.1757 36.5575 12.4637 35.2775 12.5277L33.2935 10.6877C33.2935 9.2157 33.6935 7.8717 34.4935 6.6557C35.0695 5.81304 35.7202 5.14637 36.4455 4.6557C37.1815 4.16504 37.8855 3.81304 38.5575 3.5997L41.2615 5.8397C40.9948 6.94904 40.4882 7.75437 39.7415 8.2557C38.9948 8.75704 38.1042 9.0077 37.0695 9.0077ZM36.5575 7.4557C37.1762 7.4557 37.7148 7.28504 38.1735 6.9437C38.7068 6.53837 38.9735 5.97304 38.9735 5.2477C37.8962 5.83437 37.0908 6.57037 36.5575 7.4557ZM44.6229 12.6557C43.8549 12.1437 43.1829 11.6584 42.6069 11.1997C42.0842 10.741 41.5136 10.1917 40.8949 9.5517L42.5429 8.3837C43.2896 9.16237 43.8389 9.68504 44.1909 9.9517C44.5429 10.2077 44.8576 10.4264 45.1349 10.6077C45.4336 10.5757 45.9189 10.4744 46.5909 10.3037L43.9349 7.7917C43.6896 7.5357 43.4976 7.30637 43.3589 7.1037C43.7642 6.37837 44.4629 5.62637 45.4549 4.8477C46.3829 4.12237 47.2682 3.63704 48.1109 3.3917L50.6709 5.4557C50.4896 6.18104 50.0629 7.14104 49.3909 8.3357L47.6789 7.0557C47.9029 6.72504 48.1002 6.3677 48.2709 5.9837C48.4416 5.5997 48.5429 5.3437 48.5749 5.2157C47.9776 5.4397 47.3642 5.84504 46.7349 6.4317C46.5109 6.64504 46.3082 6.8637 46.1269 7.0877C46.3296 7.39704 46.6389 7.72237 47.0549 8.0637C47.7589 8.6717 48.3509 9.19437 48.8309 9.6317C50.0149 9.22637 51.0176 8.81037 51.8389 8.3837L52.1749 9.9997C51.3216 10.6077 50.1216 11.173 48.5749 11.6957C47.1456 12.1757 45.8282 12.4957 44.6229 12.6557ZM54.7678 6.5117C55.7598 5.75437 56.9011 5.03437 58.1918 4.3517L60.1278 5.8717C59.7758 7.38637 59.1571 8.7517 58.2718 9.9677C59.3384 9.60504 60.5491 9.07704 61.9038 8.3837L62.2398 9.9997C61.8024 10.2877 61.1358 10.6557 60.2398 11.1037C58.7038 11.861 57.6424 12.3357 57.0558 12.5277L55.0718 11.1197C55.7118 10.3517 56.2451 9.59437 56.6718 8.8477C57.1091 8.09037 57.3918 7.42904 57.5198 6.8637C56.1224 7.55704 55.1998 8.0477 54.7518 8.3357C54.3144 8.6237 53.9198 8.89037 53.5678 9.1357C53.0451 10.4264 52.6451 11.557 52.3678 12.5277L50.4638 11.2957C50.8158 10.0904 51.5891 8.2877 52.7838 5.8877C53.8718 3.69037 54.8478 1.9517 55.7118 0.671702L57.3438 1.9037C56.4478 3.35437 55.5891 4.89037 54.7678 6.5117ZM67.5983 10.2877C66.5743 11.4717 65.2249 12.2184 63.5503 12.5277L61.2783 10.6237C61.2783 9.5997 61.4809 8.58637 61.8863 7.5837C62.3983 6.32504 63.2409 5.30637 64.4143 4.5277C65.2249 3.9837 66.1049 3.6477 67.0543 3.5197L69.5983 5.6957C69.4169 6.8477 69.1076 7.85037 68.6703 8.7037C69.4383 8.66104 70.3076 8.55437 71.2783 8.3837L71.6303 9.9997C70.2436 10.5757 69.1556 10.965 68.3663 11.1677L67.5983 10.2877ZM63.4223 10.3517C64.6383 10.0744 65.6516 9.32237 66.4623 8.0957C66.8036 7.57304 67.0489 7.0717 67.1983 6.5917C67.3476 6.1117 67.4276 5.7277 67.4383 5.4397C66.5743 5.55704 65.7529 6.0157 64.9743 6.8157C64.0036 7.8077 63.4863 8.98637 63.4223 10.3517ZM75.1813 5.0237C76.1733 4.91704 76.9039 4.7997 77.3733 4.6717L77.7413 6.3997C76.8026 6.63437 75.6079 6.77304 74.1573 6.8157C73.5066 8.0957 73.0213 9.25837 72.7013 10.3037C73.5653 10.1544 74.4879 9.94104 75.4693 9.6637C76.4506 9.3757 77.4373 8.94904 78.4293 8.3837L78.7653 9.9997C77.7946 10.6717 76.6853 11.2477 75.4373 11.7277C74.2106 12.197 73.1226 12.4637 72.1733 12.5277L70.1893 10.6877C70.8186 8.59704 71.8906 6.39437 73.4053 4.0797C73.8746 3.35437 74.3759 2.6557 74.9093 1.9837L76.3333 3.2957C75.9173 3.8717 75.5333 4.4477 75.1813 5.0237Z" fill="#18202B"/></svg></span></div>
+    <div class="og-bar"><span class="og-logo"><svg class="og-mark" viewBox="0 0 88 88" fill="none" aria-hidden="true"><g clip-path="url(#po-clip0)"><rect width="88" height="88" rx="20.1667" fill="url(#po-paint0)"/><g filter="url(#po-filter0)"><rect width="88" height="88" rx="20.1667" fill="url(#po-paint1)"/></g><path d="M78.1028 40.7909L-2.54209 18.8863C-7.26592 17.6032 -12.1355 20.3925 -13.4186 25.1163L-25.3665 69.1045C-26.6496 73.8283 -23.8603 78.6978 -19.1365 79.9809L61.5084 101.886C66.2322 103.169 71.1018 100.379 72.3849 95.6555L84.3328 51.6674C85.6159 46.9435 82.8266 42.074 78.1028 40.7909Z" fill="white"/><path d="M33.4055 41.1147L0.414455 32.1537C-1.61004 31.6038 -3.69699 32.7992 -4.24688 34.8237C-4.79677 36.8482 -3.60137 38.9352 -1.57687 39.4851L31.4142 48.4461C33.4387 48.9959 35.5257 47.8005 36.0756 45.776C36.6254 43.7515 35.43 41.6646 33.4055 41.1147Z" fill="#B9CCFF"/><path d="M50.3874 59.5037L-3.9868 44.7347C-5.50517 44.3223 -7.07038 45.2188 -7.4828 46.7372C-7.89522 48.2556 -6.99866 49.8208 -5.48029 50.2332L48.8939 65.0022C50.4123 65.4146 51.9775 64.5181 52.3899 62.9997C52.8023 61.4813 51.9058 59.9161 50.3874 59.5037Z" fill="#DCE6FF"/><path d="M21.9066 62.9201L-6.80787 55.1208C-8.32624 54.7083 -9.89146 55.6049 -10.3039 57.1233C-10.7163 58.6416 -9.81974 60.2069 -8.30137 60.6193L20.4131 68.4186C21.9315 68.8311 23.4967 67.9345 23.9091 66.4161C24.3215 64.8978 23.425 63.3325 21.9066 62.9201Z" fill="#DCE6FF"/><path d="M21.9066 76.0128L-6.80787 68.2134C-8.32624 67.801 -9.89146 68.6975 -10.3039 70.2159C-10.7163 71.7343 -9.81974 73.2995 -8.30137 73.7119L20.4131 81.5113C21.9315 81.9237 23.4967 81.0271 23.9091 79.5088C24.3215 77.9904 23.425 76.4252 21.9066 76.0128Z" fill="#DCE6FF"/><path d="M62.2906 74.1794L33.5761 66.3801C32.0577 65.9677 30.4925 66.8642 30.0801 68.3826C29.6677 69.901 30.5642 71.4662 32.0826 71.8786L60.7971 79.678C62.3154 80.0904 63.8807 79.1938 64.2931 77.6754C64.7055 76.1571 63.8089 74.5919 62.2906 74.1794Z" fill="#DCE6FF"/><path d="M23.6675 9.36636C22.7033 20.5986 24.8286 24.3113 35.0026 29.1675C23.7704 28.2033 20.0577 30.3286 15.2015 40.5026C16.1656 29.2704 14.0403 25.5577 3.86637 20.7014C15.0986 21.6656 18.8113 19.5403 23.6675 9.36636Z" fill="url(#po-paint2)"/><path d="M66.5 57C76.165 57 84 49.165 84 39.5C84 29.835 76.165 22 66.5 22C56.835 22 49 29.835 49 39.5C49 49.165 56.835 57 66.5 57Z" fill="#2BAF85"/><path d="M66.4288 52.5355C73.5386 52.5355 79.3021 46.7719 79.3021 39.6622C79.3021 32.5524 73.5386 26.7888 66.4288 26.7888C59.3191 26.7888 53.5555 32.5524 53.5555 39.6622C53.5555 46.7719 59.3191 52.5355 66.4288 52.5355Z" fill="#34D3A0"/><path d="M60.1998 40.0774L64.7677 44.6454L73.0731 35.0942" stroke="white" stroke-width="1.628" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="po-filter0" x="0" y="0" width="88" height="88" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feTurbulence type="fractalNoise" baseFrequency="2.7272727489471436 2.7272727489471436" stitchTiles="stitch" numOctaves="3" result="noise" seed="6543"/><feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/><feComponentTransfer in="alphaNoise" result="coloredNoise1"><feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/></feComponentTransfer><feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/><feFlood flood-color="#00308D" result="color1Flood"/><feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/><feMerge result="po-effect1"><feMergeNode in="shape"/><feMergeNode in="color1"/></feMerge></filter><linearGradient id="po-paint0" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#2557D4"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="po-paint1" x1="65.45" y1="21.2667" x2="12.65" y2="73.5167" gradientUnits="userSpaceOnUse"><stop stop-color="#2557D4"/><stop offset="1" stop-color="#0B1A3F"/></linearGradient><linearGradient id="po-paint2" x1="23.6675" y1="9.36636" x2="15.2015" y2="40.5026" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD028"/><stop offset="1" stop-color="#FFD749"/></linearGradient><clipPath id="po-clip0"><rect width="88" height="88" rx="20.1667" fill="white"/></clipPath></defs></svg><svg class="og-wordmark" viewBox="0 0 79 13" fill="none" role="img" aria-label="Slideshot"><path d="M8.57589 2.7037C7.43456 3.3117 6.39989 4.12237 5.47189 5.1357C5.58922 5.50904 5.75989 5.90904 5.98389 6.3357C6.20789 6.7517 6.44256 7.1997 6.68789 7.6797C7.33856 8.8957 7.80256 9.9357 8.07989 10.7997L6.73589 12.9437C4.74122 12.421 2.97056 11.6904 1.42389 10.7517C0.943891 10.453 0.469224 10.1437 -0.000109434 9.8237L1.07189 7.8717C2.69322 8.9917 4.17589 9.81304 5.51989 10.3357C5.26389 9.70637 4.87989 8.94904 4.36789 8.0637C3.85589 7.1677 3.48256 6.4957 3.24789 6.0477C3.02389 5.58904 2.84789 5.1357 2.71989 4.6877C3.38122 3.86637 4.22389 3.0557 5.24789 2.2557C6.18656 1.5197 7.08256 0.949036 7.93589 0.543702L11.0239 2.6077C10.8212 3.51437 10.3572 4.6397 9.63189 5.9837C9.45056 6.32504 9.29056 6.59704 9.15189 6.7997L7.23189 5.6957C7.65856 5.01304 8.10656 4.0157 8.57589 2.7037ZM9.87677 10.6877C10.3354 9.03437 11.1514 7.16237 12.3248 5.0717C13.1034 3.68504 13.9781 2.45304 14.9488 1.3757C15.4394 0.831703 15.9461 0.373036 16.4688 -0.000297546L19.1728 1.9037C18.8101 4.8157 17.4874 6.86904 15.2048 8.0637C14.4688 8.4477 13.6474 8.7517 12.7408 8.9757C12.4848 9.60504 12.2874 10.1437 12.1488 10.5917C13.4714 10.4104 14.5008 10.2077 15.2368 9.9837C16.6768 9.55704 17.8768 9.0237 18.8368 8.3837L19.1728 9.9997C17.6048 11.0877 15.8234 11.845 13.8288 12.2717C13.1674 12.4104 12.5114 12.4957 11.8608 12.5277L9.87677 10.6877ZM13.6688 6.9757C14.6394 6.51704 15.4128 5.8557 15.9888 4.9917C16.5648 4.1277 16.9488 3.11437 17.1408 1.9517C16.2981 2.70904 15.3968 3.91437 14.4368 5.5677C14.1594 6.03704 13.9034 6.50637 13.6688 6.9757ZM22.6478 3.0397C22.4024 2.7837 22.2798 2.47437 22.2798 2.1117C22.2798 1.74904 22.4024 1.44504 22.6478 1.1997C22.9038 0.943702 23.2131 0.815702 23.5758 0.815702C23.9384 0.815702 24.2424 0.943702 24.4878 1.1997C24.7438 1.44504 24.8718 1.74904 24.8718 2.1117C24.8718 2.47437 24.7438 2.7837 24.4878 3.0397C24.2424 3.28504 23.9384 3.4077 23.5758 3.4077C23.2131 3.4077 22.9038 3.28504 22.6478 3.0397ZM20.2318 10.0797C21.3198 9.74904 22.6264 9.1837 24.1518 8.3837L24.4878 9.9997C23.4531 10.6717 22.2051 11.3277 20.7438 11.9677C20.2531 12.181 19.7731 12.3677 19.3038 12.5277L17.4638 10.8317C17.9864 9.40237 18.9251 7.62104 20.2798 5.4877C20.6851 4.8477 21.0798 4.2877 21.4638 3.8077L23.0478 4.9757C22.2691 6.04237 21.5118 7.3277 20.7758 8.8317C20.5624 9.2797 20.3811 9.6957 20.2318 10.0797ZM28.4243 11.0877C27.5816 11.749 26.6109 12.229 25.5123 12.5277L23.5283 10.6877C23.5283 9.84504 23.6563 9.01837 23.9123 8.2077C24.1683 7.39704 24.5469 6.66637 25.0483 6.0157C25.5496 5.36504 26.1683 4.82637 26.9043 4.3997C27.6509 3.96237 28.5096 3.70104 29.4803 3.6157L30.3603 4.9597C31.1923 3.34904 32.0669 1.9197 32.9843 0.671702L34.5363 2.0157C33.4803 3.3597 32.3869 5.26904 31.2563 7.7437C30.9149 8.49037 30.6109 9.22104 30.3443 9.9357C31.4856 9.59437 32.6803 9.07704 33.9283 8.3837L34.2803 9.9997C33.5549 10.5437 32.3816 11.2104 30.7603 11.9997C30.3016 12.213 29.9336 12.3677 29.6563 12.4637L28.4243 11.0877ZM25.7683 10.2237C26.9096 9.91437 27.9496 9.15704 28.8883 7.9517C29.1656 7.3437 29.3736 6.58637 29.5123 5.6797C28.4136 5.78637 27.5123 6.2717 26.8083 7.1357C26.1149 7.98904 25.7683 9.01837 25.7683 10.2237ZM37.0695 9.0077C36.5682 9.0077 36.1735 8.97037 35.8855 8.8957C35.7148 9.3117 35.6082 9.82904 35.5655 10.4477C37.4002 10.341 39.1708 9.93037 40.8775 9.2157C41.4535 8.98104 42.0082 8.7037 42.5415 8.3837L42.8775 9.9997C41.8855 10.629 40.7122 11.1837 39.3575 11.6637C37.9175 12.1757 36.5575 12.4637 35.2775 12.5277L33.2935 10.6877C33.2935 9.2157 33.6935 7.8717 34.4935 6.6557C35.0695 5.81304 35.7202 5.14637 36.4455 4.6557C37.1815 4.16504 37.8855 3.81304 38.5575 3.5997L41.2615 5.8397C40.9948 6.94904 40.4882 7.75437 39.7415 8.2557C38.9948 8.75704 38.1042 9.0077 37.0695 9.0077ZM36.5575 7.4557C37.1762 7.4557 37.7148 7.28504 38.1735 6.9437C38.7068 6.53837 38.9735 5.97304 38.9735 5.2477C37.8962 5.83437 37.0908 6.57037 36.5575 7.4557ZM44.6229 12.6557C43.8549 12.1437 43.1829 11.6584 42.6069 11.1997C42.0842 10.741 41.5136 10.1917 40.8949 9.5517L42.5429 8.3837C43.2896 9.16237 43.8389 9.68504 44.1909 9.9517C44.5429 10.2077 44.8576 10.4264 45.1349 10.6077C45.4336 10.5757 45.9189 10.4744 46.5909 10.3037L43.9349 7.7917C43.6896 7.5357 43.4976 7.30637 43.3589 7.1037C43.7642 6.37837 44.4629 5.62637 45.4549 4.8477C46.3829 4.12237 47.2682 3.63704 48.1109 3.3917L50.6709 5.4557C50.4896 6.18104 50.0629 7.14104 49.3909 8.3357L47.6789 7.0557C47.9029 6.72504 48.1002 6.3677 48.2709 5.9837C48.4416 5.5997 48.5429 5.3437 48.5749 5.2157C47.9776 5.4397 47.3642 5.84504 46.7349 6.4317C46.5109 6.64504 46.3082 6.8637 46.1269 7.0877C46.3296 7.39704 46.6389 7.72237 47.0549 8.0637C47.7589 8.6717 48.3509 9.19437 48.8309 9.6317C50.0149 9.22637 51.0176 8.81037 51.8389 8.3837L52.1749 9.9997C51.3216 10.6077 50.1216 11.173 48.5749 11.6957C47.1456 12.1757 45.8282 12.4957 44.6229 12.6557ZM54.7678 6.5117C55.7598 5.75437 56.9011 5.03437 58.1918 4.3517L60.1278 5.8717C59.7758 7.38637 59.1571 8.7517 58.2718 9.9677C59.3384 9.60504 60.5491 9.07704 61.9038 8.3837L62.2398 9.9997C61.8024 10.2877 61.1358 10.6557 60.2398 11.1037C58.7038 11.861 57.6424 12.3357 57.0558 12.5277L55.0718 11.1197C55.7118 10.3517 56.2451 9.59437 56.6718 8.8477C57.1091 8.09037 57.3918 7.42904 57.5198 6.8637C56.1224 7.55704 55.1998 8.0477 54.7518 8.3357C54.3144 8.6237 53.9198 8.89037 53.5678 9.1357C53.0451 10.4264 52.6451 11.557 52.3678 12.5277L50.4638 11.2957C50.8158 10.0904 51.5891 8.2877 52.7838 5.8877C53.8718 3.69037 54.8478 1.9517 55.7118 0.671702L57.3438 1.9037C56.4478 3.35437 55.5891 4.89037 54.7678 6.5117ZM67.5983 10.2877C66.5743 11.4717 65.2249 12.2184 63.5503 12.5277L61.2783 10.6237C61.2783 9.5997 61.4809 8.58637 61.8863 7.5837C62.3983 6.32504 63.2409 5.30637 64.4143 4.5277C65.2249 3.9837 66.1049 3.6477 67.0543 3.5197L69.5983 5.6957C69.4169 6.8477 69.1076 7.85037 68.6703 8.7037C69.4383 8.66104 70.3076 8.55437 71.2783 8.3837L71.6303 9.9997C70.2436 10.5757 69.1556 10.965 68.3663 11.1677L67.5983 10.2877ZM63.4223 10.3517C64.6383 10.0744 65.6516 9.32237 66.4623 8.0957C66.8036 7.57304 67.0489 7.0717 67.1983 6.5917C67.3476 6.1117 67.4276 5.7277 67.4383 5.4397C66.5743 5.55704 65.7529 6.0157 64.9743 6.8157C64.0036 7.8077 63.4863 8.98637 63.4223 10.3517ZM75.1813 5.0237C76.1733 4.91704 76.9039 4.7997 77.3733 4.6717L77.7413 6.3997C76.8026 6.63437 75.6079 6.77304 74.1573 6.8157C73.5066 8.0957 73.0213 9.25837 72.7013 10.3037C73.5653 10.1544 74.4879 9.94104 75.4693 9.6637C76.4506 9.3757 77.4373 8.94904 78.4293 8.3837L78.7653 9.9997C77.7946 10.6717 76.6853 11.2477 75.4373 11.7277C74.2106 12.197 73.1226 12.4637 72.1733 12.5277L70.1893 10.6877C70.8186 8.59704 71.8906 6.39437 73.4053 4.0797C73.8746 3.35437 74.3759 2.6557 74.9093 1.9837L76.3333 3.2957C75.9173 3.8717 75.5333 4.4477 75.1813 5.0237Z" fill="#18202B"/></svg></span></div>
     <form id="orderForm" class="og-body" novalidate>
       <div class="og-text">
         <h1>Which order is this?</h1>
@@ -551,34 +623,45 @@
 </svg></div>
     <footer class="foot og-foot"><button type="button" class="foot-top" aria-expanded="false"><span class="foot-name"></span><span class="foot-team"></span></button><div class="foot-more" hidden><span class="foot-dash"></span><span class="foot-r"><span class="appVersion"></span><span class="foot-dot" aria-hidden="true"></span><button type="button" class="foot-signout">Sign out</button></span></div></footer>
   </section>
-  <section id="compileView" class="order-gate compile-gate" hidden aria-labelledby="cpTitle">
-    <div class="og-body">
-      <div class="og-text">
-        <h1 id="cpTitle">Compile order</h1>
-        <p class="order-sub" id="cpSub">All slides of this order go into this file, in the order of the review page.</p>
+  <section id="compileView" class="compile-gate" hidden aria-labelledby="cpOrder">
+    <header class="cp-head"><p class="cp-kicker">Compile order</p><h1 class="cp-order" id="cpOrder"></h1></header>
+    <div class="cp-body">
+      <div class="cp-flow" id="cpFlow">
+        <div class="cp-steps" id="cpSteps" role="status" aria-live="polite"></div>
+        <button id="cpBtn" type="button" hidden></button>
       </div>
-      <p class="cp-state" id="cpState" role="status" aria-live="polite"></p>
-      <ul class="cp-list" id="cpList" hidden></ul>
-      <div class="cp-progress" id="cpProgress" hidden><div class="cfile-bar"><span id="cpFill"></span></div></div>
-      <button id="cpBtn" class="primary og-btn" type="button" hidden></button>
-      <button id="cpRecheck" class="secondary cp-recheck" type="button" hidden>Check again</button>
       <div class="dv" id="dv" hidden>
-        <h2 class="dv-title">Final file on Google Drive</h2>
-        <label class="field"><span class="field-label">Stage</span><select id="dvStage"></select></label>
-        <label class="field"><span class="field-label">File name</span><input id="dvName" autocomplete="off" placeholder="e.g. Kingfish Group IS" aria-describedby="dvNameError"><span class="field-error" id="dvNameError" aria-live="polite"></span></label>
-        <p class="dv-preview" id="dvPreview"></p>
-        <div class="dv-fonts">
-          <p class="dv-label">Embedded fonts</p>
-          <p class="dv-hint" id="dvFontsText"></p>
-          <div class="dv-fontrow"><button id="dvFontsPick" class="secondary dv-copy" type="button">Choose customer's original</button><button id="dvFontsRemove" class="cfile-retry" type="button" hidden>Remove</button></div>
+        <h2 class="dv-title">Get it ready for Google Drive</h2>
+        <div class="dv-fields">
+          <div class="dv-field">
+            <label>File name<input id="dvName" autocomplete="off" placeholder="e.g. Business Overview" aria-describedby="dvNameError dvPreview"></label>
+            <p class="dv-err" id="dvNameError" aria-live="polite"></p>
+            <p class="dv-preview" id="dvPreview"></p>
+          </div>
+          <div class="dv-field"><label>Stage<select id="dvStage"></select></label></div>
+          <div class="dv-fonts">
+            <div class="dv-fonts-main">
+              <div class="dv-fonts-head"><span class="dv-fonts-label">Embedded fonts</span><button type="button" class="dv-info" id="dvInfo" aria-label="About embedded fonts" aria-describedby="dvTip"></button><span class="dv-tip" id="dvTip" role="tooltip">If the original file has embedded fonts, select it here. Slideshot will extract and add them to this file.</span></div>
+              <p class="dv-fline" id="dvFontsLine" hidden></p>
+            </div>
+            <button type="button" class="dv-icobtn" id="dvFontsBtn"></button>
+          </div>
           <input type="file" id="dvFontsFile" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
         </div>
-        <button id="dvBtn" class="primary og-btn" type="button">Upload to Drive</button>
-        <p class="cp-state" id="dvState" role="status" aria-live="polite"></p>
-        <div class="cp-progress" id="dvProgress" hidden><div class="cfile-bar"><span id="dvFill"></span></div></div>
-        <div class="dv-link" id="dvLinkRow" hidden><a id="dvLink" target="_blank" rel="noopener"></a><button id="dvCopy" class="secondary dv-copy" type="button">Copy link</button></div>
+        <div class="dv-actions">
+          <button id="dvBtn" class="cp-primary" type="button">Upload to Drive</button>
+          <button id="dvCancel" class="cp-secondary" type="button" hidden>Cancel</button>
+        </div>
+        <p class="dv-fail" id="dvFail" role="alert" hidden></p>
+      </div>
+      <div class="dv-done" id="dvDone" hidden>
+        <h2 class="dv-title" id="dvDoneTitle" tabindex="-1">🎉 All done!</h2>
+        <p class="dv-done-text" id="dvDoneText"></p>
+        <div class="dv-banner"><a id="dvLink" target="_blank" rel="noopener"></a></div>
+        <div class="dv-row"><button id="dvCopy" class="dv-small" type="button">Copy link</button><button id="dvReplace" class="dv-ghost" type="button">Replace file</button></div>
       </div>
     </div>
+    <div class="dv-bar" id="dvBar" hidden><div class="dv-bar-row"><span id="dvBarText"></span><span id="dvBarPct"></span></div><div class="dv-bar-track"><span id="dvBarFill"></span></div></div>
   </section>
   <section id="appView" hidden>
     <div class="container">
@@ -615,14 +698,14 @@
           </div>
           <div class="pos-pop" id="altPop" hidden role="dialog" aria-labelledby="apTitle">
             <p class="pp-title" id="apTitle">Alternative slide</p>
-            <div class="pp-box"><div class="pp-col"><span class="pp-lab" id="apLab">Send this slide as alternative of</span><span class="pp-select"><select id="apSel" aria-labelledby="apLab"></select><svg class="pp-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L11.6464 14.6464C11.8417 14.8417 12.1583 14.8417 12.3536 14.6464L18 9" stroke="#454C63" stroke-linecap="round"/></svg></span></div></div>
+            <div class="pp-box"><div class="pp-col"><span class="pp-lab" id="apLab">Send this slide as alternative of</span><span class="pp-select"><select id="apSel" aria-labelledby="apLab"></select><svg class="pp-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L11.6464 14.6464C11.8417 14.8417 12.1583 14.8417 12.3536 14.6464L18 9" stroke="#5C6480" stroke-linecap="round"/></svg></span></div></div>
             <div class="pp-actions"><button type="button" class="pp-save" id="apSave">Save</button></div>
           </div>
           <div class="pos-pop" id="mapPop" hidden role="dialog" aria-labelledby="ppTitle">
             <p class="pp-title" id="ppTitle">Change slide position</p>
             <div class="pp-box">
               <div class="pp-col pp-cur"><span class="pp-lab">Current position</span><span class="pp-val" id="ppCur"></span></div>
-              <div class="pp-col"><span class="pp-lab" id="ppSentLab">Sent as</span><span class="pp-select"><select id="ppSel" aria-labelledby="ppSentLab"></select><svg class="pp-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L11.6464 14.6464C11.8417 14.8417 12.1583 14.8417 12.3536 14.6464L18 9" stroke="#454C63" stroke-linecap="round"/></svg></span></div>
+              <div class="pp-col"><span class="pp-lab" id="ppSentLab">Sent as</span><span class="pp-select"><select id="ppSel" aria-labelledby="ppSentLab"></select><svg class="pp-chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9L11.6464 14.6464C11.8417 14.8417 12.1583 14.8417 12.3536 14.6464L18 9" stroke="#5C6480" stroke-linecap="round"/></svg></span></div>
             </div>
             <div class="pp-actions"><button type="button" class="pp-save" id="ppSave">Save</button></div>
           </div>
@@ -670,7 +753,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.54";
+const APP_VERSION = "2.55";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1944,23 +2027,62 @@ async function detectCompile() {
     return found;
   } catch (e) { return null; }
 }
-const CP_ICON = { ok: FILE_ICONS.saved, err: FILE_ICONS.failed };
-function cpSay(text, kind) { const el = $("cpState"); el.className = "cp-state" + (kind ? " " + kind : ""); el.innerHTML = kind && CP_ICON[kind] ? CP_ICON[kind] : ""; el.append(document.createTextNode(text || "")); }
-function cpList(lines) { const ul = $("cpList"); ul.innerHTML = ""; ul.hidden = !lines.length; lines.forEach((t) => { const li = document.createElement("li"); li.textContent = t; ul.append(li); }); }
+const CP_SVG = {"slide":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M14.0002 6.69326H2.0002V11.4136C2.00034 12.1351 2.58566 12.7198 3.30723 12.7198H12.6932C13.4147 12.7198 14.0001 12.1351 14.0002 11.4136V6.69326ZM14.0002 4.58701C14.0002 3.86536 13.4148 3.27998 12.6932 3.27998H3.30723C2.58557 3.27998 2.0002 3.86536 2.0002 4.58701V5.89326H14.0002V4.58701ZM14.8002 11.4136C14.8001 12.5769 13.8566 13.5198 12.6932 13.5198H3.30723C2.14383 13.5198 1.20034 12.5769 1.2002 11.4136V4.58701C1.2002 3.42353 2.14375 2.47998 3.30723 2.47998H12.6932C13.8566 2.47998 14.8002 3.42353 14.8002 4.58701V11.4136Z\" fill=\"#454C63\"/></svg>",
+  "history":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M13.6001 8.8C13.6001 8.35 13.2501 8 12.8001 8H3.2001C2.7501 8 2.4001 8.35 2.4001 8.8V12.4C2.4001 12.85 2.7501 13.2 3.2001 13.2H12.8001C13.2501 13.2 13.6001 12.85 13.6001 12.4V8.8ZM12.8001 7.2C13.6751 7.2 14.4001 7.925 14.4001 8.8V12.4C14.4001 13.275 13.6751 14 12.8001 14H3.2001C2.3251 14 1.6001 13.275 1.6001 12.4V8.8C1.6001 7.925 2.3251 7.2 3.2001 7.2H12.8001ZM12.8001 4.6C13.0251 4.6 13.2001 4.775 13.2001 5C13.2001 5.225 13.0251 5.4 12.8001 5.4H3.2001C2.9751 5.4 2.8001 5.225 2.8001 5C2.8001 4.775 2.9751 4.6 3.2001 4.6H12.8001ZM11.6001 2C11.8251 2 12.0001 2.175 12.0001 2.4C12.0001 2.625 11.8251 2.8 11.6001 2.8H4.4001C4.1751 2.8 4.0001 2.625 4.0001 2.4C4.0001 2.175 4.1751 2 4.4001 2H11.6001Z\" fill=\"#5C6480\"/></svg>",
+  "triangle":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M8.0001 2.80264C7.92514 2.80264 7.85017 2.85262 7.82519 2.90259L2.42795 12.8975C2.40297 12.9724 2.40297 13.0474 2.42795 13.0974C2.47793 13.1723 2.5279 13.1973 2.60286 13.1973H13.3973C13.4723 13.1973 13.5223 13.1723 13.5722 13.0974C13.5972 13.0474 13.5972 12.9724 13.5722 12.8975L8.17501 2.90259C8.15002 2.85262 8.07506 2.80264 8.0001 2.80264ZM8.87465 2.52778L14.2719 12.5227C14.4468 12.8225 14.4468 13.1973 14.2469 13.5221C14.072 13.822 13.7472 13.9969 13.3973 13.9969H2.60286C2.25304 13.9969 1.92821 13.822 1.7533 13.5221C1.5534 13.1973 1.5534 12.8225 1.72831 12.5227L7.12555 2.52778C7.30046 2.20295 7.62529 2.00305 8.0001 2.00305C8.37491 2.00305 8.69974 2.20295 8.87465 2.52778ZM8.0001 6.4008C8.22498 6.4008 8.39989 6.57571 8.39989 6.80059V9.99895C8.39989 10.2238 8.22498 10.3987 8.0001 10.3987C7.77521 10.3987 7.6003 10.2238 7.6003 9.99895V6.80059C7.6003 6.57571 7.77521 6.4008 8.0001 6.4008ZM8.49984 11.6231C8.49984 11.898 8.27496 12.1229 8.0001 12.1229C7.72524 12.1229 7.50035 11.898 7.50035 11.6231C7.50035 11.3483 7.72524 11.1234 8.0001 11.1234C8.27496 11.1234 8.49984 11.3483 8.49984 11.6231Z\" fill=\"#F23B3B\"/></svg>",
+  "loader":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M8.4001 1.99998V4.39998C8.4001 4.62498 8.2251 4.79998 8.0001 4.79998C7.7751 4.79998 7.6001 4.62498 7.6001 4.39998V1.99998C7.6001 1.77498 7.7751 1.59998 8.0001 1.59998C8.2251 1.59998 8.4001 1.77498 8.4001 1.99998ZM8.4001 11.6V14C8.4001 14.225 8.2251 14.4 8.0001 14.4C7.7751 14.4 7.6001 14.225 7.6001 14V11.6C7.6001 11.375 7.7751 11.2 8.0001 11.2C8.2251 11.2 8.4001 11.375 8.4001 11.6ZM1.6001 7.99998C1.6001 7.77498 1.7751 7.59998 2.0001 7.59998H4.4001C4.6251 7.59998 4.8001 7.77498 4.8001 7.99998C4.8001 8.22498 4.6251 8.39998 4.4001 8.39998H2.0001C1.7751 8.39998 1.6001 8.22498 1.6001 7.99998ZM11.6001 7.59998H14.0001C14.2251 7.59998 14.4001 7.77498 14.4001 7.99998C14.4001 8.22498 14.2251 8.39998 14.0001 8.39998H11.6001C11.3751 8.39998 11.2001 8.22498 11.2001 7.99998C11.2001 7.77498 11.3751 7.59998 11.6001 7.59998ZM12.5251 3.47498C12.6751 3.62498 12.6751 3.87498 12.5251 4.04998L10.8251 5.74998C10.6751 5.89998 10.4251 5.89998 10.2751 5.74998C10.1001 5.57498 10.1001 5.32498 10.2751 5.17498L11.9501 3.47498C12.1251 3.32498 12.3751 3.32498 12.5251 3.47498ZM5.7501 10.825L4.0501 12.525C3.8751 12.675 3.6251 12.675 3.4751 12.525C3.3251 12.375 3.3251 12.125 3.4751 11.95L5.1751 10.275C5.3251 10.1 5.5751 10.1 5.7501 10.275C5.9001 10.425 5.9001 10.675 5.7501 10.825ZM3.4751 3.47498C3.6251 3.32498 3.8751 3.32498 4.0501 3.47498L5.7501 5.17498C5.9001 5.32498 5.9001 5.57498 5.7501 5.74998C5.5751 5.89998 5.3251 5.89998 5.1751 5.74998L3.4751 4.04998C3.3251 3.87498 3.3251 3.62498 3.4751 3.47498ZM10.8251 10.275L12.5251 11.95C12.6751 12.125 12.6751 12.375 12.5251 12.525C12.3751 12.675 12.1251 12.675 11.9501 12.525L10.2751 10.825C10.1001 10.675 10.1001 10.425 10.2751 10.275C10.4251 10.1 10.6751 10.1 10.8251 10.275Z\" fill=\"#5C6480\"/></svg>",
+  "done":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M8.0001 14.4001C4.4651 14.4001 1.6001 11.5351 1.6001 8.0001C1.6001 4.4651 4.4651 1.6001 8.0001 1.6001C11.5351 1.6001 14.4001 4.4651 14.4001 8.0001C14.4001 11.5351 11.5351 14.4001 8.0001 14.4001ZM10.9501 5.2426C10.6826 5.0476 10.3076 5.1076 10.1126 5.3751L7.1276 9.4801L5.8251 8.1776C5.5901 7.9426 5.2101 7.9426 4.9776 8.1776C4.7451 8.4126 4.7426 8.7926 4.9776 9.0251L6.7776 10.8251C6.9026 10.9501 7.0726 11.0126 7.2476 11.0001C7.4226 10.9876 7.5826 10.8976 7.6851 10.7551L11.0826 6.0801C11.2776 5.8126 11.2176 5.4376 10.9501 5.2426Z\" fill=\"#12A45F\"/></svg>",
+  "info":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M8.0001 2.4001C4.9001 2.4001 2.4001 4.9001 2.4001 8.0001C2.4001 11.1001 4.9001 13.6001 8.0001 13.6001C11.1001 13.6001 13.6001 11.1001 13.6001 8.0001C13.6001 4.9001 11.1001 2.4001 8.0001 2.4001ZM8.0001 14.4001C4.4751 14.4001 1.6001 11.5251 1.6001 8.0001C1.6001 4.4751 4.4751 1.6001 8.0001 1.6001C11.5251 1.6001 14.4001 4.4751 14.4001 8.0001C14.4001 11.5251 11.5251 14.4001 8.0001 14.4001ZM6.8001 10.4001H7.6001V8.0001H6.8001C6.5751 8.0001 6.4001 7.8251 6.4001 7.6001C6.4001 7.3751 6.5751 7.2001 6.8001 7.2001H8.0001C8.2251 7.2001 8.4001 7.3751 8.4001 7.6001V10.4001H9.2001C9.4251 10.4001 9.6001 10.5751 9.6001 10.8001C9.6001 11.0251 9.4251 11.2001 9.2001 11.2001H6.8001C6.5751 11.2001 6.4001 11.0251 6.4001 10.8001C6.4001 10.5751 6.5751 10.4001 6.8001 10.4001ZM8.0001 6.2001C7.6751 6.2001 7.4001 5.9251 7.4001 5.6001C7.4001 5.2751 7.6751 5.0001 8.0001 5.0001C8.3251 5.0001 8.6001 5.2751 8.6001 5.6001C8.6001 5.9251 8.3251 6.2001 8.0001 6.2001Z\" fill=\"#5C6480\"/></svg>",
+  "plus":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M8.45724 2.05724V7.54295H13.943C14.2001 7.54295 14.4001 7.74295 14.4001 8.0001C14.4001 8.25724 14.2001 8.45724 13.943 8.45724H8.45724V13.943C8.45724 14.2001 8.25724 14.4001 8.0001 14.4001C7.74295 14.4001 7.54295 14.2001 7.54295 13.943V8.45724H2.05724C1.8001 8.45724 1.6001 8.25724 1.6001 8.0001C1.6001 7.74295 1.8001 7.54295 2.05724 7.54295H7.54295V2.05724C7.54295 1.8001 7.74295 1.6001 8.0001 1.6001C8.25724 1.6001 8.45724 1.8001 8.45724 2.05724Z\" fill=\"#5C6480\"/></svg>",
+  "check":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M14.1986 2.14375C14.427 2.28651 14.4556 2.57203 14.3128 2.80045L6.3183 13.7644C6.23265 13.85 6.11844 13.9357 5.97568 13.9357C5.86147 13.9357 5.71871 13.9071 5.63306 13.7929L1.75 9.90988C1.55013 9.73856 1.55013 9.45305 1.75 9.28173C1.92131 9.11042 2.20683 9.11042 2.37814 9.28173L5.89002 12.7936L13.5705 2.25796C13.7132 2.0581 13.9988 2.001 14.1986 2.14375Z\" fill=\"#12A45F\"/></svg>",
+  "trash":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6.47285 2.64252L6.20619 3.53949H9.81831L9.55164 2.64252C9.50316 2.49707 9.33346 2.37586 9.16376 2.37586H6.83649C6.66679 2.37586 6.52134 2.49707 6.47285 2.64252ZM5.38195 3.53949L5.72134 2.42434C5.86679 1.93949 6.3274 1.6001 6.83649 1.6001H9.16376C9.67285 1.6001 10.1335 1.93949 10.2789 2.42434L10.6183 3.53949H13.0426C13.2607 3.53949 13.4304 3.70919 13.4304 3.92737C13.4304 4.14555 13.2607 4.31525 13.0426 4.31525H2.9577C2.73952 4.31525 2.56982 4.14555 2.56982 3.92737C2.56982 3.70919 2.73952 3.53949 2.9577 3.53949H5.38195ZM3.34558 5.47889H4.12134V12.8486C4.12134 13.2849 4.46073 13.6243 4.8971 13.6243H11.1032C11.5395 13.6243 11.8789 13.2849 11.8789 12.8486V5.47889H12.6547V12.8486C12.6547 13.6971 11.9516 14.4001 11.1032 14.4001H4.8971C4.04861 14.4001 3.34558 13.6971 3.34558 12.8486V5.47889ZM6.06073 7.0304V11.6849C6.06073 11.9031 5.89104 12.0728 5.67285 12.0728C5.45467 12.0728 5.28498 11.9031 5.28498 11.6849V7.0304C5.28498 6.81222 5.45467 6.64252 5.67285 6.64252C5.89104 6.64252 6.06073 6.81222 6.06073 7.0304ZM8.38801 7.0304V11.6849C8.38801 11.9031 8.21831 12.0728 8.00013 12.0728C7.78195 12.0728 7.61225 11.9031 7.61225 11.6849V7.0304C7.61225 6.81222 7.78195 6.64252 8.00013 6.64252C8.21831 6.64252 8.38801 6.81222 8.38801 7.0304ZM10.7153 7.0304V11.6849C10.7153 11.9031 10.5456 12.0728 10.3274 12.0728C10.1092 12.0728 9.93952 11.9031 9.93952 11.6849V7.0304C9.93952 6.81222 10.1092 6.64252 10.3274 6.64252C10.5456 6.64252 10.7153 6.81222 10.7153 7.0304Z\" fill=\"#5C6480\"/></svg>",
+  "textslash":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M2.20513 1.70831L4.04797 3.52895C4.13678 3.24032 4.40322 3.01829 4.73626 3.01829H12.8847C13.3288 3.01829 13.6841 3.46234 13.573 3.9064L13.3288 4.88333C13.2844 5.08316 13.0846 5.19417 12.8847 5.14977C12.7071 5.10536 12.5961 4.90554 12.6405 4.70571L12.8847 3.72878H8.99923L8.11111 7.59209L14.2835 13.7867C14.439 13.9199 14.439 14.142 14.2835 14.2752C14.1503 14.4306 13.9283 14.4306 13.7951 14.2752L1.71666 2.19678C1.56124 2.06356 1.56124 1.84153 1.71666 1.70831C1.84988 1.57509 2.07191 1.57509 2.20513 1.70831ZM4.62525 4.12843L7.51163 6.99261L8.26653 3.72878H4.73626L4.62525 4.12843ZM6.29047 12.2547L7.04537 9.03528L7.62265 9.63476L7.02317 12.2547H8.35534C8.55517 12.2547 8.71059 12.4101 8.71059 12.61C8.71059 12.8098 8.55517 12.9652 8.35534 12.9652H4.80287C4.60305 12.9652 4.44763 12.8098 4.44763 12.61C4.44763 12.4101 4.60305 12.2547 4.80287 12.2547H6.29047Z\" fill=\"#E09600\"/></svg>",
+  "excl":"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M8.0001 2.4001C4.9001 2.4001 2.4001 4.9001 2.4001 8.0001C2.4001 11.1001 4.9001 13.6001 8.0001 13.6001C11.1001 13.6001 13.6001 11.1001 13.6001 8.0001C13.6001 4.9001 11.1001 2.4001 8.0001 2.4001ZM8.0001 14.4001C4.4751 14.4001 1.6001 11.5251 1.6001 8.0001C1.6001 4.4751 4.4751 1.6001 8.0001 1.6001C11.5251 1.6001 14.4001 4.4751 14.4001 8.0001C14.4001 11.5251 11.5251 14.4001 8.0001 14.4001ZM8.0001 5.2001C8.2251 5.2001 8.4001 5.3751 8.4001 5.6001V8.8001C8.4001 9.0251 8.2251 9.2001 8.0001 9.2001C7.7751 9.2001 7.6001 9.0251 7.6001 8.8001V5.6001C7.6001 5.3751 7.7751 5.2001 8.0001 5.2001ZM8.5001 10.4251C8.5001 10.7001 8.2751 10.9251 8.0001 10.9251C7.7251 10.9251 7.5001 10.7001 7.5001 10.4251C7.5001 10.1501 7.7251 9.9251 8.0001 9.9251C8.2751 9.9251 8.5001 10.1501 8.5001 10.4251Z\" fill=\"#F23B3B\"/></svg>",
+  "hook":"<svg width=\"8\" height=\"11\" viewBox=\"0 0 8 11\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M0.5 0V6.5C0.5 8.70914 2.29086 10.5 4.5 10.5H7.5\" stroke-linecap=\"round\" stroke=\"#A3ADC2\"/></svg>",
+  "spinner":"<svg class=\"cp-spin\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><mask id=\"cpSpinMask\" style=\"mask-type:alpha\" maskUnits=\"userSpaceOnUse\" x=\"3\" y=\"3\" width=\"14\" height=\"14\"><path d=\"M10 3.39453C13.6277 3.39453 16.5684 6.35181 16.5684 10C16.5684 13.6482 13.6277 16.6055 10 16.6055C6.37225 16.6055 3.43164 13.6482 3.43164 10C3.43164 6.35181 6.37225 3.39453 10 3.39453ZM10 6.08496C7.84965 6.08496 6.10645 7.83753 6.10645 10C6.10645 12.1625 7.84965 13.915 10 13.915C12.1504 13.915 13.8936 12.1625 13.8936 10C13.8936 7.83753 12.1504 6.08496 10 6.08496Z\" fill=\"#CB202D\"/></mask><g mask=\"url(#cpSpinMask)\"><g clip-path=\"url(#cpSpinClip)\"><g transform=\"matrix(0 0.00732394 -0.00728291 0 9.99971 9.99997)\"><foreignObject x=\"-1137.31\" y=\"-1137.31\" width=\"2274.62\" height=\"2274.62\"><div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"background:conic-gradient(from 90deg,rgba(255,255,255,1) 0deg,rgba(255,255,255,0) 360deg);height:100%;width:100%\"></div></foreignObject></g></g><ellipse cx=\"10.0068\" cy=\"15.2605\" rx=\"1.35154\" ry=\"1.35915\" fill=\"white\"/></g><defs><clipPath id=\"cpSpinClip\"><rect x=\"2.7168\" y=\"2.67603\" width=\"14.5658\" height=\"14.6479\"/></clipPath></defs></svg>"};
+const CP_STEP1 = { icon: "slide", text: "All approved slides will go into this file" };
+// Figma 784:2369 C1-C8: a short timeline of steps; the last one shows the current state
+function cpShow(steps, problems, btn) {
+  const box = $("cpSteps"); box.innerHTML = "";
+  steps.forEach((st, i) => {
+    const last = i === steps.length - 1, row = document.createElement("div");
+    row.className = "cp-step" + (st.kind ? " " + st.kind : "") + (last ? "" : " has-line");
+    const rail = document.createElement("div"); rail.className = "cp-rail";
+    const ico = document.createElement("span"); ico.className = "cp-ico"; ico.innerHTML = CP_SVG[st.icon];
+    if (st.spin) ico.firstChild.classList.add("cp-spin");
+    rail.append(ico);
+    if (!last) { const l = document.createElement("span"); l.className = "cp-line"; rail.append(l); }
+    const txt = document.createElement("div"); txt.className = "cp-txt";
+    const p = document.createElement("p"); p.textContent = st.text; txt.append(p);
+    if (st.action) { const b = document.createElement("button"); b.type = "button"; b.className = "cp-act"; b.textContent = st.action.label; b.onclick = st.action.fn; txt.append(b); }
+    row.append(rail, txt); box.append(row);
+  });
+  if (problems && problems.length) {
+    const ul = document.createElement("ul"); ul.className = "cp-problems";
+    (problems.length > 8 ? problems.slice(0, 8).concat(["…and " + (problems.length - 8) + " more."]) : problems).forEach((t) => {
+      const li = document.createElement("li"); li.innerHTML = CP_SVG.hook; const sp = document.createElement("span"); sp.textContent = t; li.append(sp); ul.append(li); });
+    box.append(ul);
+  }
+  const b = $("cpBtn"); b.hidden = !btn;
+  if (btn) { b.className = btn.secondary ? "cp-secondary" : "cp-primary"; b.textContent = btn.label; b.onclick = btn.fn; b.disabled = false; }
+}
+const plural = (n, word) => n + " " + word + (n === 1 ? "" : "s");
+function cpCount(items) {
+  const alts = items.filter((r) => r.alternative_of).length, k = items.length - alts;
+  return { icon: "history", text: plural(k, "slide") + " ready to compile" + (alts ? " + " + plural(alts, "alternative slide") : "") };
+}
 async function enterCompile(comp) {
   CP.order = comp.order; CP.starterId = comp.starterId; CP.done = 0; CP.lastId = comp.starterId;
   doneLoading(); $("orderView").hidden = true; $("appView").hidden = true; $("compileView").hidden = false;
-  $("cpTitle").textContent = "Compile Order #" + CP.order;
+  $("cpOrder").textContent = "#" + CP.order;
+  $("cpFlow").hidden = false; $("dv").hidden = true; $("dvDone").hidden = true;
   showDashboardLink(S.user);
-  $("cpRecheck").onclick = () => compileCheck();
-  $("cpBtn").onclick = () => runCompile();
-  let dm = false;
-  try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); dm = !r.error && !!r.data; } catch (e) {}
-  if (!dm) { cpSay("Only a DM can compile an order. Ask your DM to open this file.", "err"); return; }
-  if (comp.delivery) { $("cpTitle").textContent = "Order #" + CP.order + " final file"; $("cpSub").textContent = "Upload this file to the order's folder on Google Drive. Uploading the same stage again keeps the link."; cpSay(""); enterDelivery(CP.order); return; }
+  cpShow([CP_STEP1, { icon: "loader", spin: true, text: "Checking the slides…" }]);
+  if (!(await isDm())) { cpShow([CP_STEP1, { icon: "triangle", kind: "err", text: "Only a DM can compile an order. Ask your DM to open this file." }]); return; }
+  if (comp.delivery) { enterDelivery(CP.order); return; }
   compileCheck();
 }
-const STATUS_TEXT = { ready: "waiting for review", changes: "changes requested" };
+const STATUS_TEXT = { ready: "is waiting for review", changes: "has changes requested" };
 // Everything that must be true before compiling; returns { items, problems }
 async function compilePlan(order) {
   const [sh, fi, as] = await Promise.all([
@@ -1987,36 +2109,32 @@ async function compilePlan(order) {
   ((as.error ? [] : as.data) || []).filter((a) => orderId(a.order_key) === order).forEach((a) => (a.slides || []).forEach((n) => { if (!sent.has(n)) problems.push("Slide " + n + " (" + a.assignee_name + ") isn't sent yet."); }));
   const items = normal.concat(alts);
   items.forEach((r) => {
-    if (r.status !== "approved") problems.push("Slide " + r.label + " (" + r.designer + ") is " + (STATUS_TEXT[r.status] || r.status) + ".");
+    if (r.status !== "approved") problems.push("Slide " + r.label + " (" + r.designer + ") " + (STATUS_TEXT[r.status] || "is " + r.status) + ".");
     else if (!r.file) problems.push("Slide " + r.label + " (" + r.designer + ") isn't saved for compile. Ask them to open it in Slideshot and click Retry.");
     else if (r.file.version < r.version) problems.push("Slide " + r.label + " (" + r.designer + "): the saved file is v" + r.file.version + ", the approved slide is v" + r.version + ". Ask them to open it in Slideshot and click Retry.");
   });
   return { items, problems: [...new Set(problems)] };
 }
 async function compileCheck() {
-  $("cpBtn").hidden = true; $("cpRecheck").hidden = true; $("cpProgress").hidden = true; cpList([]);
-  cpSay("Checking the slides\u2026");
+  cpShow([CP_STEP1, { icon: "loader", spin: true, text: "Checking the slides…" }]);
   try { CP.plan = await compilePlan(CP.order); }
-  catch (e) { cpSay("Couldn't load this order: " + (e.message || e) + ".", "err"); $("cpRecheck").hidden = false; return; }
-  const { items, problems } = CP.plan, n = items.length, alts = items.filter((r) => r.alternative_of).length;
+  catch (e) { cpShow([CP_STEP1, { icon: "triangle", kind: "err", text: "Couldn't load this order: " + (e.message || e) + ".", action: { label: "Check again", fn: compileCheck } }]); return; }
+  const { items, problems } = CP.plan;
   if (problems.length) {
-    cpSay("Not ready yet. Every slide must be approved and saved for compile.", "err");
-    cpList(problems.length > 8 ? problems.slice(0, 8).concat(["\u2026and " + (problems.length - 8) + " more."]) : problems);
-    $("cpRecheck").hidden = false; return;
+    cpShow([CP_STEP1, { icon: "triangle", kind: "err", text: "Not ready yet. Every slide must be approved and saved for compile.", action: { label: "Check again", fn: compileCheck } }], problems);
+    return;
   }
-  cpSay(n + " slide" + (n === 1 ? "" : "s") + " approved and saved" + (alts ? ", including " + alts + " alternative" + (alts === 1 ? "" : "s") + " at the end" : "") + ".", "ok");
-  $("cpBtn").textContent = "Compile " + n + " slide" + (n === 1 ? "" : "s"); $("cpBtn").hidden = false; $("cpBtn").disabled = false;
+  cpShow([CP_STEP1, cpCount(items)], null, { label: "Compile slides", fn: runCompile });
 }
 const blobToB64 = (blob) => new Promise((ok, fail) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1] || ""); r.onerror = () => fail(r.error); r.readAsDataURL(blob); });
 async function runCompile() {
   if (CP.busy || !CP.plan) return;
-  CP.busy = true; $("cpBtn").hidden = true; $("cpRecheck").hidden = true; cpList([]); $("cpProgress").hidden = false;
-  const items = CP.plan.items, n = items.length;
+  CP.busy = true;
+  const items = CP.plan.items, n = items.length, count = cpCount(items);
   try {
     for (let i = CP.done; i < n; i++) {
       const it = items[i];
-      cpSay("Adding slide " + it.label + " (" + (i + 1) + " of " + n + ")\u2026");
-      $("cpFill").style.width = Math.max(4, Math.round((i / n) * 100)) + "%";
+      cpShow([CP_STEP1, count, { icon: "loader", spin: true, text: "Adding slide " + (i + 1) + "/" + n }]);
       const dl = await S.sb.storage.from("slide-files").download(it.file.storage_path);
       if (dl.error) throw new Error("couldn't download slide " + it.label + " (" + (dl.error.message || dl.error) + ")");
       const b64 = await blobToB64(dl.data);
@@ -2030,18 +2148,15 @@ async function runCompile() {
       });
       CP.done = i + 1;
     }
-    $("cpFill").style.width = "100%";
     await PowerPoint.run(async (ctx) => { ctx.presentation.slides.getItem(CP.starterId).delete(); await ctx.sync(); });
     try { const st = Office.context.document.settings; st.remove("Office.AutoShowTaskpaneWithDocument"); st.remove("slideshot.compile"); st.saveAsync(() => {}); } catch (e) {}
-    $("cpProgress").hidden = true;
-    cpSay("Done: " + n + " slide" + (n === 1 ? "" : "s") + " added. Save this file (File > Save As) and check it before sending.", "ok");
-    $("cpSub").textContent = "The starter slide was removed. Check the slides, then upload the final file below.";
-    enterDelivery(CP.order);
+    // C8: the DM checks the slides, then Continue opens the Drive form (D1)
+    cpShow([CP_STEP1, count, { icon: "done", kind: "ok", text: "All set! " + plural(n, "slide") + " added. Get it ready to drop on Google Drive." }], null,
+      { label: "Continue", fn: () => enterDelivery(CP.order) });
   } catch (e) {
     console.warn("Slideshot compile:", e);
-    $("cpProgress").hidden = true;
-    cpSay("Stopped after " + CP.done + " of " + n + ": " + (e.message || e) + ".", "err");
-    $("cpBtn").textContent = "Try again (continue from slide " + (items[CP.done] ? items[CP.done].label : "") + ")"; $("cpBtn").hidden = false; $("cpBtn").disabled = false;
+    cpShow([CP_STEP1, count, { icon: "triangle", kind: "err", text: "Stopped after " + CP.done + " of " + n + ": " + (e.message || e) + "." }], null,
+      { secondary: true, label: "Try again (continue from slide " + (items[CP.done] ? items[CP.done].label : "") + ")", fn: runCompile });
   } finally { CP.busy = false; }
 }
 
@@ -2050,37 +2165,56 @@ async function runCompile() {
    whole open file (getFileAsync, 4 MB slices) and sends it to the Edge Function drive-upload's one-time upload URL.
    Drive: <order>/<stage>/<order>_<name>_<stage>.pptx, shared with everyone at 24Slides. The same stage again replaces it. */
 const STAGES = ["First Draft"].concat([...Array(10)].map((_, i) => "Revision " + (i + 1)));
-const DV = { order: null, busy: false, fonts: null };
+const DV = { order: null, busy: false, fonts: null, list: [], last: null };
 function deliverySaved() { try { const v = docStore.get("slideshot.delivery"); const o = typeof v === "string" ? (v ? JSON.parse(v) : null) : v; return o && /^\d+$/.test(String(o.order || "")) ? o : null; } catch (e) { return null; } }
 async function isDm() { try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); return !r.error && !!r.data; } catch (e) { return false; } }
-function dvSay(text, kind) { const el = $("dvState"); el.className = "cp-state" + (kind ? " " + kind : ""); el.innerHTML = kind && CP_ICON[kind] ? CP_ICON[kind] : ""; el.append(document.createTextNode(text || "")); }
 const dvFileName = () => DV.order + "_" + ($("dvName").value.trim() || "Name") + "_" + $("dvStage").value + ".pptx";
-function dvPreview() { $("dvPreview").textContent = "Saved as " + DV.order + " / " + $("dvStage").value + " / " + dvFileName(); }
-function dvShowLink(link) { $("dvLinkRow").hidden = !link; if (link) { $("dvLink").href = link; $("dvLink").textContent = link; } }
+function dvPreview() { $("dvPreview").textContent = $("dvName").value.trim() ? dvFileName() : ""; }
+function dvNameError(msg) { $("dvNameError").textContent = msg || ""; $("dvName").setAttribute("aria-invalid", msg ? "true" : "false"); }
+const dvUploaded = (stage) => DV.list.some((d) => d.stage === stage && d.link);
+function dvBtnLabel() { if (!DV.busy) $("dvBtn").textContent = dvUploaded($("dvStage").value) ? "Replace with this file" : "Upload to Drive"; }
+// D1-D7, D10, D11: the form
+function dvShowForm() {
+  $("cpFlow").hidden = true; $("dvDone").hidden = true; $("dv").hidden = false; $("dvFail").hidden = true;
+  $("dvCancel").hidden = !DV.last; dvBtnLabel(); dvPreview();
+}
+// D8-D10a: uploaded, with the link
+function dvShowDone(d, replaced) {
+  DV.last = d;
+  $("cpFlow").hidden = true; $("dv").hidden = true; $("dvDone").hidden = false;
+  const t = $("dvDoneText"), b = document.createElement("strong"); b.textContent = d.fileName;
+  t.textContent = "The "; t.append(b, document.createTextNode(replaced ? " has been replaced. Anyone at 24Slides can open the link." : " is uploaded and ready to share. Anyone at 24Slides can open the link."));
+  $("dvLink").href = d.link; $("dvLink").textContent = d.link; $("dvCopy").textContent = "Copy link";
+}
 async function enterDelivery(order) {
-  DV.order = order; $("dv").hidden = false;
+  DV.order = order; DV.last = null;
   const saved = deliverySaved() || {};
   if (!saved.order) docStore.set("slideshot.delivery", JSON.stringify({ order }));
   let list = [];
   try { const r = await S.sb.from("deliveries").select("stage,name,link,uploaded_at").eq("order_key", order).order("uploaded_at", { ascending: false }).limit(50); if (!r.error) list = r.data || []; } catch (e) {}
-  const done = new Set(list.map((d) => d.stage)), top = Math.max(-1, ...list.map((d) => STAGES.indexOf(d.stage)));
+  if (saved.link && saved.stage && !list.some((d) => d.stage === saved.stage)) list.push({ stage: saved.stage, name: saved.name, link: saved.link });
+  DV.list = list;
+  const top = Math.max(-1, ...list.map((d) => STAGES.indexOf(d.stage)));
   const sel = $("dvStage"); sel.innerHTML = "";
-  STAGES.forEach((st) => { const o = document.createElement("option"); o.value = st; o.textContent = st + (done.has(st) ? " \u00B7 uploaded" : ""); sel.append(o); });
+  STAGES.forEach((st) => { const o = document.createElement("option"); o.value = st; o.textContent = st + (dvUploaded(st) ? " · uploaded" : ""); sel.append(o); });
   sel.value = saved.stage || STAGES[Math.min(STAGES.length - 1, top + 1)];   // this file's stage, or the next one for the order
   $("dvName").value = saved.name || (list[0] && list[0].name) || "";
-  dvShowLink(saved.link && saved.stage === sel.value ? saved.link : "");
-  $("dvBtn").textContent = saved.link ? "Upload again" : "Upload to Drive";
-  $("dvStage").onchange = () => { const s2 = deliverySaved() || {}; dvShowLink(s2.link && s2.stage === $("dvStage").value ? s2.link : ""); dvPreview(); };
-  $("dvName").oninput = () => { setFieldError("dvName", ""); dvPreview(); };
+  dvNameError("");
+  sel.onchange = () => { dvBtnLabel(); dvPreview(); };
+  $("dvName").oninput = () => { dvNameError(""); dvPreview(); };
   $("dvBtn").onclick = uploadFinal;
-  DV.fonts = await cmpGet("fonts:" + order); dvFontsShow();
-  $("dvFontsPick").onclick = () => $("dvFontsFile").click();
+  $("dvCancel").onclick = () => { if (DV.last) dvShowDone(DV.last); };
+  $("dvCopy").onclick = () => copyLink(DV.last && DV.last.link);
+  $("dvReplace").onclick = () => { if (DV.last) { sel.value = DV.last.stage; if (DV.last.name) $("dvName").value = DV.last.name; } dvNameError(""); dvShowForm(); $("dvName").focus(); };
+  $("dvInfo").innerHTML = CP_SVG.info;
+  $("dvFontsBtn").onclick = () => { if (DV.fonts && DV.fonts.fonts && DV.fonts.fonts.length) { DV.fonts = null; cmpPut("fonts:" + order, null); dvFontsShow(); } else $("dvFontsFile").click(); };
   $("dvFontsFile").onchange = () => dvFontsChoose($("dvFontsFile").files[0]);
-  $("dvFontsRemove").onclick = () => { DV.fonts = null; cmpPut("fonts:" + order, null); dvFontsShow(); };
-  $("dvCopy").onclick = () => copyLink($("dvLink").href);
-  dvPreview();
+  DV.fonts = await cmpGet("fonts:" + order); dvFontsShow();
+  if (saved.link && saved.stage) dvShowDone({ stage: saved.stage, name: saved.name, link: saved.link, fileName: order + "_" + saved.name + "_" + saved.stage + ".pptx" });
+  else dvShowForm();
 }
 function copyLink(text) {
+  if (!text) return;
   const done = () => { $("dvCopy").textContent = "Copied"; setTimeout(() => { $("dvCopy").textContent = "Copy link"; }, 1500); };
   const fallback = () => { const t = document.createElement("textarea"); t.value = text; t.style.position = "fixed"; t.style.opacity = "0"; document.body.append(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) {} t.remove(); };
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
@@ -2180,48 +2314,67 @@ async function addFonts(blob, F) {
   zip.file("ppt/presentation.xml", pres); zip.file("ppt/_rels/presentation.xml.rels", rels); zip.file("[Content_Types].xml", ct);
   return { blob: await zip.generateAsync({ type: "blob", compression: "DEFLATE", mimeType: PPTX_MIME }), added };
 }
+// Embedded fonts row (D1, D3-D6): status line under the label, + (choose) or trash (remove) on the right
 function dvFontsShow(kind, msg) {
-  const el = $("dvFontsText"), F = DV.fonts;
-  el.className = "dv-hint" + (kind ? " " + kind : "");
-  if (msg) el.textContent = msg;
-  else if (F && F.fonts && F.fonts.length) { el.className = "dv-hint ok"; el.textContent = F.fonts.map((f) => f.typeface).join(", ") + " (from " + F.name + ") will be added to the uploaded file."; }
-  else if (F) el.textContent = "No embedded fonts in " + F.name + ". Nothing to add.";
-  else el.textContent = "If the customer's deck has its own fonts embedded (often brand fonts), choose it so they go into the final file.";
-  $("dvFontsRemove").hidden = !F; $("dvFontsPick").textContent = F ? "Choose another file" : "Choose customer's original";
+  const line = $("dvFontsLine"), btn = $("dvFontsBtn"), F = DV.fonts, has = !!(F && F.fonts && F.fonts.length);
+  line.className = "dv-fline"; line.innerHTML = ""; line.hidden = false;
+  const say = (icon, a, b) => { if (icon) line.insertAdjacentHTML("beforeend", CP_SVG[icon]); const sp = document.createElement("span"); sp.textContent = a; if (b) sp.append(document.createElement("br"), document.createTextNode(b)); line.append(sp); };
+  if (kind === "busy") { say("loader", msg); line.firstChild.classList.add("cp-spin"); }
+  else if (kind === "err") { line.classList.add("err"); say("", msg); }
+  else if (has) say("check", F.fonts.map((f) => f.typeface).join(", "), "will be added to the uploaded file.");
+  else if (F) say("textslash", "No embedded fonts in " + F.name + ".", "Nothing to add.");
+  else line.hidden = true;
+  const label = has ? "Remove the embedded fonts" : "Choose the customer's original";
+  btn.innerHTML = has ? CP_SVG.trash : CP_SVG.plus; btn.setAttribute("aria-label", label); btn.title = label;
+  btn.disabled = kind === "busy" || DV.busy;
 }
 async function dvFontsChoose(file) {
   $("dvFontsFile").value = "";
   if (!file) return;
-  if (!/\.pptx$/i.test(file.name)) { dvFontsShow("err", "Choose a .pptx file."); return; }
-  dvFontsShow("", "Reading the fonts in " + file.name + "\u2026");
+  if (!/\.pptx$/i.test(file.name)) { dvFontsShow("err", "Couldn't read " + file.name + ": Choose a .pptx file."); return; }
+  dvFontsShow("busy", "Reading the fonts in " + file.name + "…");
   try { DV.fonts = await readEmbeddedFonts(file); await cmpPut("fonts:" + DV.order, DV.fonts); dvFontsShow(); }
   catch (e) { dvFontsShow("err", "Couldn't read " + file.name + ": " + (e.message || e) + "."); }
+}
+function dvBar(text, f) {
+  $("dvBar").hidden = false; $("dvBarText").textContent = text;
+  $("dvBarPct").textContent = f == null ? "" : Math.round(f * 100) + "%";
+  $("dvBarFill").style.width = f == null ? "100%" : Math.max(2, Math.round(f * 100)) + "%";
+}
+function dvLock(on) {
+  DV.busy = on;
+  ["dvName", "dvStage", "dvFontsBtn"].forEach((id) => { $(id).disabled = on; });
+  const b = $("dvBtn"); b.disabled = on;
+  if (on) { b.innerHTML = CP_SVG.spinner; b.setAttribute("aria-label", "Uploading"); $("dvCancel").hidden = true; }
+  else { b.removeAttribute("aria-label"); $("dvBar").hidden = true; $("dvCancel").hidden = !DV.last; dvBtnLabel(); }
 }
 async function uploadFinal() {
   if (DV.busy) return;
   const name = $("dvName").value.trim(), stage = $("dvStage").value;
-  if (!name) { setFieldError("dvName", "Enter the file name"); $("dvName").focus(); return; }
-  if (/[\\/:*?"<>|]/.test(name) || name.length > 120) { setFieldError("dvName", "Don't use \\ / : * ? \" < > |"); $("dvName").focus(); return; }
-  DV.busy = true; $("dvBtn").disabled = true; $("dvStage").disabled = true; $("dvName").disabled = true; $("dvProgress").hidden = false; dvShowLink("");
-  const bar = (f) => { $("dvFill").style.width = Math.max(4, Math.round(f * 100)) + "%"; };
+  if (!name) { dvNameError("Enter the file name"); $("dvName").focus(); return; }
+  if (/[\\/:*?"<>|]/.test(name) || name.length > 120) { dvNameError("Don't use \\ / : * ? \" < > |"); $("dvName").focus(); return; }
+  dvLock(true); $("dvFail").hidden = true;
   try {
-    dvSay("Reading the file\u2026"); bar(0);
-    let blob = await readWholeFile((f) => { dvSay("Reading the file\u2026 " + Math.round(f * 100) + "%"); bar(f * 0.2); });
-    if (DV.fonts && DV.fonts.fonts && DV.fonts.fonts.length) { dvSay("Adding the embedded fonts\u2026"); blob = (await addFonts(blob, DV.fonts)).blob; }
+    dvBar("Reading the file…", 0);
+    let blob = await readWholeFile((f) => dvBar("Reading the file…", f));
+    if (DV.fonts && DV.fonts.fonts && DV.fonts.fonts.length) { dvBar("Adding the embedded fonts…", null); blob = (await addFonts(blob, DV.fonts)).blob; }
     const mb = (blob.size / 1048576).toFixed(1) + " MB";
     const st = await driveCall("start", { order: DV.order, stage, name, size: blob.size });
-    const up = await drivePut(st.uploadUrl, blob, (f) => { dvSay((st.replacing ? "Replacing" : "Uploading") + " " + mb + "\u2026 " + Math.round(f * 100) + "%"); bar(0.2 + f * 0.75); });
+    const verb = st.replacing ? "Replacing " : "Uploading ";
+    dvBar(verb + mb, 0);
+    const up = await drivePut(st.uploadUrl, blob, (f) => dvBar(verb + mb, f));
     const fin = await driveCall("finish", { fileId: up.id, order: DV.order, stage, name });
-    bar(1); $("dvProgress").hidden = true;
     docStore.set("slideshot.delivery", JSON.stringify({ order: DV.order, stage, name, link: fin.link }));
-    dvSay((st.replacing ? "Replaced " : "Uploaded ") + fin.name + ". Everyone at 24Slides can open the link.", "ok");
-    dvShowLink(fin.link); $("dvBtn").textContent = "Upload again";
-    const opt = [...$("dvStage").options].find((o) => o.value === stage); if (opt) opt.textContent = stage + " \u00B7 uploaded";
+    DV.list = DV.list.filter((d) => d.stage !== stage).concat([{ stage, name, link: fin.link }]);
+    const opt = [...$("dvStage").options].find((o) => o.value === stage); if (opt) opt.textContent = stage + " · uploaded";
+    dvLock(false);
+    dvShowDone({ stage, name, link: fin.link, fileName: fin.name }, st.replacing);
+    $("dvDoneTitle").focus({ preventScroll: true });
   } catch (e) {
     console.warn("Slideshot drive upload:", e);
-    $("dvProgress").hidden = true;
-    dvSay("Not uploaded: " + (e.message || e) + ". Try again.", "err");
-  } finally { DV.busy = false; $("dvBtn").disabled = false; $("dvStage").disabled = false; $("dvName").disabled = false; }
+    dvLock(false);
+    const f = $("dvFail"); f.innerHTML = CP_SVG.excl; const sp = document.createElement("span"); sp.textContent = "Not uploaded: " + (e.message || e) + ". Try again."; f.append(sp); f.hidden = false;
+  }
 }
 
 /* ---------- start ---------- */
