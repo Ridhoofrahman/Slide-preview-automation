@@ -500,7 +500,8 @@
   .cmp-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
   .cmp-sec { display: flex; flex-direction: column; gap: 8px; }
   .cmp-sec h3 { margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; }
-  .cmp-table { border: 1px solid #DDE4EE; border-radius: 4px; }
+  .cmp-table { border: 1px solid #DDE4EE; border-radius: 4px; overflow: hidden; }
+  .cmp-row.cmp-label { background: #F7F9FC; }   /* header row: elevation/secondary (Figma 606:6445) */
   .cmp-row { display: flex; align-items: stretch; }
   .cmp-row + .cmp-row { border-top: 1px solid #DDE4EE; }
   .cmp-cell { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 4px; padding: 4px; }
@@ -779,7 +780,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.59";
+const APP_VERSION = "2.60";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);

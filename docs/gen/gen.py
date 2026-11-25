@@ -344,6 +344,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.60',('Compare with original: table headers (Original, Your slide) have a light grey background.','Bandingkan dengan file asli: header tabel (Original, Your slide) memakai latar abu-abu muda.')],
 ['v2.59',('Formatting check: the feather opens just the B, I, U, S toggles, off by default; turning one on updates the list at once. Superscript and subscript are always checked.','Formatting check: bulu hanya membuka toggle B, I, U, S, mati secara default; menyalakan salah satunya langsung memperbarui daftar. Superscript dan subscript selalu dicek.')],
 ['v2.58',('Formatting check works both ways: formatting added on your slide (e.g. a word made bold) is flagged too. The Formatting check popup opens above the button when the panel is short.','Pengecekan format dua arah: format yang ditambahkan di slide-mu (mis. kata yang di-bold) juga ditandai. Popup Formatting check terbuka di atas tombol saat panel pendek.')],
 ['v2.57',('Compare with original also checks formatting: words that lost their bold, italic, underline, strikethrough, superscript or subscript (Formatting changed). The feather button chooses which styles are checked.','Bandingkan dengan file asli juga mengecek format: kata yang kehilangan bold, italic, underline, strikethrough, superscript, atau subscript (Formatting changed). Tombol bulu memilih gaya mana yang dicek.')],
@@ -432,7 +433,7 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.59','Add-in v2.59')}</span><span class="meta">{T('Updated 25 Nov 2026','Diperbarui 25 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.60','Add-in v2.60')}</span><span class="meta">{T('Updated 25 Nov 2026','Diperbarui 25 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
