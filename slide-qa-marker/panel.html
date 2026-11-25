@@ -348,10 +348,11 @@
   /* Bottom progress while uploading (D7) */
   .dv-bar { position: fixed; left: 0; right: 0; bottom: 0; background: #F7F9FC; z-index: 4; }
   .dv-bar[hidden] { display: none; }
-  .dv-bar-row { display: flex; justify-content: space-between; padding: 8px; font-size: 14px; line-height: 20px; color: #6A7389; }
-  .dv-bar-track { height: 6px; background: #EEF2F8; }
-  .dv-bar-track span { display: block; height: 100%; width: 0; background: #2557D4; transition: width .2s ease-out; }
-  @media (prefers-reduced-motion: reduce) { .dv-bar-track span { transition: none; } }
+  .dv-bar-row { display: flex; justify-content: space-between; padding: 8px 20px; font-size: 14px; line-height: 20px; color: #6A7389; }
+  /* Status indicator (Figma 836:16295): 10 x 6 tile, #6D9BFF slant on background/brand/default, moving while busy */
+  .dv-bar-track { height: 6px; background: #2557D4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M10 0H5.5L0 6H4.5L10 0Z' fill='%236D9BFF'/%3E%3C/svg%3E") repeat-x 0 0 / 10px 6px; animation: dvstripes .5s linear infinite; }
+  @keyframes dvstripes { to { background-position: 10px 0; } }
+  @media (prefers-reduced-motion: reduce) { .dv-bar-track { animation-duration: 2s; } }
   /* Uploaded (D8-D10a) */
   .dv-done { display: flex; flex-direction: column; gap: 20px; }
   .dv-done-text { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; overflow-wrap: anywhere; }
@@ -661,7 +662,7 @@
         <div class="dv-row"><button id="dvCopy" class="dv-small" type="button">Copy link</button><button id="dvReplace" class="dv-ghost" type="button">Replace file</button></div>
       </div>
     </div>
-    <div class="dv-bar" id="dvBar" hidden><div class="dv-bar-row"><span id="dvBarText"></span><span id="dvBarPct"></span></div><div class="dv-bar-track"><span id="dvBarFill"></span></div></div>
+    <div class="dv-bar" id="dvBar" hidden><div class="dv-bar-row"><span id="dvBarText"></span><span id="dvBarPct"></span></div><div class="dv-bar-track" role="progressbar" aria-label="Upload progress"></div></div>
   </section>
   <section id="appView" hidden>
     <div class="container">
@@ -753,7 +754,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.55";
+const APP_VERSION = "2.56";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -2339,7 +2340,6 @@ async function dvFontsChoose(file) {
 function dvBar(text, f) {
   $("dvBar").hidden = false; $("dvBarText").textContent = text;
   $("dvBarPct").textContent = f == null ? "" : Math.round(f * 100) + "%";
-  $("dvBarFill").style.width = f == null ? "100%" : Math.max(2, Math.round(f * 100)) + "%";
 }
 function dvLock(on) {
   DV.busy = on;
