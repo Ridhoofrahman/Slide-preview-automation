@@ -865,6 +865,92 @@
   .as-save { border: 0; background: #1C43A5; color: #FFFFFF; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
   .as-save:hover:not(:disabled) { background: #132D70; }
   .as-save:disabled { opacity: .6; cursor: progress; }
+
+  /* ===== Review page v2 (Figma 113:1730, R1-R8; Builder DS palette of 2026-11-25) ===== */
+  .review { grid-template-rows: 72px 1fr; }
+  /* the panel runs the full height on the right; the header covers the left column only */
+  .review { grid-template-columns: minmax(0, 1fr) 305px; grid-template-rows: 72px minmax(0, 1fr); }
+  .review > .rv-head { grid-column: 1; grid-row: 1; min-width: 0; }
+  .review .rv-main { display: contents; }
+  .review .rv-work { grid-column: 1; grid-row: 2; min-height: 0; }
+  .review .rv-panel { grid-column: 2; grid-row: 1 / 3; min-height: 0; }
+  .review.empty { grid-template-columns: minmax(0, 1fr); }
+  /* version picker (Figma 880:20735): "v1" with a chevron, only when there are 2+ versions */
+  .rv-vsel { flex: none; }
+  .rv-vsel[hidden] { display: none; }
+  .rv-vsel select { height: 32px; padding: 0 36px 0 8px; border: 1px solid #DDE4EE; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; cursor: pointer; -webkit-appearance: none; appearance: none;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M16.4166 6.20224C16.6863 5.93259 17.1234 5.93259 17.393 6.20224C17.6627 6.4719 17.6627 6.909 17.393 7.17866L10.9762 13.5955C10.4369 14.1347 9.56268 14.1347 9.02337 13.5955L2.60654 7.17866C2.33688 6.909 2.33688 6.4719 2.60654 6.20224C2.8762 5.93259 3.3133 5.93259 3.58296 6.20224L9.99979 12.6191L16.4166 6.20224Z' fill='%235C6480'/%3E%3C/svg%3E") no-repeat right 8px center / 20px 20px; }
+  .rv-vsel select:hover { background-color: #F7F9FC; }
+  .rv-vsel select:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
+  .rv-head { height: 72px; gap: 12px; padding: 0 16px; }
+  .rv-back { margin-left: -4px; }
+  .rv-titlewrap { gap: 12px; }
+  .rv-titlewrap .rv-name { margin: 0; font-size: 14px; line-height: 20px; font-weight: 600; color: #1A1F2E; }   /* text-s/Semi-bold */
+  .rv-divider { margin: 0; }
+  .rv-progress { gap: 12px; font-size: 14px; line-height: 20px; color: #454C63; }
+  .rv-progress .ic, .rv-progress .ic svg { width: 20px; height: 20px; }
+  .rv-progress[hidden] { display: none; }
+  .rv-cgroup { flex: none; display: inline-flex; align-items: stretch; height: 32px; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .rv-cgroup[hidden] { display: none; }
+  .rv-cbtn, .rv-clink { border: 0; background: #2557D4; color: #FFFFFF; cursor: pointer; font-family: inherit; }   /* background/brand/default */
+  .rv-cbtn { padding: 6px 16px; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; }
+  .rv-clink { width: 32px; display: grid; place-items: center; padding: 0; border-left: 1px solid rgba(255,255,255,.3); }
+  .rv-clink[hidden] { display: none; }
+  .rv-clink svg { width: 20px; height: 20px; }
+  .rv-cbtn:hover, .rv-clink:hover { background: #1C43A5; }   /* background/brand/hover */
+  .rv-clink.copied { background: #0C7F49; }
+  .rv-cbtn:focus-visible, .rv-clink:focus-visible, .rv-ibtn:focus-visible, .rv-toggle:focus-visible, .rv-thumbdel:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
+  .rv-tools { gap: 12px; }
+  .rv-ibtn { width: 32px; height: 32px; padding: 0; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #6D7395; display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 2px rgba(18,18,23,.05); }
+  .rv-ibtn svg { width: 20px; height: 20px; }
+  .rv-ibtn:hover { background: #F7F9FC; }
+  .rv-toggle { width: 32px; height: 32px; padding: 6px 8px; border: 1px solid #DDE4EE; background: #FFFFFF; color: #5C6480; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .rv-toggle:hover { background: #F7F9FC; }
+  .rv-toggle[aria-pressed="true"] { background: #F7F9FC; border-color: #3B74F5; color: #3B74F5; }   /* outline/strong/brand, icon/brand */
+  .rv-zoomwrap { position: relative; }
+  .rv-zoompop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; padding: 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); }
+  .rv-zoompop[hidden] { display: none; }
+  .rv-zoompop .rv-tool { height: 32px; font-weight: 400; color: #454C63; }
+  .rv-zoompop .rv-zoomlevel { min-width: 56px; font-size: 13px; }
+  /* strip: sunken panel, bigger thumbnails; a delete button shows on hover (Figma 756:18661) */
+  .review .rv-work { padding: 0 24px 24px; }
+  .rv-stripwrap { padding-top: 20px; margin: 0 -4px; background: linear-gradient(#F7F9FC 20px, transparent 20px); }
+  .review .rv-strip { background: #EEF2F8; border: 0; border-radius: 12px; padding: 0 4px; box-shadow: 0 1px 1px rgba(18,18,23,.05); }   /* elevation/sunken */
+  .review .rv-rail { background: transparent; padding: 8px 0; gap: 4px; }
+  .review .rv-thumb img, .review .rv-thumb .ph, .review .rv-thumb.pending .ph { width: 133px; }
+  .review .rv-thumb:hover { background: #F7F9FC; }
+  .rv-thumbbox { position: relative; flex: none; display: flex; }
+  .rv-thumbdel { position: absolute; left: 4px; bottom: 4px; width: 16px; height: 16px; padding: 0; border: 1px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; color: #F23B3B; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s ease-out; }   /* icon/danger */
+  .rv-thumbdel svg { width: 11px; height: 11px; }
+  .rv-thumbbox:hover .rv-thumbdel, .rv-thumbdel:focus-visible { opacity: 1; }
+  .rv-thumbdel:hover { background: #FFF1F1; }
+  @media (prefers-reduced-motion: reduce) { .rv-thumbdel { transition: none; } }
+  /* details under the slide: Fonts table, then speaker notes */
+  .review .rv-details { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+  .review .rv-details section { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .review .rv-details h4 { margin: 0; font-size: 12px; line-height: 16px; font-weight: 500; color: #1A1F2E; }
+  .review .rv-details p { font-size: 12px; line-height: 16px; color: #6A7389; }
+  .rv-ftable { width: 100%; border-collapse: collapse; table-layout: fixed; border-radius: 4px; }
+  .rv-ftable th { height: 28px; padding: 4px 8px; text-align: left; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; }
+  .rv-ftable td { padding: 4px 8px; border-bottom: 1px solid #DDE4EE; font-size: 14px; line-height: 20px; color: #6A7389; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rv-ftable th:first-child, .rv-ftable td:first-child { width: 94px; padding-left: 0; }
+  .rv-ftable th:nth-child(2), .rv-ftable td:nth-child(2) { width: 72px; }
+  .rv-ftable td.small { color: #D62020; font-weight: 500; }
+  .review .rv-details .warn { background: #FFF1F1; color: #D62020; }
+  /* panel: white title, facts on a sunken band, then the decision */
+  .rv-ptitle { background: #FFFFFF; }
+  .rv-facts { flex: none; margin: 0; padding: 12px 20px; border: 0; border-radius: 0; background: #EEF2F8; }   /* elevation/sunken */
+  .rv-facts > div { padding: 0; }
+  .rv-facts > div + div { padding: 0 10px; }
+  .rv-facts dd { font-weight: 500; }
+  .review .rv-decision { padding: 20px; gap: 24px; }
+  .review .rv-actions { gap: 12px; }
+  .rv-approve:hover { background: #0C7F49; }
+  .rv-change { color: #454C63; }
+  .rv-change:hover { background: #F7F9FC; border-color: #DDE4EE; }
+  .rv-pbanner.approved { background: #E6F7EE; border-color: #7ED9A8; color: #0C7F49; }
+  .rv-pbanner.changes { background: #FFF1F1; border-color: #FFB0B0; color: #D62020; }
+  .rv-pbanner.older { background: #F0EBFC; border-color: #BDA6EE; color: #6035C4; }
 </style>
 </head>
 <body>
@@ -919,21 +1005,22 @@
   <div id="reviewView" class="review" hidden role="dialog" aria-modal="true" aria-labelledby="rvProject">
     <header class="rv-head">
       <button id="backBtn" class="rv-back" aria-label="Back to slides"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6.91793 10.2848C6.73032 10.124 6.73032 9.85595 6.91793 9.69514L12.4925 4.1206C12.6533 3.9598 12.9213 3.9598 13.0821 4.1206C13.2697 4.28141 13.2697 4.54941 13.0821 4.71022L7.82915 9.98995L13.0821 15.2697C13.2697 15.4305 13.2697 15.6985 13.0821 15.8593C12.9213 16.0469 12.6533 16.0469 12.4925 15.8593L6.91793 10.2848Z" fill="currentColor"/></svg></button>
-      <div class="rv-titlewrap"><h2 id="rvProject" class="rv-name"></h2><span class="rv-divider" aria-hidden="true"></span><span class="rv-progress" id="rvProgress"></span></div>
-      <button id="rvFinal" class="rv-secondary" type="button" hidden><span>Copy final link</span></button>
-      <button id="rvCompile" class="rv-secondary" type="button" hidden><span>Compile order</span></button>
-      <button id="rvSendCustomer" class="rv-primary" hidden>Send to customer</button>
-      <button id="rvAdjust" class="rv-secondary" type="button"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.59998 12C1.59998 11.775 1.77498 11.6 1.99998 11.6H3.64998C3.82498 10.7 4.62498 10 5.59998 10C6.57498 10 7.37498 10.7 7.54998 11.6H14C14.225 11.6 14.4 11.775 14.4 12C14.4 12.225 14.225 12.4 14 12.4H7.54998C7.37498 13.325 6.57498 14 5.59998 14C4.62498 14 3.82498 13.325 3.64998 12.4H1.99998C1.77498 12.4 1.59998 12.225 1.59998 12ZM6.79998 12C6.79998 11.325 6.27498 10.8 5.59998 10.8C4.92498 10.8 4.39998 11.325 4.39998 12C4.39998 12.675 4.92498 13.2 5.59998 13.2C6.27498 13.2 6.79998 12.675 6.79998 12ZM11.6 8C11.6 7.325 11.075 6.8 10.4 6.8C9.72498 6.8 9.19998 7.325 9.19998 8C9.19998 8.675 9.72498 9.2 10.4 9.2C11.075 9.2 11.6 8.675 11.6 8ZM10.4 6C11.375 6 12.175 6.7 12.35 7.6H14C14.225 7.6 14.4 7.775 14.4 8C14.4 8.225 14.225 8.4 14 8.4H12.35C12.175 9.325 11.375 10 10.4 10C9.42498 10 8.62498 9.325 8.44998 8.4H1.99998C1.77498 8.4 1.59998 8.225 1.59998 8C1.59998 7.775 1.77498 7.6 1.99998 7.6H8.44998C8.62498 6.7 9.42498 6 10.4 6ZM6.39998 2.8C5.72498 2.8 5.19998 3.325 5.19998 4C5.19998 4.675 5.72498 5.2 6.39998 5.2C7.07498 5.2 7.59998 4.675 7.59998 4C7.59998 3.325 7.07498 2.8 6.39998 2.8ZM8.34998 3.6H14C14.225 3.6 14.4 3.775 14.4 4C14.4 4.225 14.225 4.4 14 4.4H8.34998C8.17498 5.325 7.37498 6 6.39998 6C5.42498 6 4.62498 5.325 4.44998 4.4H1.99998C1.77498 4.4 1.59998 4.225 1.59998 4C1.59998 3.775 1.77498 3.6 1.99998 3.6H4.44998C4.62498 2.7 5.42498 2 6.39998 2C7.37498 2 8.17498 2.7 8.34998 3.6Z" fill="currentColor"/></svg><span id="rvAdjustLabel">Adjust distribution</span></button>
-      <div class="rv-tools" role="group" aria-label="View">
-        <button id="stripToggle" class="rv-toggle" aria-pressed="true" aria-label="Slide list" title="Hide the slide list"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.59998 6.29334H14.4M3.30664 2.88H12.6933C13.6359 2.88 14.4 3.64411 14.4 4.58667V11.4133C14.4 12.3559 13.6359 13.12 12.6933 13.12H3.30664C2.36408 13.12 1.59998 12.3559 1.59998 11.4133V4.58667C1.59998 3.64411 2.36408 2.88 3.30664 2.88Z" stroke="currentColor"/></svg></button>
-        <div class="rv-zoom" role="group" aria-label="Zoom">
-          <button id="zoomOut" class="rv-tool" aria-label="Zoom out" title="Zoom out">−</button>
-          <button id="zoomLevel" class="rv-tool rv-zoomlevel" title="Fit the slide to the window">Fit</button>
-          <button id="zoomIn" class="rv-tool" aria-label="Zoom in" title="Zoom in">+</button>
-        </div>
+      <div class="rv-titlewrap"><h2 id="rvProject" class="rv-name"></h2><span class="rv-divider" aria-hidden="true"></span><span class="rv-progress" id="rvProgress"></span>
+        <div class="rv-cgroup" id="rvCompileGroup" hidden><button id="rvCompile" class="rv-cbtn" type="button">Compile slides</button><button id="rvFinal" class="rv-clink" type="button" aria-label="Copy final link" hidden><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M11.4722 5.47211C12.1944 4.80545 13.1111 4.44434 14.0833 4.44434C16.25 4.44434 18 6.19434 18 8.361C18 9.38878 17.5833 10.3888 16.8611 11.111L14.6667 13.3054C13.9167 14.0277 12.9444 14.4443 11.8889 14.4443C9.75 14.4443 8 12.6943 8 10.5554C8 9.97211 8.11111 9.44434 8.36111 8.94434C8.44444 8.72211 8.72222 8.611 8.94444 8.72211C9.16667 8.80545 9.25 9.08323 9.16667 9.30545C8.97222 9.69434 8.88889 10.111 8.88889 10.5554C8.88889 12.2221 10.25 13.5554 11.8889 13.5554C12.6944 13.5554 13.4722 13.2499 14.0278 12.6666L16.2222 10.4721C16.8056 9.91656 17.1111 9.13878 17.1111 8.361C17.1111 6.69434 15.75 5.33322 14.1111 5.33322C13.3611 5.33322 12.6667 5.611 12.1111 6.08323C11.9167 5.861 11.6944 5.63878 11.4722 5.47211ZM8.11111 6.44434C7.30556 6.44434 6.52778 6.74989 5.97222 7.33323L3.77778 9.52767C3.19444 10.0832 2.88889 10.861 2.88889 11.6388C2.88889 13.3054 4.25 14.6666 5.91667 14.6666C6.63889 14.6666 7.36111 14.3888 7.88889 13.9166C8.08333 14.1388 8.30556 14.361 8.52778 14.5554C7.80556 15.1943 6.88889 15.5554 5.91667 15.5554C3.75 15.5554 2 13.8054 2 11.6666C2 10.611 2.41667 9.63878 3.13889 8.88878L5.33333 6.69434C6.08333 5.97211 7.05556 5.55545 8.11111 5.55545C10.25 5.55545 12 7.30545 12 9.47211C12 10.0277 11.8889 10.5832 11.6389 11.0832C11.5556 11.3054 11.2778 11.3888 11.0556 11.3054C10.8333 11.1943 10.75 10.9166 10.8333 10.6943C11.0278 10.3054 11.1111 9.88878 11.1111 9.47211C11.1111 7.80545 9.75 6.44434 8.11111 6.44434Z" fill="currentColor"/></svg></button></div>
       </div>
-      <label class="rv-version" id="versionWrap"><span class="sr">Version</span><select id="versionSelect" aria-label="Version"></select></label>
-      <button id="deleteSlideBtn" class="rv-delete-ic" aria-label="Delete slide" title="Delete slide (the designer can send it again)"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8.09095 3.30303L7.75761 4.42424H12.2728L11.9394 3.30303C11.8788 3.12121 11.6667 2.9697 11.4546 2.9697H8.54549C8.33337 2.9697 8.15155 3.12121 8.09095 3.30303ZM6.72731 4.42424L7.15155 3.0303C7.33337 2.42424 7.90913 2 8.54549 2H11.4546C12.0909 2 12.6667 2.42424 12.8485 3.0303L13.2728 4.42424H16.3031C16.5758 4.42424 16.7879 4.63636 16.7879 4.90909C16.7879 5.18182 16.5758 5.39394 16.3031 5.39394H3.69701C3.42428 5.39394 3.21216 5.18182 3.21216 4.90909C3.21216 4.63636 3.42428 4.42424 3.69701 4.42424H6.72731ZM4.18186 6.84848H5.15155V16.0606C5.15155 16.6061 5.57579 17.0303 6.12125 17.0303H13.8788C14.4243 17.0303 14.8485 16.6061 14.8485 16.0606V6.84848H15.8182V16.0606C15.8182 17.1212 14.9394 18 13.8788 18H6.12125C5.06064 18 4.18186 17.1212 4.18186 16.0606V6.84848ZM7.57579 8.78788V14.6061C7.57579 14.8788 7.36367 15.0909 7.09095 15.0909C6.81822 15.0909 6.6061 14.8788 6.6061 14.6061V8.78788C6.6061 8.51515 6.81822 8.30303 7.09095 8.30303C7.36367 8.30303 7.57579 8.51515 7.57579 8.78788ZM10.4849 8.78788V14.6061C10.4849 14.8788 10.2728 15.0909 10 15.0909C9.72731 15.0909 9.51519 14.8788 9.51519 14.6061V8.78788C9.51519 8.51515 9.72731 8.30303 10 8.30303C10.2728 8.30303 10.4849 8.51515 10.4849 8.78788ZM13.394 8.78788V14.6061C13.394 14.8788 13.1819 15.0909 12.9091 15.0909C12.6364 15.0909 12.4243 14.8788 12.4243 14.6061V8.78788C12.4243 8.51515 12.6364 8.30303 12.9091 8.30303C13.1819 8.30303 13.394 8.51515 13.394 8.78788Z" fill="currentColor"/></svg></button>
+      <div class="rv-tools" role="group" aria-label="View">
+        <label class="rv-vsel" id="versionWrap" hidden><span class="sr">Version</span><select id="versionSelect" aria-label="Version"></select></label>
+        <button id="rvAdjust" class="rv-ibtn" type="button" aria-label="Adjust slide distribution" title="Adjust slide distribution"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8.83333 14.8888C8.91667 15.1943 9.02778 15.4999 9.13889 15.7777H3.77778C2.80556 15.7777 2 14.9721 2 13.9999V9.99989C2 9.02767 2.80556 8.22211 3.77778 8.22211H14C12.9167 8.22211 11.8889 8.55545 11.0556 9.111H3.77778C3.27778 9.111 2.88889 9.49989 2.88889 9.99989V13.9999C2.88889 14.4999 3.27778 14.8888 3.77778 14.8888H8.83333ZM14.8889 5.77767C14.8889 6.02767 14.6944 6.22211 14.4444 6.22211H3.77778C3.52778 6.22211 3.33333 6.02767 3.33333 5.77767C3.33333 5.52767 3.52778 5.33322 3.77778 5.33322H14.4444C14.6944 5.33322 14.8889 5.52767 14.8889 5.77767ZM13.5556 2.88878C13.5556 3.13878 13.3611 3.33322 13.1111 3.33322H5.11111C4.86111 3.33322 4.66667 3.13878 4.66667 2.88878C4.66667 2.63878 4.86111 2.44434 5.11111 2.44434H13.1111C13.3611 2.44434 13.5556 2.63878 13.5556 2.88878ZM15.6667 16.1943C15.4444 15.9443 15.1389 15.7777 14.7778 15.7777H13.2222C12.8611 15.7777 12.5556 15.9443 12.3333 16.1943C12.8056 16.4999 13.3889 16.6666 14 16.6666C14.6111 16.6666 15.1944 16.4999 15.6667 16.1943ZM16.3333 15.611C16.8333 15.0554 17.1111 14.3332 17.1111 13.5554C17.1111 11.8332 15.7222 10.4443 14 10.4443C12.2778 10.4443 10.8889 11.8332 10.8889 13.5554C10.8889 14.3332 11.1667 15.0554 11.6667 15.611C12.0556 15.1666 12.6111 14.8888 13.2222 14.8888H14.7778C15.3889 14.8888 15.9722 15.1666 16.3333 15.611ZM18 13.5554C18 15.7777 16.2222 17.5554 14 17.5554C11.7778 17.5554 10 15.7777 10 13.5554C10 11.3332 11.7778 9.55545 14 9.55545C16.2222 9.55545 18 11.3332 18 13.5554ZM14 12.2221C13.6389 12.2221 13.3333 12.5277 13.3333 12.8888C13.3333 13.2499 13.6389 13.5554 14 13.5554C14.3611 13.5554 14.6667 13.2499 14.6667 12.8888C14.6667 12.5277 14.3611 12.2221 14 12.2221ZM14 14.4443C13.1389 14.4443 12.4444 13.7499 12.4444 12.8888C12.4444 12.0277 13.1389 11.3332 14 11.3332C14.8611 11.3332 15.5556 12.0277 15.5556 12.8888C15.5556 13.7499 14.8611 14.4443 14 14.4443Z" fill="currentColor"/></svg></button>
+        <div class="rv-zoomwrap">
+          <button id="zoomToggle" class="rv-toggle" type="button" aria-pressed="false" aria-expanded="false" aria-controls="zoomPop" aria-label="Zoom" title="Zoom"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11.1953 6.79756C11.1953 4.37374 9.22125 2.39971 6.79744 2.39971C4.37362 2.39971 2.39959 4.37374 2.39959 6.79756C2.39959 9.22138 4.37362 11.1954 6.79744 11.1954C9.22125 11.1954 11.1953 9.22138 11.1953 6.79756ZM10.1708 10.7456C9.27123 11.5203 8.0968 11.995 6.79744 11.995C3.92384 11.995 1.59998 9.67116 1.59998 6.79756C1.59998 3.92396 3.92384 1.6001 6.79744 1.6001C9.67103 1.6001 11.9949 3.92396 11.9949 6.79756C11.9949 8.09693 11.5201 9.27135 10.7455 10.1709L14.2688 13.7192C14.4437 13.8691 14.4437 14.119 14.2688 14.2689C14.1189 14.4438 13.869 14.4438 13.7191 14.2689L10.1708 10.7456Z" fill="currentColor"/></svg></button>
+          <div class="rv-zoompop" id="zoomPop" hidden><div class="rv-zoom" role="group" aria-label="Zoom">
+            <button id="zoomOut" class="rv-tool" type="button" aria-label="Zoom out" title="Zoom out">−</button>
+            <button id="zoomLevel" class="rv-tool rv-zoomlevel" type="button" title="Fit the slide to the window">100%</button>
+            <button id="zoomIn" class="rv-tool" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+          </div></div>
+        </div>
+        <button id="stripToggle" class="rv-toggle" type="button" aria-pressed="true" aria-label="Slide list" title="Hide the slide list"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M14 6.69326H2.00001V11.4136C2.00015 12.1351 2.58548 12.7198 3.30704 12.7198H12.693C13.4145 12.7198 13.9999 12.1351 14 11.4136V6.69326ZM14 4.58701C14 3.86536 13.4146 3.27998 12.693 3.27998H3.30704C2.58539 3.27998 2.00001 3.86536 2.00001 4.58701V5.89326H14V4.58701ZM14.8 11.4136C14.7999 12.5769 13.8564 13.5198 12.693 13.5198H3.30704C2.14365 13.5198 1.20015 12.5769 1.20001 11.4136V4.58701C1.20001 3.42353 2.14356 2.47998 3.30704 2.47998H12.693C13.8565 2.47998 14.8 3.42353 14.8 4.58701V11.4136Z" fill="currentColor"/></svg></button>
+      </div>
     </header>
     <div class="rv-main">
       <div class="rv-work" id="rvWork">
@@ -956,13 +1043,13 @@
           <div class="rv-ptitle-l"><span>Order ID</span><b id="rvOrderId"></b></div>
           <div class="rv-ptitle-r"><span id="rvSlideNo"></span><span id="rvStatus" class="rv-tag"></span></div>
         </div>
+        <dl class="rv-facts" id="rvFacts">
+          <div><dt>Sent by</dt><dd id="rvBy"></dd></div>
+          <div><dt>Team</dt><dd id="rvTeam"></dd></div>
+          <div><dt>Time</dt><dd id="rvTime"></dd></div>
+        </dl>
         <div class="rv-decision" id="decisionBox">
           <div class="rv-dmnote" id="rvNoteBox" hidden><span>Note for DM:</span><p id="rvNote"></p></div>
-          <dl class="rv-facts">
-            <div><dt>Sent by</dt><dd id="rvBy"></dd></div>
-            <div><dt>Team</dt><dd id="rvTeam"></dd></div>
-            <div><dt>Time</dt><dd id="rvTime"></dd></div>
-          </dl>
           <div class="rv-actions" id="decisionBtns">
             <button id="approveBtn" class="rv-approve">Approve slide</button>
             <button id="changesBtn" class="rv-change">Request change</button>
@@ -1144,15 +1231,6 @@ async function cleanupOldProjects() {
   const keys = [...new Set(stale.map((r) => (r.project || "").trim().toLowerCase()))];
   await S.sb.from("project_status").delete().in("key", keys);
 }
-async function setSentToCustomer(key, sent) {
-  const p = S.projects[key]; if (!p) return;
-  const row = sent ? { key, name: p.name, sent_at: new Date().toISOString(), sent_by: displayName(S.user), updated_at: new Date().toISOString() }
-                   : { key, name: p.name, sent_at: null, sent_by: null, updated_at: new Date().toISOString() };
-  const { error } = await S.sb.from("project_status").upsert(row);
-  if (error) { alert("Couldn't update the project: " + error.message + "\n\nRun the project status SQL in Supabase first."); return; }
-  S.projectStatus[key] = row; renderBoard();
-  if (!$("reviewView").hidden) renderReview();
-}
 function buildIndex() {
   S.versions = {};
   S.shots.forEach((s) => { (S.versions[keyOf(s)] = S.versions[keyOf(s)] || []).push(s); });
@@ -1208,9 +1286,8 @@ const pinnedNumbers = (cs) => { let n = 0; const m = {}; cs.forEach((c) => { if 
 
 /* ---------- board ---------- */
 function visibleProjects() {
-  const sent = (p) => !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
   return Object.values(S.projects)
-    .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || sent(a) - sent(b) || b.lastAt.localeCompare(a.lastAt));
+    .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || b.lastAt.localeCompare(a.lastAt));
 }
 const BOARD = { sort: "waiting", view: "orders", designer: "all" };
 try { BOARD.sort = localStorage.getItem("qa.sort") || "waiting"; BOARD.view = localStorage.getItem("qa.view.board") === "distribution" ? "distribution" : "orders"; } catch (e) {}
@@ -1230,10 +1307,8 @@ function emptyIllo() {
   d.innerHTML = '<div class="s"><span><i></i><i></i><i></i></span></div>';
   return d;
 }
-// Progress ring (Figma component: states 0 / Some approved / All approved / Sent to customer)
-const SENT_RING = '<svg viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M0 15C0 6.71573 6.71573 0 15 0C23.2843 0 30 6.71573 30 15C30 23.2843 23.2843 30 15 30C6.71573 30 0 23.2843 0 15Z" fill="#0C7F49"/><path d="M20.5994 10.3525C20.9792 10.6125 21.0642 11.1125 20.788 11.47L13.988 20.27C13.8419 20.46 13.6161 20.5775 13.3664 20.5975C13.1167 20.6175 12.875 20.53 12.6997 20.365L9.29968 17.165C8.96765 16.8525 8.96765 16.345 9.29968 16.0325C9.63171 15.72 10.1709 15.72 10.503 16.0325L13.1991 18.57L19.4147 10.5275C19.6909 10.17 20.2222 10.09 20.602 10.35L20.5994 10.3525Z" fill="white"/></svg>';
-function ringSvg(frac, sent) {
-  if (sent) return SENT_RING;
+// Progress ring (Figma component: states 0 / Some approved / All approved)
+function ringSvg(frac) {
   const C = 2 * Math.PI * 13.5;
   const arc = frac >= 1 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#0C7F49" stroke-width="3"/>'
     : frac > 0 ? '<circle cx="15" cy="15" r="13.5" fill="none" stroke="#0C7F49" stroke-width="3" stroke-linecap="round" stroke-dasharray="' + (C * frac).toFixed(2) + ' ' + C.toFixed(2) + '" transform="rotate(-90 15 15)"/>' : "";
@@ -1242,15 +1317,14 @@ function ringSvg(frac, sent) {
 function projectRingState(p) {
   // Same count as the header: distinct slides sent for review (two people's copies of a slide count once)
   const prog = projectProgress(p); const total = prog.total || 1;
-  const sent = !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
-  return { prog, total, frac: Math.min(1, prog.approvedNums / total), sent };
+  return { prog, total, frac: Math.min(1, prog.approvedNums / total) };
 }
 function ring(p) {
   const r = projectRingState(p);
-  const w = el("span", "bd-ring"); w.title = p.waiting + " waiting, " + r.prog.approvedNums + " of " + r.total + " approved" + (r.sent ? ", sent to customer" : "");
-  w.innerHTML = ringSvg(r.frac, r.sent);
+  const w = el("span", "bd-ring"); w.title = p.waiting + " waiting, " + r.prog.approvedNums + " of " + r.total + " approved";
+  w.innerHTML = ringSvg(r.frac);
   // The number is the approved count, so it always matches the ring: 0 = grey, some = partial green, all = full circle
-  if (!r.sent) w.append(el("span", "n", String(r.prog.approvedNums)));
+  w.append(el("span", "n", String(r.prog.approvedNums)));
   return w;
 }
 // Deep link from Slack: review.html?order=351164&slide=6 (query string, not the hash: the hash carries auth tokens).
@@ -1280,10 +1354,8 @@ function openProject(p) {
 function cardMenu(p, anchor) {
   document.querySelectorAll(".bd-menu").forEach((m) => m.remove());
   const m = el("div", "bd-menu"); m.setAttribute("role", "menu");
-  const st = S.projectStatus[p.key]; const prog = projectProgress(p);
+  const prog = projectProgress(p);
   const item = (label, fn, opts = {}) => { const b = el("button", "bd-menuitem" + (opts.danger ? " danger" : ""), label); b.setAttribute("role", "menuitem"); b.disabled = !!opts.disabled; if (opts.title) b.title = opts.title; b.onclick = (e) => { e.stopPropagation(); m.remove(); fn(); }; m.append(b); };
-  if (st && st.sent_at) item("Undo \u201Csent to customer\u201D", () => setSentToCustomer(p.key, false));
-  else item("Mark as sent to customer", () => askSendToCustomer(p.key), { disabled: !prog.allApproved, title: prog.allApproved ? "" : prog.approvedNums + " of " + prog.total + " slides approved" });
   const fin = finalFile(p);
   if (fin) item("Copy final file link (" + fin.stage + ")", () => copyText(fin.link), { title: fin.file_name });
   item("Compile order", () => downloadCompileStarter(p), { disabled: !allSlidesApproved(p), title: allSlidesApproved(p) ? "Download a file that compiles this order in PowerPoint" : "Available when every slide is approved" });
@@ -1323,9 +1395,8 @@ function orderCard(p) {
 function sortedProjects() {
   const list = Object.values(S.projects);
   const oldestWaiting = (p) => p.slides.filter((x) => x.status === "ready").reduce((m, x) => (!m || x.created_at < m ? x.created_at : m), "");
-  const sent = (p) => !!(S.projectStatus[p.key] && S.projectStatus[p.key].sent_at);
   const by = {
-    waiting: (a, b) => (b.waiting > 0) - (a.waiting > 0) || (oldestWaiting(a) || "~").localeCompare(oldestWaiting(b) || "~") || sent(a) - sent(b) || b.lastAt.localeCompare(a.lastAt),
+    waiting: (a, b) => (b.waiting > 0) - (a.waiting > 0) || (oldestWaiting(a) || "~").localeCompare(oldestWaiting(b) || "~") || b.lastAt.localeCompare(a.lastAt),
     most: (a, b) => b.waiting - a.waiting || b.lastAt.localeCompare(a.lastAt),
     recent: (a, b) => b.lastAt.localeCompare(a.lastAt),
     name: (a, b) => a.name.localeCompare(b.name)
@@ -1482,7 +1553,6 @@ function renderActivity() {
     cs.forEach((cm) => ev.push({ t: cm.created_at, kind: cm.audio_path ? "voice" : "comment", shot: x, pin: nums[cm.id], dur: cm.audio_duration,
       text: [[who(cm.author), 1], [cm.audio_path ? " left a voice note on slide " : " commented on slide ", 0], [x.slide_number + " of ", 0], [x.project, 1]], quote: cm.body }));
   });
-  Object.values(S.projectStatus).forEach((st) => { if (st.sent_at && S.projects[st.key]) ev.push({ t: st.sent_at, kind: "customer", key: st.key, text: [[st.name, 1], [" was marked as sent to customer by ", 0], [who(st.sent_by), 1]] }); });
   ev.sort((a, b) => String(b.t).localeCompare(String(a.t)));
   if (!ev.length) { box.append(el("p", "bd-actempty", "Activity from designers and DMs shows up here.")); return; }
   const day = (iso) => { const d = new Date(iso); const t = new Date(); const y = new Date(); y.setDate(t.getDate() - 1);
@@ -1562,7 +1632,8 @@ function assignRow(a) {
   who.addEventListener("change", syncWho); syncWho();
   cols.append(who, sl, due); r.append(cols, x); return r;
 }
-function openAssign(key) {
+function openAssign(key, title) {
+  $("asTitle").textContent = title || "Assign order";
   const rows = key ? (S.assignments || {})[key] || [] : [];
   const p = key ? S.projects[key] : null;
   $("asOrder").value = p ? p.name : rows[0] ? rows[0].order_name : "";
@@ -1628,7 +1699,7 @@ function currentShot() {
 
 // ---- view: slide list toggle + zoom (Fit, or 25% to 400% of the column width)
 const ZOOMS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
-const VIEW = { zoom: "fit", strip: true };
+const VIEW = { zoom: 1, strip: true };   // 100% = the slide as wide as the column (Figma); Fit is a click on the percentage
 try { const v = JSON.parse(localStorage.getItem("qa.view") || "{}"); if (v.zoom === "fit" || ZOOMS.includes(v.zoom)) VIEW.zoom = v.zoom; if (v.strip === false) VIEW.strip = false; } catch (e) {}
 function saveView() { try { localStorage.setItem("qa.view", JSON.stringify(VIEW)); } catch (e) {} }
 function fitScale() { const col = $("rvScroll").clientWidth || 1; const w = $("rvImg").getBoundingClientRect().width; return w ? w / col : 1; }
@@ -1639,7 +1710,7 @@ function applyView() {
   $("stripToggle").title = VIEW.strip ? "Hide the slide list" : "Show the slide list";
   const fit = VIEW.zoom === "fit";
   rv.classList.toggle("fit", fit); rv.classList.toggle("zoomed", !fit);
-  $("zoomLevel").textContent = fit ? "Fit" : Math.round(VIEW.zoom * 100) + "%";
+  $("zoomLevel").textContent = Math.round((fit ? fitScale() : VIEW.zoom) * 100) + "%";
   $("zoomOut").disabled = !fit && VIEW.zoom <= ZOOMS[0];
   $("zoomIn").disabled = !fit && VIEW.zoom >= ZOOMS[ZOOMS.length - 1];
   if (fit) {
@@ -1674,14 +1745,27 @@ function openEmptyOrder() {
   renderEmptyOrder();
   $("backBtn").focus({ focusVisible: false });
 }
+// Header: progress until every slide is approved, then "Compile slides" (+ a link button once a final file is on Drive)
+function renderHeaderState(proj) {
+  const done = !!proj && allSlidesApproved(proj), fin = proj && finalFile(proj);
+  $("rvCompileGroup").hidden = !done; $("rvProgress").hidden = done;
+  if (proj) $("rvCompile").dataset.key = proj.key;
+  $("rvCompile").title = "Download a file that compiles this order in PowerPoint";
+  $("rvFinal").hidden = !fin;
+  if (fin) { $("rvFinal").dataset.link = fin.link; $("rvFinal").title = "Copy final link \u2014 " + fin.stage + ": " + fin.file_name + (fin.uploaded_by_name ? " (uploaded by " + fin.uploaded_by_name + ")" : ""); }
+  if (proj && !done) {
+    const r = projectRingState(proj); const pr = $("rvProgress");
+    pr.innerHTML = '<span class="ic">' + ringSvg(r.frac) + "</span>";
+    pr.append(document.createTextNode(r.prog.approvedNums + "/" + r.total + " slides approved"));
+  }
+}
 function renderEmptyOrder() {
   const p = S.projects[S.project]; if (!p) { closeReview(); return; }
   if (p.slides.length) { openProject(p); return; }   // the first slide arrived
   $("rvProject").textContent = p.name;
   const r = projectRingState(p); const pr = $("rvProgress");
-  pr.innerHTML = '<span class="ic">' + ringSvg(0, false) + "</span>"; pr.append(document.createTextNode("0/" + ((S.assignments[S.project] || []).reduce((n, a) => n + a.slides.length, 0)) + " slides approved"));
-  ["rvSendCustomer", "versionWrap", "deleteSlideBtn"].forEach((id) => { $(id).hidden = true; });
-  $("rvAdjustLabel").textContent = "Adjust distribution";
+  pr.innerHTML = '<span class="ic">' + ringSvg(0) + "</span>"; pr.append(document.createTextNode("0/" + ((S.assignments[S.project] || []).reduce((n, a) => n + a.slides.length, 0)) + " slides approved"));
+  $("rvCompileGroup").hidden = true; $("rvProgress").hidden = false; $("versionWrap").hidden = true;
   ["olderBanner", "decidedBanner"].forEach((id) => { $(id).hidden = true; });
   $("rvEmpty").hidden = false;
   renderRail();
@@ -1689,7 +1773,6 @@ function renderEmptyOrder() {
 async function renderReview() {
   if (!S.slideKey && S.project && $("reviewView").classList.contains("empty")) { renderEmptyOrder(); return; }
   const shot = currentShot(); if (!shot) { closeReview(); return; }
-  $("rvAdjustLabel").textContent = ((S.assignments || {})[S.project] || []).length ? "Adjust distribution" : "Assign order";
   S.shotId = shot.id;
   const vers = S.versions[S.slideKey];
   const latest = vers[0], isLatest = shot.id === latest.id;
@@ -1699,22 +1782,9 @@ async function renderReview() {
 
   $("rvProject").textContent = shot.project;
   const proj = S.projects[(shot.project || "").trim().toLowerCase()];
-  // Send to customer: only once every sent slide is approved and the order isn't marked as sent yet
-  const canSend = !!proj && projectProgress(proj).allApproved && !(S.projectStatus[proj.key] && S.projectStatus[proj.key].sent_at);
-  $("rvSendCustomer").hidden = !canSend;
-  if (proj) $("rvSendCustomer").dataset.key = proj.key;
-  $("rvCompile").hidden = !(proj && allSlidesApproved(proj));
-  const fin = proj && finalFile(proj);
-  $("rvFinal").hidden = !fin;
-  if (fin) { $("rvFinal").title = fin.stage + ": " + fin.file_name + (fin.uploaded_by_name ? " (uploaded by " + fin.uploaded_by_name + ")" : ""); $("rvFinal").dataset.link = fin.link; $("rvFinal").querySelector("span").textContent = "Copy final link"; }
-  if (proj) $("rvCompile").dataset.key = proj.key;
-  if (proj) {
-    const r = projectRingState(proj); const pr = $("rvProgress");
-    pr.innerHTML = '<span class="ic">' + ringSvg(r.frac, r.sent) + "</span>";
-    pr.append(document.createTextNode(r.sent ? "Sent to customer" : r.prog.approvedNums + "/" + r.total + " slides approved"));
-  }
+  renderHeaderState(proj);
   const sel = $("versionSelect"); sel.innerHTML = "";
-  vers.forEach((v) => { const o = el("option", "", "Version " + v.version); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
+  vers.forEach((v) => { const o = el("option", "", "v" + v.version); o.value = v.id; if (v.id === shot.id) o.selected = true; sel.append(o); });
   $("versionWrap").hidden = vers.length < 2;
   // Older version: a purple banner in the panel points to the latest one
   $("olderBanner").hidden = isLatest;
@@ -1738,7 +1808,6 @@ async function renderReview() {
   $("decisionBtns").hidden = !isLatest || decided || !canReview(shot);
   // Tag team: another team's slides are reviewed by their own DM, so no decision buttons here
   $("undoDecision").hidden = !canReview(shot);
-  $("deleteSlideBtn").hidden = !canReview(shot);
   const box = $("decidedBanner"); box.hidden = !decided;
   if (decided) {
     box.className = "rv-pbanner " + shot.status;
@@ -1784,6 +1853,7 @@ function renderFilter(all) {
   }
   return f === "all" ? null : rows.find((a) => a.assignee_id === f);
 }
+const THUMB_DEL = '<svg viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M4.31491 1.7616L4.13713 2.35958H6.54521L6.36744 1.7616C6.33511 1.66463 6.22198 1.58382 6.10885 1.58382H4.55734C4.4442 1.58382 4.34723 1.66463 4.31491 1.7616ZM3.58764 2.35958L3.8139 1.61615C3.91087 1.29291 4.21794 1.06665 4.55734 1.06665H6.10885C6.44824 1.06665 6.75532 1.29291 6.85228 1.61615L7.07855 2.35958H8.69471C8.84016 2.35958 8.9533 2.47271 8.9533 2.61817C8.9533 2.76362 8.84016 2.87675 8.69471 2.87675H1.97148C1.82602 2.87675 1.71289 2.76362 1.71289 2.61817C1.71289 2.47271 1.82602 2.35958 1.97148 2.35958H3.58764ZM2.23006 3.65251H2.74723V8.56564C2.74723 8.85655 2.9735 9.08281 3.26441 9.08281H7.40178C7.69269 9.08281 7.91895 8.85655 7.91895 8.56564V3.65251H8.43612V8.56564C8.43612 9.1313 7.96744 9.59998 7.40178 9.59998H3.26441C2.69875 9.59998 2.23006 9.1313 2.23006 8.56564V3.65251ZM4.04016 4.68685V7.78988C4.04016 7.93534 3.92703 8.04847 3.78158 8.04847C3.63612 8.04847 3.52299 7.93534 3.52299 7.78988V4.68685C3.52299 4.5414 3.63612 4.42827 3.78158 4.42827C3.92703 4.42827 4.04016 4.5414 4.04016 4.68685ZM5.59168 4.68685V7.78988C5.59168 7.93534 5.47855 8.04847 5.33309 8.04847C5.18764 8.04847 5.07451 7.93534 5.07451 7.78988V4.68685C5.07451 4.5414 5.18764 4.42827 5.33309 4.42827C5.47855 4.42827 5.59168 4.5414 5.59168 4.68685ZM7.14319 4.68685V7.78988C7.14319 7.93534 7.03006 8.04847 6.88461 8.04847C6.73915 8.04847 6.62602 7.93534 6.62602 7.78988V4.68685C6.62602 4.5414 6.73915 4.42827 6.88461 4.42827C7.03006 4.42827 7.14319 4.5414 7.14319 4.68685Z" fill="currentColor"/></svg>';
 async function renderRail() {
   const every = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
   const all = every.filter((x) => !x.alternative_of), alts = every.filter((x) => x.alternative_of);
@@ -1805,7 +1875,12 @@ async function renderRail() {
     b.append(el("span", "n", slideLabel(s)));
     const im = new Image(); im.alt = ""; im.loading = "lazy"; im.dataset.path = s.image_path; b.append(im);
     b.onclick = () => openReview(keyOf(s));
-    rail.append(b);
+    if (!canReview(s)) { rail.append(b); return; }
+    const box = el("div", "rv-thumbbox"); box.append(b);
+    const del = el("button", "rv-thumbdel"); del.type = "button"; del.innerHTML = THUMB_DEL;
+    del.setAttribute("aria-label", "Delete slide " + slideLabel(s)); del.title = "Delete slide (the designer can send it again)";
+    del.onclick = (e) => { e.stopPropagation(); askDeleteSlide(keyOf(s)); };
+    box.append(del); rail.append(box);
   });
   const sent = list.filter((x) => !x.placeholder);
   try { await ensureUrls(sent); } catch (e) {}
@@ -1949,11 +2024,7 @@ function renderDetails(shot, vers) {
   if (!d) { box.append(el("p", "", "Font and speaker-note details weren't captured for this version.")); return; }
   if (d.error) { box.append(el("p", "", "Details couldn't be read on the designer's computer: " + d.error + ".")); return; }
 
-  // Speaker notes, shown as-is; the DM compares them with the client's original file
-  const nc = el("section"); nc.append(el("h4", "", "Speaker notes"));
-  nc.append(el("p", "", d.notes.present ? d.notes.text : "This slide has no speaker notes."));
-  box.append(nc);
-  // Fonts
+  // Fonts (Figma 880:19507): Family, Size, Applied at (the text it's used on, else where it's used)
   const fc = el("section");
   const fh = el("h4", "", "Fonts");
   const small = d.smallest !== null && d.smallest !== undefined && d.smallest < SMALL_PT;
@@ -1961,19 +2032,26 @@ function renderDetails(shot, vers) {
   fc.append(fh);
   if (!d.fonts.length) fc.append(el("p", "", "No text on this slide."));
   else {
-    const rows = el("div", "rows");
+    const t = el("table", "rv-ftable"), hr = el("tr");
+    ["Family", "Size", "Applied at"].forEach((h) => hr.append(el("th", "", h)));
+    const th = el("thead"); th.append(hr); t.append(th);
+    const tb = el("tbody");
     d.fonts.forEach((f) => {
-      const r = el("div", "row");
-      r.append(el("span", "", f.font), el("span", f.size < SMALL_PT ? "small" : "", fmtPt(f.size) + "pt"));
-      const used = el("span", "", f.roles.join(", ") + (f.count > 1 ? " (" + f.count + "\u00D7)" : ""));
-      if (f.sample) { const sm = el("span", "sample", "\u201C" + f.sample + "\u201D"); sm.title = f.sample; used.append(sm); }
-      r.append(used); rows.append(r);
+      const r = el("tr");
+      const fam = el("td", "", f.font); fam.title = f.font;
+      const size = el("td", f.size < SMALL_PT ? "small" : "", fmtPt(f.size) + "pt");
+      const where = f.roles.join(", ") + (f.count > 1 ? " (" + f.count + "\u00D7)" : "");
+      const used = el("td", "", f.sample || where); used.title = f.sample ? "\u201C" + f.sample + "\u201D \u2014 " + where : where;
+      r.append(fam, size, used); tb.append(r);
     });
-    fc.append(rows);
+    t.append(tb); fc.append(t);
   }
   if (d.shrunk && d.shrunk.length) fc.append(el("p", "dnote", "Autofit is shrinking text in: " + d.shrunk.join(", ") + ". Sizes shown are as displayed."));
   box.append(fc);
-
+  // Speaker notes, shown as-is; the DM compares them with the client's original file
+  const nc = el("section"); nc.append(el("h4", "", "Speaker notes"));
+  nc.append(el("p", "", d.notes.present ? d.notes.text : "This slide has no speaker notes."));
+  box.append(nc);
 }
 function renderPinsOnly(shot) {
   const cs = S.comments[shot.id] || []; const nums = pinnedNumbers(cs);
@@ -2065,18 +2143,9 @@ async function removeShots(ids, imagePaths) {
   }
   for (let i = 0; i < files.length; i += 500) await S.sb.storage.from("slides").remove(files.slice(i, i + 500));
 }
-function askSendToCustomer(key) {
-  const p = S.projects[key]; if (!p) return;
-  pendingDelete = async () => { $("deleteDialog").close(); await setSentToCustomer(key, true); };
-  $("delTitle").textContent = "Mark " + p.name + " as sent to customer?";
-  $("delBody").textContent = "All " + projectProgress(p).total + " slides are approved. Designers and DMs will see this project as sent.";
-  $("delConfirm").textContent = "Mark as sent"; $("delWarn").hidden = true;
-  $("delConfirm").className = "primary";
-  say($("delMsg"), ""); $("delConfirm").disabled = false;
-  $("deleteDialog").showModal(); $("delCancel").focus();
-}
-function askDeleteSlide() {
-  const vers = S.versions[S.slideKey]; if (!vers) return;
+function askDeleteSlide(key) {
+  S.delKey = key || S.slideKey;
+  const vers = S.versions[S.delKey]; if (!vers) return;
   const l = vers[0]; pendingDelete = deleteSlide; $("delConfirm").className = "danger"; $("delWarn").hidden = false;
   const comments = vers.reduce((n, v) => n + (S.comments[v.id] || []).length, 0);
   $("delTitle").textContent = "Delete slide " + slideLabel(l) + " from " + l.designer + "?";
@@ -2086,7 +2155,7 @@ function askDeleteSlide() {
   $("deleteDialog").showModal(); $("delCancel").focus();
 }
 async function deleteSlide() {
-  const key = S.slideKey; const vers = S.versions[key]; if (!vers) return;
+  const key = S.delKey || S.slideKey, open = key === S.slideKey; const vers = S.versions[key]; if (!vers) return;
   $("delConfirm").disabled = true; say($("delMsg"), "Deleting…");
   try {
     const list = projectSlides(); const i = list.findIndex((s) => keyOf(s) === key);
@@ -2094,7 +2163,8 @@ async function deleteSlide() {
     await removeShots(vers.map((v) => v.id), vers.map((v) => v.image_path));
     $("deleteDialog").close();
     await loadAll();
-    if (next && S.versions[keyOf(next)]) openReview(keyOf(next)); else closeReview();
+    if (!open && S.versions[S.slideKey]) renderReview();   // another slide was deleted: stay on this one
+    else if (next && S.versions[keyOf(next)]) openReview(keyOf(next)); else closeReview();
     renderBoard();
   } catch (e) { say($("delMsg"), "Couldn't delete: " + (e.message || e) + ".", "err"); $("delConfirm").disabled = false; }
 }
@@ -2397,10 +2467,13 @@ async function enter(user, team) {
   $("railPrev").onclick = () => { $("rvRail").scrollBy({ left: -3 * 165 }); };
   $("railNext").onclick = () => { $("rvRail").scrollBy({ left: 3 * 165 }); };
   $("rvRail").addEventListener("scroll", updateRailArrows, { passive: true });
-  $("rvFinal").onclick = () => { const b = $("rvFinal"); copyText(b.dataset.link, () => { b.querySelector("span").textContent = "Link copied"; setTimeout(() => { b.querySelector("span").textContent = "Copy final link"; }, 1500); }); };
+  $("rvFinal").onclick = () => { const b = $("rvFinal"); copyText(b.dataset.link, () => { b.classList.add("copied"); b.setAttribute("aria-label", "Link copied"); setTimeout(() => { b.classList.remove("copied"); b.setAttribute("aria-label", "Copy final link"); }, 1500); }); };
   $("rvCompile").onclick = () => { const p = S.projects[$("rvCompile").dataset.key]; if (p) downloadCompileStarter(p); };
-  $("rvSendCustomer").onclick = () => { const k = $("rvSendCustomer").dataset.key; if (k) askSendToCustomer(k); };
-  $("rvAdjust").onclick = () => openAssign(S.project);
+  $("rvAdjust").onclick = () => openAssign(S.project, "Adjust slide distribution");
+  // Zoom: the magnifier shows or hides the zoom control
+  const zoomShow = (on) => { $("zoomPop").hidden = !on; $("zoomToggle").setAttribute("aria-pressed", String(on)); $("zoomToggle").setAttribute("aria-expanded", String(on)); if (on) applyView(); };
+  $("zoomToggle").onclick = () => zoomShow($("zoomPop").hidden);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("zoomPop").hidden) { zoomShow(false); $("zoomToggle").focus(); } });
   $("asAdd").onclick = () => { const r = assignRow(); $("asRows").append(r); updateRemoveButtons(); r.querySelector("select").focus(); r.scrollIntoView({ block: "nearest" }); };
   $("asCancel").onclick = () => $("assignDialog").close();
   $("assignForm").addEventListener("submit", (e) => { e.preventDefault(); saveAssign(); });
@@ -2418,7 +2491,6 @@ async function enter(user, team) {
   $("recStop").onclick = toggleRecording;
   $("delCancel").onclick = () => { $("deleteDialog").close(); deleteKey = null; };
   $("delConfirm").onclick = () => pendingDelete && pendingDelete();
-  $("deleteSlideBtn").onclick = askDeleteSlide;
   $("recDiscard").onclick = () => discardRecording();
   $("removePin").onclick = () => { S.draft = null; renderComments(currentShot()); };
   $("commentBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) addComment(); });
