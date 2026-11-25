@@ -550,7 +550,7 @@
   .fmt-pop { position: absolute; right: 26px; top: calc(100% + 9px); z-index: 5; display: flex; padding: 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF;
     box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); font-weight: 400; }   /* Shadow/m */
   .fmt-pop.up { top: auto; bottom: calc(100% + 9px); }   /* not enough room below (short task pane): open above the button */
-  .fmt-tgs { display: flex; gap: 20px; }
+  .fmt-tgs { display: flex; gap: 8px; }
   .fmt-tg { position: relative; width: 32px; height: 32px; padding: 6px 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #5C6480; cursor: pointer; display: grid; place-items: center; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
   .fmt-tg svg { width: 16px; height: 16px; display: block; }
   .fmt-tg:hover { background: #F7F9FC; }
@@ -796,7 +796,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.63";
+const APP_VERSION = "2.64";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);

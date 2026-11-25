@@ -7,7 +7,7 @@ Slideshot is an internal tool at 24Slides. Designers send finished PowerPoint sl
 - **Apply Figma designs exactly.** Read the node, measure it, then match px, colors, radius and spacing. Export icons from Figma as SVG; never hand-draw icons. After building, measure DOM positions against the Figma numbers and look at a screenshot. Fonts render ~1px wider in Chrome than in Figma, so give wrapping text 1–2px slack to keep Figma's line breaks.
 - If the design conflicts with how something works (e.g. a hover button covering a tag), do not silently pick: apply the design where possible, explain the conflict, propose one fix.
 - **Never commit or push until she says "commit".** Commit messages are short English imperatives, e.g. `Fix duplicate positions; show Slide x → Slide y in the header`.
-- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.63). The dashboard has no version string.
+- **Bump `APP_VERSION` in `panel.html`** on every panel change (footer shows it; currently 2.64). The dashboard has no version string.
 - **After every shipped change, update the docs**: edit `docs/gen/gen.py` (English and Indonesian together, plus a release-notes row, the version badge and the "Updated" date), run `npm run docs`, and publish/commit `docs/slideshot-docs.html`.
 - For each visual change, save a preview PNG (`npm run shot`) and tell her where it is. Say plainly what was only tested with mock data.
 - Be honest and short. Report what changed, what you verified, and what she needs to decide.

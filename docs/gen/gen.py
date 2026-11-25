@@ -344,6 +344,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['v2.64',('Formatting check: the B, I, U, S toggles sit closer together.','Formatting check: toggle B, I, U, S kini lebih rapat.')],
 ['v2.63',('Compare with original: a formatting difference now counts as a difference, so the status no longer says the text matches.','Bandingkan dengan file asli: perbedaan format kini dihitung sebagai perbedaan, jadi status tidak lagi menyebut teksnya cocok.')],
 ['v2.62',('Sending a slide: the file status moves to a bar at the bottom of the panel (Sending file… with a moving strip, File sent! that fades, or Couldn’t send the file with Retry).','Mengirim slide: status file pindah ke bar di bawah panel (Sending file… dengan strip bergerak, File sent! yang menghilang, atau Couldn’t send the file dengan Retry).')],
 ['v2.61',('Compare with original: the Check again tooltip stays inside the panel.','Bandingkan dengan file asli: tooltip Check again tetap di dalam panel.')],
@@ -436,7 +437,7 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.63','Add-in v2.63')}</span><span class="meta">{T('Updated 25 Nov 2026','Diperbarui 25 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.64','Add-in v2.64')}</span><span class="meta">{T('Updated 25 Nov 2026','Diperbarui 25 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>
