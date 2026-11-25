@@ -88,6 +88,28 @@
     return s;
   }
   function bodyParas(txBody) { return kids(txBody, "p").map(paraText).filter((t) => t.trim()); }
+  // Same paragraph with its formatting: fm has one character per text character, code 64 + flags
+  // (1 bold, 2 italic, 4 underline, 8 strikethrough, 16 superscript, 32 subscript). Only formatting written on the run
+  // itself counts (not what a run inherits from the shape, layout or master). Unicode characters stay as they are:
+  // "m²" in the original and "m2" in superscript on the slide are different text (reported as a word change).
+  function runFlags(r) {
+    const pr = kids(r, "rPr")[0]; if (!pr) return 0;
+    const on = (a) => /^(1|true|on)$/i.test(pr.getAttribute(a) || "");
+    const u = pr.getAttribute("u"), st = pr.getAttribute("strike"), bl = +(pr.getAttribute("baseline") || 0);
+    return (on("b") ? 1 : 0) | (on("i") ? 2 : 0) | (u && u !== "none" ? 4 : 0) | (st && st !== "noStrike" ? 8 : 0) | (bl > 0 ? 16 : 0) | (bl < 0 ? 32 : 0);
+  }
+  function paraRich(p) {
+    let text = "", fm = "";
+    const add = (str, f) => {
+      for (const ch of str) { text += ch; fm += String.fromCharCode(64 + f); }
+    };
+    for (const n of p.children) {
+      if (n.localName === "r" || n.localName === "fld") add(all(n, "t").map((t) => t.textContent).join(""), runFlags(n));
+      else if (n.localName === "br") add(" ", 0);
+    }
+    return { text, fm };
+  }
+  function richParas(txBody) { return kids(txBody, "p").map(paraRich).filter((x) => x.text.trim()); }
 
   // ---------- read one presentation ----------
   // Returns { slides: [ { index, part, blocks: [ {loc, text, shape} ] } ] } in presentation order (sldIdLst), plus timings.
@@ -127,7 +149,7 @@
       const nd = xml(await zip.text(notesRel.target));
       all(nd, "sp").forEach((sp) => {
         const ph = all(sp, "ph")[0]; if (!ph || (ph.getAttribute("type") || "body") !== "body") return;
-        const tb = kids(sp, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "notes", text: t, shape: null }));
+        const tb = kids(sp, "txBody")[0]; if (tb) richParas(tb).forEach((x) => blocks.push({ loc: "notes", text: x.text, fm: x.fm, shape: null }));
       });
     }
     return { blocks };
@@ -162,10 +184,10 @@
   }
   async function shapeBlocks(el, ln, shape, blocks, zip, srels) {
     {
-      if (ln === "sp") { const tb = kids(el, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "text", text: t, shape })); return; }
+      if (ln === "sp") { const tb = kids(el, "txBody")[0]; if (tb) richParas(tb).forEach((x) => blocks.push({ loc: "text", text: x.text, fm: x.fm, shape })); return; }
       if (ln === "graphicFrame") {
         const tbl = all(el, "tbl")[0];
-        if (tbl) { all(tbl, "tr").forEach((tr, r) => kids(tr, "tc").forEach((tc, c) => { const tb = kids(tc, "txBody")[0]; if (tb) bodyParas(tb).forEach((t) => blocks.push({ loc: "table", text: t, shape, cell: [r, c] })); })); return; }
+        if (tbl) { all(tbl, "tr").forEach((tr, r) => kids(tr, "tc").forEach((tc, c) => { const tb = kids(tc, "txBody")[0]; if (tb) richParas(tb).forEach((x) => blocks.push({ loc: "table", text: x.text, fm: x.fm, shape, cell: [r, c] })); })); return; }
         const dm = all(el, "relIds")[0];   // SmartArt: the text lives in the diagram data part
         if (dm) { const rel = srels[dm.getAttributeNS(RNS, "dm") || dm.getAttribute("r:dm")]; if (rel && zip.has(rel.target)) { const dd = xml(await zip.text(rel.target)); all(dd, "pt").forEach((pt) => { const t = kids(pt, "t")[0]; if (t) all(t, "p").map(paraText).filter((x) => x.trim()).forEach((x) => blocks.push({ loc: "text", text: x, shape })); }); } return; }
         const ch = all(el, "chart")[0];
@@ -190,6 +212,69 @@
     return text.split(/\n+/).map(norm).filter(Boolean).flatMap((line) => line.split(/(?<=[.!?…])\s+(?=[A-Z0-9"“(])/)).map((s) => s.trim()).filter(Boolean);
   }
   const words = (s) => s.split(" ").filter(Boolean);
+  // segments() with the formatting kept: for each sentence, one flag string per word (same order as words())
+  function richSegments(text, fm) {
+    let cs = [...text].map((c, i) => ({ c: /[\u00a0\u2007\u202f\t]/.test(c) ? " " : c, f: fm[i] || "@" }));
+    const out = [];
+    const lines = []; let cur = [];
+    cs.forEach((x) => { if (x.c === "\n") { lines.push(cur); cur = []; } else cur.push(x); }); lines.push(cur);
+    for (let line of lines) {
+      const sq = []; line.forEach((x) => { const ws = /\s/.test(x.c); if (ws && (!sq.length || sq[sq.length - 1].c === " ")) return; sq.push(ws ? { c: " ", f: "@" } : x); });
+      while (sq.length && sq[sq.length - 1].c === " ") sq.pop();
+      const str = sq.map((x) => x.c).join(""), bm = str.match(BULLET); const body = bm ? sq.slice(bm[0].length) : sq;
+      if (!body.length) continue;
+      const bs = body.map((x) => x.c).join(""), cuts = [0]; const re = /(?<=[.!?…])\s+(?=[A-Z0-9"“(])/g; let m;
+      while ((m = re.exec(bs))) { cuts.push(m.index, m.index + m[0].length); }
+      cuts.push(bs.length);
+      for (let k = 0; k < cuts.length; k += 2) {
+        let piece = body.slice(cuts[k], cuts[k + 1]);
+        while (piece.length && piece[0].c === " ") piece.shift(); while (piece.length && piece[piece.length - 1].c === " ") piece.pop();
+        if (!piece.length) continue;
+        const t = piece.map((x) => x.c).join(""), wf = []; let w = "";
+        piece.forEach((x) => { if (x.c === " ") { if (w) wf.push(w); w = ""; } else w += x.f; }); if (w) wf.push(w);
+        out.push({ t, wf });
+      }
+    }
+    return out;
+  }
+  // Formatting differences between two paired sentences (same words, other formatting). Bold, italic, underline and
+  // strikethrough count only as emphasis: some words of the original sentence have it, others not (a sentence that is
+  // all bold is a design choice). Superscript and subscript always count. Only formatting the slide lost is reported.
+  const FMT = [[1, "b", "bold"], [2, "i", "italic"], [4, "u", "underline"], [8, "s", "strikethrough"]];
+  function lcsPairs(a, b) {
+    const n = a.length, m = b.length, dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    const out = []; let i = 0, j = 0;
+    while (i < n && j < m) { if (a[i] === b[j]) { out.push([i, j]); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++; }
+    return out;
+  }
+  const fl = (ch) => ch.charCodeAt(0) - 64;
+  const wordHas = (f, bit) => { let c = 0; for (const ch of f) if (fl(ch) & bit) c++; return c * 2 > f.length; };
+  function formatDiffs(o, s, enabled) {
+    const a = words(o.t), b = words(s.t), out = [];
+    if (!o.wf || !s.wf || o.wf.length !== a.length || s.wf.length !== b.length) return out;
+    const pairs = lcsPairs(a, b), found = [];
+    for (const [bit, key, name] of FMT) {
+      if (enabled && enabled[key] === false) continue;
+      const n = o.wf.filter((f) => wordHas(f, bit)).length;
+      if (!n || n === a.length) continue;   // none, or the whole sentence: not emphasis
+      pairs.forEach(([i, j]) => { if (wordHas(o.wf[i], bit) && !wordHas(s.wf[j], bit)) found.push({ i, j, name }); });
+    }
+    for (const [bit, name] of [[16, "superscript"], [32, "subscript"]]) {
+      pairs.forEach(([i, j]) => {
+        const fo = o.wf[i], fs = s.wf[j];
+        for (let k = 0; k < fo.length; k++) if ((fl(fo[k]) & bit) && !(fl(fs[k] || "@") & bit)) { found.push({ i, j, name }); break; }
+      });
+    }
+    // neighbouring words with the same lost formatting become one row
+    found.sort((x, y) => x.name.localeCompare(y.name) || x.i - y.i);
+    for (const f of found) {
+      const last = out[out.length - 1];
+      if (last && last.name === f.name && last.i1 === f.i - 1 && last.j1 === f.j - 1) { last.i1 = f.i; last.j1 = f.j; }
+      else out.push({ name: f.name, i0: f.i, i1: f.i, j0: f.j, j1: f.j });
+    }
+    return out.map((g) => ({ fmt: g.name, orig: windowed(a, g.i0, g.i1 + 1), slide: windowed(b, g.j0, g.j1 + 1), ofm: o.wf.slice(g.i0, g.i1 + 1).join("@") }));
+  }
   const loose = (w) => w.toLowerCase().replace(/[^\p{L}\p{N}%]+/gu, "");
   // Similarity for pairing (loose: case and punctuation ignored); the diff itself is exact
   function similarity(a, b) {
@@ -229,7 +314,11 @@
   // Compare one original slide with the current slide. Returns { items, pairs }
   function compare(origBlocks, slideBlocks, opts) {
     const threshold = (opts && opts.threshold) || 0.5, items = [];
-    const seg = (blocks) => blocks.flatMap((b) => segments(b.text).map((t) => ({ t, b, loc: b.loc })));
+    const seg = (blocks) => blocks.flatMap((b) => {
+      const plain = segments(b.text), rich = b.fm ? richSegments(b.text, b.fm) : null;
+      const ok = rich && rich.length === plain.length && rich.every((r, k) => r.t === plain[k]);
+      return plain.map((t, k) => ({ t, b, loc: b.loc, wf: ok ? rich[k].wf : null }));
+    });
     const allO = seg(origBlocks), allS = seg(slideBlocks), takenO = new Set(), takenS = new Set(), partner = new Map();
     // Pass 1 per location (slide text, table, chart, notes); pass 2 across locations for what is left, because a
     // redesign often turns a table into text boxes (or the other way round): the text is still there, just elsewhere.
@@ -251,6 +340,9 @@
         });
       }
     }
+    // Formatting the slide lost, in every paired sentence (exact pairs too)
+    partner.forEach((s, o) => formatDiffs(o, s, opts && opts.formats).forEach((d) =>
+      items.push(Object.assign({ cat: "format", loc: o.loc, slideSentence: s.t, slideLoc: s.loc, shape: s.b.shape, cell: s.b.cell || null }, d))));
     // Still unpaired: missing, unless the text sits inside a longer slide sentence (two sentences merged into one)
     const slideAll = allS.map((x) => x.t).join(" \u0000 ");
     // Anchor for missing text: the slide text that matches the original text right before it (or right after it),
@@ -269,5 +361,5 @@
   }
 
   function now() { return (root.performance && performance.now()) || Date.now(); }
-  root.CompareOriginal = { openZip, readDeck, readSlide, compare, segments, similarity, norm };
+  root.CompareOriginal = { openZip, readDeck, readSlide, compare, segments, richSegments, similarity, norm };
 })(typeof window !== "undefined" ? window : globalThis);

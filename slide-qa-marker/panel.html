@@ -517,6 +517,34 @@
   .cmp-cell.stack { flex-direction: column; align-items: stretch; gap: 4px; }
   .cmp-line, .cmp-clue { display: flex; align-items: center; gap: 4px; min-width: 0; }
   .cmp-clue { padding-left: 4px; }   /* Figma 687:12163 */
+  /* Formatting check (Figma 860:18629): feather + check again icon buttons, settings popover, Formatting rows */
+  .cmp-status { position: relative; }
+  .cmp-ib { flex: none; position: relative; width: 24px; height: 24px; padding: 4px; border: 0; border-radius: 6px; background: none; color: #5C6480; cursor: pointer; display: grid; place-items: center; }
+  .cmp-ib svg { width: 16px; height: 16px; display: block; }
+  .cmp-ib:hover { background: #F7F9FC; }
+  .cmp-ib + .cmp-ib { margin-left: -4px; }   /* 4px between the two buttons (the row gap is 8px) */
+  .cmp-ib.on { background: #FFFFFF; box-shadow: 0 1px 2px rgba(18,18,23,.05), 0 0 0 3px rgba(163,173,194,.5); }
+  .cmp-ib:focus-visible, .fmt-tg:focus-visible, .fmt-save:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
+  .cmp-tip { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 4px 8px; border-radius: 6px; background: #1A1F2E; color: #FFFFFF; font: 400 12px/16px var(--font); white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease-out; z-index: 6; }   /* tooltip/default */
+  .cmp-ib:hover > .cmp-tip, .cmp-ib:focus-visible > .cmp-tip, .fmt-tg:hover > .cmp-tip, .fmt-tg:focus-visible > .cmp-tip { opacity: 1; visibility: visible; }
+  .cmp-ib.on > .cmp-tip { display: none; }
+  @media (prefers-reduced-motion: reduce) { .cmp-tip { transition: none; } }
+  .fmt-pop { position: absolute; right: 25px; top: calc(100% + 7px); z-index: 5; width: 222px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF;
+    box-shadow: 0 2px 4px -1px rgba(18,18,23,.06), 0 4px 6px -1px rgba(18,18,23,.08); font-weight: 400; }   /* Shadow/m */
+  .fmt-pop h4 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
+  .fmt-pop p { margin: 0; font-size: 12px; line-height: 16px; color: #2F3547; }   /* text/subtitle */
+  .fmt-tgs { display: flex; gap: 20px; }
+  .fmt-tg { position: relative; width: 32px; height: 32px; padding: 6px 8px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; color: #5C6480; cursor: pointer; display: grid; place-items: center; box-shadow: 0 1px 1px rgba(18,18,23,.05); }
+  .fmt-tg svg { width: 16px; height: 16px; display: block; }
+  .fmt-tg:hover { background: #F7F9FC; }
+  .fmt-tg[aria-pressed="true"] { background: #F7F9FC; border-color: #3B74F5; }   /* outline/strong/brand */
+  .fmt-foot { display: flex; justify-content: flex-end; }
+  .fmt-save { padding: 0; border: 0; background: none; font: 500 14px/20px var(--font); color: #2557D4; cursor: pointer; }   /* text/color/brand */
+  .fmt-save:hover { text-decoration: underline; text-underline-position: from-font; }
+  .cmp-note { flex: none; display: flex; align-items: center; gap: 8px; margin-top: -4px; font-size: 12px; line-height: 16px; color: #6A7389; }
+  .cmp-note span { flex: 1; min-width: 0; }
+  .cmp-cell mark.f-bold { font-weight: 600; } .cmp-cell mark.f-italic { font-style: italic; } .cmp-cell mark.f-underline { text-decoration: underline; } .cmp-cell mark.f-strikethrough { text-decoration: line-through; }
+  .cmp-cell mark sup, .cmp-cell mark sub { font-size: 9px; line-height: 0; }
   .cmp-clue span { flex: 1; min-width: 0; font-size: 12px; line-height: 16px; color: #454C63; overflow-wrap: anywhere; }   /* text-xs/Regular, text/body */
 </style>
 </head>
@@ -754,7 +782,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.56";
+const APP_VERSION = "2.57";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1338,6 +1366,15 @@ function openAltPop() {
 const CMP_ICON = {"bullseye": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.4 2.4)\"><path d=\"M10.5 5.6C10.5 2.8875 8.3125 0.7 5.6 0.7C2.8875 0.7 0.7 2.8875 0.7 5.6C0.7 8.3125 2.8875 10.5 5.6 10.5C8.3125 10.5 10.5 8.3125 10.5 5.6ZM0 5.6C0 2.51562 2.51562 0 5.6 0C8.68437 0 11.2 2.51562 11.2 5.6C11.2 8.68437 8.68437 11.2 5.6 11.2C2.51562 11.2 0 8.68437 0 5.6ZM5.6 8.4C7.15312 8.4 8.4 7.15312 8.4 5.6C8.4 4.04687 7.15312 2.8 5.6 2.8C4.04687 2.8 2.8 4.04687 2.8 5.6C2.8 7.15312 4.04687 8.4 5.6 8.4ZM5.6 2.1C7.525 2.1 9.1 3.675 9.1 5.6C9.1 7.525 7.525 9.1 5.6 9.1C3.675 9.1 2.1 7.525 2.1 5.6C2.1 3.675 3.675 2.1 5.6 2.1ZM5.6 6.3C5.99375 6.3 6.3 5.99375 6.3 5.6C6.3 5.20625 5.99375 4.9 5.6 4.9C5.20625 4.9 4.9 5.20625 4.9 5.6C4.9 5.99375 5.20625 6.3 5.6 6.3ZM5.6 4.2C6.36562 4.2 7 4.83437 7 5.6C7 6.36562 6.36562 7 5.6 7C4.83437 7 4.2 6.36562 4.2 5.6C4.2 4.83437 4.83437 4.2 5.6 4.2Z\" fill=\"currentColor\"/></g></svg>", "copy": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(3.1 2.4)\"><path d=\"M3.5 1.4V7C3.5 7.39375 3.80625 7.7 4.2 7.7H8.4C8.79375 7.7 9.1 7.39375 9.1 7V2.7125C9.1 2.51562 9.03438 2.34062 8.90313 2.20937L7.59063 0.896875C7.45938 0.765625 7.28438 0.7 7.0875 0.7H4.2C3.80625 0.7 3.5 1.00625 3.5 1.4ZM4.2 0H7.0875C7.45938 0 7.80938 0.153125 8.07188 0.415625L9.38438 1.72812C9.64688 1.99062 9.8 2.34062 9.8 2.7125V7C9.8 7.76562 9.16563 8.4 8.4 8.4H4.2C3.43438 8.4 2.8 7.76562 2.8 7V1.4C2.8 0.634375 3.43438 0 4.2 0ZM1.4 2.8H1.75V3.5H1.4C1.00625 3.5 0.7 3.80625 0.7 4.2V9.8C0.7 10.1937 1.00625 10.5 1.4 10.5H5.6C5.99375 10.5 6.3 10.1937 6.3 9.8V9.45H7V9.8C7 10.5656 6.36563 11.2 5.6 11.2H1.4C0.634375 11.2 0 10.5656 0 9.8V4.2C0 3.43437 0.634375 2.8 1.4 2.8Z\" fill=\"currentColor\"/></g></svg>", "x16": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(2.4 2.4)\"><path d=\"M11.0471 0.77342L6.26996 5.58906L11.0471 10.4047C11.251 10.5798 11.251 10.8717 11.0471 11.0468C10.8723 11.2511 10.581 11.2511 10.4062 11.0468L5.6 6.26033L0.793758 11.0468C0.618986 11.2511 0.327698 11.2511 0.152926 11.0468C-0.0509753 10.8717 -0.0509753 10.5798 0.152926 10.4047L4.93004 5.58906L0.152926 0.77342C-0.0509753 0.598306 -0.0509753 0.30645 0.152926 0.131335C0.327698 -0.0437785 0.618986 -0.0437785 0.793758 0.131335L5.6 4.91779L10.4062 0.131335C10.581 -0.0437785 10.8723 -0.0437785 11.0471 0.131335C11.251 0.30645 11.251 0.598306 11.0471 0.77342Z\" fill=\"currentColor\"/></g></svg>", "plus16": "<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><g transform=\"translate(1.6 1.6)\"><path d=\"M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z\" fill=\"currentColor\"/></g></svg>"};
 const CMP_TRASH = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.47273 2.64242L6.20606 3.53939H9.81818L9.55152 2.64242C9.50303 2.49697 9.33333 2.37576 9.16364 2.37576H6.83636C6.66667 2.37576 6.52121 2.49697 6.47273 2.64242ZM5.38182 3.53939L5.72121 2.42424C5.86667 1.93939 6.32727 1.6 6.83636 1.6H9.16364C9.67273 1.6 10.1333 1.93939 10.2788 2.42424L10.6182 3.53939H13.0424C13.2606 3.53939 13.4303 3.70909 13.4303 3.92727C13.4303 4.14545 13.2606 4.31515 13.0424 4.31515H2.95758C2.73939 4.31515 2.5697 4.14545 2.5697 3.92727C2.5697 3.70909 2.73939 3.53939 2.95758 3.53939H5.38182ZM3.34545 5.47879H4.12121V12.8485C4.12121 13.2848 4.46061 13.6242 4.89697 13.6242H11.103C11.5394 13.6242 11.8788 13.2848 11.8788 12.8485V5.47879H12.6545V12.8485C12.6545 13.697 11.9515 14.4 11.103 14.4H4.89697C4.04848 14.4 3.34545 13.697 3.34545 12.8485V5.47879ZM6.06061 7.0303V11.6848C6.06061 11.903 5.89091 12.0727 5.67273 12.0727C5.45455 12.0727 5.28485 11.903 5.28485 11.6848V7.0303C5.28485 6.81212 5.45455 6.64242 5.67273 6.64242C5.89091 6.64242 6.06061 6.81212 6.06061 7.0303ZM8.38788 7.0303V11.6848C8.38788 11.903 8.21818 12.0727 8 12.0727C7.78182 12.0727 7.61212 11.903 7.61212 11.6848V7.0303C7.61212 6.81212 7.78182 6.64242 8 6.64242C8.21818 6.64242 8.38788 6.81212 8.38788 7.0303ZM10.7152 7.0303V11.6848C10.7152 11.903 10.5455 12.0727 10.3273 12.0727C10.1091 12.0727 9.93939 11.903 9.93939 11.6848V7.0303C9.93939 6.81212 10.1091 6.64242 10.3273 6.64242C10.5455 6.64242 10.7152 6.81212 10.7152 7.0303Z" fill="currentColor"/></svg>';   // Builder DS Icon/regular/trash-can
 const CMP_CHECK = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.3l3 3 6-6.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const FMT_SVG = {"feather":"<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M9.5353 5.9914C9.66668 5.86002 9.88564 5.86002 10.017 5.9914C10.1703 6.12278 10.1703 6.34174 10.017 6.47312L9.20686 7.30518H12.5132C12.776 6.88915 12.9073 6.40743 12.9073 5.90381C12.9073 5.20313 12.6227 4.50245 12.1191 3.99883L12.0096 3.88935C11.506 3.38573 10.8272 3.10108 10.1046 3.10108C9.40392 3.10108 8.70324 3.38573 8.19962 3.88935L5.94429 6.16657C5.02464 7.08622 4.49913 8.33432 4.49913 9.6262V11.0057L9.5353 5.9914ZM8.50617 8.00587L7.1048 9.40724H10.5206L11.922 8.00587H8.50617ZM9.81996 10.1079H6.40412L5.00275 11.5093H6.38222C7.67411 11.5093 8.90031 11.0057 9.81996 10.1079ZM3.79845 9.6262C3.79845 8.13725 4.38965 6.71398 5.44068 5.66295L7.7179 3.38573C8.3529 2.75073 9.20686 2.40039 10.1046 2.40039C11.0024 2.40039 11.8563 2.75073 12.4913 3.38573L12.6227 3.51711C13.2577 4.1521 13.608 5.00606 13.608 5.90381C13.608 6.80157 13.2577 7.65553 12.6227 8.29052L10.3455 10.5677C9.29444 11.6188 7.87118 12.21 6.38222 12.21H4.30206L2.98828 13.5019C2.8569 13.6332 2.63794 13.6332 2.50656 13.5019C2.35328 13.3705 2.35328 13.1515 2.50656 13.0201L3.79845 11.7064V9.6262Z\" fill=\"currentColor\"/></svg>",
+  "rotate":"<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12.8994 3.34131L10.6882 5.54939H12.8994V3.34131ZM13.0745 6.24898H10.2723C10.0534 6.24898 9.87823 6.11781 9.79066 5.92105C9.70309 5.72429 9.74688 5.50567 9.90012 5.35263L11.0823 4.19394C9.15579 2.64172 6.3098 2.75103 4.53654 4.54373C3.66085 5.41822 3.17922 6.53319 3.11354 7.67003C3.02598 8.785 3.33247 9.9437 4.0768 10.9275C5.69682 13.0919 8.76173 13.5291 10.9291 11.9113C11.542 11.4741 12.0018 10.9056 12.3302 10.2935C12.4177 10.1186 12.6366 10.053 12.8118 10.1405C12.9869 10.2279 13.0526 10.4465 12.965 10.5996C12.571 11.321 12.0456 11.9769 11.345 12.4797C8.87119 14.338 5.36844 13.8352 3.5076 11.3429C2.6757 10.2279 2.32543 8.91617 2.41299 7.6263C2.50056 6.31457 3.02598 5.04656 4.03302 4.0409C6.09088 1.98585 9.37471 1.85468 11.5639 3.69111L12.7023 2.55427C12.8556 2.40124 13.0745 2.35751 13.2715 2.44496C13.4685 2.53241 13.5999 2.70731 13.5999 2.92593V5.72429C13.5999 6.0085 13.3591 6.24898 13.0745 6.24898Z\" fill=\"currentColor\"/></svg>",
+  "b":"<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M2.9713 1.59961H9.3713C11.1427 1.59961 12.5713 3.02818 12.5713 4.79961C12.5713 5.85675 12.057 6.79961 11.257 7.37104C12.5713 7.94247 13.4856 9.22818 13.4856 10.7425C13.4856 12.771 11.857 14.3996 9.82845 14.3996H2.9713C2.71416 14.3996 2.51416 14.1996 2.51416 13.9425C2.51416 13.6853 2.71416 13.4853 2.9713 13.4853H4.34273V2.5139H2.9713C2.71416 2.5139 2.51416 2.3139 2.51416 2.05675C2.51416 1.79961 2.71416 1.59961 2.9713 1.59961ZM5.25702 13.4853H9.82845C11.3427 13.4853 12.5713 12.2568 12.5713 10.7425C12.5713 9.22818 11.3427 7.99961 9.82845 7.99961H5.25702V13.4853ZM5.25702 2.5139V7.08532H9.3713C10.6284 7.08532 11.657 6.05675 11.657 4.79961C11.657 3.54247 10.6284 2.5139 9.3713 2.5139H5.25702Z\" fill=\"currentColor\"/></svg>",
+  "i":"<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6.1713 2.05675C6.1713 1.79961 6.3713 1.59961 6.62845 1.59961H13.0284C13.2856 1.59961 13.4856 1.79961 13.4856 2.05675C13.4856 2.3139 13.2856 2.5139 13.0284 2.5139H10.3713L6.59987 13.4853H9.3713C9.62845 13.4853 9.82845 13.6853 9.82845 13.9425C9.82845 14.1996 9.62845 14.3996 9.3713 14.3996H2.9713C2.71416 14.3996 2.51416 14.1996 2.51416 13.9425C2.51416 13.6853 2.71416 13.4853 2.9713 13.4853H5.62845L9.42845 2.5139H6.62845C6.3713 2.5139 6.1713 2.3139 6.1713 2.05675Z\" fill=\"currentColor\"/></svg>",
+  "u":"<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M3.2002 1.99961C3.2002 1.77461 3.3752 1.59961 3.6002 1.59961H6.0002C6.2252 1.59961 6.4002 1.77461 6.4002 1.99961C6.4002 2.22461 6.2252 2.39961 6.0002 2.39961H5.2002V7.59961C5.2002 9.14961 6.4502 10.3996 8.0002 10.3996C9.5502 10.3996 10.8002 9.14961 10.8002 7.59961V2.39961H10.0002C9.7752 2.39961 9.6002 2.22461 9.6002 1.99961C9.6002 1.77461 9.7752 1.59961 10.0002 1.59961H12.4002C12.6252 1.59961 12.8002 1.77461 12.8002 1.99961C12.8002 2.22461 12.6252 2.39961 12.4002 2.39961H11.6002V7.59961C11.6002 9.59961 10.0002 11.1996 8.0002 11.1996C6.0252 11.1996 4.4002 9.59961 4.4002 7.59961V2.39961H3.6002C3.3752 2.39961 3.2002 2.22461 3.2002 1.99961ZM3.6002 13.5996H12.4002C12.6252 13.5996 12.8002 13.7746 12.8002 13.9996C12.8002 14.2246 12.6252 14.3996 12.4002 14.3996H3.6002C3.3752 14.3996 3.2002 14.2246 3.2002 13.9996C3.2002 13.7746 3.3752 13.5996 3.6002 13.5996Z\" fill=\"currentColor\"/></svg>",
+  "s":"<svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4.0001 5.30039C4.0001 3.70039 5.3001 2.40039 6.9001 2.40039H11.2001C11.4251 2.40039 11.6001 2.57539 11.6001 2.80039C11.6001 3.02539 11.4251 3.20039 11.2001 3.20039H6.9001C5.7251 3.20039 4.8001 4.12539 4.8001 5.30039C4.8001 6.32539 5.5501 7.17539 6.5501 7.35039L9.5751 7.85039C9.7751 7.90039 9.9501 7.95039 10.1251 8.00039H14.0001C14.2251 8.00039 14.4001 8.17539 14.4001 8.40039C14.4001 8.62539 14.2251 8.80039 14.0001 8.80039H2.0001C1.7751 8.80039 1.6001 8.62539 1.6001 8.40039C1.6001 8.17539 1.7751 8.00039 2.0001 8.00039H5.8751C4.7751 7.60039 4.0001 6.52539 4.0001 5.30039ZM11.0751 10.0004H11.9001C11.9751 10.2254 12.0001 10.4754 12.0001 10.7004C12.0001 12.3004 10.7001 13.6004 9.1001 13.6004H4.8001C4.5751 13.6004 4.4001 13.4254 4.4001 13.2004C4.4001 12.9754 4.5751 12.8004 4.8001 12.8004H9.1001C10.2751 12.8004 11.2001 11.8754 11.2001 10.7004C11.2001 10.4754 11.1501 10.2254 11.0751 10.0004Z\" fill=\"currentColor\"/></svg>"};
+// Formatting check settings (Figma 860:18817), per computer; superscript and subscript are always checked
+const FMT_KEYS = [["b", "Bold"], ["i", "Italic"], ["u", "Underline"], ["s", "Strikethrough"]];
+function fmtSettings() { let v = null; try { v = JSON.parse(localStorage.getItem("slideshot.fmtCheck") || "null"); } catch (e) {} const o = { b: true, i: true, u: true, s: true }; if (v) FMT_KEYS.forEach(([k]) => { if (typeof v[k] === "boolean") o[k] = v[k]; }); return o; }
 const CMP = { meta: null, slides: null, open: false, state: "idle", items: [], base: null, local: null, slideId: null, err: "", retry: null, key: null };
 let cmpEngine = null;
 function loadEngine() {
@@ -1356,7 +1393,7 @@ async function cmpInit() {
   const key = "order:" + orderKey(); if (CMP.key === key) return;
   CMP.key = key; CMP.open = false; CMP.state = "idle"; CMP.meta = null; CMP.slides = null;
   const v = await cmpGet(key);
-  if (v && CMP.key === key) { CMP.meta = { name: v.name, size: v.size, lastModified: v.lastModified }; CMP.slides = v.slides; }
+  if (v && CMP.key === key) { CMP.meta = { name: v.name, size: v.size, lastModified: v.lastModified }; CMP.slides = v.slides; CMP.fmtOld = !(v.v >= 2); }
   render();
 }
 async function cmpChoose(file) {
@@ -1371,7 +1408,8 @@ async function cmpChoose(file) {
     const E = await loadEngine(), d = await E.readDeck(file);
     CMP.meta = { name: file.name, size: file.size, lastModified: file.lastModified };
     CMP.slides = d.slides.map((x) => x.blocks);
-    cmpPut(CMP.key, Object.assign({ savedAt: Date.now(), slides: CMP.slides }, CMP.meta));
+    CMP.fmtOld = false;
+    cmpPut(CMP.key, Object.assign({ savedAt: Date.now(), slides: CMP.slides, v: 2 }, CMP.meta));
     CMP.reading = null;
     await cmpCheck();
   } catch (e) {
@@ -1394,7 +1432,7 @@ async function cmpCheck() {
     let b64 = "";
     await PowerPoint.run(async (ctx) => { const r = ctx.presentation.slides.getItem(cur.id).exportAsBase64(); await ctx.sync(); b64 = r.value; });
     const mine = await E.readDeck(b64ToBlob(b64, "application/zip"));
-    const items = E.compare(CMP.slides[base - 1], (mine.slides[0] && mine.slides[0].blocks) || [], { threshold: 0.5 });
+    const items = E.compare(CMP.slides[base - 1], (mine.slides[0] && mine.slides[0].blocks) || [], { threshold: 0.5, formats: fmtSettings() });
     await cmpWait(started);
     if (CMP.slideId !== cur.id) return;   // the designer moved on meanwhile
     CMP.items = items; CMP.base = base; CMP.local = cur.alt ? null : cur.local; CMP.state = "result";
@@ -1406,7 +1444,45 @@ function cmpRemove() { cmpPut(CMP.key, null); CMP.meta = null; CMP.slides = null
 function cmpCollapse() { CMP.open = false; if (CMP.state !== "checking") CMP.state = "idle"; renderCmp(); }
 
 const CMP_LOCS = [["text", ""], ["table", " in table"], ["chart", " in chart"], ["notes", " in speaker notes"]];
-const CMP_CATS = [["numbers", "Numbers changed"], ["missing", "Missing text"], ["words", "Words changed"], ["added", "Added text"]];
+const CMP_CATS = [["numbers", "Numbers changed"], ["missing", "Missing text"], ["words", "Words changed"], ["format", "Formatting changed"], ["added", "Added text"]];
+const FMT_NAMES = { bold: "Bold", italic: "Italic", underline: "Underlined", strikethrough: "Struck through", superscript: "Superscript", subscript: "Subscript" };
+// Original words with the formatting the slide lost, shown as they look (bold, superscript…)
+function cmpFmtText(it) {
+  const p = document.createElement("p");
+  if (it.orig.pre) p.append(document.createTextNode(it.orig.pre + " "));
+  const m = document.createElement("mark"); m.className = "o f-" + it.fmt; m.title = FMT_NAMES[it.fmt] + " in the original";
+  const mid = it.orig.mid, fm = it.ofm || "";
+  if (it.fmt === "superscript" || it.fmt === "subscript") {
+    const bit = it.fmt === "superscript" ? 16 : 32, tag = it.fmt === "superscript" ? "sup" : "sub";
+    for (let k = 0; k < mid.length; k++) { const on = fm[k] && ((fm.charCodeAt(k) - 64) & bit); if (on) { const e = document.createElement(tag); e.textContent = mid[k]; m.append(e); } else m.append(document.createTextNode(mid[k])); }
+  } else m.textContent = mid;
+  p.append(m);
+  if (it.orig.post) p.append(document.createTextNode(" " + it.orig.post));
+  return p;
+}
+// Settings popover under the feather button: changes apply on Save; Escape or a click outside closes without saving
+function fmtPopover(anchorBtn, row) {
+  const old = row.querySelector(".fmt-pop"); if (old) { old.remove(); anchorBtn.classList.remove("on"); anchorBtn.setAttribute("aria-expanded", "false"); return; }
+  const cur = fmtSettings(), draft = Object.assign({}, cur);
+  const pop = document.createElement("div"); pop.className = "fmt-pop"; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", "Formatting check");
+  pop.innerHTML = '<h4>Formatting check</h4><p>Flag words that are formatted differently from the original:</p><div class="fmt-tgs"></div><div class="fmt-foot"><button type="button" class="fmt-save">Save</button></div>';
+  const tgs = pop.querySelector(".fmt-tgs");
+  FMT_KEYS.forEach(([k, label]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "fmt-tg"; b.innerHTML = FMT_SVG[k] + '<span class="cmp-tip">' + label + "</span>"; b.setAttribute("aria-label", label); b.setAttribute("aria-pressed", String(draft[k]));
+    b.onclick = (e) => { e.stopPropagation(); draft[k] = !draft[k]; b.setAttribute("aria-pressed", String(draft[k])); };
+    tgs.append(b);
+  });
+  const close = () => { pop.remove(); anchorBtn.classList.remove("on"); anchorBtn.setAttribute("aria-expanded", "false"); document.removeEventListener("click", outside, true); document.removeEventListener("keydown", esc, true); };
+  const outside = (e) => { if (!pop.contains(e.target) && !anchorBtn.contains(e.target)) close(); };
+  const esc = (e) => { if (e.key === "Escape") { close(); anchorBtn.focus(); } };
+  pop.querySelector(".fmt-save").onclick = () => {
+    try { localStorage.setItem("slideshot.fmtCheck", JSON.stringify(draft)); } catch (e) {}
+    close(); if (FMT_KEYS.some(([k]) => draft[k] !== cur[k]) && CMP.state === "result") cmpCheck();
+  };
+  row.append(pop); anchorBtn.classList.add("on"); anchorBtn.setAttribute("aria-expanded", "true");
+  setTimeout(() => { document.addEventListener("click", outside, true); document.addEventListener("keydown", esc, true); }, 0);
+  tgs.firstChild.focus();
+}
 function cmpText(part, cls) {
   const p = document.createElement("p");
   if (part.pre) p.append(document.createTextNode(part.pre + " "));
@@ -1444,11 +1520,18 @@ function renderCmp(show) {
       body.append(st);
     } else {
       // Added text is information, not a difference: counted apart
-      const all = CMP.items.length, added = CMP.items.filter((it) => it.cat === "added").length, n = all - added, plus = added ? " \u00B7 " + added + " added" : "", moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
+      const all = CMP.items.length, added = CMP.items.filter((it) => it.cat === "added").length, fmts = CMP.items.filter((it) => it.cat === "format").length, n = all - added - fmts,
+        plus = (fmts ? " \u00B7 " + fmts + " formatting" : "") + (added ? " \u00B7 " + added + " added" : ""), moved = CMP.local && CMP.base !== CMP.local, alt = !CMP.local;
       const vs = moved || alt ? " vs original slide " + CMP.base : "";
       if (!n) { st.classList.add("ok"); msg.textContent = "Text matches the original" + vs + plus; }
       else msg.textContent = n + " difference" + (n === 1 ? "" : "s") + " found" + vs + plus;
-      act("Check again", cmpCheck); body.append(st);
+      const ib = (svg, label, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "cmp-ib"; b.innerHTML = svg + '<span class="cmp-tip">' + label + "</span>"; b.setAttribute("aria-label", label); b.onclick = fn; st.append(b); return b; };
+      const fb = ib(FMT_SVG.feather, "Formatting check", () => fmtPopover(fb, st)); fb.setAttribute("aria-haspopup", "dialog"); fb.setAttribute("aria-expanded", "false");
+      ib(FMT_SVG.rotate, "Check again", cmpCheck);
+      body.append(st);
+      // An original chosen before v2.57 has no formatting stored: say so once, with a way to fix it
+      if (CMP.fmtOld) { const note = document.createElement("div"); note.className = "cmp-note"; const t = document.createElement("span"); t.textContent = "Formatting isn't checked: choose the original again."; note.append(t);
+        const b = document.createElement("button"); b.type = "button"; b.className = "cmp-act"; b.textContent = "Choose file"; b.onclick = () => $("cmpFile").click(); note.append(b); body.append(note); }
       const list = document.createElement("div"); list.className = "cmp-list";
       CMP_LOCS.forEach(([loc, suffix]) => CMP_CATS.forEach(([cat, title]) => {
         const rows = CMP.items.filter((it) => it.loc === loc && it.cat === cat); if (!rows.length) return;
@@ -1465,7 +1548,7 @@ function renderCmp(show) {
             if (it.slideLoc !== "notes") { const bb = document.createElement("button"); bb.type = "button"; bb.className = "cmp-btn"; bb.innerHTML = CMP_ICON.bullseye; bb.setAttribute("aria-label", "Select on slide"); bb.onclick = () => cmpSelect({ slideLoc: it.slideLoc, shape: it.shape, slideSentence: it.text, slide: { mid: "" } }); c.append(bb); }
             r.append(c); tb.append(r); return;
           }
-          const a = document.createElement("div"); a.className = "cmp-cell"; a.append(cat === "missing" ? cmpText({ pre: [it.orig.pre, it.orig.mid, it.orig.post].filter(Boolean).join(" ") }, "") : cmpText(it.orig, "o")); r.append(a);
+          const a = document.createElement("div"); a.className = "cmp-cell"; a.append(cat === "missing" ? cmpText({ pre: [it.orig.pre, it.orig.mid, it.orig.post].filter(Boolean).join(" ") }, "") : cat === "format" ? cmpFmtText(it) : cmpText(it.orig, "o")); r.append(a);
           const btn = document.createElement("button"); btn.type = "button"; btn.className = "cmp-btn";
           if (cat === "missing") {
             btn.innerHTML = CMP_ICON.copy; btn.setAttribute("aria-label", "Copy original text");

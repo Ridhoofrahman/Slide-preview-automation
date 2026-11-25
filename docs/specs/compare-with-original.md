@@ -173,3 +173,16 @@ Ignore; DM visibility of check results; a deck-wide check; choosing a different 
 
 ## 12. After shipping
 Bump `APP_VERSION`, then update `CLAUDE.md`, the docs page (EN + ID) and the release notes.
+
+## Formatting check (v2.57, Figma 860:18629)
+
+- **What counts:** formatting the designer's slide lost on words that are otherwise the same (paired sentences, equal words).
+  - Superscript and subscript: always. Unicode ² ₂ stay as text: "m²" in the original and "m2" in superscript on the slide (or the other way round) are reported as a word change.
+  - Bold, italic, underline, strikethrough: only as emphasis, i.e. some words of the original sentence have it and others don't. A sentence that is entirely bold is treated as a design choice.
+  - Formatting added on the slide is not reported.
+- **Source:** only formatting set on the run itself (`a:rPr` attributes `b`, `i`, `u`, `strike`, `baseline`). Formatting inherited from the shape, layout or master is not resolved. Slide text, tables and notes are checked; charts and SmartArt are not.
+- **UI:**
+  - Section "Formatting changed" shows the original words styled as they look.
+  - Counted apart in the status line (e.g. "· 2 formatting").
+  - The feather icon opens "Formatting check" with toggles B, I, U, S; Save applies them. Settings are stored per computer in localStorage `slideshot.fmtCheck`, default all on.
+- **Stored originals:** the stored original keeps a `v: 2` marker. Older ones show "Formatting isn't checked: choose the original again."
