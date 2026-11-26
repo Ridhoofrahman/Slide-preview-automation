@@ -127,7 +127,9 @@
       if (only && !only.has(i + 1)) { slides.push({ index: i + 1, part: order[i], blocks: null }); continue; }
       slides.push(Object.assign({ index: i + 1, part: order[i] }, await readSlide(zip, order[i])));
     }
-    return { slides, partsByName: slidePartsByFileName(zip), ms: Math.round(now() - t0) };
+    // "Number slides from": the first slide shows this number (absent = 1)
+    const first = Math.max(1, parseInt(pres.documentElement.getAttribute("firstSlideNum"), 10) || 1);
+    return { slides, first, partsByName: slidePartsByFileName(zip), ms: Math.round(now() - t0) };
   }
   function slidePartsByFileName(zip) {
     return zip.names().filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a, b) => +a.match(/(\d+)\.xml$/)[1] - +b.match(/(\d+)\.xml$/)[1]);

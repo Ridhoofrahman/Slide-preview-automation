@@ -15,6 +15,8 @@ const db={design_managers:new URLSearchParams(location.search).get('dm')?[{user_
                     {order_key:'45236',order_name:'Order #45236',assignee_id:'u-kevin',assignee_name:'Kevin',assignee_team:'Cascade',slides:[11]}]};
 // ?alt=free: Bela has slides 1-8, so 9 and 10 are unassigned · ?alt=sent: slide 10 was sent as an alternative of slide 1
 // ?alt=mid: slide 2 of the file is marked as an alternative of slide 1 (inserted mid-deck), the rest must keep their numbers
+// ?first=7: the file numbers its slides from 7 (Design > Slide Size); Bela is assigned 7-16
+{if(qs.get('first')==='7'){window.__exportB64=window.__exportB64||'UEsDBBQAAAAAAAeHel3BKPvcsgAAALIAAAAUAAAAcHB0L3ByZXNlbnRhdGlvbi54bWw8P3htbCB2ZXJzaW9uPSIxLjAiPz48cDpwcmVzZW50YXRpb24geG1sbnM6cD0iaHR0cDovL3NjaGVtYXMub3BlbnhtbGZvcm1hdHMub3JnL3ByZXNlbnRhdGlvbm1sLzIwMDYvbWFpbiIgZmlyc3RTbGlkZU51bT0iNyI+PHA6c2xkU3ogY3g9IjEyMTkyMDAwIiBjeT0iNjg1ODAwMCIvPjwvcDpwcmVzZW50YXRpb24+UEsBAhQDFAAAAAAAB4d6XcEo+9yyAAAAsgAAABQAAAAAAAAAAAAAAIABAAAAAHBwdC9wcmVzZW50YXRpb24ueG1sUEsFBgAAAAABAAEAQgAAAOQAAAAAAA==';db.slide_assignments[0].slides=[7,8,9,10,11,12,13,14,15,16];db.slide_assignments[1].slides=[17];}}
 {const alt=qs.get('alt');if(alt==='free'||alt==='sent')db.slide_assignments[0].slides=[1,2,3,4,5,6,7,8];
  if(alt==='sent')db.slide_shots.push({id:'alt1',file_key:'fk-1234:u-bela',slide_id:ids[9],project:'Order #45236',slide_number:1,alternative_of:1,designer:'Bela',designer_id:'u-bela',team:'Cascade',status:'ready',version:1,image_path:'p',created_at:iso(3),total_slides:10});
  if(alt==='mid')settings['slideqa.alt']=JSON.stringify({[ids[1]]:1});}

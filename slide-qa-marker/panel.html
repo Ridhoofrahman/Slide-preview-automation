@@ -19,7 +19,7 @@
     --link: #2557D4; --primary: #2557D4; --primary-hover: #1C43A5; --focus: #3D66F5;
     --outline: #DDE4EE; --line: #DDE4EE; --input: #C2CCDB; --input-focus: #A8C3FF; /* Builder DS: outline/neutral, divider/default, outline/brand */
     --grey-bg: #EEF2F8; --grey-bd: #DDE4EE;
-    --yellow-bg: #FFF9E6; --yellow-bd: #FFE08A; --yellow-fg: #AD7300;
+    --yellow-bg: #FFF9E6; --yellow-bd: #FFCF52; --yellow-fg: #AD7300;
     --red-bg: #FFF1F1; --red-bd: #FFB0B0; --red-fg: #D62020;
     --green-bg: #E6F7EE; --green-bd: #7ED9A8; --green-fg: #0C7F49; --success: #7ED9A8; --success-solid: #12A45F; --danger-solid: #D62020;
     --pin-bd: #A8C3FF; --scrim: rgba(26, 31, 46, .5); --overlay: rgba(26, 31, 46, .5); /* Builder DS: overlay/scrim */
@@ -108,6 +108,8 @@
   .cancel { border: 0; background: none; color: var(--red-fg); }
   .primary:disabled, .cancel:disabled { opacity: .5; cursor: not-allowed; }
   .msg { margin: 16px 0 0; font-size: 14px; line-height: 20px; }
+  /* Banner, type Warning (Figma 981:10378): 20px under the button (actions gap 4 + 16) */
+  .msg.warn { margin-top: 16px; padding: 10px 12px; border: 1px solid var(--yellow-bd); border-radius: 8px; background: var(--yellow-bg); color: var(--yellow-fg); }
   /* Slide file for compile: a quiet status row under the actions (text-xs/Regular, text/subtle) */
   /* Sending the slide file (Figma 864:18880 sending, 864:19086 failed): a bar at the top of the dock */
   .sbar { background: #F7F9FC; transition: opacity .4s ease-out; }   /* elevation/secondary */
@@ -274,7 +276,7 @@
   #reviewLinkWrap { display: none; }
 
   /* Same order number used by another deck (Banner / Warning) */
-  .not-mine.warn { background: #FFF9E6; border-color: #FFE08A; }
+  .not-mine.warn { background: var(--yellow-bg); border-color: var(--yellow-bd); }
   .not-mine.warn strong { color: #AD7300; }
   .not-mine.warn p { color: #AD7300; }
 
@@ -797,7 +799,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.65";
+const APP_VERSION = "2.66";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -874,6 +876,31 @@ async function slideExport(id) {
     await ctx.sync(); v = r.value;
   });
   return v;
+}
+// "Number slides from" (Design > Slide Size): PowerPoint shows slide 1 of the file as this number, and so do the DM's
+// positions. Office.js has no property for it, but a one-slide export keeps presentation.xml's firstSlideNum (checked on
+// Mac and Windows, also before saving). Absent = 1. Any failure leaves the number as it was (1 = before v2.66) silently.
+async function firstNumFrom(b64) {
+  try {
+    if (!b64) return null;
+    if (!window.JSZip) await needJSZip();
+    const z = await window.JSZip.loadAsync(b64, { base64: true }), f = z.file("ppt/presentation.xml"); if (!f) return null;
+    const m = (await f.async("string")).match(/\sfirstSlideNum="(\d+)"/);
+    const v = m ? +m[1] : 1; return v >= 1 && v < 10000 ? v : null;
+  } catch (e) { return null; }
+}
+// Once per file open, in the background: export one slide and read its number. Never blocks; gives up after 15 s.
+async function readFirstNum() {
+  if (S.firstNumRead) return; S.firstNumRead = true;
+  try {
+    const id = (S.slides && S.slides[0] && S.slides[0].id) || S.currentId; if (!id) return;
+    const b64 = await Promise.race([slideExport(id), new Promise((r) => setTimeout(() => r(null), 15000))]);
+    setFirstNum(await firstNumFrom(b64));
+  } catch (e) {}
+}
+function setFirstNum(v) {
+  if (!v || v === (S.firstNum || 1)) return false;
+  S.firstNum = v; applyWorkingMap(); render(); return true;
 }
 // Fonts, sizes and speaker notes for the DM. Never blocks sending if it fails.
 async function readDetails(id, keep) {
@@ -1299,7 +1326,8 @@ function applyWorkingMap() {
   if (!S.slides) return;
   // Alternatives first: they hold no position, and the slides after them keep their numbers (x.deck = place in the file)
   let seq = 0;
-  S.slides.forEach((x) => { if (x.deck == null) x.deck = x.local; x.alt = altOf(x); if (!x.alt) x.local = ++seq; });
+  const off = (S.firstNum || 1) - 1;   // "Number slides from" 7: the file's first slide is slide 7
+  S.slides.forEach((x) => { if (x.deck == null) x.deck = x.local; x.alt = altOf(x); if (!x.alt) x.local = off + (++seq); });
   const all = S.slides; S.slides = all.filter((x) => !x.alt);
   try { mapPositions(); } finally { S.slides = all; S.slides.forEach((x) => { if (x.alt) { x.n = null; x.sentAt = null; } }); }
 }
@@ -1408,9 +1436,9 @@ async function cmpPut(key, val) { try { const db = await cmpDb(); await new Prom
 // The order's original (if one was chosen on this computer)
 async function cmpInit() {
   const key = "order:" + orderKey(); if (CMP.key === key) return;
-  CMP.key = key; CMP.open = false; CMP.state = "idle"; CMP.meta = null; CMP.slides = null;
+  CMP.key = key; CMP.open = false; CMP.state = "idle"; CMP.meta = null; CMP.slides = null; CMP.first = 1;
   const v = await cmpGet(key);
-  if (v && CMP.key === key) { CMP.meta = { name: v.name, size: v.size, lastModified: v.lastModified }; CMP.slides = v.slides; CMP.fmtOld = !(v.v >= 2); }
+  if (v && CMP.key === key) { CMP.meta = { name: v.name, size: v.size, lastModified: v.lastModified }; CMP.slides = v.slides; CMP.first = v.first || 1; CMP.fmtOld = !(v.v >= 2); }
   render();
 }
 async function cmpChoose(file) {
@@ -1424,9 +1452,9 @@ async function cmpChoose(file) {
     if (head[0] === 0xD0 && head[1] === 0xCF && head[2] === 0x11 && head[3] === 0xE0) throw Object.assign(new Error("ole"), { code: "password" });   // encrypted .pptx = OLE container
     const E = await loadEngine(), d = await E.readDeck(file);
     CMP.meta = { name: file.name, size: file.size, lastModified: file.lastModified };
-    CMP.slides = d.slides.map((x) => x.blocks);
+    CMP.slides = d.slides.map((x) => x.blocks); CMP.first = d.first || 1;
     CMP.fmtOld = false;
-    cmpPut(CMP.key, Object.assign({ savedAt: Date.now(), slides: CMP.slides, v: 2 }, CMP.meta));
+    cmpPut(CMP.key, Object.assign({ savedAt: Date.now(), slides: CMP.slides, first: CMP.first, v: 2 }, CMP.meta));
     CMP.reading = null;
     await cmpCheck();
   } catch (e) {
@@ -1444,12 +1472,13 @@ async function cmpCheck() {
   const started = Date.now();
   try {
     const base = cur.alt || cur.n || cur.local;
-    if (!base || base > CMP.slides.length) { await cmpWait(started); cmpFail("The original has " + CMP.slides.length + " slide" + (CMP.slides.length === 1 ? "" : "s") + ", so there's no slide " + base + " to compare.", null); return; }
+    const first = CMP.first || 1, last = first + CMP.slides.length - 1;   // the original's own numbering ("Number slides from")
+    if (!base || base < first || base > last) { await cmpWait(started); cmpFail("The original has slide" + (first === last ? " " + first : "s " + first + "\u2013" + last) + ", so there's no slide " + base + " to compare.", null); return; }
     const E = await loadEngine();
     let b64 = "";
     await PowerPoint.run(async (ctx) => { const r = ctx.presentation.slides.getItem(cur.id).exportAsBase64(); await ctx.sync(); b64 = r.value; });
     const mine = await E.readDeck(b64ToBlob(b64, "application/zip"));
-    const items = E.compare(CMP.slides[base - 1], (mine.slides[0] && mine.slides[0].blocks) || [], { threshold: 0.5 });
+    const items = E.compare(CMP.slides[base - first], (mine.slides[0] && mine.slides[0].blocks) || [], { threshold: 0.5 });
     await cmpWait(started);
     if (CMP.slideId !== cur.id) return;   // the designer moved on meanwhile
     CMP.items = items; CMP.base = base; CMP.local = cur.alt ? null : cur.local; CMP.state = "result";
@@ -1788,6 +1817,7 @@ function renderFile() {
 
 async function markReady() {
   const cur = currentSlide(); if (!cur || (!cur.n && !cur.alt)) return;
+  const pos = cur.alt || cur.n;   // the position on the button (cur is re-mapped in place if the numbering changed)
   const what = cur.alt ? "slide " + altLabel(cur) : "slide " + cur.n;
   const prev = S.latest[cur.id];
   const version = prev ? prev.version + 1 : 1;
@@ -1796,6 +1826,11 @@ async function markReady() {
     const b64 = await slideImage(cur.id, IMAGE_WIDTH);
     const keep = {};
     const details = await readDetails(cur.id, keep);
+    // The number can change while the panel is open: if it did, the position changes too, so show it and let the designer send again
+    if (setFirstNum(await firstNumFrom(keep.b64))) {
+      const now = currentSlide();
+      if (!now || now.id !== cur.id || (now.alt || now.n) !== pos) { say($("msg"), "Slide numbering in this file changed. Check the slide number and send again", "warn"); return; }
+    }
     const key = fileKey();
     const path = key + "/" + cur.id.replace(/[^a-zA-Z0-9_-]/g, "_") + "/v" + version + "-" + Date.now() + ".png";
     const up = await S.sb.storage.from("slides").upload(path, b64ToBlob(b64, "image/png"), { contentType: "image/png" });
@@ -1883,6 +1918,7 @@ async function enterApp(user, team) {
     S.handlerAdded = true;
   }
   await refreshDeck();
+  readFirstNum();   // background; re-maps and re-renders if the file doesn't start at slide 1
   try { await loadReviews(); } catch (e) { say($("msg"), "Couldn't load review status: " + e.message, "err"); }
   saveProfile(user);
   showDashboardLink(user);
