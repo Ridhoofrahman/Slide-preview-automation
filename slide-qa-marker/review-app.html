@@ -967,6 +967,38 @@
   .rv-pbanner.approved { background: #E6F7EE; border-color: #7ED9A8; color: #0C7F49; }
   .rv-pbanner.changes { background: #FFF1F1; border-color: #FFB0B0; color: #D62020; }
   .rv-pbanner.older { background: #F0EBFC; border-color: #BDA6EE; color: #6035C4; }
+
+  /* Comments and voice (Figma 950:26094-26259, R5 880:20734): pin shape with a sharp bottom-right corner, the pin number
+     in the meta row, voice pill on elevation/sunken with a brand waveform, composer in brand outline while recording */
+  .review .pin { width: 20px; height: 20px; border-radius: 999px 999px 2px 999px; transform: translate(-100%, -100%); background: #3B74F5; border: 1px solid #FFFFFF; box-sizing: border-box; }   /* the sharp corner points at the spot */
+  .review .pin span { font-size: 12px; line-height: 16px; font-weight: 500; }
+  .review .pin.resolved { background: #C2CCDB; }
+  .review .pin.hot { background: #2557D4; scale: 1.15; transform-origin: 100% 100%; }
+  .review .pin.draft { background: #FFFFFF; border: 1.5px dashed #3B74F5; color: #3B74F5; }
+  .rv-comment { gap: 0; }
+  .rv-comment.active { border-color: #3B74F5; }
+  .rv-comment.resolved { background: #E6F7EE; border-color: #12A45F; }   /* outline/strong/success */
+  .rv-comment .metal { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .rv-comment .pinno { width: 20px; height: 20px; border-radius: 999px 999px 2px 999px; background: #3B74F5; font-size: 12px; line-height: 16px; }   /* icon/brand */
+  .rv-comment.resolved .pinno { background: #C2CCDB; }   /* icon/subtle */
+  .rv-comment .when .clk { width: 16px; height: 16px; flex: none; color: #C2CCDB; }
+  .rv-comment .act { color: #2557D4; }
+  .rv-comment.resolved .act { color: #454C63; }
+  .player { height: 32px; box-sizing: border-box; gap: 4px; padding: 4px 8px 4px 4px; background: #EEF2F8; }   /* elevation/sunken */
+  .player .pp { width: 24px; height: 24px; color: #3B74F5; }
+  .player .pp svg { width: 24px; height: 24px; }
+  .player .wave { flex: 1; min-width: 0; overflow: hidden; }
+  .player .wave i { background: #3B74F5; }
+  .player .t { padding: 0; }
+  .rv-msgbox.recording { background: #F7F9FC; border-color: #3B74F5; }   /* outline/strong/brand */
+  .review .rv-live { background: #EEF2F8; }
+  .rv-msgbar .rv-recorded { flex: 1; min-width: 0; align-self: stretch; margin: 0; display: flex; align-items: center; gap: 4px; }
+  .rv-msgbar .rv-recorded[hidden] { display: none; }
+  .rv-msgbar .rv-recorded #recPlayer { flex: 1; min-width: 0; }
+  .rv-msgbar .rv-recorded:not([hidden]) ~ .spacer { display: none; }
+  .review .rv-send { background: #2557D4; } .review .rv-send:not(:disabled):hover { background: #1C43A5; }   /* background/brand */
+  #recDiscard { width: 24px; height: 24px; padding: 4px; }
+  #recDiscard svg { width: 16px; height: 16px; }
 </style>
 </head>
 <body>
@@ -1081,11 +1113,11 @@
         <div class="rv-composer" id="composer">
           <p id="pinHint">Click anywhere on the slide to pin a comment, or write a general comment.</p>
           <div class="rv-msgbox">
-            <div class="rv-recorded" id="recPreview" hidden><div id="recPlayer"></div><button id="recDiscard" class="rv-icon" aria-label="Discard recording" title="Discard recording"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div>
             <textarea id="commentBody" aria-label="Message" placeholder="Send a message..." rows="2"></textarea>
             <div class="rv-msgbar">
               <button id="removePin" class="rv-link" hidden>Remove pin</button>
-              <span class="rv-live" id="recLive" hidden><button id="recStop" class="rv-stop" type="button" aria-label="Stop recording" title="Stop recording"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path opacity="0.4" d="M0.96 12C0.96 14.928 2.12314 17.7361 4.19354 19.8065C6.26394 21.8769 9.07201 23.04 12 23.04C14.928 23.04 17.7361 21.8769 19.8065 19.8065C21.8769 17.7361 23.04 14.928 23.04 12C23.04 9.07201 21.8769 6.26394 19.8065 4.19354C17.7361 2.12314 14.928 0.96 12 0.96C9.07201 0.96 6.26394 2.12314 4.19354 4.19354C2.12314 6.26394 0.96 9.07201 0.96 12ZM7.86 9.24C7.86 8.47669 8.47669 7.86 9.24 7.86H14.76C15.5233 7.86 16.14 8.47669 16.14 9.24V14.76C16.14 15.5233 15.5233 16.14 14.76 16.14H9.24C8.47669 16.14 7.86 15.5233 7.86 14.76V9.24Z" fill="#D62020"/><path d="M9.12 7.68H14.88C15.6765 7.68 16.32 8.3235 16.32 9.12V14.88C16.32 15.6765 15.6765 16.32 14.88 16.32H9.12C8.3235 16.32 7.68 15.6765 7.68 14.88V9.12C7.68 8.3235 8.3235 7.68 9.12 7.68Z" fill="#D62020"/></svg></button><span class="wave live"></span><span id="recClock">00:00/02:00</span></span>
+              <span class="rv-live" id="recLive" hidden><button id="recStop" class="rv-stop" type="button" aria-label="Stop recording" title="Stop recording"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path opacity="0.4" d="M0.959961 12C0.959961 14.928 2.1231 17.736 4.1935 19.8064C6.2639 21.8768 9.07197 23.04 12 23.04C14.928 23.04 17.736 21.8768 19.8064 19.8064C21.8768 17.736 23.04 14.928 23.04 12C23.04 9.07197 21.8768 6.2639 19.8064 4.1935C17.736 2.1231 14.928 0.959961 12 0.959961C9.07197 0.959961 6.2639 2.1231 4.1935 4.1935C2.1231 6.2639 0.959961 9.07197 0.959961 12ZM7.85996 9.23996C7.85996 8.47665 8.47665 7.85996 9.23996 7.85996H14.76C15.5233 7.85996 16.14 8.47665 16.14 9.23996V14.76C16.14 15.5233 15.5233 16.14 14.76 16.14H9.23996C8.47665 16.14 7.85996 15.5233 7.85996 14.76V9.23996Z" fill="#D62020"/><path d="M9.12018 7.67993H14.8802C15.6767 7.67993 16.3202 8.32343 16.3202 9.11993V14.8799C16.3202 15.6764 15.6767 16.3199 14.8802 16.3199H9.12018C8.32368 16.3199 7.68018 15.6764 7.68018 14.8799V9.11993C7.68018 8.32343 8.32368 7.67993 9.12018 7.67993Z" fill="#D62020"/></svg></button><span class="wave live"></span><span id="recClock">00:00/02:00</span></span>
+              <div class="rv-recorded" id="recPreview" hidden><div id="recPlayer"></div><button id="recDiscard" class="rv-icon" aria-label="Discard recording" title="Discard recording"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div>
               <span class="spacer"></span>
               <button id="recBtn" class="rv-icon" aria-label="Record a voice note, up to 2 minutes" title="Record a voice note (up to 2 min)"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path transform="translate(3.75 1.6667)" d="M6.25 1.04167C5.11068 1.04167 4.16667 1.98568 4.16667 3.125V7.29167C4.16667 8.43099 5.11068 9.375 6.25 9.375C7.38932 9.375 8.33333 8.43099 8.33333 7.29167V3.125C8.33333 1.98568 7.38932 1.04167 6.25 1.04167ZM3.125 3.125C3.125 1.39974 4.52474 0 6.25 0C7.97526 0 9.375 1.39974 9.375 3.125V7.29167C9.375 9.01693 7.97526 10.4167 6.25 10.4167C4.52474 10.4167 3.125 9.01693 3.125 7.29167V3.125ZM1.04167 5.72917V7.29167C1.04167 10.1562 3.38542 12.5 6.25 12.5C9.11458 12.5 11.4583 10.1562 11.4583 7.29167V5.72917C11.4583 5.4362 11.6862 5.20833 11.9792 5.20833C12.2721 5.20833 12.5 5.4362 12.5 5.72917V7.29167C12.5 10.5794 9.99349 13.2487 6.77083 13.5091V15.625H8.85417C9.14714 15.625 9.375 15.8529 9.375 16.1458C9.375 16.4388 9.14714 16.6667 8.85417 16.6667H3.64583C3.35286 16.6667 3.125 16.4388 3.125 16.1458C3.125 15.8529 3.35286 15.625 3.64583 15.625H5.72917V13.5091C2.50651 13.2487 0 10.5794 0 7.29167V5.72917C0 5.4362 0.227865 5.20833 0.520833 5.20833C0.813802 5.20833 1.04167 5.4362 1.04167 5.72917Z" fill="currentColor"/></svg></button>
               <button id="sendComment" class="rv-send" aria-label="Send"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path transform="translate(3.986 2)" d="M6.35777 0.140762L11.8631 5.64614C12.0821 5.83382 12.0821 6.14663 11.8631 6.33431C11.6755 6.55327 11.3627 6.55327 11.175 6.33431L6.51417 1.70479V15.4995C6.51417 15.781 6.29521 16 6.01369 16C5.73216 16 5.5132 15.781 5.5132 15.4995V1.70479L0.852395 6.33431C0.664712 6.55327 0.351906 6.55327 0.164223 6.33431C-0.054741 6.14663 -0.054741 5.83382 0.164223 5.64614L5.6696 0.140762C5.85728 -0.0469208 6.17009 -0.0469208 6.35777 0.140762Z" fill="currentColor"/></svg></button>
@@ -1946,19 +1978,20 @@ function renderComments(shot) {
     const li = el("li", "rv-comment" + (c.resolved ? " resolved" : "") + (S.hot === c.id ? " hot" : "") + (S.active === c.id ? " active" : "")); li.dataset.cid = c.id;
     li.onmouseenter = () => { S.hot = c.id; renderPinsOnly(shot); li.classList.add("hot"); };
     li.onmouseleave = () => { S.hot = null; renderPinsOnly(shot); li.classList.remove("hot"); };
-    if (nums[c.id]) li.append(el("span", "pinno", nums[c.id]));
     const body = el("div", "body");
     if (c.audio_path) body.append(voiceEl(c));
     if (c.body) body.append(el("p", "", c.body));
-    const meta = el("div", "meta"); const when = el("span", "when"); when.append(el("span", "", ago(c.created_at)));
+    const meta = el("div", "meta"), left = el("span", "metal"); if (nums[c.id]) left.append(el("span", "pinno", nums[c.id]));
+    const when = el("span", "when"); when.insertAdjacentHTML("beforeend", CLOCK16); when.append(el("span", "", ago(c.created_at))); left.append(when);
     if (c.resolved) { when.append(el("span", "dot"), el("span", "", "Resolved")); }
-    meta.append(when);
+    meta.append(left);
     if (!S.readOnly) { const r = el("button", "act", c.resolved ? "Reopen" : "Resolve"); r.onclick = () => toggleResolved(c); meta.append(r); }
     body.append(meta); li.append(body); list.append(li);
   });
   fillVoiceSources(cs);
 }
 // ---- voice notes
+const CLOCK16 = '<svg class="clk" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5996 8.0001C13.5996 4.9001 11.0996 2.4001 7.99961 2.4001C4.89961 2.4001 2.39961 4.9001 2.39961 8.0001C2.39961 11.1001 4.89961 13.6001 7.99961 13.6001C11.0996 13.6001 13.5996 11.1001 13.5996 8.0001ZM1.59961 8.0001C1.59961 4.4751 4.47461 1.6001 7.99961 1.6001C11.5246 1.6001 14.3996 4.4751 14.3996 8.0001C14.3996 11.5251 11.5246 14.4001 7.99961 14.4001C4.47461 14.4001 1.59961 11.5251 1.59961 8.0001ZM7.59961 4.4001C7.59961 4.1751 7.77461 4.0001 7.99961 4.0001C8.22461 4.0001 8.39961 4.1751 8.39961 4.4001V7.7751L10.6246 9.2751C10.7996 9.4001 10.8496 9.6501 10.7246 9.8251C10.5996 10.0001 10.3746 10.0501 10.1746 9.9251L7.77461 8.3251C7.67461 8.2501 7.59961 8.1251 7.59961 8.0001V4.4001Z" fill="currentColor"/></svg>';
 const MAX_REC = 120; // seconds
 const REC = { rec: null, chunks: [], blob: null, url: null, start: 0, timer: null, stream: null, duration: 0 };
 const VOICE = new Map(); // comment id -> element, reused so playback survives re-renders
@@ -1994,8 +2027,8 @@ function discardRecording(silent) {
 const WAVE = [6,12,6,12,12,8,12,12,12,8,12,12,12,8,12,12];
 const waveEl = (live) => { const w = el("span", "wave" + (live ? " live" : "")); WAVE.forEach((h, i) => { const b = document.createElement("i"); b.style.height = h + "px"; if (live) b.style.animationDelay = (i * 60) + "ms"; w.append(b); }); return w; };
 const mmss = (sec) => { const t = Math.max(0, Math.floor(sec)); return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"); };
-const PLAY = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.3 6.9l4.6 3.1-4.6 3.1z" fill="currentColor"/></svg>';
-const PAUSE = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.2" stroke="currentColor" stroke-width="1.5"/><path d="M8.2 7v6M11.8 7v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const PLAY = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path opacity="0.4" d="M2.40039 11.9999C2.40039 14.546 3.41182 16.9878 5.21217 18.7881C7.01252 20.5885 9.45431 21.5999 12.0004 21.5999C14.5465 21.5999 16.9883 20.5885 18.7886 18.7881C20.589 16.9878 21.6004 14.546 21.6004 11.9999C21.6004 9.45382 20.589 7.01203 18.7886 5.21168C16.9883 3.41133 14.5465 2.3999 12.0004 2.3999C9.45431 2.3999 7.01252 3.41133 5.21217 5.21168C3.41182 7.01203 2.40039 9.45382 2.40039 11.9999ZM9.00039 8.6999C9.00039 8.37365 9.17664 8.07365 9.46164 7.91615C9.74664 7.75865 10.0916 7.7624 10.3729 7.9349L15.7729 11.2349C16.0391 11.3999 16.2041 11.6887 16.2041 12.0037C16.2041 12.3187 16.0391 12.6074 15.7729 12.7724L10.3729 16.0724C10.0954 16.2412 9.74664 16.2487 9.46164 16.0912C9.17664 15.9337 9.00039 15.6262 9.00039 15.2999V8.6999Z" fill="currentColor"/><path d="M10.3687 7.93123C10.0912 7.76248 9.7425 7.75498 9.4575 7.91248C9.1725 8.06998 9 8.37373 9 8.69998V15.3C9 15.6262 9.17625 15.9262 9.46125 16.0837C9.74625 16.2412 10.0913 16.2375 10.3725 16.065L15.7725 12.765C16.0387 12.6 16.2037 12.3112 16.2037 11.9962C16.2037 11.6812 16.0387 11.3925 15.7725 11.2275L10.3725 7.92748L10.3687 7.93123Z" fill="currentColor"/></svg>';
+const PAUSE = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle opacity="0.4" cx="12" cy="12" r="9.6" fill="currentColor"/><rect x="8.9" y="7.9" width="2.2" height="8.2" rx="1" fill="#FFFFFF"/><rect x="12.9" y="7.9" width="2.2" height="8.2" rx="1" fill="#FFFFFF"/></svg>';
 // Compact player: play/pause, waveform, "elapsed/total"
 function makePlayer(audio, total) {
   const p = el("div", "player"); const btn = el("button", "pp"); btn.type = "button"; btn.innerHTML = PLAY; btn.setAttribute("aria-label", "Play voice note");
@@ -2011,8 +2044,8 @@ function makePlayer(audio, total) {
 function renderRecUI() {
   const btn = $("recBtn"); const recording = !!(REC.rec && REC.rec.state === "recording");
   // While recording, the mic button hides; stop sits at the start of the live pill
-  btn.hidden = recording;
-  btn.closest(".rv-msgbox").classList.toggle("recording", recording);
+  btn.hidden = recording || !!REC.blob;
+  btn.closest(".rv-msgbox").classList.toggle("recording", recording || !!REC.blob);
   $("recLive").hidden = !recording;
   if (recording) {
     if (!$("recLive").querySelector(".wave i")) { const w = $("recLive").querySelector(".wave"); w.replaceWith(waveEl(true)); }
