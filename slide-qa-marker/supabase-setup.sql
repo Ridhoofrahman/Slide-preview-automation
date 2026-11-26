@@ -677,3 +677,49 @@ create policy "deliveries: DMs read" on public.deliveries for select to authenti
 create policy "members only" on public.deliveries as restrictive for all to authenticated
   using ((select public.is_member())) with check ((select public.is_member()));
 -- No insert/update/delete policies: only the Edge Function (service role) writes.
+
+-- 22. Profile photos from Slack (sql/avatars.sql): profiles.avatar_url, refreshed on every Slack sign-in
+-- 1. Column
+alter table public.profiles add column if not exists avatar_url text;
+
+-- 2. Photo URL from a Slack identity (192px is plenty for a 32px avatar on a retina screen)
+create or replace function public.slack_photo(d jsonb) returns text
+  language sql immutable set search_path = public
+  as $$ select nullif(coalesce(d->>'https://slack.com/user_image_192', d->>'https://slack.com/user_image_72', d->>'picture'), '') $$;
+
+-- 3. On every Slack sign-in (identity added or refreshed): copy the photo to the profile
+create or replace function public.sync_slack_avatar() returns trigger
+  language plpgsql security definer set search_path = public
+  as $$
+begin
+  if new.provider = 'slack_oidc' and public.slack_photo(new.identity_data) is not null then
+    update public.profiles set avatar_url = public.slack_photo(new.identity_data)
+     where user_id = new.user_id and avatar_url is distinct from public.slack_photo(new.identity_data);
+  end if;
+  return new;
+end $$;
+drop trigger if exists slack_avatar_sync on auth.identities;
+create trigger slack_avatar_sync after insert or update of identity_data on auth.identities
+  for each row execute function public.sync_slack_avatar();
+
+-- 4. A profile created after the sign-in (first team step): take the photo from the identity right away
+create or replace function public.fill_profile_avatar() returns trigger
+  language plpgsql security definer set search_path = public
+  as $$
+begin
+  if new.avatar_url is null then
+    select public.slack_photo(i.identity_data) into new.avatar_url
+      from auth.identities i where i.user_id = new.user_id and i.provider = 'slack_oidc'
+     order by i.updated_at desc nulls last limit 1;
+  end if;
+  return new;
+end $$;
+drop trigger if exists profile_avatar_fill on public.profiles;
+create trigger profile_avatar_fill before insert on public.profiles
+  for each row execute function public.fill_profile_avatar();
+
+-- 5. Everyone who already signed in with Slack
+update public.profiles p set avatar_url = public.slack_photo(i.identity_data)
+  from auth.identities i
+ where i.user_id = p.user_id and i.provider = 'slack_oidc' and public.slack_photo(i.identity_data) is not null;
+
