@@ -916,16 +916,27 @@
   .rv-zoompop[hidden] { display: none; }
   .rv-zoompop .rv-tool { height: 32px; font-weight: 400; color: #454C63; }
   .rv-zoompop .rv-zoomlevel { min-width: 56px; font-size: 13px; }
-  /* strip: sunken panel, bigger thumbnails; a delete button shows on hover (Figma 756:18661) */
+  /* strip (Figma 177:10882): sunken panel, 161 x 78 slides 8px apart, number column + image, hover and selected fills;
+     the delete button sits under the number on hover */
   .review .rv-work { padding: 0 24px 24px; }
   .rv-stripwrap { padding-top: 20px; margin: 0 -4px; background: linear-gradient(#F7F9FC 20px, transparent 20px); }
   .review .rv-strip { background: #EEF2F8; border: 0; border-radius: 12px; padding: 0 4px; box-shadow: 0 1px 1px rgba(18,18,23,.05); }   /* elevation/sunken */
-  .review .rv-rail { background: transparent; padding: 8px 0; gap: 4px; }
-  .review .rv-thumb img, .review .rv-thumb .ph, .review .rv-thumb.pending .ph { width: 133px; }
-  .review .rv-thumb:hover { background: #F7F9FC; }
-  .rv-thumbbox { position: relative; flex: none; display: flex; }
-  .rv-thumbdel { position: absolute; left: 4px; bottom: 4px; width: 16px; height: 16px; padding: 0; border: 1px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; color: #F23B3B; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s ease-out; }   /* icon/danger */
-  .rv-thumbdel svg { width: 11px; height: 11px; }
+  .review .rv-scroll { flex: none; width: 24px; padding: 0; border: 0; background: none; color: #5C6480; display: grid; place-items: center; cursor: pointer; }
+  .review .rv-scroll svg { width: 24px; height: 24px; }
+  .review .rv-scroll:disabled { color: #C2CCDB; cursor: default; }
+  .review .rv-rail { background: transparent; padding: 8px 0; gap: 8px; }
+  .review .rv-thumb, .rv-thumbbox { flex: none; width: 161px; height: 78px; box-sizing: border-box; }
+  .review .rv-thumb { display: flex; align-items: stretch; gap: 4px; padding: 2px; border: 0; border-radius: 6px; background: none; box-shadow: none; }
+  .review .rv-thumb .n { flex: none; width: 24px; min-width: 0; height: 20px; padding: 4px 6px 0; box-sizing: border-box; text-align: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #6A7389; }
+  .review .rv-thumb img, .review .rv-thumb .ph { flex: 1; min-width: 0; width: auto; height: 100%; aspect-ratio: auto; box-sizing: border-box; border: 1px solid #DDE4EE; border-radius: 4px; object-fit: cover; background: #FFFFFF; }
+  .review .rv-thumb.pending .ph { width: auto; aspect-ratio: auto; border-style: dashed; }
+  .review .rv-thumb:hover, .rv-thumbbox:hover > .rv-thumb { background: #DDE4EE; }   /* background/neutral/hover-strong */
+  .review .rv-thumb.pending:hover { background: none; }
+  .review .rv-thumb[aria-current="true"] { background: #D9E6FF; box-shadow: inset 0 0 0 1.5px #3B74F5; }   /* background/accent/strong/brand, outline/strong/brand */
+  .rv-thumbbox { position: relative; display: flex; }
+  .rv-thumbbox > .rv-thumb { width: 100%; height: 100%; }
+  .rv-thumbdel { position: absolute; left: 2px; bottom: 2px; width: 26px; height: 26px; padding: 4px; box-sizing: border-box; border: 1px solid #DDE4EE; border-radius: 6px; background: #FFFFFF; color: #F23B3B; display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 2px rgba(18,18,23,.05); opacity: 0; transition: opacity .12s ease-out; }   /* Button Icon xs, icon/danger */
+  .rv-thumbdel svg { width: 16px; height: 16px; }
   .rv-thumbbox:hover .rv-thumbdel, .rv-thumbdel:focus-visible { opacity: 1; }
   .rv-thumbdel:hover { background: #FFF1F1; }
   @media (prefers-reduced-motion: reduce) { .rv-thumbdel { transition: none; } }
@@ -1030,9 +1041,9 @@
     <div class="rv-main">
       <div class="rv-work" id="rvWork">
         <div class="rv-stripwrap" id="rvStripWrap"><div class="rv-filter" id="rvFilter" role="toolbar" aria-label="Show slides for"></div><div class="rv-strip">
-          <button class="rv-scroll" id="railPrev" aria-label="Scroll slides left"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="rv-scroll" id="railPrev" aria-label="Scroll slides left"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.8757 6L9.3 11.5757C9.06569 11.8101 9.06569 12.1899 9.3 12.4243L14.8757 18" stroke="currentColor" stroke-linecap="round"/></svg></button>
           <nav class="rv-rail" id="rvRail" aria-label="Slides in this order"></nav>
-          <button class="rv-scroll" id="railNext" aria-label="Scroll slides right"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="rv-scroll" id="railNext" aria-label="Scroll slides right"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9.12427 6L14.7 11.5757C14.9343 11.8101 14.9343 12.1899 14.7 12.4243L9.12427 18" stroke="currentColor" stroke-linecap="round"/></svg></button>
         </div></div>
         <div class="rv-scrollarea" id="rvScroll">
           <div class="rv-empty" id="rvEmpty" hidden>
@@ -1867,7 +1878,7 @@ function renderFilter(all) {
   }
   return f === "all" ? null : rows.find((a) => a.assignee_id === f);
 }
-const THUMB_DEL = '<svg viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M4.31491 1.7616L4.13713 2.35958H6.54521L6.36744 1.7616C6.33511 1.66463 6.22198 1.58382 6.10885 1.58382H4.55734C4.4442 1.58382 4.34723 1.66463 4.31491 1.7616ZM3.58764 2.35958L3.8139 1.61615C3.91087 1.29291 4.21794 1.06665 4.55734 1.06665H6.10885C6.44824 1.06665 6.75532 1.29291 6.85228 1.61615L7.07855 2.35958H8.69471C8.84016 2.35958 8.9533 2.47271 8.9533 2.61817C8.9533 2.76362 8.84016 2.87675 8.69471 2.87675H1.97148C1.82602 2.87675 1.71289 2.76362 1.71289 2.61817C1.71289 2.47271 1.82602 2.35958 1.97148 2.35958H3.58764ZM2.23006 3.65251H2.74723V8.56564C2.74723 8.85655 2.9735 9.08281 3.26441 9.08281H7.40178C7.69269 9.08281 7.91895 8.85655 7.91895 8.56564V3.65251H8.43612V8.56564C8.43612 9.1313 7.96744 9.59998 7.40178 9.59998H3.26441C2.69875 9.59998 2.23006 9.1313 2.23006 8.56564V3.65251ZM4.04016 4.68685V7.78988C4.04016 7.93534 3.92703 8.04847 3.78158 8.04847C3.63612 8.04847 3.52299 7.93534 3.52299 7.78988V4.68685C3.52299 4.5414 3.63612 4.42827 3.78158 4.42827C3.92703 4.42827 4.04016 4.5414 4.04016 4.68685ZM5.59168 4.68685V7.78988C5.59168 7.93534 5.47855 8.04847 5.33309 8.04847C5.18764 8.04847 5.07451 7.93534 5.07451 7.78988V4.68685C5.07451 4.5414 5.18764 4.42827 5.33309 4.42827C5.47855 4.42827 5.59168 4.5414 5.59168 4.68685ZM7.14319 4.68685V7.78988C7.14319 7.93534 7.03006 8.04847 6.88461 8.04847C6.73915 8.04847 6.62602 7.93534 6.62602 7.78988V4.68685C6.62602 4.5414 6.73915 4.42827 6.88461 4.42827C7.03006 4.42827 7.14319 4.5414 7.14319 4.68685Z" fill="currentColor"/></svg>';
+const THUMB_DEL = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.47273 2.6424L6.20607 3.53937H9.81819L9.55152 2.6424C9.50304 2.49695 9.33334 2.37573 9.16364 2.37573H6.83637C6.66667 2.37573 6.52122 2.49695 6.47273 2.6424ZM5.38182 3.53937L5.72122 2.42422C5.86667 1.93937 6.32728 1.59998 6.83637 1.59998H9.16364C9.67273 1.59998 10.1333 1.93937 10.2788 2.42422L10.6182 3.53937H13.0424C13.2606 3.53937 13.4303 3.70907 13.4303 3.92725C13.4303 4.14543 13.2606 4.31513 13.0424 4.31513H2.95758C2.7394 4.31513 2.5697 4.14543 2.5697 3.92725C2.5697 3.70907 2.7394 3.53937 2.95758 3.53937H5.38182ZM3.34546 5.47876H4.12122V12.8485C4.12122 13.2848 4.46061 13.6242 4.89698 13.6242H11.103C11.5394 13.6242 11.8788 13.2848 11.8788 12.8485V5.47876H12.6546V12.8485C12.6546 13.6969 11.9515 14.4 11.103 14.4H4.89698C4.04849 14.4 3.34546 13.6969 3.34546 12.8485V5.47876ZM6.06061 7.03028V11.6848C6.06061 11.903 5.89091 12.0727 5.67273 12.0727C5.45455 12.0727 5.28485 11.903 5.28485 11.6848V7.03028C5.28485 6.8121 5.45455 6.6424 5.67273 6.6424C5.89091 6.6424 6.06061 6.8121 6.06061 7.03028ZM8.38788 7.03028V11.6848C8.38788 11.903 8.21819 12.0727 8.00001 12.0727C7.78182 12.0727 7.61213 11.903 7.61213 11.6848V7.03028C7.61213 6.8121 7.78182 6.6424 8.00001 6.6424C8.21819 6.6424 8.38788 6.8121 8.38788 7.03028ZM10.7152 7.03028V11.6848C10.7152 11.903 10.5455 12.0727 10.3273 12.0727C10.1091 12.0727 9.9394 11.903 9.9394 11.6848V7.03028C9.9394 6.8121 10.1091 6.6424 10.3273 6.6424C10.5455 6.6424 10.7152 6.8121 10.7152 7.03028Z" fill="currentColor"/></svg>';
 async function renderRail() {
   const every = projectSlides(); const rail = $("rvRail"); rail.innerHTML = "";
   const all = every.filter((x) => !x.alternative_of), alts = every.filter((x) => x.alternative_of);
