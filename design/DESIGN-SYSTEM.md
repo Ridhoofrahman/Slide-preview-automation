@@ -107,12 +107,13 @@ Palette read from the library on 2026-11-25 (Mapped collection; outline tokens a
 ## Spacing, radius, shadow
 - **Spacing** (`Brand / scale/*`): none 0, 1 → 1, 25 → 2, 50 → 4, 100 → 6, 150 → 8, 175 → 10, 200 → 12, 300 → 16, 400 → 20, 500 → 24, 600 → 28, 700 → 32, 800 → 36, 900 → 40.
 - **Radius** (`Mapped / radii/*`): xs 2, s 4, m 6, l 8, xl 12, **full 999** (pills, round avatars, rings).
-- **Shadow** (effect styles, colour #121217, unchanged):
-  - `Shadow/xs`: 0 1 2 0 @5%
-  - `Shadow/s`: 0 1 2 0 @6% + 0 1 3 0 @10%
-  - `Shadow/m`: 0 2 4 −1 @6% + 0 4 6 −1 @8%
-  - `Shadow/lg`: 0 4 6 −2 @5% + 0 10 15 −3 @8%
-  - `Shadow/xl`: 0 10 10 −5 @4% + 0 20 25 −5 @10%
+- **Shadow** (effect styles, updated 2026-11-27; CSS `--sh-*` on `:root` in `panel.html` and `review-app.html`):
+  - `Shadow/xxs`: 0 1 1 1 #6A7389 @10%
+  - `Shadow/xs`: 0 4 4 −2 #A3ADC2 @8% + 0 2 4 −2 #A3ADC2 @12%
+  - `Shadow/s`: 0 8 16 −6 #A3ADC2 @8% + 0 6 8 −6 #A3ADC2 @12%
+  - `Shadow/m`: 0 10 32 −4 #A3ADC2 @10% + 0 6 14 −6 #A3ADC2 @12%
+  - `Shadow/lg`: 0 14 64 −4 #18274B @12% + 0 8 22 −6 #A3ADC2 @12%
+  - `Shadow/xl` was removed.
 
 ## Components (Builder DS, republished 2026-11-13)
 | Component | Variants (default size) |
