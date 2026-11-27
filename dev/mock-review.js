@@ -22,7 +22,7 @@ const db={slide_files:[],deliveries:[{order_key:"45236",stage:"Revision 1",file_
  slide_assignments:[{order_key:'123',order_name:'Order #123',assignee_id:'u2',assignee_name:'Kevin',assignee_team:'Cascade',assignee_team_:'',slides:[1,2,3],created_by:'dm1',created_team:'Cascade',created_at:iso(500)}]
 };
 function q(t){let f=[],op='select',payload=null;const o={select(){return o},order(){return o},limit(){return o},range(){return o},upsert(){return o},in(k,v){f.push(r=>v.includes(r[k]));return o},neq(k,v){f.push(r=>r[k]!==v);return o},gte(){return o},lt(){return o},lte(){return o},gt(){return o},is(){return o},eq(k,v){f.push(r=>r[k]===v);return o},insert(p){op='insert';payload=p;return o},update(){op='update';return o},delete(){op='delete';return o},single(){o._one=1;return o},maybeSingle(){o._one=1;return o},
- then(r,j){let d=db[t].filter(x=>f.every(g=>g(x)));r({data:o._one?(d[0]||null):d,error:null})}};return o}
+ then(r,j){if(op==='insert'){[].concat(payload).forEach(x=>db[t].push(Object.assign({id:'m'+Math.random().toString(36).slice(2),created_at:new Date().toISOString()},x)));return r({data:null,error:null})}if(op==='delete'){db[t]=db[t].filter(x=>!f.every(g=>g(x)));return r({data:null,error:null})}let d=db[t].filter(x=>f.every(g=>g(x)));r({data:o._one?(d[0]||null):d,error:null})}};return o}
 const OUT=!!new URLSearchParams(location.search).get('out');
 if(new URLSearchParams(location.search).get('bignum')){db.slide_assignments[0].slides=[2312];}
 // ?alt=1: order #45236 gets two alternatives of slide 1 (1a sent first, 1b later) and one of slide 2
@@ -34,7 +34,13 @@ if(new URLSearchParams(location.search).get('dist')){const h=(x)=>new Date(Date.
  db.profiles.push(...['Thomas','Budi','Rama','Lina','Dewi'].map(n=>({user_id:'u'+n,name:n,team:'Cascade',avatar_url:n==='Thomas'?PH('#8AA4D6'):n==='Lina'?PH('#C99A7A'):null})),{user_id:'uSyarif',name:'Syarif',team:'Trident'});
  const A=(order,id,name,team,slides,dl)=>({order_key:order.replace(/\D/g,''),order_name:order,assignee_id:id,assignee_name:name,assignee_team:team,slides,deadline:dl,created_by:'Ridho',created_team:'Cascade',created_at:new Date().toISOString()});
  db.slide_assignments.push(A('Order #351265','uThomas','Thomas','Cascade',[1,2],h(-1)),A('Order #351265','uSyarif','Syarif','Trident',[3],h(3)),A('Order #351164','uBudi','Budi','Cascade',[1,2,3,4,5,7,9],h(1)),
-  A('Order #45236','uRama','Rama','Cascade',[1,2],h(-2)),A('Order #999000','uLina','Lina','Cascade',[1,2,3],h(30)),A('Order #351164','uThomas','Thomas','Cascade',[6,8],h(26)),A('Order #351164','dm1','Ridho','Cascade',[10],h(5)));}
+  A('Order #45236','uRama','Rama','Cascade',[1,2],h(-2)),A('Order #999000','uLina','Lina','Cascade',[1,2,3],h(30)),A('Order #351164','uThomas','Thomas','Cascade',[6,8],h(26)),A('Order #351164','dm1','Ridho','Cascade',[10],h(5)));
+ // order-level stage/internal and per-designer treatments + notes (sql/assignment-details.sql)
+ const X=(o,f)=>db.slide_assignments.filter(a=>a.order_name===o).forEach(a=>Object.assign(a,f(a)));
+ const dl=h(26);
+ X('Order #351164',a=>({stage:'Revision 1',deadline:dl,treatments:a.assignee_id==='uBudi'?{fu:[1,2,3,4],rd:[5,7],rw:[9]}:{fu:a.slides,rd:[],rw:[]},note:a.assignee_id==='uBudi'?'Please make sure you use typeface no more than 10px and use the correct company background as seen on the CVI':null,note_by:'dm1'}));
+ X('Order #351265',a=>({stage:'First Draft',internal:true,treatments:{fu:[],rd:a.slides,rw:[]}}));
+ X('Order #999000',a=>({stage:'First Draft',treatments:{fu:[1],rd:[2],rw:[3]},note:'Redraw the map on slide 3 as vector.',note_by:'dm1'}));}
 if(new URLSearchParams(location.search).get('empty')){db.slide_shots=[];db.slide_assignments=[];db.project_status=[];}
 window.supabase={createClient(){return{auth:{getSession:async()=>({data:{session:OUT?null:{user}}}),signInWithOAuth:async()=>({data:{},error:null}),signOut:async()=>{},updateUser:async()=>({data:{user},error:null}),signInWithPassword:async()=>({data:{user},error:null})},from:q,
  storage:{from(){return{createSignedUrls:async(p)=>({data:p.map(x=>({path:x,signedUrl:IM[x]})),error:null}),createSignedUrl:async(x)=>({data:{signedUrl:IM[x]},error:null}),upload:async()=>({data:{},error:null}),remove:async()=>({data:{},error:null})}}},

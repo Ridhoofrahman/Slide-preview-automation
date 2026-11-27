@@ -825,83 +825,124 @@
 
   /* Board body: 86px sides at 1280 (Figma 156:8287, content 1108 wide, cards 262), less on small screens */
   .bd-body { padding: 32px clamp(24px, 6.72vw, 86px); max-width: 1440px; }
-  /* ===== Distribution (Figma 465:14440, component "Load distribution" 483:16733) ===== */
-  .dd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 20px; align-items: start; }
-  .dd-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 12px; background: #EEF2F8; }
-  .dd-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 48px; padding: 0 12px; }
+  /* ===== Distribution (Figma 465:14440 / 1086:23318, component "Load distribution" 483:16733) ===== */
+  .dd-grid { display: flex; flex-direction: column; gap: 20px; }
+  .dd-card { display: flex; flex-direction: column; gap: 8px; padding: 8px; border: 1px solid #DDE4EE; border-radius: 12px; background: #EEF2F8; min-width: 0; }
+  .dd-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 12px; }
   .dd-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .dd-avatar { flex: none; width: 32px; height: 32px; border: 1px solid #A8C3FF; border-radius: 999px; background: #F7F9FC; display: grid; place-items: center; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; }
+  .dd-avatar { flex: none; width: 32px; height: 32px; box-sizing: border-box; border: 1px solid #A8C3FF; border-radius: 999px; background: #F7F9FC; display: grid; place-items: center; font-size: 14px; line-height: 20px; font-weight: 500; color: #2557D4; object-fit: cover; }
+  img.dd-avatar { border-color: #DDE4EE; }
   .dd-name { font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .dd-upd { flex: none; display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6A7389; white-space: nowrap; }
-  .dd-upd .ago { display: inline-flex; align-items: center; gap: 4px; }
-  .dd-upd svg { width: 12px; height: 12px; }
-  .dd-box { padding: 16px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: var(--sh-xs); }
-  .dd-row { display: flex; align-items: flex-start; gap: 20px; padding: 12px 4px 12px 0; }
-  .dd-row > :nth-child(1), .dd-row > :nth-child(2) { flex: 1 1 0; min-width: 0; }
-  .dd-row > :nth-child(3), .dd-row > :nth-child(4) { flex: none; width: 100px; }
-  .dd-head { padding-left: 16px; border-radius: 4px; background: #F7F9FC; font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; }
-  .dd-rows { padding: 0 16px; }
-  .dd-rows .dd-row { border-bottom: 1px solid #DDE4EE; }
-  .dd-rows .dd-row:last-child { border-bottom: 0; }
-  .dd-rows .dd-row.go { cursor: pointer; }
-  .dd-rows .dd-row.go:hover .dd-order { color: #1C43A5; text-decoration: underline; text-underline-position: from-font; }
-  .dd-order { font-size: 14px; line-height: 20px; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .dd-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-  .dd-chip { padding: 2px; min-width: 18px; border: 1px solid #DDE4EE; border-radius: 2px; background: #F7F9FC; font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; text-align: center; }
-  .dd-appr, .dd-due { display: flex; align-items: center; gap: 8px; min-height: 22px; font-size: 12px; line-height: 16px; color: #454C63; white-space: nowrap; }
-  .dd-appr svg { width: 16px; height: 16px; flex: none; color: #A3ADC2; }
-  .dd-due svg { width: 16px; height: 16px; flex: none; color: #454C63; }
-  .dd-due.soon, .dd-due.soon svg { color: #AD7300; }
-  .dd-due.soon svg { color: #E09600; }
-  .dd-due.late { color: #A81A1A; }
-  .dd-due.late svg { color: #D62020; }
-  .dd-due.ok { color: #0A6139; }
-  .dd-due.ok svg { color: #0C7F49; }
+  .dd-pts { flex: none; display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: #6A7389; white-space: nowrap; }
+  .dd-pts b { font-size: 20px; line-height: 32px; font-weight: 500; color: #454C63; }
+  .dd-box { padding: 16px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 1px rgba(18,18,23,.05); overflow-x: auto; }
+  .dd-table { min-width: 860px; border-radius: 6px; overflow: hidden; }
+  .dd-tr { display: flex; align-items: stretch; padding: 0 16px; font-size: 14px; line-height: 20px; color: #454C63; }
+  .dd-tr > .c-order, .dd-tr > .c-type { flex: none; width: 120px; box-sizing: border-box; }
+  .dd-tr > .c-due { flex: none; width: 220px; box-sizing: border-box; }
+  .dd-tr > .c-appr { flex: none; width: 160px; box-sizing: border-box; }
+  .dd-tr > .c-tr { flex: 1 1 0; min-width: 0; display: flex; background: #F7F9FC; }
+  .dd-tr > .c-tr > span { flex: 1 1 0; min-width: 0; padding: 12px; display: flex; flex-wrap: wrap; align-content: center; align-items: center; gap: 4px; }
+  .dd-tr > .c-tr > span + span { border-left: 1px solid #DDE4EE; }
+  .dd-th { background: #F7F9FC; font-weight: 500; }
+  .dd-th > span { display: flex; align-items: center; padding: 4px 0; }
+  .dd-th > .c-type, .dd-th > .c-due { padding-left: 16px; }
+  .dd-th > .c-appr { justify-content: flex-end; padding-left: 12px; }
+  .dd-th > .c-tr { background: #EEF2F8; padding: 0; }
+  .dd-th > .c-tr > span { padding: 12px 0 12px 8px; }
+  .dd-rows .dd-tr { border-bottom: 1px solid #DDE4EE; }
+  .dd-rows .dd-tr:last-child { border-bottom: 0; }
+  .dd-rows .dd-tr > .c-order, .dd-rows .dd-tr > .c-type, .dd-rows .dd-tr > .c-due, .dd-rows .dd-tr > .c-appr { padding-top: 8px; padding-bottom: 8px; display: flex; align-items: center; }
+  .dd-rows .dd-tr > .c-type, .dd-rows .dd-tr > .c-due { padding-left: 16px; padding-right: 16px; }
+  .dd-rows .dd-tr > .c-type { flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; }
+  .dd-rows .dd-tr > .c-appr { justify-content: flex-end; gap: 4px; padding-left: 12px; }
+  .dd-rows .dd-tr.go { cursor: pointer; }
+  .dd-rows .dd-tr.go:hover .dd-order, .dd-rows .dd-tr.go:focus-visible .dd-order { color: #1C43A5; text-decoration: underline; text-underline-position: from-font; }
+  .dd-rows .dd-tr.go:focus-visible { outline: 2px solid #3D66F5; outline-offset: -2px; }
+  .c-order { gap: 8px; }
+  .dd-order { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dd-note { flex: none; width: 16px; height: 16px; padding: 0; border: 0; background: none; color: #7D4FE0; display: grid; place-items: center; cursor: default; position: relative; }
+  .dd-note svg { width: 16px; height: 16px; display: block; }
+  .dd-note:focus-visible { outline: 2px solid #3D66F5; outline-offset: 1px; border-radius: 2px; }
+  /* Note popover (Figma 1086:25201): opens from the icon's bottom-right, the corner nearest the icon is sharp */
+  .dd-pop { position: fixed; z-index: 60; width: 302px; box-sizing: border-box; padding: 10px; border: 1px solid #BDA6EE; border-radius: 2px 8px 8px 8px; background: #F0EBFC; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+  .dd-pop[hidden] { display: none; }
+  .dd-pop .h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
+  .dd-pop .h .bd-av, .dd-pop .h img, .dd-pop .h .ini { width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #DDE4EE; border-radius: 999px; object-fit: cover; }
+  .dd-pop p { margin: 0; padding: 1px 0; font-size: 14px; line-height: 20px; color: #454C63; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .dd-due { gap: 4px; white-space: nowrap; }
+  .dd-due .p { display: inline-flex; align-items: center; gap: 4px; }
+  .dd-due svg { width: 20px; height: 20px; flex: none; color: #5C6480; }
+  .dd-due .dot { width: 4px; height: 4px; flex: none; display: grid; place-items: center; }
+  .dd-due .dot::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: #C2CCDB; }
+  .dd-due.soon { color: #AD7300; }
+  .dd-due.late { color: #D62020; }
+  .dd-chip { box-sizing: border-box; height: 20px; min-width: 20px; padding: 2px; border: 1px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; box-shadow: 0 1px .5px rgba(106,115,137,.1); font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; text-align: center; white-space: nowrap; }
+  .dd-appr.ok { color: #0C7F49; }
+  .dd-appr svg { width: 16px; height: 16px; flex: none; }
   .dd-empty { margin: 0; padding: 12px 0; font-size: 14px; line-height: 20px; color: #6A7389; }
 
-  /* ===== Assign order dialog (Figma 483:19630) ===== */
-  .as-dialog { width: min(552px, calc(100vw - 32px)); max-height: calc(100vh - 64px); padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: var(--sh-lg); overflow: hidden; }
+  /* ===== Assign order dialog (Figma 1107:27508) ===== */
+  .as-dialog { width: min(874px, calc(100vw - 32px)); max-height: calc(100vh - 64px); padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: var(--sh-lg); overflow: hidden; }
   .as-dialog[open] { display: flex; }
   .as-dialog::backdrop { background: rgba(26,31,46,.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
-  .as-dialog form { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+  .as-dialog form { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; }
   .as-dialog h2 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; }
-  .as-sub { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; }
-  .as-field { display: flex; flex-direction: column; gap: 8px; }
-  .as-label, .as-head .as-cols span { font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; }
-  .as-dialog input, .as-dialog select { height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; background-color: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; min-width: 0; }
+  .as-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; margin: -2px; padding: 2px; }
+  .as-sec { margin: 0; padding: 8px; border-radius: 6px; background: #F7F9FC; font-size: 14px; line-height: 20px; font-weight: 500; color: #6A7389; }
+  .as-details { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 0 8px; }
+  .as-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .as-label, .as-head span { font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; white-space: nowrap; }
+  .as-dialog input, .as-dialog select { box-sizing: border-box; width: 100%; height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; background-color: #FFFFFF; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #454C63; min-width: 0; }
   .as-dialog input { padding: 8px 12px 8px 8px; }
   .as-dialog input::placeholder { color: #6A7389; opacity: 1; }
   .as-dialog input[readonly] { background: #F7F9FC; color: #6A7389; }
-  .as-dialog input:focus, .as-dialog select:focus, .as-due:focus-within { outline: none; border-color: #3D66F5; box-shadow: 0 0 0 1px #3D66F5; }
-  .as-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
-  .as-rows { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: -2px; padding: 2px; }
-  .as-line, .as-row { display: flex; align-items: center; gap: 8px; }
-  .as-cols { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .8fr) minmax(0, 1.3fr); gap: 16px; }
+  .as-dialog input:focus, .as-dialog select:focus, .as-due:focus-within, .as-tr:focus-within { outline: none; border-color: #3D66F5; box-shadow: 0 0 0 1px #3D66F5; }
+  .as-dialog select { padding: 8px 40px 8px 8px; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.6 9.4l5.4 5.4 5.4-5.4' fill='none' stroke='%23454C63' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center / 24px; }
+  .as-dialog select:invalid, .as-dialog select.ph { color: #6A7389; }
+  .as-assign { display: flex; flex-direction: column; gap: 8px; padding: 0 8px; }
+  .as-rows { display: flex; flex-direction: column; gap: 8px; }
+  .as-line { display: flex; align-items: center; gap: 8px; }
+  .as-cols { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 205fr) minmax(0, 376fr) minmax(0, 205fr); gap: 16px; }
+  .as-trs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .as-head .as-xcol { flex: none; width: 32px; }
-  .as-row select { padding: 8px 36px 8px 8px; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
-    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.6 9.4l5.4 5.4 5.4-5.4' fill='none' stroke='%23454C63' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center / 24px; cursor: pointer; }
-  .as-row select:invalid, .as-row select.ph { color: #6A7389; }
-  .as-due { position: relative; display: flex; align-items: center; height: 40px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; cursor: pointer; min-width: 0; }
+  /* Slide fields with a treatment tag (FU / RD / RW) on the left */
+  .as-tr { display: flex; align-items: stretch; height: 40px; box-sizing: border-box; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; overflow: hidden; min-width: 0; }
+  .as-tr .tag { flex: none; display: flex; align-items: center; padding: 8px; background: #EEF2F8; font: 14px/20px "Geist Mono", ui-monospace, Menlo, monospace; color: #5C6480; cursor: help; }
+  .as-dialog .as-tr input { height: auto; border: 0; border-radius: 0; padding: 8px; background: transparent; box-shadow: none; }
+  .as-due { position: relative; display: flex; align-items: center; height: 40px; box-sizing: border-box; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; cursor: pointer; min-width: 0; }
   .as-due svg { flex: none; width: 20px; height: 20px; margin: 0 8px; color: #454C63; }
   .as-duetxt { flex: 1; min-width: 0; padding: 0 8px; font-size: 14px; line-height: 20px; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .as-duetxt.ph { color: #6A7389; }
   .as-dialog .as-duein { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; opacity: 0; pointer-events: none; }
-  .as-row.bad select, .as-row.bad input, .as-row.bad .as-due { border-color: #FFB0B0; background-color: #FFF1F1; }
+  .as-row.bad select, .as-row.bad input, .as-row.bad .as-tr, .as-dialog .bad-f, .as-due.bad-f { border-color: #FFB0B0; background-color: #FFF1F1; }
+  .as-row.bad .as-tr input { background: transparent; }
   .as-remove { flex: none; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: none; color: #454C63; cursor: pointer; display: grid; place-items: center; }
   .as-remove svg { width: 20px; height: 20px; }
   .as-remove:hover { background: #F7F9FC; color: #1A1F2E; }
   /* One designer: no ×, the fields use the full width; from two designers on the × column appears */
-  .as-remove.off, .as-list.single .as-xcol { display: none; }
-  .as-add { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 8px; border: 0; border-radius: 8px; background: none; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
+  .as-remove.off, .as-assign.single .as-xcol { display: none; }
+  .as-add { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: none; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #1C43A5; cursor: pointer; }
   .as-add svg { width: 16px; height: 16px; }
-  .as-add span { padding: 0 4px; }
-  .as-add:hover { background: #EEF4FF; }
+  .as-add:hover { text-decoration: underline; text-underline-position: from-font; }
   .as-err { margin: 0; font-size: 14px; line-height: 20px; color: #A81A1A; }
-  .as-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 0; }
-  .as-cancel, .as-save { height: 40px; padding: 8px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; box-shadow: var(--sh-xs); }
+  .as-err:empty { display: none; }
+  .as-actions { display: flex; align-items: center; gap: 8px; }
+  .as-actions .sp { flex: 1; }
+  /* Internal order switch (Builder DS Switcher: off icon/subtle, on background/success/default, knob Shadow/m) */
+  .as-switch { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: #454C63; cursor: pointer; user-select: none; }
+  .as-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .as-switch .tr { position: relative; flex: none; width: 40px; height: 22px; border-radius: 999px; background: #C2CCDB; transition: background .15s ease; }
+  .as-switch .tr::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #FFFFFF; box-shadow: var(--sh-m); transition: transform .15s ease; }
+  .as-switch input:checked + .tr { background: #12A45F; }
+  .as-switch input:checked + .tr::after { transform: translateX(18px); }
+  .as-switch input:focus-visible + .tr { outline: 2px solid #3D66F5; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .as-switch .tr, .as-switch .tr::after { transition: none; } }
+  .as-cancel, .as-save { height: 40px; padding: 8px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; box-shadow: var(--sh-xxs); }
   .as-cancel { border: 1px solid #DDE4EE; background: #FFFFFF; color: #454C63; }
   .as-cancel:hover { background: #F7F9FC; }
-  .as-save { border: 0; background: #1C43A5; color: #FFFFFF; box-shadow: var(--sh-xs); }
+  .as-save { border: 0; background: #1C43A5; color: #FFFFFF; }
   .as-save:hover:not(:disabled) { background: #132D70; }
   .as-save:disabled { opacity: .6; cursor: progress; }
 
@@ -1175,15 +1216,26 @@
 <dialog id="assignDialog" class="as-dialog" aria-labelledby="asTitle">
   <form id="assignForm" novalidate>
     <h2 id="asTitle">Assign order</h2>
-    <p class="as-sub">Split the order between designers. Use slide numbers like 1-5 or 1-3, 7.</p>
-    <label class="as-field"><span class="as-label">Order number</span><input id="asOrder" placeholder="e.g. 351164" autocomplete="off"></label>
-    <div class="as-list">
-      <div class="as-line as-head" aria-hidden="true"><div class="as-cols"><span>Designer</span><span>Slides to work</span><span>Deadline</span></div><span class="as-xcol"></span></div>
-      <div class="as-rows" id="asRows"></div>
-      <button type="button" class="as-add" id="asAdd"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><g transform="translate(1.6 1.6)"><path d="M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z" fill="currentColor"/></g></svg><span>Add designer</span></button>
+    <div class="as-body">
+      <p class="as-sec">ORDER DETAILS</p>
+      <div class="as-details">
+        <label class="as-field"><span class="as-label">Order number</span><input id="asOrder" placeholder="e.g. 456654" autocomplete="off"></label>
+        <div class="as-field"><span class="as-label" id="asDueLbl">Deadline</span><div id="asDueSlot"></div></div>
+        <label class="as-field"><span class="as-label">Stage</span><select id="asStage" required></select></label>
+      </div>
+      <p class="as-sec">ASSIGN TO</p>
+      <div class="as-assign" id="asAssign">
+        <div class="as-line as-head" aria-hidden="true"><div class="as-cols"><span>Designer</span><span>Slide to work</span><span>Note for designer</span></div><span class="as-xcol"></span></div>
+        <div class="as-rows" id="asRows"></div>
+        <button type="button" class="as-add" id="asAdd"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><g transform="translate(1.6 1.6)"><path d="M6.85714 0.457143V5.94286H12.3429C12.6 5.94286 12.8 6.14286 12.8 6.4C12.8 6.65714 12.6 6.85714 12.3429 6.85714H6.85714V12.3429C6.85714 12.6 6.65714 12.8 6.4 12.8C6.14286 12.8 5.94286 12.6 5.94286 12.3429V6.85714H0.457143C0.2 6.85714 0 6.65714 0 6.4C0 6.14286 0.2 5.94286 0.457143 5.94286H5.94286V0.457143C5.94286 0.2 6.14286 0 6.4 0C6.65714 0 6.85714 0.2 6.85714 0.457143Z" fill="currentColor"/></g></svg><span>Add designer</span></button>
+      </div>
     </div>
     <p class="as-err" id="asErr" role="alert"></p>
-    <div class="as-actions"><button type="button" class="as-cancel" id="asCancel">Cancel</button><button type="submit" class="as-save" id="asSave">Save</button></div>
+    <div class="as-actions">
+      <label class="as-switch"><input type="checkbox" id="asInternal"><span class="tr" aria-hidden="true"></span><span>Internal order</span></label>
+      <span class="sp"></span>
+      <button type="button" class="as-cancel" id="asCancel">Cancel</button><button type="submit" class="as-save" id="asSave">Assign order</button>
+    </div>
   </form>
 </dialog>
 <dialog id="deleteDialog" class="confirm" aria-labelledby="delTitle">
@@ -1473,6 +1525,8 @@ const ELLIPSIS_V = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><pat
 // Stage of an order: FIRST DRAFT until a final file is on Drive. After an upload, the order stays on that stage until
 // someone sends slides again; then it is the next revision (First Draft → Revision 1, Revision 2 → Revision 3).
 function orderStage(p) {
+  const set = orderMeta((S.assignments || {})[p.key]).stage;   // the DM's stage (Assign order dialog) wins
+  if (set) return set;
   const d = finalFile(p);
   if (!d) return "First Draft";
   const n = d.stage === "First Draft" ? 0 : parseInt(String(d.stage).replace(/\D/g, ""), 10) || 0;
@@ -1520,6 +1574,7 @@ function orderCard(p) {
   c.append(fan);
   const stats = el("div", "bd-stats"), stage = orderStage(p);
   stats.append(el("span", "bd-stat" + (stage === "First Draft" ? "" : " rev"), stage.toUpperCase()));
+  if (orderMeta((S.assignments || {})[p.key]).internal) stats.append(el("span", "bd-stat int", "INTERNAL"));
   if (p.teams && p.teams.size > 1) { const t = el("span", "bd-stat tt", "TAG TEAM"); t.title = [...p.teams].join(" + "); stats.append(t); }
   c.append(stats);
   const info = el("div", "bd-info"), title = el("div", "bd-title");
@@ -1646,52 +1701,140 @@ function renderDistribution(c) {
   list.forEach((d) => grid.append(designerCard(d)));
   c.append(grid);
 }
+// Slide treatments (Assign order dialog, Distribution table) and their points per slide (Uda, 2026-11-27)
+const TREATS = [["fu", "FU", "Fix-up"], ["rd", "RD", "Redesign"], ["rw", "RW", "Redraw"]];
+const TREAT_POINTS = { fu: 1, rd: 4, rw: 8 };
+const STAGES = ["First Draft"].concat(Array.from({ length: 10 }, (_, i) => "Revision " + (i + 1)));
+// Slides per treatment; distributions saved before the treatments existed count as Fix-up
+function treatmentsOf(a) {
+  const t = a && a.treatments && typeof a.treatments === "object" ? a.treatments : null;
+  const out = {}; TREATS.forEach(([k]) => { out[k] = []; });
+  if (t && TREATS.some(([k]) => Array.isArray(t[k]))) TREATS.forEach(([k]) => { out[k] = (t[k] || []).map(Number).filter(Boolean).sort((x, y) => x - y); });
+  else out.fu = ((a && a.slides) || []).slice().sort((x, y) => x - y);
+  return out;
+}
+const pointsOf = (a) => { const t = treatmentsOf(a); return TREATS.reduce((s, [k]) => s + t[k].length * TREAT_POINTS[k], 0); };
+// Order-level fields live on every row of the order: the first one set wins
+function orderMeta(rows) {
+  rows = rows || [];
+  const ds = rows.map((a) => a.deadline).filter(Boolean).sort();
+  return { stage: (rows.find((a) => a.stage) || {}).stage || "", internal: rows.some((a) => a.internal), deadline: ds[0] || null };
+}
+// Stages: First Draft = 0, Revision n = n. A stage that was completed can't be chosen again:
+// completed = a final file was uploaded for it (deliveries, latest per order), or it is the order's current
+// stage and every slide of the order is approved.
+const stageNum = (st) => (!st ? -1 : /first/i.test(st) ? 0 : parseInt(String(st).replace(/\D/g, ""), 10) || -1);
+function completedStage(key) {
+  if (!key) return -1;
+  const d = (S.deliveries || {})[orderId(key)];
+  let n = d ? stageNum(d.stage) : -1;
+  const p = S.projects[key] || Object.values(S.projects || {}).find((x) => orderId(x.name) === orderId(key));
+  const rows = (S.assignments || {})[p ? p.key : key] || [];
+  const cur = stageNum(orderMeta(rows).stage);
+  if (p && cur >= 0) { const c = orderCounts(p); if (c.total > 0 && c.approved >= c.total) n = Math.max(n, cur); }
+  return n;
+}
+// Fill the Stage dropdown: completed stages are disabled (the current one stays, so the DM can adjust it)
+function fillStages(key, current) {
+  const st = $("asStage"), done = completedStage(key), keep = stageNum(current);
+  st.innerHTML = ""; st.append(new Option("Select stage", ""));
+  STAGES.forEach((x) => { const n = stageNum(x), o = new Option(x, x); if (n <= done && n !== keep) { o.disabled = true; o.textContent = x + " \u00B7 completed"; } st.append(o); });
+  const next = STAGES.find((x) => stageNum(x) === done + 1);
+  st.value = current && STAGES.includes(current) ? current : done >= 0 && next ? next : "";
+  st.classList.toggle("ph", !st.value);
+}
+const NOTE_ICON = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><g transform="translate(1.6 1.6)"><path d="M0 10.9714V1.82857C0 0.828571 0.828571 0 1.82857 0H10.9714C11.9714 0 12.8 0.828571 12.8 1.82857V7.91429C12.8 8.4 12.6 8.88571 12.2571 9.22857L9.22857 12.2571C8.88571 12.6 8.42857 12.8 7.94286 12.8H1.82857C0.828571 12.8 0 11.9714 0 10.9714ZM7.77143 11.1429L11.1429 7.77143H8.45714C8.08571 7.77143 7.77143 8.08571 7.77143 8.45714V11.1429ZM1.94286 10.0571C1.94286 10.4857 2.31429 10.8571 2.74286 10.8571C3.17143 10.8571 3.54286 10.4857 3.54286 10.0571C3.54286 9.62857 3.17143 9.25714 2.74286 9.25714C2.31429 9.25714 1.94286 9.62857 1.94286 10.0571ZM2.74286 3.54286C3.17143 3.54286 3.54286 3.17143 3.54286 2.74286C3.54286 2.31429 3.17143 1.94286 2.74286 1.94286C2.31429 1.94286 1.94286 2.31429 1.94286 2.74286C1.94286 3.17143 2.31429 3.54286 2.74286 3.54286ZM1.94286 6.4C1.94286 6.82857 2.31429 7.2 2.74286 7.2C3.17143 7.2 3.54286 6.82857 3.54286 6.4C3.54286 5.97143 3.17143 5.6 2.74286 5.6C2.31429 5.6 1.94286 5.97143 1.94286 6.4Z" fill="currentColor"/></g></svg>';
+const CLOCK20 = '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><g transform="translate(2 2)"><path d="M15 8C15 4.125 11.875 1 8 1C4.125 1 1 4.125 1 8C1 11.875 4.125 15 8 15C11.875 15 15 11.875 15 8ZM0 8C0 3.59375 3.59375 0 8 0C12.4062 0 16 3.59375 16 8C16 12.4062 12.4062 16 8 16C3.59375 16 0 12.4062 0 8ZM7.5 3.5C7.5 3.21875 7.71875 3 8 3C8.28125 3 8.5 3.21875 8.5 3.5V7.71875L11.2812 9.59375C11.5 9.75 11.5625 10.0625 11.4062 10.2812C11.25 10.5 10.9688 10.5625 10.7188 10.4062L7.71875 8.40625C7.59375 8.3125 7.5 8.15625 7.5 8V3.5Z" fill="currentColor"/></g></svg>';
+const CHECK_SOLID = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 14.4C4.465 14.4 1.6 11.535 1.6 8C1.6 4.465 4.465 1.6 8 1.6C11.535 1.6 14.4 4.465 14.4 8C14.4 11.535 11.535 14.4 8 14.4ZM10.95 5.2425C10.6825 5.0475 10.3075 5.1075 10.1125 5.375L7.1275 9.48L5.825 8.1775C5.59 7.9425 5.21 7.9425 4.9775 8.1775C4.745 8.4125 4.7425 8.7925 4.9775 9.025L6.7775 10.825C6.9025 10.95 7.0725 11.0125 7.2475 11C7.4225 10.9875 7.5825 10.8975 7.685 10.755L11.0825 6.08C11.2775 5.8125 11.2175 5.4375 10.95 5.2425Z" fill="#12A45F"/></svg>';
+const shortDate = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + " ’" + String(d.getFullYear()).slice(2);
+// Note popover: one shared element, opens from the note icon's bottom-right corner
+function notePop(btn, a) {
+  let pop = $("ddPop");
+  if (!pop) { pop = el("div", "dd-pop"); pop.id = "ddPop"; pop.setAttribute("role", "tooltip"); pop.hidden = true; document.body.append(pop); }
+  pop.innerHTML = "";
+  const h = el("div", "h"); h.append(el("span", "", "Notes"));
+  const prof = (S.profiles || []).find((x) => a.note_by && x.user_id === a.note_by);
+  const by = prof ? { name: prof.name, photo: prof.avatar_url } : a.created_by ? { name: a.created_by } : null;
+  if (by) h.append(avatar(by));
+  pop.append(h, el("p", "", a.note)); pop.hidden = false;
+  const r = btn.getBoundingClientRect(), w = pop.offsetWidth, ht = pop.offsetHeight;
+  let x = r.right, y = r.bottom;
+  if (x + w > innerWidth - 8) x = Math.max(8, innerWidth - 8 - w);
+  if (y + ht > innerHeight - 8) y = Math.max(8, r.top - ht);
+  pop.style.left = x + "px"; pop.style.top = y + "px";
+}
+function hideNotePop() { const p = $("ddPop"); if (p) p.hidden = true; }
 function designerCard(d) {
   const card = el("article", "dd-card");
   const top = el("div", "dd-top"); const who = el("div", "dd-who");
+  const prof = (S.profiles || []).find((x) => x.user_id === d.user_id) || d;
   const initials = d.name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
-  who.append(el("span", "dd-avatar", initials), el("span", "dd-name", d.name)); top.append(who);
-  const last = (S.shots || []).filter((x) => x.designer_id === d.user_id).reduce((m, x) => (x.created_at > m ? x.created_at : m), "");
-  const upd = el("div", "dd-upd");
-  if (last) { upd.append(el("span", "", "Last update")); const a = el("span", "ago"); a.innerHTML = CLOCK; a.append(document.createTextNode(ago(last))); upd.append(a); }
-  else upd.append(el("span", "", "No slides sent yet"));
-  top.append(upd); card.append(top);
-  const box = el("div", "dd-box");
-  const hrow = el("div", "dd-row dd-head"); ["Assigned orders", "Slides to work", "Approved", "Deadline"].forEach((t) => hrow.append(el("span", "", t))); box.append(hrow);
+  let av = el("span", "dd-avatar", initials);
+  if (prof.avatar_url) { const i = new Image(); i.className = "dd-avatar"; i.alt = ""; i.src = prof.avatar_url; i.referrerPolicy = "no-referrer"; i.onerror = () => i.replaceWith(el("span", "dd-avatar", initials)); av = i; }
+  who.append(av, el("span", "dd-name", d.name)); top.append(who);
   const rows = [];
-  Object.entries(S.assignments || {}).forEach(([key, list]) => list.forEach((a) => { if (a.assignee_id === d.user_id) rows.push({ key, a }); }));
+  Object.entries(S.assignments || {}).forEach(([key, list]) => list.forEach((a) => { if (a.assignee_id === d.user_id) rows.push({ key, a, meta: orderMeta(list) }); }));
   const now = Date.now();
   rows.forEach((r) => {
     const st = statusByNum(S.projects[r.key]); r.done = r.a.slides.filter((n) => st[n] === "approved").length;
     r.complete = r.a.slides.length > 0 && r.done >= r.a.slides.length;
-    r.t = r.a.deadline ? new Date(r.a.deadline).getTime() : Infinity;
+    const dl = r.a.deadline || r.meta.deadline;
+    r.t = dl ? new Date(dl).getTime() : Infinity;
     r.late = !r.complete && r.t < now;
   });
+  // Assigned points: slides × TREAT_POINTS over the orders still in progress
+  const pts = rows.filter((r) => !r.complete).reduce((s, r) => s + pointsOf(r.a), 0);
+  const pw = el("div", "dd-pts"); pw.append(el("span", "", "Assigned points"), el("b", "", String(pts))); top.append(pw);
+  card.append(top);
   // Overdue first, then the nearest deadline; finished orders last
   rows.sort((x, y) => (x.complete - y.complete) || (y.late - x.late) || (x.t - y.t));
+  const box = el("div", "dd-box"), table = el("div", "dd-table");
+  const th = el("div", "dd-tr dd-th");
+  th.append(el("span", "c-order", "Assigned orders"), el("span", "c-type", "Type"), el("span", "c-due", "Deadline"));
+  const thr = el("span", "c-tr"); TREATS.forEach(([, , label]) => thr.append(el("span", "", label))); th.append(thr, el("span", "c-appr", "Approved slides"));
+  table.append(th);
   const body = el("div", "dd-rows");
   if (!rows.length) body.append(el("p", "dd-empty", "No orders assigned."));
   rows.forEach((r) => {
-    const row = el("div", "dd-row go"); row.tabIndex = 0; row.setAttribute("role", "link");
+    const row = el("div", "dd-tr go"); row.tabIndex = 0; row.setAttribute("role", "link");
     const p = S.projects[r.key]; const name = p ? p.name : r.a.order_name;
-    const oid = orderId(name); row.append(el("span", "dd-order", /^\d+$/.test(oid) ? "Order #" + oid : name));
-    row.setAttribute("aria-label", "Open " + name);
-    const chips = el("div", "dd-chips"); rangesOf(r.a.slides.slice().sort((x, y) => x - y)).split(", ").forEach((t) => chips.append(el("span", "dd-chip", t.replace("-", "\u2013")))); row.append(chips);
-    const ap = el("div", "dd-appr"); ap.innerHTML = ICONS.history; ap.append(document.createTextNode(r.done + "/" + r.a.slides.length + " slides")); row.append(ap);
-    const due = el("div", "dd-due");
-    if (r.complete) { due.classList.add("ok"); due.innerHTML = ICONS.check; due.append(document.createTextNode("Completed")); }
-    else if (!r.a.deadline) { due.append(document.createTextNode("\u2013")); due.title = "No deadline"; }
+    const oid = orderId(name); row.setAttribute("aria-label", "Open " + name);
+    const oc = el("span", "c-order"); oc.append(el("span", "dd-order", /^\d+$/.test(oid) ? "#" + oid : name));
+    if (r.a.note) {
+      const nb = el("button", "dd-note"); nb.type = "button"; nb.innerHTML = NOTE_ICON; nb.setAttribute("aria-label", "Note for " + d.name + ": " + r.a.note);
+      nb.onmouseenter = nb.onfocus = () => notePop(nb, r.a); nb.onmouseleave = nb.onblur = hideNotePop;
+      nb.onclick = (e) => { e.stopPropagation(); const pop = $("ddPop"); if (pop && !pop.hidden) hideNotePop(); else notePop(nb, r.a); };
+      nb.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Escape") hideNotePop(); };
+      oc.append(nb);
+    }
+    row.append(oc);
+    const tc = el("span", "c-type"), stage = r.meta.stage || (p ? orderStage(p) : "First Draft");
+    tc.append(el("span", "bd-stat" + (stage === "First Draft" ? "" : " rev"), stage.toUpperCase()));
+    if (r.meta.internal) tc.append(el("span", "bd-stat int", "INTERNAL"));
+    row.append(tc);
+    const due = el("span", "c-due dd-due");
+    if (r.t === Infinity) { due.append(document.createTextNode("–")); due.title = "No deadline"; }
     else {
-      const left = r.t - now; due.classList.toggle("late", left < 0); due.classList.toggle("soon", left >= 0 && left < 2 * 36e5);
-      due.innerHTML = ICONS.clock; due.append(document.createTextNode(dueText(new Date(r.t))));
-      due.title = (left < 0 ? "Overdue: " : "Due ") + new Date(r.t).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      const dt = new Date(r.t), left = r.t - now;
+      if (!r.complete) { due.classList.toggle("late", left < 0); due.classList.toggle("soon", left >= 0 && left < 2 * 36e5); }
+      const a1 = el("span", "p"); a1.innerHTML = CLOCK20; a1.append(document.createTextNode(hhmm(dt)));
+      const a2 = el("span", "p"); a2.innerHTML = ICONS.calday; a2.append(document.createTextNode(shortDate(dt)));
+      due.append(a1, el("span", "dot"), a2);
+      due.title = (r.complete ? "Deadline " : left < 0 ? "Overdue: " : "Due ") + dt.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     }
     row.append(due);
-    const open = () => { if (p) openProject(p); };
+    const tr = el("span", "c-tr"), t = treatmentsOf(r.a);
+    TREATS.forEach(([k]) => { const cell = el("span", ""); if (t[k].length) rangesOf(t[k]).split(", ").forEach((x) => cell.append(el("span", "dd-chip", x))); tr.append(cell); });
+    row.append(tr);
+    const ap = el("span", "c-appr dd-appr" + (r.complete ? " ok" : ""));
+    if (r.complete) ap.innerHTML = CHECK_SOLID;
+    ap.append(document.createTextNode(r.done + "/" + r.a.slides.length));
+    row.append(ap);
+    const open = () => { hideNotePop(); if (p) openProject(p); };
     row.onclick = open; row.onkeydown = (e) => { if (e.key === "Enter") open(); };
     body.append(row);
   });
-  box.append(body); card.append(box);
+  table.append(body); box.append(table); card.append(box);
   return card;
 }
 function renderActivity() {
@@ -1756,8 +1899,8 @@ const orderId = (name) => { const t = String(name || "").trim(); const m = t.mat
 function orderNameFrom(v) { const t = String(v || "").trim(); const m = t.match(/^(?:order\s*)?#?\s*(\d{5,7})$/i); return m ? "Order #" + m[1] : t; }
 function designerSelect(value) {
   const sel = document.createElement("select"); sel.className = "as-who"; sel.setAttribute("aria-label", "Designer");
-  sel.append(new Option("Choose a designer", ""));
-  const people = (S.profiles || []).filter((p) => p.user_id !== S.user.id || true).slice().sort((a, b) => a.name.localeCompare(b.name));
+  sel.append(new Option("Select designer", ""));
+  const people = (S.profiles || []).slice().sort((a, b) => a.name.localeCompare(b.name));
   const mine = people.filter((p) => S.myTeam && p.team === S.myTeam), others = people.filter((p) => !(S.myTeam && p.team === S.myTeam));
   const group = (label, list) => { if (!list.length) return; const g = document.createElement("optgroup"); g.label = label; list.forEach((p) => g.append(new Option(p.name + (p.team ? "_" + p.team : ""), p.user_id))); sel.append(g); };
   group(S.myTeam ? "Your team (" + S.myTeam + ")" : "People", mine); group("Other teams", others);
@@ -1767,36 +1910,53 @@ function designerSelect(value) {
 // Deadline field: shows "Today, 14:00"; a click opens the browser's date + time picker
 const toLocalInput = (iso) => { if (!iso) return ""; const d = new Date(iso); if (isNaN(d)) return ""; const z = (n) => String(n).padStart(2, "0"); return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()) + "T" + z(d.getHours()) + ":" + z(d.getMinutes()); };
 function dueLabel(d) { const k = dayDiff(d); return (k === 0 ? "Today" : k === 1 ? "Tomorrow" : k === -1 ? "Yesterday" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" })) + ", " + hhmm(d); }
-function dueField(iso) {
+function dueField(iso, ph) {
   const f = el("div", "as-due"); f.innerHTML = ICONS.calclock;
   const txt = el("span", "as-duetxt"); const inp = document.createElement("input");
-  inp.type = "datetime-local"; inp.className = "as-duein"; inp.setAttribute("aria-label", "Deadline"); inp.value = toLocalInput(iso);
-  const show = () => { const v = inp.value; txt.textContent = v ? dueLabel(new Date(v)) : "Today, 14:00"; txt.classList.toggle("ph", !v); f.title = v ? new Date(v).toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "Set a deadline"; };
+  inp.type = "datetime-local"; inp.className = "as-duein"; inp.setAttribute("aria-labelledby", "asDueLbl"); inp.value = toLocalInput(iso);
+  const show = () => { const v = inp.value; txt.textContent = v ? dueLabel(new Date(v)) : ph || "Select a date"; txt.classList.toggle("ph", !v); f.title = v ? new Date(v).toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "Set a deadline"; };
   inp.addEventListener("change", show); inp.addEventListener("input", show);
   f.onclick = () => { try { inp.showPicker(); } catch (e) { inp.focus(); } };
   f.append(txt, inp); show();
   return f;
 }
 // The × shows only when there is more than one designer (Figma: one line by default)
-function updateRemoveButtons() { const rows = [...$("asRows").children]; rows.forEach((r) => r.querySelector(".as-remove").classList.toggle("off", rows.length < 2)); $("asRows").closest(".as-list").classList.toggle("single", rows.length < 2); }
+function updateRemoveButtons() { const rows = [...$("asRows").children]; rows.forEach((r) => r.querySelector(".as-remove").classList.toggle("off", rows.length < 2)); $("asAssign").classList.toggle("single", rows.length < 2); }
 function assignRow(a) {
-  const r = el("div", "as-row"); const cols = el("div", "as-cols");
+  const r = el("div", "as-row as-line"); const cols = el("div", "as-cols");
   const who = designerSelect(a ? a.assignee_id : "");
   const syncWho = () => { who.classList.toggle("ph", !who.value); who.title = who.value ? who.selectedOptions[0].textContent : ""; };
-  const sl = document.createElement("input"); sl.className = "as-slides"; sl.placeholder = "e.g. 1-10"; sl.setAttribute("aria-label", "Slides to work"); sl.value = a ? rangesOf(a.slides || []) : "";
-  const due = dueField(a ? a.deadline : null);
+  const trs = el("div", "as-trs"), t = treatmentsOf(a);
+  TREATS.forEach(([k, tag, label]) => {
+    const f = el("label", "as-tr"); const tg = el("span", "tag", tag); tg.title = label;
+    const inp = document.createElement("input"); inp.className = "as-sl"; inp.dataset.t = k; inp.placeholder = "e.g 1-10"; inp.autocomplete = "off";
+    inp.setAttribute("aria-label", label + " slides"); inp.value = a ? rangesOf(t[k]) : "";
+    f.append(tg, inp); trs.append(f);
+  });
+  const note = document.createElement("input"); note.className = "as-note"; note.placeholder = "Add note..."; note.setAttribute("aria-label", "Note for designer"); note.maxLength = 500; note.value = (a && a.note) || "";
   const x = el("button", "as-remove"); x.type = "button"; x.setAttribute("aria-label", "Remove designer"); x.innerHTML = ICONS.xmark;
   x.onclick = () => { r.remove(); if (!$("asRows").children.length) $("asRows").append(assignRow()); updateRemoveButtons(); };
-  [who, sl, due.querySelector("input")].forEach((n) => ["input", "change"].forEach((ev) => n.addEventListener(ev, () => { $("asErr").textContent = ""; r.classList.remove("bad"); })));
+  r.addEventListener("input", () => { $("asErr").textContent = ""; r.classList.remove("bad"); });
+  r.addEventListener("change", () => { $("asErr").textContent = ""; r.classList.remove("bad"); });
   who.addEventListener("change", syncWho); syncWho();
-  cols.append(who, sl, due); r.append(cols, x); return r;
+  cols.append(who, trs, note); r.append(cols, x); return r;
 }
 function openAssign(key, title) {
   $("asTitle").textContent = title || "Assign order";
+  $("asSave").textContent = key ? "Save" : "Assign order";
   const rows = key ? (S.assignments || {})[key] || [] : [];
-  const p = key ? S.projects[key] : null;
+  const p = key ? S.projects[key] : null, meta = orderMeta(rows);
   $("asOrder").value = p ? p.name : rows[0] ? rows[0].order_name : "";
   $("asOrder").readOnly = !!key;
+  const slot = $("asDueSlot"); slot.innerHTML = ""; slot.append(dueField(meta.deadline));
+  const st = $("asStage"); fillStages(key, meta.stage);
+  st.dataset.picked = "";
+  st.onchange = () => { st.dataset.picked = st.value ? "1" : ""; st.classList.toggle("ph", !st.value); st.classList.remove("bad-f"); $("asErr").textContent = ""; };
+  $("asInternal").checked = meta.internal;
+  // A new distribution for an order that already exists: its completed stages can't be chosen again
+  $("asOrder").classList.remove("bad-f");
+  $("asOrder").oninput = () => { $("asOrder").classList.remove("bad-f"); $("asErr").textContent = "";
+    if (!key) { const k = orderId(orderNameFrom($("asOrder").value)); const cur = st.dataset.picked ? st.value : ""; fillStages(/^\d+$/.test(k) ? "order #" + k : "", ""); if (cur && [...st.options].some((o) => o.value === cur && !o.disabled)) { st.value = cur; st.classList.remove("ph"); } } };
   const box = $("asRows"); box.innerHTML = "";
   (rows.length ? rows : [null]).forEach((a) => box.append(assignRow(a)));
   updateRemoveButtons();
@@ -1804,31 +1964,56 @@ function openAssign(key, title) {
   $("assignDialog").showModal();
   (key ? box.querySelector("select") : $("asOrder")).focus();
 }
+// Columns added by sql/assignment-details.sql; left out of the save when that SQL hasn't run yet
+const ASSIGN_EXTRA = ["stage", "internal", "treatments", "note"];
 async function saveAssign() {
-  const err = (m, row) => { $("asErr").textContent = m; if (row) row.classList.add("bad"); };
-  const name = orderNameFrom($("asOrder").value); if (!name) { err("Enter the order number."); $("asOrder").focus(); return; }
+  const err = (m, row, field) => { $("asErr").textContent = m; if (row) row.classList.add("bad"); if (field) { field.classList.add("bad-f"); field.focus && field.focus(); } };
+  const name = orderNameFrom($("asOrder").value); if (!name) { err("Enter the order number.", null, $("asOrder")); return; }
   const key = orderId(name);
+  const dueBox = $("asDueSlot").querySelector(".as-due"), due = dueBox.querySelector(".as-duein").value;
+  if (!due) { err("Set the order's deadline.", null, dueBox); dueBox.querySelector(".as-duein").addEventListener("change", () => dueBox.classList.remove("bad-f"), { once: true }); return; }
+  const stage = $("asStage").value; if (!stage) { err("Choose the stage of this order.", null, $("asStage")); return; }
+  const internal = $("asInternal").checked, deadline = new Date(due).toISOString();
   const rows = [], owner = {};
   for (const r of $("asRows").children) {
-    const id = r.querySelector(".as-who").value, txt = r.querySelector(".as-slides").value.trim(), due = r.querySelector(".as-duein").value;
-    if (!id && !txt && !due) continue;
+    const id = r.querySelector(".as-who").value, note = r.querySelector(".as-note").value.trim();
+    const txt = {}; r.querySelectorAll(".as-sl").forEach((i) => { txt[i.dataset.t] = i.value.trim(); });
+    if (!id && !note && TREATS.every(([k]) => !txt[k])) continue;
     if (!id) { err("Choose a designer for every row.", r); return; }
-    const nums = parseSlides(txt); if (!nums) { err("Write slides as numbers or ranges, like 1-5 or 1-3, 7.", r); return; }
-    if (!due) { err("Set a deadline for every designer.", r); return; }
-    const deadline = new Date(due).toISOString();
     const prof = (S.profiles || []).find((x) => x.user_id === id) || {};
-    for (const n of nums) { if (owner[n]) { err("Slide " + n + " is given to both " + owner[n] + " and " + prof.name + ".", r); return; } owner[n] = prof.name; }
+    const tr = {}, mine = {};
+    for (const [k, , label] of TREATS) {
+      tr[k] = [];
+      if (!txt[k]) continue;
+      const nums = parseSlides(txt[k]); if (!nums) { err("Write slides as numbers or ranges, like 1-5 or 1-3, 7.", r); return; }
+      for (const n of nums) { if (mine[n]) { err("Slide " + n + " is in both " + mine[n] + " and " + label + ".", r); return; } mine[n] = label; }
+      tr[k] = nums;
+    }
+    const nums = Object.keys(mine).map(Number).sort((a, b) => a - b);
+    if (!nums.length) { err("Add the slides to work for every designer.", r); return; }
+    for (const n of nums) { if (owner[n] && owner[n].id !== id) { err("Slide " + n + " is given to both " + owner[n].name + " and " + prof.name + ".", r); return; } owner[n] = { id, name: prof.name }; }
     const same = rows.find((x) => x.assignee_id === id);
-    if (same) { same.slides = [...new Set(same.slides.concat(nums))].sort((a, b) => a - b); if (deadline < same.deadline) same.deadline = deadline; continue; }
-    rows.push({ order_key: key, order_name: name, assignee_id: id, assignee_name: prof.name || "Designer", assignee_team: prof.team || null, slides: nums, deadline: deadline, created_by: displayName(S.user), created_team: S.myTeam });
+    if (same) {
+      for (const n of nums) { if (same.slides.includes(n)) { err("Slide " + n + " is given to " + prof.name + " twice.", r); return; } }
+      same.slides = same.slides.concat(nums).sort((a, b) => a - b);
+      TREATS.forEach(([k]) => { same.treatments[k] = same.treatments[k].concat(tr[k]).sort((a, b) => a - b); });
+      if (note) same.note = same.note ? same.note + "\n" + note : note;
+      continue;
+    }
+    rows.push({ order_key: key, order_name: name, assignee_id: id, assignee_name: prof.name || "Designer", assignee_team: prof.team || null, slides: nums, deadline, stage, internal, treatments: tr, note: note || null, created_by: displayName(S.user), created_team: S.myTeam });
   }
   if (!rows.length) { err("Add at least one designer and their slides."); return; }
   $("asSave").disabled = true;
   try {
     const keys = [...new Set([key, "order #" + key, name.toLowerCase(), S.project || ""].filter(Boolean))];
     const del = await S.sb.from("slide_assignments").delete().in("order_key", keys); if (del.error) throw del.error;
-    const ins = await S.sb.from("slide_assignments").insert(rows); if (ins.error) throw ins.error;
+    let ins = await S.sb.from("slide_assignments").insert(rows), lite = false;
+    if (ins.error && /column|schema cache/i.test(ins.error.message || "") && ASSIGN_EXTRA.some((c) => (ins.error.message || "").includes(c))) {
+      lite = true; ins = await S.sb.from("slide_assignments").insert(rows.map((x) => { const y = Object.assign({}, x); ASSIGN_EXTRA.forEach((c) => delete y[c]); return y; }));
+    }
+    if (ins.error) throw ins.error;
     $("assignDialog").close();
+    if (lite) toast("Saved without stage, notes and slide types: the database needs an update");
     await loadAll(); renderBoard(); if (!$("reviewView").hidden) renderReview();
   } catch (e) { err("Couldn't save: " + e.message); }
   finally { $("asSave").disabled = false; }

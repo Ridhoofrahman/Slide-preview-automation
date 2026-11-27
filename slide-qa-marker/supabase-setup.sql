@@ -723,3 +723,10 @@ update public.profiles p set avatar_url = public.slack_photo(i.identity_data)
   from auth.identities i
  where i.user_id = p.user_id and i.provider = 'slack_oidc' and public.slack_photo(i.identity_data) is not null;
 
+
+-- 21. Assign order details: stage, internal, slides per treatment, note (sql/assignment-details.sql)
+alter table public.slide_assignments add column if not exists stage      text;
+alter table public.slide_assignments add column if not exists internal   boolean not null default false;
+alter table public.slide_assignments add column if not exists treatments jsonb;
+alter table public.slide_assignments add column if not exists note       text;
+alter table public.slide_assignments add column if not exists note_by    uuid default auth.uid();
