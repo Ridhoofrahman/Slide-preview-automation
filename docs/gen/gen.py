@@ -26,7 +26,7 @@ YES='<span class="yes" role="img" aria-label="Yes">✓</span>'
 NO='<span class="no" role="img" aria-label="No">–</span>'
 def section(i,en,idn,body): return f'<section id="{i}"><h2>{T(en,idn)}</h2>{body}</section>'
 
-NAV=[('overview','Overview','Ringkasan'),('roles','Who uses what','Siapa memakai apa'),('start','Getting started','Memulai'),('install','Install &amp; update','Instalasi &amp; pembaruan'),
+NAV=[('overview','Overview','Ringkasan'),('features','Features','Fitur'),('roles','Who uses what','Siapa memakai apa'),('start','Getting started','Memulai'),('install','Install &amp; update','Instalasi &amp; pembaruan'),
 ('designers','For designers','Untuk designer'),('dms','For Design Managers','Untuk Design Manager'),('tagteam','Teams and tag team','Tim dan tag team'),
 ('reference','Tags and statuses','Tag dan status'),('admin','Admin and setup','Admin dan setup'),('faq','FAQ','FAQ'),('trouble','Troubleshooting','Pemecahan masalah'),
 ('limits','Limits and what’s next','Batasan dan rencana'),('releases','Release notes','Catatan rilis'),('glossary','Glossary','Glosarium')]
@@ -74,15 +74,64 @@ BCARD=('<div class="bcards" role="img" aria-label="Three example order cards: at
  bcard('Order #351164',[('','FIRST DRAFT'),('tt','TAG TEAM')],['B','K'],'14 Jun 2026, 14:00','2 minutes ago',(2,1,4,6),hover=True)+
  bcard('Order #123',[('rev','REVISION 1')],['R'],'16 Jun 2026, 09:30','1 day ago',(0,0,0,5),none=True)+'</div>')
 
+
+# ---------- key features ----------
+FEAT_NAV=[]
+def feat(tag,en_t,id_t,en,idn,who):
+    w={'d':T('Designers','Designer'),'m':T('DMs','DM'),'b':T('Designers and DMs','Designer dan DM')}[who]
+    fid='f-'+re.sub(r'[^a-z0-9]+','-',en_t.lower().replace('’','')).strip('-')
+    FEAT_NAV.append((fid,en_t,id_t))
+    return (f'<div class="feat" id="{fid}"><h3><span class="feat-n">{tag}</span>{T(en_t,id_t)}</h3><p>{T(en,idn)}</p>'
+            f'<p class="feat-who">{T("For:","Untuk:")} {w}</p></div>')
+FEATS=[
+feat('01','Review slide by slide','Review per slide',
+ 'Designers send each slide from PowerPoint the moment it is finished. The DM sees it on the Dashboard right away and can review it while the rest of the deck is still being made. No waiting for a full deck, no exporting, no sharing files by hand. Every update is a new version (v1, v2…), so the DM can look back at what came before.',
+ 'Designer mengirim tiap slide dari PowerPoint begitu selesai. DM langsung melihatnya di Dashboard dan bisa mereviewnya selagi slide lain masih dikerjakan. Tidak perlu menunggu deck lengkap, tidak perlu export, tidak perlu kirim file manual. Setiap update menjadi versi baru (v1, v2…), jadi DM bisa melihat versi sebelumnya.','b'),
+feat('02','Feedback straight into PowerPoint','Feedback langsung ke PowerPoint',
+ 'The DM approves a slide or requests changes, with comments pinned to the exact spot and voice notes when typing takes too long. The designer sees the decision, the pins and the voice notes in the Slideshot panel next to the slide, fixes it and sends the new version from the same place. No email or chat threads to dig through.',
+ 'DM meng-approve slide atau meminta perubahan, dengan komentar yang di-pin tepat di titiknya dan voice note kalau mengetik terlalu lama. Designer melihat keputusan, pin, dan voice note di panel Slideshot di samping slide-nya, memperbaikinya, lalu mengirim versi baru dari tempat yang sama. Tidak perlu mencari-cari di email atau chat.','b'),
+feat('03','Slide distribution and Dashboard','Distribusi slide dan Dashboard',
+ 'The DM splits an order between designers (for example slides 1-10 and 11-20), each with a deadline. In PowerPoint every designer sees which slides are theirs (“Assigned to you”) and which are not (“Not to work”). The Dashboard shows every order as a card with its stage, designers, deadline and progress, and the Distribution tab shows each designer’s workload.',
+ 'DM membagi order ke beberapa designer (misalnya slide 1-10 dan 11-20), masing-masing dengan deadline. Di PowerPoint setiap designer melihat slide mana yang miliknya (“Assigned to you”) dan mana yang bukan (“Not to work”). Dashboard menampilkan setiap order sebagai kartu dengan tahap, designer, deadline, dan progresnya, dan tab Distribution menampilkan beban kerja tiap designer.','m'),
+feat('04','Compare with the customer’s original','Bandingkan dengan original customer',
+ 'Before sending, the designer checks the slide’s text against the customer’s original deck, right inside PowerPoint: missing text, changed words, added text and lost or added bold, italic, underline, superscript. One click on the target icon selects the text in the slide. It is light and fast: only the text of the original is read and kept on the designer’s computer, nothing is uploaded, and a check takes a few seconds.',
+ 'Sebelum mengirim, designer mengecek teks slide terhadap deck original customer, langsung di dalam PowerPoint: teks yang hilang, kata yang berubah, teks tambahan, serta bold, italic, underline, dan superscript yang hilang atau bertambah. Satu klik di ikon target memilih teks itu di slide. Ringan dan cepat: hanya teks original yang dibaca dan disimpan di komputer designer, tidak ada yang diunggah, dan satu pengecekan hanya beberapa detik.','d'),
+feat('05','Files, compile and link: all automatic','File, compile, dan link: semua otomatis',
+ 'Every slide a designer sends is saved as a file in the background; designers never upload anything. When all slides are approved, the DM compiles the whole order into one deck in PowerPoint with one click, in the right order and with alternatives at the end. Slideshot then uploads the final file to the 24Slides Google Drive with a clear name per stage (First Draft, Revision 1…), adds the customer’s embedded fonts, and creates a shareable link. No more downloading and uploading the same files again and again.',
+ 'Setiap slide yang dikirim designer otomatis disimpan sebagai file di belakang layar; designer tidak perlu mengunggah apa pun. Saat semua slide sudah approved, DM meng-compile seluruh order menjadi satu deck di PowerPoint dengan satu klik, dengan urutan yang benar dan slide alternatif di akhir. Slideshot lalu mengunggah file final ke Google Drive 24Slides dengan nama yang jelas per tahap (First Draft, Revision 1…), menambahkan font customer yang di-embed, dan membuat link yang bisa dibagikan. Tidak perlu lagi download dan upload file yang sama berulang kali.','m'),
+feat('06','Slack notifications','Notifikasi Slack',
+ 'A Slideshot bot sends short Slack messages: to DMs when their team sends slides or new versions, and to designers when slides are approved, need changes or their assignment changes. Messages are grouped so nobody gets a flood, never tell you about your own actions, and link straight to the slide.',
+ 'Bot Slideshot mengirim pesan Slack singkat: ke DM saat timnya mengirim slide atau versi baru, dan ke designer saat slide di-approve, perlu perubahan, atau pembagian slide-nya berubah. Pesan digabung supaya tidak membanjiri, tidak pernah memberi tahu tentang aksimu sendiri, dan langsung menautkan ke slide-nya.','b'),
+feat('07','Tag team orders','Order tag team',
+ 'When designers from two teams work on one order, both DMs see the whole deck, and each DM decides only on their own team’s slides. The order card is marked TAG TEAM.',
+ 'Saat designer dari dua tim mengerjakan satu order, kedua DM melihat seluruh deck, dan tiap DM hanya memutuskan slide milik timnya sendiri. Kartu order diberi tanda TAG TEAM.','m'),
+feat('08','Alternative slides','Slide alternatif',
+ 'A designer can send an extra version of a slide as an alternative (Slide 1a, 1b). It holds no position of its own, so the numbering of the other slides stays the same, and it ends up at the end of the compiled deck.',
+ 'Designer bisa mengirim versi tambahan sebuah slide sebagai alternatif (Slide 1a, 1b). Slide ini tidak memakan posisi, jadi nomor slide lain tetap, dan masuk di akhir deck hasil compile.','d'),
+feat('09','Details that help the review','Detail yang membantu review',
+ 'Next to each slide the DM sees the fonts used (with size and where they are applied) and the speaker notes, so font and notes mistakes are caught before the customer sees them.',
+ 'Di samping setiap slide, DM melihat font yang dipakai (dengan ukuran dan di mana dipakai) serta speaker notes, sehingga kesalahan font dan notes ketahuan sebelum customer melihatnya.','m'),
+feat('10','Works with real decks','Bekerja dengan deck sungguhan',
+ 'Slides can be moved to another position, designers can work in a new file and keep the DM’s numbering, numbering follows “Number slides from”, and slides of any size (4:3, A4, portrait) are shown whole.',
+ 'Slide bisa dipindah ke posisi lain, designer bisa bekerja di file baru dan tetap memakai nomor dari DM, penomoran mengikuti “Number slides from”, dan slide ukuran apa pun (4:3, A4, portrait) ditampilkan utuh.','d'),
+feat('11','Sign in with Slack, 24Slides only','Sign in dengan Slack, khusus 24Slides',
+ 'Everyone signs in with their 24Slides Slack account; the first sign-in creates the account. Only DMs and listed designers can see order data.',
+ 'Semua orang sign in dengan akun Slack 24Slides; sign-in pertama otomatis membuat akunnya. Hanya DM dan designer yang terdaftar yang bisa melihat data order.','b'),
+]
+
 # ---------- sections ----------
 S=[]
 S.append(section('overview','Overview','Ringkasan',
 p('Slideshot connects designers and Design Managers (DMs) while an order is being made. Designers send finished slides for review from inside PowerPoint. DMs hand out the work, review every slide, and see when an order is ready for the customer.','Slideshot menghubungkan designer dan Design Manager (DM) selama sebuah order dikerjakan. Designer mengirim slide yang selesai untuk direview langsung dari PowerPoint. DM membagi pekerjaan, mereview setiap slide, dan melihat kapan order siap untuk customer.')+
 table([('Part','Bagian'),('Who uses it','Siapa pemakainya'),('What it does','Fungsinya')],[
 [('<b>Add-in</b> (side panel in PowerPoint)','<b>Add-in</b> (panel samping di PowerPoint)'),('Designers','Designer'),('Send slides, add notes, upload new versions, change a slide’s position.','Mengirim slide, menambah catatan, mengunggah versi baru, mengubah posisi slide.')],
-[('<b>Dashboard</b> (web page)','<b>Dashboard</b> (halaman web)'),('Design Managers','Design Manager'),('Board of orders, assigning slides, reviewing, approving, sending to customer.','Board order, membagi slide, mereview, approve, mengirim ke customer.')]])+
+[('<b>Dashboard</b> (web page)','<b>Dashboard</b> (halaman web)'),('Design Managers','Design Manager'),('Board of orders, assigning slides, reviewing, approving, compiling the final file and sharing its link.','Board order, membagi slide, mereview, approve, meng-compile file final dan membagikan link-nya.')]])+
 h3('How an order moves','Perjalanan sebuah order')+FLOW+
 callout('note','The product is in English, so button and tag names are quoted in English on both language versions of this page.','Produknya berbahasa Inggris, jadi nama tombol dan tag tetap ditulis dalam bahasa Inggris di kedua versi bahasa halaman ini.')))
+
+S.append(section('features','Features','Fitur',
+p('What Slideshot does for designers and Design Managers, from the first slide to the final file.','Apa yang dilakukan Slideshot untuk designer dan Design Manager, dari slide pertama sampai file final.')+
+''.join(FEATS)))
 
 S.append(section('roles','Who uses what','Siapa memakai apa',
 p('There are three kinds of users. Everyone belongs to one team.','Ada tiga jenis pengguna. Setiap orang masuk ke satu tim.')+
@@ -336,6 +385,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['Docs',('New section “Features”: what Slideshot does, one heading per feature (each one can be linked).','Bagian baru “Fitur”: apa yang dilakukan Slideshot, satu judul per fitur (masing-masing bisa ditautkan).')],
 ['Dashboard',('Slides that aren’t 16:9 (4:3, A4, portrait…) are shown whole on the order cards and in the review strip, on a light grey box, instead of being cropped.','Slide yang bukan 16:9 (4:3, A4, portrait…) ditampilkan utuh di kartu order dan di strip review, di atas kotak abu-abu muda, tidak lagi dipotong.')],
 ['v2.69',('The slide preview follows the deck’s slide size (4:3, A4, portrait…) instead of cropping it to 16:9. Portrait slides are shown as tall as the panel is wide, centred.','Preview slide mengikuti ukuran slide deck (4:3, A4, portrait…) dan tidak lagi dipotong jadi 16:9. Slide portrait ditampilkan setinggi lebar panel, di tengah.')],
 ['v2.68',('The slide position popup uses the new Builder DS menu shadow (Shadow/m).','Popup posisi slide memakai bayangan menu Builder DS yang baru (Shadow/m).')],
@@ -421,7 +471,7 @@ table([('Term','Istilah'),('Meaning','Arti')],[
 [('Tag team','Tag team'),('An order worked on by more than one team.','Order yang dikerjakan lebih dari satu tim.')],
 [('DM','DM'),('Design Manager. Reviews and distributes work.','Design Manager. Mereview dan membagi pekerjaan.')]],'two')))
 
-navhtml=''.join(f'<a href="#{i}">{T(en,idn)}</a>' for i,en,idn in NAV)
+navhtml=''.join(f'<a href="#{i}">{T(en,idn)}</a>'+(''.join(f'<a class="sub" href="#{fi}">{T(fe,fd)}</a>' for fi,fe,fd in FEAT_NAV) if i=='features' else '') for i,en,idn in NAV)
 
 CSS=open(os.path.join(HERE,'style.css')).read()
 JS=open(os.path.join(HERE,'app.js')).read()

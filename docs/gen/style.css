@@ -194,3 +194,11 @@ details[open] summary::after{content:"–"}
 }
 @media (max-width:420px){.brand em{display:none}.panel{width:min(320px,calc(100vw - 100px))}}
 @media print{.top,.toc,.band-wrap{display:none}.layout{display:block}}
+
+/* Features: one heading per feature */
+.feat{padding:4px 0 8px;scroll-margin-top:96px}
+.feat h3{display:flex;align-items:baseline;gap:10px}
+.feat-n{font-size:12px;line-height:16px;font-weight:600;letter-spacing:.4px;color:var(--brand-text)}
+.feat-who{margin-top:-4px;font-size:14px;color:var(--muted)}
+.toc a.sub{padding:4px 12px 4px 24px;font-size:13.5px}
+@media (max-width:900px){.toc a.sub{display:none}}
