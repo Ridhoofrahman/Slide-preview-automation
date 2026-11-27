@@ -85,7 +85,7 @@ Palette read from the library on 2026-11-25 (Mapped collection; outline tokens a
 | `elevation/secondary` (new 2026-11-19) | #F7F9FC |
 | `elevation/default` · `raised` · `overlay` | #FFFFFF |
 | `outline/neutral` | #DDE4EE |
-| `outline/brand` | #A8C3FF |
+| `outline/brand` (Builder DS now names it `outline/soft/brand`; `outline/strong/brand` also exists) | #A8C3FF |
 | `outline/success` · `warning` · `danger` · `information` | #7ED9A8 · #FFCF52 (was #FFE08A, changed 2026-11-26) · #FFB0B0 · #BDA6EE |
 | `outline/on-color` | #FFFFFF |
 | `divider/default` | #C2CCDB |
