@@ -493,37 +493,65 @@
   .bd-sub { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; }
   .bd-sort { flex: none; display: flex; align-items: center; gap: 4px; height: 40px; padding: 0 8px 0 10px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; font-size: 14px; color: #6A7389; }
   .bd-sort select { border: 0; background: transparent; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; cursor: pointer; padding-right: 4px; }
-  .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-  .bd-card { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 16px 12px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; cursor: pointer; outline: none; transition: box-shadow .15s ease, border-color .15s ease; }
-  /* Figma 156:9063 (State=Hover, Type=Card): background/neutral/default, outline/neutral, Shadow/s */
-  .bd-card:hover, .bd-card:focus-visible { background: #FFFFFF; border-color: #DDE4EE; box-shadow: 0 1px 2px rgba(18,18,23,.06), 0 1px 3px rgba(18,18,23,.10); }
+  .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }   /* 260: room for the three slides on hover */
+  /* Order card (Figma 1009:16406, States=Default / Hover). Hover reveals slides 2 and 3 behind the cover with a small bounce */
+  .bd-card { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; padding: 12px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; cursor: pointer; outline: none; transition: background-color .15s ease; }
+  .bd-card:hover, .bd-card:focus-within { background: #EEF2F8; }   /* background/neutral/hover */
   .bd-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .bd-thumbrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-  .bd-thumbs { position: relative; flex: none; width: 112px; height: 63.5px; }
-  .bd-thumbs img, .bd-thumbs .ph { position: absolute; left: 0; top: 0; width: 112px; height: 63.5px; object-fit: cover; border-radius: 3.73px; background: #EEF2F8; }
-  .bd-thumbs .front { box-shadow: 0 1.86px 3.72px rgba(18,18,23,.06), 0 1.86px 5.58px rgba(18,18,23,.10); }
-  /* Second slide peeks out behind the first: up and left, tilted 3 degrees (counter-clockwise) */
-  .bd-thumbs .back { left: -5.1px; top: -3px; transform: rotate(-3deg); transform-origin: 0 0; }
-  .bd-thumbs .nsy { border-radius: 11.2px; background: transparent; overflow: visible; box-shadow: none; }
-  .bd-thumbs .nsy .nsy-svg { display: block; width: 112px; height: 63.5px; }
-  .bd-tt { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px solid #BDA6EE; border-radius: 999px; background: #F0EBFC; color: #4A2999; font-size: 12px; line-height: 16px; white-space: nowrap; }
-  .bd-ring { position: absolute; left: 94px; top: -8px; width: 30px; height: 30px; }
-  .bd-ring svg { position: absolute; inset: 0; width: 30px; height: 30px; }
-  .bd-ring .n { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #1A1F2E; }
-  .bd-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .bd-info h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bd-who { margin: 0; font-size: 14px; line-height: 20px; color: #454C63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bd-when { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: #6A7389; flex-wrap: wrap; }
-  .bd-ago { display: inline-flex; align-items: center; gap: 4px; }
-  .bd-when svg { width: 12px; height: 12px; }
-  .bd-tag { margin-left: 4px; padding: 0 6px; border-radius: 999px; font-size: 11px; line-height: 16px; font-weight: 500; }
-  .bd-tag.ok { background: #E6F7EE; color: #0A6139; }
-  .bd-tag.sent { background: #EEF4FF; color: #1C43A5; }
-  .bd-more { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #6A7389; font-size: 18px; line-height: 1; cursor: pointer; opacity: 0; }
-  .bd-card:hover .bd-more, .bd-card:focus-within .bd-more { opacity: 1; background: #FFFFFF; }
-  .bd-more:hover { background: #F7F9FC; color: #1A1F2E; }
-  @media (hover: none) { .bd-more { opacity: 1; } }
-  .bd-menu { position: absolute; right: 8px; bottom: 40px; z-index: 6; min-width: 220px; padding: 4px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
+  .bd-fan { position: relative; flex: none; width: 127px; height: 72px; isolation: isolate; }
+  .bd-fan .sl { position: absolute; left: 0; top: 0; width: 127px; height: 72px; border-radius: 3.72px; overflow: hidden; background: #EEF2F8; box-shadow: 0 1.861px 1.861px rgba(18,18,23,.05);
+    transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .2s ease; }
+  .bd-fan .sl img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .bd-fan .s0 { z-index: 3; } .bd-fan .s1 { z-index: 2; } .bd-fan .s2 { z-index: 1; }
+  .bd-fan .nsy { background: transparent; box-shadow: none; overflow: visible; }
+  .bd-fan .nsy-svg { display: block; width: 127px; height: 72px; }
+  /* Hover: 127px slides, 74px overlap = 53px steps; cover and slide 2 cast Shadow/s on the slide behind */
+  .bd-card:is(:hover, :focus-within) .bd-fan .s0,
+  .bd-card:is(:hover, :focus-within) .bd-fan .s1 { box-shadow: 0 1.861px 1.861px rgba(18,18,23,.05), 0 1px 3px rgba(18,18,23,.10), 0 1px 2px rgba(18,18,23,.06); }
+  .bd-card:is(:hover, :focus-within) .bd-fan .s1 { transform: translateX(53px); transition: transform .45s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+  .bd-card:is(:hover, :focus-within) .bd-fan .s2 { transform: translateX(106px); transition: transform .45s cubic-bezier(.34,1.56,.64,1) .05s, box-shadow .2s ease; }
+  /* Design statuses (Figma 1009:16322) */
+  .bd-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+  .bd-stat { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px; background: #F7F9FC; border: .75px solid #DDE4EE; border-radius: 4px; font-size: 10px; line-height: 12px; font-weight: 500; letter-spacing: .4px; color: #6A7389; white-space: nowrap; }
+  .bd-stat::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 2px; background: #12A45F; }   /* icon/success */
+  .bd-stat.rev::before { background: #E09600; }   /* icon/warning */
+  .bd-stat.tt::before { background: #7D4FE0; }    /* icon/information */
+  .bd-stat.int::before { background: #3B74F5; }   /* icon/brand */
+  .bd-info { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .bd-title { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .bd-title h3 { flex: 1; min-width: 0; margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bd-more { flex: none; width: 24px; height: 24px; margin: -4px; padding: 0; border: 0; border-radius: 6px; background: transparent; display: grid; place-items: center; cursor: pointer; }
+  .bd-more svg { width: 16px; height: 16px; }
+  .bd-more:hover, .bd-more[aria-expanded="true"] { background: #DDE4EE; }
+  .bd-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 20px; font-size: 14px; line-height: 20px; color: #454C63; }
+  .bd-row > span:first-child { flex: none; }
+  .bd-row .v { min-width: 0; color: #6A7389; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bd-avs { display: flex; align-items: center; flex: none; }
+  /* Builder DS Avatar, size S: photo with outline/neutral, or initials (Blue) */
+  .bd-av { flex: none; width: 24px; height: 24px; border: 1px solid #DDE4EE; border-radius: 999px; background: #F7F9FC; object-fit: cover; }
+  .bd-av + .bd-av { margin-left: -8px; }
+  .bd-av.ini { display: grid; place-items: center; background: #EEF4FF; border-color: #A8C3FF; color: #2557D4; font-size: 10px; line-height: 12px; font-weight: 500; }
+  /* Progress: green = approved, red = changes requested, blue = sent and waiting for review (layered), track grey.
+     Hovering the bar shows the counts (Builder DS Tooltip, position Top) */
+  .bd-prog { position: relative; display: flex; align-items: center; height: 12px; }
+  .bd-bar { position: relative; flex: 1; min-width: 0; height: 8px; border-radius: 2px; overflow: hidden; background: #EEF2F8; transition: background-color .15s ease; }
+  .bd-card:is(:hover, :focus-within) .bd-bar { background: #F7F9FC; }
+  .bd-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-right: 1px solid #FFFFFF; }
+  .bd-bar i.full { border-right: 0; }
+  .bd-bar .ap { z-index: 2; background: #12A45F; }
+  .bd-bar .ch { z-index: 1; background: #D62020; }    /* background/danger/default */
+  .bd-bar .sub { z-index: 0; background: #2557D4; }
+  .bd-ptip { position: absolute; left: 50%; bottom: calc(100% + 6px); z-index: 7; transform: translateX(-50%); display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 8px; background: #1A1F2E; color: #FFFFFF;
+    font-size: 14px; line-height: 20px; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease-out, visibility .12s; }   /* tooltip/default, text/on-color */
+  .bd-prog:hover .bd-ptip { opacity: 1; visibility: visible; }
+  .bd-ptip span { display: flex; align-items: center; gap: 8px; }
+  .bd-ptip span::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+  @media (prefers-reduced-motion: reduce) {
+    .bd-fan .sl, .bd-card:is(:hover, :focus-within) .bd-fan .sl { transition: opacity .15s ease; }
+    .bd-fan .s1, .bd-fan .s2 { opacity: 0; }
+    .bd-card:is(:hover, :focus-within) .bd-fan .sl { opacity: 1; }
+  }
+  .bd-menu { position: absolute; right: 8px; top: 0; z-index: 6; min-width: 220px; padding: 4px; background: #FFFFFF; border: 1px solid #DDE4EE; border-radius: 8px; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
   .bd-menuitem { text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 6px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; cursor: pointer; }
   .bd-menuitem:hover:not(:disabled) { background: #F7F9FC; }
   .bd-menuitem:disabled { color: #A3ADC2; cursor: not-allowed; }
@@ -1194,7 +1222,7 @@ async function loadAll() {
   const ps = await S.sb.from("project_status").select("*");
   S.projectStatus = {};
   if (!ps.error) ps.data.forEach((r) => { S.projectStatus[r.key] = r; });
-  const [pr, as, dms] = await Promise.all([S.sb.from("profiles").select("user_id,name,team"), S.sb.from("slide_assignments").select("*"), S.sb.from("design_managers").select("user_id")]);
+  const [pr, as, dms] = await Promise.all([S.sb.from("profiles").select("*"), S.sb.from("slide_assignments").select("*"), S.sb.from("design_managers").select("user_id")]);
   S.dmIds = new Set(dms && !dms.error ? dms.data.map((d) => d.user_id) : []);
   S.profiles = pr && !pr.error ? pr.data : [];
   S.assignments = {};
@@ -1422,35 +1450,94 @@ function cardMenu(p, anchor) {
   item("Compile order", () => downloadCompileStarter(p), { disabled: !allSlidesApproved(p), title: allSlidesApproved(p) ? "Download a file that compiles this order in PowerPoint" : "Available when every slide is approved" });
   item("Assign order", () => openAssign(p.key));
   item("Delete order", () => askDeleteProject(p.key), { danger: true });
-  anchor.parentElement.append(m);
-  setTimeout(() => document.addEventListener("click", function off(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener("click", off); } }), 0);
+  const card = anchor.closest(".bd-card") || anchor.parentElement;
+  m.style.top = (anchor.getBoundingClientRect().bottom - card.getBoundingClientRect().top + 4) + "px";
+  card.append(m); anchor.setAttribute("aria-expanded", "true");
+  const close = () => { m.remove(); anchor.setAttribute("aria-expanded", "false"); };
+  m.addEventListener("click", () => anchor.setAttribute("aria-expanded", "false"));
+  setTimeout(() => document.addEventListener("click", function off(e) { if (!m.contains(e.target)) { close(); document.removeEventListener("click", off); } }), 0);
 }
+// Builder DS Icon/regular/ellipsis-vertical (16px, icon/neutral)
+const ELLIPSIS_V = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path transform="translate(7.0857 1.6)" d="M0.914286 10.9714C1.42857 10.9714 1.82857 11.3714 1.82857 11.8857C1.82857 12.4 1.42857 12.8 0.914286 12.8C0.4 12.8 0 12.4 0 11.8857C0 11.3714 0.4 10.9714 0.914286 10.9714ZM0.914286 5.48571C1.42857 5.48571 1.82857 5.88571 1.82857 6.4C1.82857 6.91429 1.42857 7.31429 0.914286 7.31429C0.4 7.31429 0 6.91429 0 6.4C0 5.88571 0.4 5.48571 0.914286 5.48571ZM0 0.914286C0 0.4 0.4 0 0.914286 0C1.42857 0 1.82857 0.4 1.82857 0.914286C1.82857 1.42857 1.42857 1.82857 0.914286 1.82857C0.4 1.82857 0 1.42857 0 0.914286Z" fill="#5C6480"/></svg>';
+// Stage of an order: FIRST DRAFT until a final file is on Drive. After an upload, the order stays on that stage until
+// someone sends slides again; then it is the next revision (First Draft → Revision 1, Revision 2 → Revision 3).
+function orderStage(p) {
+  const d = finalFile(p);
+  if (!d) return "First Draft";
+  const n = d.stage === "First Draft" ? 0 : parseInt(String(d.stage).replace(/\D/g, ""), 10) || 0;
+  const after = p.slides.some((x) => (x.created_at || "") > (d.uploaded_at || "~"));
+  return after ? "Revision " + (n + 1) : d.stage;
+}
+// The order's numbers for the card: slides expected (distribution and sent, normal slides only), sent, approved
+function orderCounts(p) {
+  const by = statusByNum(p), rows = (S.assignments || {})[p.key] || [];
+  const nums = new Set(Object.keys(by).map(Number));
+  rows.forEach((a) => (a.slides || []).forEach((n) => nums.add(Number(n))));
+  const st = Object.values(by), sent = st.length, approved = st.filter((x) => x === "approved").length, changes = st.filter((x) => x === "changes").length;
+  return { total: nums.size, sent, approved, changes };
+}
+// Who works on the order: the distribution, else whoever sent slides. Photo from profiles.avatar_url (Slack)
+function orderPeople(p) {
+  const rows = (S.assignments || {})[p.key] || [], seen = new Map();
+  rows.forEach((a) => { if (!seen.has(a.assignee_id)) seen.set(a.assignee_id, a.assignee_name || "?"); });
+  if (!seen.size) p.slides.forEach((x) => { const k = x.designer_id || x.designer; if (!seen.has(k)) seen.set(k, x.designer || "?"); });
+  const prof = {}; (S.profiles || []).forEach((r) => { prof[r.user_id] = r; });
+  return [...seen].map(([id, name]) => ({ id, name: (prof[id] && prof[id].name) || name, photo: prof[id] && prof[id].avatar_url }));
+}
+function avatar(person) {
+  if (person.photo) { const i = new Image(); i.className = "bd-av"; i.alt = ""; i.src = person.photo; i.referrerPolicy = "no-referrer"; i.title = person.name;
+    i.onerror = () => i.replaceWith(avatar({ name: person.name })); return i; }
+  const ini = person.name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "?";
+  const s = el("span", "bd-av ini", ini); s.title = person.name; return s;
+}
+// Deadline shown on the card: the earliest one of a designer who still has slides to finish; when everyone is done, the last one
+function orderDeadline(p) {
+  const rows = ((S.assignments || {})[p.key] || []).filter((a) => a.deadline);
+  if (!rows.length) return null;
+  const by = statusByNum(p);
+  const open = rows.filter((a) => !(a.slides || []).length || (a.slides || []).some((n) => by[n] !== "approved"));
+  const ds = (open.length ? open : rows).map((a) => new Date(a.deadline)).sort((x, y) => x - y);
+  return open.length ? ds[0] : ds[ds.length - 1];
+}
+const longDate = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + ", " + hhmm(d);
 function orderCard(p) {
   const c = el("article", "bd-card"); c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", "Open " + p.name);
-  const front = p.slides.find((x) => x.status === "ready") || p.slides[0]; const back = p.slides.find((x) => x !== front);
-  const top = el("div", "bd-thumbrow");
-  const th = el("div", "bd-thumbs");
-  if (front) {
-    if (back) { const b = new Image(); b.className = "back"; b.alt = ""; b.dataset.k = keyOf(back); th.append(b); }   // more than one slide: stacked
-    const f = new Image(); f.className = "front"; f.alt = ""; f.dataset.k = keyOf(front); th.append(f);
-  } else { const n = el("span", "front ph nsy"); n.innerHTML = '<svg class="nsy-svg" viewBox="0 0 60 34" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="59" height="33" rx="5.5" fill="#F7F9FC" stroke="#DDE4EE" stroke-dasharray="2 2"/><g transform="translate(22 9)"><path d="M1.60001 6.29322H14.4M3.30667 2.87988H12.6933C13.6359 2.87988 14.4 3.64398 14.4 4.58655V11.4132C14.4 12.3558 13.6359 13.1199 12.6933 13.1199H3.30667C2.36411 13.1199 1.60001 12.3558 1.60001 11.4132V4.58655C1.60001 3.64398 2.36411 2.87988 3.30667 2.87988Z" stroke="#DDE4EE"/></g></svg>'; th.append(n); }   // nothing sent yet
-  th.append(ring(p)); top.append(th);
-  if (p.teams && p.teams.size > 1) { const t = el("span", "bd-tt", "Tag team"); t.title = [...p.teams].join(" + "); top.append(t); }
-  c.append(top);
-  const info = el("div", "bd-info");
-  const t = el("h3", "", p.name); t.title = p.name; info.append(t);
-  info.append(el("p", "bd-who", [...p.designers].join(", ")));
-  if (p.assignOnly) info.querySelector(".bd-who").textContent = "Assigned: " + [...p.designers].join(", ");
-  const when = el("p", "bd-when");
-  when.append(el("span", "", "Last update"));
-  const ago_ = el("span", "bd-ago"); ago_.innerHTML = CLOCK; ago_.append(document.createTextNode(ago(p.lastAt))); when.append(ago_);
-  if (p.assignOnly) { when.innerHTML = ""; when.append(el("span", "", "No slides sent yet")); }
-  info.append(when); c.append(info);
-  const more = el("button", "bd-more"); more.setAttribute("aria-label", "More actions for " + p.name); more.textContent = "\u22EF";
-  more.onclick = (e) => { e.stopPropagation(); cardMenu(p, more); };
-  c.append(more);
+  // Cover + the next two slides (normal slides by number; alternatives come last)
+  const fan = el("div", "bd-fan");
+  p.slides.slice(0, 3).forEach((x, i) => { const w = el("span", "sl s" + i); const im = new Image(); im.alt = ""; im.dataset.k = keyOf(x); w.append(im); fan.append(w); });
+  if (!p.slides.length) { const n = el("span", "sl s0 nsy"); n.innerHTML = '<svg class="nsy-svg" viewBox="0 0 60 34" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="59" height="33" rx="2.5" fill="#F7F9FC" stroke="#DDE4EE" stroke-dasharray="2 2"/><g transform="translate(22 9)"><path d="M1.60001 6.29322H14.4M3.30667 2.87988H12.6933C13.6359 2.87988 14.4 3.64398 14.4 4.58655V11.4132C14.4 12.3558 13.6359 13.1199 12.6933 13.1199H3.30667C2.36411 13.1199 1.60001 12.3558 1.60001 11.4132V4.58655C1.60001 3.64398 2.36411 2.87988 3.30667 2.87988Z" stroke="#DDE4EE"/></g></svg>'; fan.append(n); }   // nothing sent yet
+  c.append(fan);
+  const stats = el("div", "bd-stats"), stage = orderStage(p);
+  stats.append(el("span", "bd-stat" + (stage === "First Draft" ? "" : " rev"), stage.toUpperCase()));
+  if (p.teams && p.teams.size > 1) { const t = el("span", "bd-stat tt", "TAG TEAM"); t.title = [...p.teams].join(" + "); stats.append(t); }
+  c.append(stats);
+  const info = el("div", "bd-info"), title = el("div", "bd-title");
+  const t = el("h3", "", p.name); t.title = p.name;
+  const more = el("button", "bd-more"); more.type = "button"; more.innerHTML = ELLIPSIS_V;
+  more.setAttribute("aria-label", "More actions for " + p.name); more.title = "More actions"; more.setAttribute("aria-haspopup", "menu"); more.setAttribute("aria-expanded", "false");
+  more.onclick = (e) => { e.stopPropagation(); if (more.getAttribute("aria-expanded") === "true") { document.body.click(); return; } cardMenu(p, more); };
+  title.append(t, more); info.append(title);
+  const row = (label, value) => { const r = el("div", "bd-row"); r.append(el("span", "", label)); if (typeof value === "string") r.append(el("span", "v", value)); else r.append(value); info.append(r); return r; };
+  const people = orderPeople(p), avs = el("span", "bd-avs");
+  people.slice(0, 3).forEach((x) => avs.append(avatar(x)));
+  if (people.length > 3) { const more_ = el("span", "bd-av ini", "+" + (people.length - 3)); more_.title = people.slice(3).map((x) => x.name).join(", "); avs.append(more_); }
+  avs.setAttribute("aria-label", people.map((x) => x.name).join(", "));
+  row("Assigned to", avs);
+  const due = orderDeadline(p);
+  row("Deadline", due ? longDate(due) : "None");
+  row("Last update", p.lastAt ? ago(p.lastAt) : "None");
+  c.append(info);
+  const n = orderCounts(p), prog = el("div", "bd-prog"), bar = el("div", "bd-bar");
+  const seg = (cls, k) => { if (!n.total || !k) return; const i = el("i", cls); const f = Math.min(1, k / n.total); i.style.width = (f * 100) + "%"; if (f >= 1) i.classList.add("full"); bar.append(i); };
+  seg("ap", n.approved); seg("ch", n.approved + n.changes); seg("sub", n.sent);
+  const tip = el("span", "bd-ptip"); tip.setAttribute("role", "tooltip");
+  const line = (k, label, color) => { const l = el("span", "", k + " slide" + (k === 1 ? "" : "s") + " " + label); l.style.setProperty("--c", color); tip.append(l); };
+  line(n.approved, "approved", "#12A45F"); line(n.sent - n.approved - n.changes, "submitted", "#2557D4"); line(n.changes, "waiting changes", "#D62020");
+  bar.setAttribute("role", "img"); bar.setAttribute("aria-label", [...tip.children].map((x) => x.textContent).join(", "));
+  prog.append(bar, tip);
+  c.append(prog);
   c.onclick = () => openProject(p);
-  c.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openProject(p); } };
+  c.onkeydown = (e) => { if (e.target !== c) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openProject(p); } };
   return c;
 }
 function sortedProjects() {
@@ -1472,7 +1559,7 @@ async function renderBoard() {
   const projects = sortedProjects();
   c.append(boardTabs());
   if (BOARD.view === "distribution") { $("boardView").classList.add("solo"); renderDistribution(c); return; }
-  $("boardView").classList.toggle("solo", !projects.length);
+  $("boardView").classList.add("solo");   // Activity is hidden for now; a button to open it comes later (TBU)
   if (!projects.length) {
     const e = el("div", "bd-state empty"); e.append(emptyIllo(), el("strong", "", "No slides yet"), el("p", "", "Ready-to-review slides will appear here"));
     // Figma: Board / No projects yet — start by distributing a project

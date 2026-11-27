@@ -5,7 +5,7 @@ const now=Date.now(), iso=(m)=>new Date(now-m*60000).toISOString();
 const user={id:'dm1',email:'ridho@24slides.com',user_metadata:{name:'Ridho',team:'Cascade'}};
 let n=0;
 function shot(project,num,sid,img,status,mins,team,designer){return {id:'s'+(++n),file_key:'fk'+project.replace(/\W/g,''),project:project,slide_id:sid,slide_number:num,total_slides:10,version:1,designer:designer||'Bela',designer_id:'u'+designer,note:'',image_path:img,details:{fonts:[],notes:{present:false,text:''},size:{w:13.33,h:7.5}},status:status,reviewed_by:null,reviewed_at:null,created_at:iso(mins),team:team||'Cascade'};}
-const db={slide_files:[],deliveries:[{order_key:"45236",stage:"Revision 1",file_name:"45236_Kingfish Group IS_Revision 1.pptx",link:"https://drive.google.com/file/d/mock2/view",uploaded_at:new Date().toISOString(),uploaded_by_name:"Uda"}],
+const db={slide_files:[],deliveries:[{order_key:"45236",stage:"Revision 1",file_name:"45236_Kingfish Group IS_Revision 1.pptx",link:"https://drive.google.com/file/d/mock2/view",uploaded_at:new Date().toISOString(),uploaded_by_name:"Uda"},{order_key:"999000",stage:"First Draft",file_name:"999000_x_First Draft.pptx",link:"https://drive.google.com/file/d/mock3/view",uploaded_at:new Date(Date.now()-800*60000).toISOString(),uploaded_by_name:"Uda"},{order_key:"351164",stage:"First Draft",file_name:"351164_x_First Draft.pptx",link:"https://drive.google.com/file/d/mock4/view",uploaded_at:new Date(Date.now()-30*60000).toISOString(),uploaded_by_name:"Uda"}],
  slide_shots:[
   // order A: tag team, 3 slides, 1 approved
   shot('Order #351265',1,'a1','a','approved',120,'Cascade','Thomas'),shot('Order #351265',2,'a2','b','ready',60,'Cascade','Thomas'),shot('Order #351265',3,'a3','c','ready',30,'Trident','Syarif'),
@@ -29,7 +29,9 @@ if(new URLSearchParams(location.search).get('bignum')){db.slide_assignments[0].s
 if(new URLSearchParams(location.search).get('alt')){const a=(sid,base,mins)=>Object.assign(shot('Order #45236',base,sid,'a','ready',mins,'Cascade','Rama'),{alternative_of:base});db.slide_shots.push(a('alt1a',1,120),a('alt1b',1,60),a('alt2a',2,90));}
 // ?dist=1: designers of team Cascade (Dewi has no orders) and distributions with deadlines, for the Distribution tab
 if(new URLSearchParams(location.search).get('dist')){const h=(x)=>new Date(Date.now()+x*3600000).toISOString();
- db.profiles.push(...['Thomas','Budi','Rama','Lina','Dewi'].map(n=>({user_id:'u'+n,name:n,team:'Cascade'})),{user_id:'uSyarif',name:'Syarif',team:'Trident'});
+ db.slide_shots.push(shot('Order #351164',2,'b2','e','changes',40,'Cascade','Budi'),shot('Order #351164',3,'b3','a','approved',50,'Cascade','Budi'));
+ const PH=(c)=>'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="48" height="48" fill="'+c+'"/><circle cx="24" cy="19" r="9" fill="#fff" opacity=".85"/><ellipse cx="24" cy="44" rx="16" ry="12" fill="#fff" opacity=".85"/></svg>');
+ db.profiles.push(...['Thomas','Budi','Rama','Lina','Dewi'].map(n=>({user_id:'u'+n,name:n,team:'Cascade',avatar_url:n==='Thomas'?PH('#8AA4D6'):n==='Lina'?PH('#C99A7A'):null})),{user_id:'uSyarif',name:'Syarif',team:'Trident'});
  const A=(order,id,name,team,slides,dl)=>({order_key:order.replace(/\D/g,''),order_name:order,assignee_id:id,assignee_name:name,assignee_team:team,slides,deadline:dl,created_by:'Ridho',created_team:'Cascade',created_at:new Date().toISOString()});
  db.slide_assignments.push(A('Order #351265','uThomas','Thomas','Cascade',[1,2],h(-1)),A('Order #351265','uSyarif','Syarif','Trident',[3],h(3)),A('Order #351164','uBudi','Budi','Cascade',[1,2,3,4,5,7,9],h(1)),
   A('Order #45236','uRama','Rama','Cascade',[1,2],h(-2)),A('Order #999000','uLina','Lina','Cascade',[1,2,3],h(30)),A('Order #351164','uThomas','Thomas','Cascade',[6,8],h(26)),A('Order #351164','dm1','Ridho','Cascade',[10],h(5)));}
