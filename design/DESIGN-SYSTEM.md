@@ -114,6 +114,7 @@ Palette read from the library on 2026-11-25 (Mapped collection; outline tokens a
   - `Shadow/m`: 0 10 32 −4 #A3ADC2 @10% + 0 6 14 −6 #A3ADC2 @12%
   - `Shadow/lg`: 0 14 64 −4 #18274B @12% + 0 8 22 −6 #A3ADC2 @12%
   - `Shadow/xl` was removed.
+  - In code: buttons, tags and chips `Shadow/xs`; menus and popovers `Shadow/m`; dialogs `Shadow/lg`.
 
 ## Components (Builder DS, republished 2026-11-13)
 | Component | Variants (default size) |

@@ -411,7 +411,7 @@
   .wc-no { height: 32px; border: 0; background: none; font: 500 13px/20px var(--font); color: #6035C4; cursor: pointer; border-radius: 6px; }
   .wc-no:hover { background: rgba(71,60,144,.08); }
   /* Mapped-position swap button + popover */
-  .map-pop { position: absolute; right: 20px; top: 40px; z-index: 20; min-width: 180px; padding: 4px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: 0 8px 24px rgba(18,18,23,.14); display: flex; flex-direction: column; }
+  .map-pop { position: absolute; right: 20px; top: 40px; z-index: 20; min-width: 180px; padding: 4px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: var(--sh-m); display: flex; flex-direction: column; }
   .map-opt { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 6px; font: 13px/18px var(--font); color: #1A1F2E; cursor: pointer; }
   .map-opt:hover { background: #F7F9FC; }
   .map-opt.on { background: #EEF4FF; color: #2557D4; font-weight: 500; }
@@ -805,7 +805,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.67";
+const APP_VERSION = "2.68";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
