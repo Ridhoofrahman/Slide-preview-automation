@@ -336,6 +336,8 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
+['Dashboard',('Slides that aren’t 16:9 (4:3, A4, portrait…) are shown whole on the order cards and in the review strip, on a light grey box, instead of being cropped.','Slide yang bukan 16:9 (4:3, A4, portrait…) ditampilkan utuh di kartu order dan di strip review, di atas kotak abu-abu muda, tidak lagi dipotong.')],
+['v2.69',('The slide preview follows the deck’s slide size (4:3, A4, portrait…) instead of cropping it to 16:9. Portrait slides are shown as tall as the panel is wide, centred.','Preview slide mengikuti ukuran slide deck (4:3, A4, portrait…) dan tidak lagi dipotong jadi 16:9. Slide portrait ditampilkan setinggi lebar panel, di tengah.')],
 ['v2.68',('The slide position popup uses the new Builder DS menu shadow (Shadow/m).','Popup posisi slide memakai bayangan menu Builder DS yang baru (Shadow/m).')],
 ['Dashboard',('Card menus use Shadow/m; the Assign order dialog and confirmation dialogs use Shadow/lg (new Builder DS values).','Menu kartu memakai Shadow/m; dialog Assign order dan dialog konfirmasi memakai Shadow/lg (nilai Builder DS baru).')],
 ['v2.67',('New Builder DS shadows on buttons, tags and popovers (softer, blue-grey). Nothing else changed in the add-in.','Bayangan Builder DS baru di tombol, tag, dan popover (lebih lembut, abu-kebiruan). Tidak ada perubahan lain di add-in.')],
@@ -438,7 +440,7 @@ page=f'''<!DOCTYPE html>
 <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="id" aria-pressed="false">ID</button></div></header>
 <div class="hero" id="top"><div class="hero-in"><h1>{T('Slideshot documentation','Dokumentasi Slideshot')}</h1>
 <p class="lead">{T('Everything about the PowerPoint add-in for designers and the web Dashboard for Design Managers: who uses it, what it does, and how to use it.','Semua tentang add-in PowerPoint untuk designer dan Dashboard web untuk Design Manager: siapa pemakainya, fungsinya, dan cara memakainya.')}</p>
-<div class="metas"><span class="meta">{T('Add-in v2.68','Add-in v2.68')}</span><span class="meta">{T('Updated 27 Nov 2026','Diperbarui 27 Nov 2026')}</span></div>
+<div class="metas"><span class="meta">{T('Add-in v2.69','Add-in v2.69')}</span><span class="meta">{T('Updated 27 Nov 2026','Diperbarui 27 Nov 2026')}</span></div>
 <div class="paths"><a href="#designers"><b>{T('I’m a designer','Saya designer')}</b><span>{T('Send slides from PowerPoint','Kirim slide dari PowerPoint')}</span></a><a href="#dms"><b>{T('I’m a Design Manager','Saya Design Manager')}</b><span>{T('Assign, review, approve','Bagi, review, approve')}</span></a><a href="#admin"><b>{T('I set things up','Saya mengurus setup')}</b><span>{T('Add DMs, release updates','Tambah DM, rilis pembaruan')}</span></a></div></div>
 <div class="band-wrap" aria-hidden="true">{BAND}</div></div>
 <div class="layout"><nav class="toc" aria-label="Contents / Daftar isi">{navhtml}</nav>

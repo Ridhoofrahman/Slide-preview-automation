@@ -73,7 +73,8 @@
   .hdr-ic svg { width: 16px; height: 16px; }
   .hdr-ic:hover { background: #F7F9FC; }
   .hdr-ic.on { background: #EEF4FF; border-color: #A8C3FF; color: #2557D4; }
-  .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #EEF2F8; }
+  /* Preview box takes the slide's own shape (setThumbRatio); portrait slides are capped at a square: narrower, centred */
+  .thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #EEF2F8; width: 100%; margin: 0 auto; }
   .thumb-inner { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tpins { position: absolute; inset: 0; pointer-events: none; }
@@ -805,7 +806,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.68";
+const APP_VERSION = "2.69";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -1295,6 +1296,15 @@ async function signedUrl(path) {
   return SIGNED[path].url;
 }
 // Live slide while it hasn't been sent (or a new version is being prepared); the sent snapshot otherwise
+// The slide size isn't always 16:9 (4:3, A4, portrait...). Use the image's own ratio, so nothing is cropped and the
+// comment pins (placed in % of the box) stay on their spot. Remembered, so the next slide doesn't jump back to 16:9.
+function setThumbRatio(r) {
+  if (!(r > 0.2 && r < 5)) return;
+  S.thumbRatio = r;
+  const t = document.querySelector(".thumb"); if (!t) return;
+  t.style.aspectRatio = String(r);
+  t.style.width = r < 1 ? "calc(100% * " + r.toFixed(4) + ")" : "100%";   // taller than wide: height = panel width
+}
 async function renderThumb() {
   const cur = currentSlide(), box = $("thumb"), token = ++S.thumbToken;
   if (!cur) { box.innerHTML = "<span>Select a slide</span>"; return; }
@@ -1309,6 +1319,7 @@ async function renderThumb() {
     const existing = box.querySelector("img");
     if (existing && existing.getAttribute("src") === src) return;
     box.innerHTML = ""; const img = new Image();
+    img.onload = () => { if (token === S.thumbToken && img.naturalHeight) setThumbRatio(img.naturalWidth / img.naturalHeight); };
     img.alt = (snapshotPath ? "Sent version of slide " : "Slide ") + cur.n; img.src = src; box.append(img);
   } catch (e) { if (token === S.thumbToken) box.innerHTML = "<span>Preview unavailable</span>"; }
 }
