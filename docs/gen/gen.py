@@ -77,12 +77,21 @@ BCARD=('<div class="bcards" role="img" aria-label="Three example order cards: at
 
 # ---------- key features ----------
 FEAT_NAV=[]
+IMGS={'01':('panel','The Slideshot panel in PowerPoint with a slide ready to send'),'02':('panel','The panel showing Change needed and the DM’s pinned comment'),
+ '03':('wide','The Dashboard board with order cards'),'04':('panel','Compare original in the panel: a changed number and missing text'),
+ '05':('panel','All done: the final file is on Google Drive with its link'),'07':('card','An order card marked TAG TEAM'),
+ '08':('panel','An alternative slide, Slide 1a, marked Alternative of slide 1'),'09':('wide','Fonts table and speaker notes next to a slide on the Dashboard'),
+ '10':('panel','The Change slide position popup'),'11':('panel','Sign in to Slideshot with Slack')}
+def featimg(tag):
+    if tag not in IMGS: return ''
+    k,alt=IMGS[tag]
+    return f'<figure class="feat-img {k}"><img src="img/feat-{tag}.jpg" alt="{alt}" loading="lazy"></figure>'
 def feat(tag,en_t,id_t,en,idn,who):
     w={'d':T('Designers','Designer'),'m':T('DMs','DM'),'b':T('Designers and DMs','Designer dan DM')}[who]
     fid='f-'+re.sub(r'[^a-z0-9]+','-',en_t.lower().replace('’','')).strip('-')
     FEAT_NAV.append((fid,en_t,id_t))
     return (f'<div class="feat" id="{fid}"><h3><span class="feat-n">{tag}</span>{T(en_t,id_t)}</h3><p>{T(en,idn)}</p>'
-            f'<p class="feat-who">{T("For:","Untuk:")} {w}</p></div>')
+            f'<p class="feat-who">{T("For:","Untuk:")} {w}</p>{featimg(tag)}</div>')
 FEATS=[
 feat('01','Review slide by slide','Review per slide',
  'Designers send each slide from PowerPoint the moment it is finished. The DM sees it on the Dashboard right away and can review it while the rest of the deck is still being made. No waiting for a full deck, no exporting, no sharing files by hand. Every update is a new version (v1, v2…), so the DM can look back at what came before.',
@@ -385,7 +394,7 @@ ul([('A Dashboard for everyone: designers see their workload, their team and who
 
 S.append(section('releases','Release notes','Catatan rilis',
 table([('Version','Versi'),('What changed','Yang berubah')],[
-['Docs',('New section “Features”: what Slideshot does, one heading per feature (each one can be linked).','Bagian baru “Fitur”: apa yang dilakukan Slideshot, satu judul per fitur (masing-masing bisa ditautkan).')],
+['Docs',('New section “Features”: what Slideshot does, one heading per feature (each one can be linked), with a screenshot of each.','Bagian baru “Fitur”: apa yang dilakukan Slideshot, satu judul per fitur (masing-masing bisa ditautkan), dengan screenshot masing-masing.')],
 ['Dashboard',('Slides that aren’t 16:9 (4:3, A4, portrait…) are shown whole on the order cards and in the review strip, on a light grey box, instead of being cropped.','Slide yang bukan 16:9 (4:3, A4, portrait…) ditampilkan utuh di kartu order dan di strip review, di atas kotak abu-abu muda, tidak lagi dipotong.')],
 ['v2.69',('The slide preview follows the deck’s slide size (4:3, A4, portrait…) instead of cropping it to 16:9. Portrait slides are shown as tall as the panel is wide, centred.','Preview slide mengikuti ukuran slide deck (4:3, A4, portrait…) dan tidak lagi dipotong jadi 16:9. Slide portrait ditampilkan setinggi lebar panel, di tengah.')],
 ['v2.68',('The slide position popup uses the new Builder DS menu shadow (Shadow/m).','Popup posisi slide memakai bayangan menu Builder DS yang baru (Shadow/m).')],

@@ -7,7 +7,8 @@
     "dev": "node dev/serve.mjs",
     "check": "node dev/check-syntax.mjs",
     "shot": "node dev/shot.mjs",
-    "docs": "python3 docs/gen/gen.py"
+    "docs": "python3 docs/gen/gen.py",
+    "docs:shots": "node dev/feature-shots.mjs"
   },
   "devDependencies": {
     "playwright": "^1.48.0"

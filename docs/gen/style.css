@@ -202,3 +202,8 @@ details[open] summary::after{content:"–"}
 .feat-who{margin-top:-4px;font-size:14px;color:var(--muted)}
 .toc a.sub{padding:4px 12px 4px 24px;font-size:13.5px}
 @media (max-width:900px){.toc a.sub{display:none}}
+.feat-img{margin:12px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--soft);line-height:0}
+.feat-img img{display:block;width:100%;height:auto}
+.feat-img.panel{max-width:320px}
+.feat-img.card{max-width:294px}
+.feat-img.wide{max-width:100%}

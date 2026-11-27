@@ -34,7 +34,7 @@ if(st==='waiting'||st==='update') db.slide_shots.push({id:'s1',file_key:'fk-1234
 }}
 // Drive (phase 3): ?drive=fail makes the upload fail; ?delivery=1 = a compiled file opened again (needs dm=1)
 {const dm=qs.get('drive'),files={};
- if(qs.get('delivery')){ids.splice(3);settings['slideshot.delivery']=JSON.stringify({order:'45236',stage:'First Draft',name:'Kingfish Group IS',link:'https://drive.google.com/file/d/mock1/view'});settings['slideqa.orderSet']='';db.deliveries.push({order_key:'45236',stage:'First Draft',name:'Kingfish Group IS',link:'https://drive.google.com/file/d/mock1/view',uploaded_at:iso(60)});}
+ if(qs.get('delivery')){ids.splice(3);settings['slideshot.delivery']=JSON.stringify({order:'45236',stage:'First Draft',name:'Northwind Pitch',link:'https://drive.google.com/file/d/mock1/view'});settings['slideqa.orderSet']='';db.deliveries.push({order_key:'45236',stage:'First Draft',name:'Northwind Pitch',link:'https://drive.google.com/file/d/mock1/view',uploaded_at:iso(60)});}
  window.__readFile=(onPct)=>new Promise(ok=>{let i=0;const iv=setInterval(()=>{onPct(++i/4);if(i===4){clearInterval(iv);ok(new Blob([new Uint8Array(3*1048576)]))}},120)});
  window.__driveCall=async(action,b)=>{await new Promise(r=>setTimeout(r,150));
   if(action==='start'){const fn=b.order+'_'+b.name+'_'+b.stage+'.pptx',k=b.order+'/'+b.stage;const rep=!!files[k]&&files[k].fn===fn;files[k]=files[k]&&rep?files[k]:{id:'mock'+Math.random().toString(36).slice(2,8),fn};return{uploadUrl:'mock:'+k,fileName:fn,path:k+'/'+fn,replacing:rep}}
