@@ -501,8 +501,8 @@
   .bd-sort select { border: 0; background: transparent; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; cursor: pointer; padding-right: 4px; }
   .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }   /* 260: room for the three slides on hover */
   /* Order card (Figma 1009:16406, States=Default / Hover). Hover reveals slides 2 and 3 behind the cover with a small bounce */
-  .bd-card { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; padding: 16px; background: linear-gradient(144deg, #F7F9FC 13.9%, #FFFFFF 47.7%); border: 1px solid #DDE4EE; border-radius: 12px; cursor: pointer; outline: none; transition: box-shadow .15s ease; }
-  .bd-card:hover, .bd-card:focus-within { box-shadow: var(--sh-s); }   /* Hover: Shadow/s. Background (all states): diagonal from elevation/secondary at the top left to white at ~40% (Figma stops 0 / 0.4), so white slides stand out */
+  .bd-card { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; padding: 16px; background: linear-gradient(144deg, #F7F9FC 13.9%, #FFFFFF 47.7%); border: 1px solid #DDE4EE; border-radius: 12px; box-shadow: var(--sh-xxs); cursor: pointer; outline: none; transition: box-shadow .15s ease; }
+  .bd-card:hover, .bd-card:focus-within { box-shadow: var(--sh-s); }   /* Rest: Shadow/xxs; hover: Shadow/s. Background (all states): diagonal from elevation/secondary at the top left to white at ~40% (Figma stops 0 / 0.4), so white slides stand out */
   .bd-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .bd-fan { position: relative; flex: none; width: 127px; height: 72px; isolation: isolate; }
   .bd-fan .sl { position: absolute; left: 0; top: 0; width: 127px; height: 72px; border-radius: 6px; overflow: hidden; background: #EEF2F8; box-shadow: none;
@@ -517,6 +517,7 @@
   .bd-card:is(:hover, :focus-within) .bd-fan .sl { box-shadow: 0 1.861px 3.722px rgba(18,18,23,.05); }
   .bd-card:is(:hover, :focus-within) .bd-fan .s0,
   .bd-card:is(:hover, :focus-within) .bd-fan .s1 { box-shadow: 0 1.861px 3.722px rgba(18,18,23,.05), var(--sh-s); }
+  .bd-card:is(:hover, :focus-within) .bd-fan .s2 { box-shadow: 0 7.444px 7.444px -3.722px rgba(163,173,194,.08), 0 3.722px 7.444px -3.722px rgba(163,173,194,.12); }   /* Figma: Shadow/xs scaled with the thumbnail */
   .bd-card:is(:hover, :focus-within) .bd-fan .sl.nsy { box-shadow: none; }   /* the empty illustration never gets a shadow */
   .bd-card:is(:hover, :focus-within) .bd-fan .s1 { transform: translateX(53px); transition: transform .45s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
   .bd-card:is(:hover, :focus-within) .bd-fan .s2 { transform: translateX(106px); transition: transform .45s cubic-bezier(.34,1.56,.64,1) .05s, box-shadow .2s ease; }
@@ -822,8 +823,8 @@
   .bd-new span { padding: 0 4px; }
   .bd-new:hover { background: #132D70; }
 
-  /* Board body: 40px sides, as in Figma 483:18468 / 465:14440 (content 1200 wide at 1280) */
-  .bd-body { padding: 32px 40px; max-width: 1360px; }
+  /* Board body: 86px sides at 1280 (Figma 156:8287, content 1108 wide, cards 262), less on small screens */
+  .bd-body { padding: 32px clamp(24px, 6.72vw, 86px); max-width: 1440px; }
   /* ===== Distribution (Figma 465:14440, component "Load distribution" 483:16733) ===== */
   .dd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 20px; align-items: start; }
   .dd-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 12px; background: #EEF2F8; }
