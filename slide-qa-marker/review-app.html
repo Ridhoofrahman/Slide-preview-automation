@@ -501,8 +501,8 @@
   .bd-sort select { border: 0; background: transparent; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 400; color: #1A1F2E; cursor: pointer; padding-right: 4px; }
   .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }   /* 260: room for the three slides on hover */
   /* Order card (Figma 1009:16406, States=Default / Hover). Hover reveals slides 2 and 3 behind the cover with a small bounce */
-  .bd-card { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; padding: 16px; background: linear-gradient(144deg, #F7F9FC 13.9%, #FFFFFF 47.7%); border: 1px solid #DDE4EE; border-radius: 12px; box-shadow: var(--sh-xxs); cursor: pointer; outline: none; transition: box-shadow .15s ease; }
-  .bd-card:hover, .bd-card:focus-within { box-shadow: var(--sh-s); }   /* Rest: Shadow/xxs; hover: Shadow/s. Background (all states): diagonal from elevation/secondary at the top left to white at ~40% (Figma stops 0 / 0.4), so white slides stand out */
+  .bd-card { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; padding: 16px; background: linear-gradient(144deg, #F7F9FC 13.9%, #FFFFFF 47.7%); border: 1px solid #DDE4EE; border-radius: 12px; cursor: pointer; outline: none; transition: box-shadow .15s ease; }
+  .bd-card:hover, .bd-card:focus-within { box-shadow: var(--sh-m); }   /* Rest: no shadow; hover: Shadow/m (Figma 156:8287). Background (all states): diagonal from elevation/secondary at the top left to white at ~40% (Figma stops 0 / 0.4), so white slides stand out */
   .bd-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .bd-fan { position: relative; flex: none; width: 127px; height: 72px; isolation: isolate; }
   .bd-fan .sl { position: absolute; left: 0; top: 0; width: 127px; height: 72px; border-radius: 6px; overflow: hidden; background: #EEF2F8; box-shadow: none;
