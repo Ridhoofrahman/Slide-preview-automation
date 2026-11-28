@@ -528,6 +528,7 @@
   .bd-stat.rev::before { background: #E09600; }   /* icon/warning */
   .bd-stat.tt::before { background: #7D4FE0; }    /* icon/information */
   .bd-stat.int::before { background: #3B74F5; }   /* icon/brand */
+  .bd-stat.smp::before { background: #8F98AD; }   /* icon/subtle: Sample Draft (not in Figma yet) */
   .bd-info { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
   .bd-title { display: flex; align-items: center; gap: 4px; min-width: 0; }
   .bd-title h3 { flex: 1; min-width: 0; margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: #1A1F2E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -861,11 +862,11 @@
   .dd-rows .dd-tr.go:focus-visible { outline: 2px solid #3D66F5; outline-offset: -2px; }
   .c-order { gap: 8px; }
   .dd-order { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .dd-note { flex: none; width: 16px; height: 16px; padding: 0; border: 0; background: none; color: #7D4FE0; display: grid; place-items: center; cursor: default; position: relative; }
+  .dd-note { flex: none; width: 16px; height: 16px; padding: 0; border: 0; background: none; color: #E09600; display: grid; place-items: center; cursor: default; position: relative; }
   .dd-note svg { width: 16px; height: 16px; display: block; }
   .dd-note:focus-visible { outline: 2px solid #3D66F5; outline-offset: 1px; border-radius: 2px; }
   /* Note popover (Figma 1086:25201): opens from the icon's bottom-right, the corner nearest the icon is sharp */
-  .dd-pop { position: fixed; z-index: 60; width: 302px; box-sizing: border-box; padding: 10px; border: 1px solid #BDA6EE; border-radius: 2px 8px 8px 8px; background: #F0EBFC; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+  .dd-pop { position: fixed; z-index: 60; width: 302px; box-sizing: border-box; padding: 10px; border: 1px solid #FFCF52; border-radius: 2px 8px 8px 8px; background: #FFF9E6; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
   .dd-pop[hidden] { display: none; }
   .dd-pop .h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: #1A1F2E; }
   .dd-pop .h .bd-av, .dd-pop .h img, .dd-pop .h .ini { width: 24px; height: 24px; box-sizing: border-box; border: 1px solid #DDE4EE; border-radius: 999px; object-fit: cover; }
@@ -877,6 +878,15 @@
   .dd-due .dot::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: #C2CCDB; }
   .dd-due.soon { color: #AD7300; }
   .dd-due.late { color: #D62020; }
+  .dd-due .day { color: inherit; }
+  /* Distribution day: calendar + date (Figma 1086:23348), with previous / next day buttons (not in Figma yet) */
+  .dd-day { display: flex; align-items: center; gap: 8px; }
+  .dd-day .bd-today { color: #6A7389; min-width: 212px; }
+  .dd-day .bd-today svg { width: 20px; height: 20px; }
+  .dd-day .rv-ibtn:disabled { opacity: .4; cursor: default; }
+  .dd-day .dd-todaybtn { height: 32px; padding: 0 12px; border: 1px solid #DDE4EE; border-radius: 8px; background: #FFFFFF; box-shadow: var(--sh-xs); font: inherit; font-size: 14px; line-height: 20px; font-weight: 500; color: #454C63; cursor: pointer; }
+  .dd-day .dd-todaybtn:hover { background: #F7F9FC; }
+  .dd-day .dd-todaybtn:focus-visible { outline: 2px solid #3D66F5; outline-offset: 2px; }
   .dd-chip { box-sizing: border-box; height: 20px; min-width: 20px; padding: 2px; border: 1px solid #DDE4EE; border-radius: 4px; background: #FFFFFF; box-shadow: 0 1px .5px rgba(106,115,137,.1); font-size: 12px; line-height: 16px; font-weight: 500; color: #454C63; text-align: center; white-space: nowrap; }
   .dd-appr.ok { color: #0C7F49; }
   .dd-appr svg { width: 16px; height: 16px; flex: none; }
@@ -1441,7 +1451,7 @@ function visibleProjects() {
   return Object.values(S.projects)
     .sort((a, b) => (b.waiting > 0) - (a.waiting > 0) || b.lastAt.localeCompare(a.lastAt));
 }
-const BOARD = { sort: "waiting", view: "orders", designer: "all" };
+const BOARD = { sort: "waiting", view: "orders", designer: "all", day: 0 };   // day: Distribution page, days from today
 try { BOARD.sort = localStorage.getItem("qa.sort") || "waiting"; BOARD.view = localStorage.getItem("qa.view.board") === "distribution" ? "distribution" : "orders"; } catch (e) {}
 const SORTS = { waiting: "Longest waiting", most: "Most waiting", recent: "Recently updated", name: "Name" };
 const CLOCK = '<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10.2 5.99995C10.2 3.67495 8.32495 1.79995 5.99995 1.79995C3.67495 1.79995 1.79995 3.67495 1.79995 5.99995C1.79995 8.32495 3.67495 10.2 5.99995 10.2C8.32495 10.2 10.2 8.32495 10.2 5.99995ZM1.19995 5.99995C1.19995 3.3562 3.3562 1.19995 5.99995 1.19995C8.6437 1.19995 10.8 3.3562 10.8 5.99995C10.8 8.6437 8.6437 10.8 5.99995 10.8C3.3562 10.8 1.19995 8.6437 1.19995 5.99995ZM5.69995 3.29995C5.69995 3.1312 5.8312 2.99995 5.99995 2.99995C6.1687 2.99995 6.29995 3.1312 6.29995 3.29995V5.8312L7.9687 6.9562C8.09995 7.04995 8.13745 7.23745 8.0437 7.3687C7.94995 7.49995 7.7812 7.53745 7.6312 7.4437L5.8312 6.2437C5.7562 6.18745 5.69995 6.0937 5.69995 5.99995V3.29995Z" fill="currentColor"/></svg>';
@@ -1523,15 +1533,14 @@ function cardMenu(p, anchor) {
 // Builder DS Icon/regular/ellipsis-vertical (16px, icon/neutral)
 const ELLIPSIS_V = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path transform="translate(7.0857 1.6)" d="M0.914286 10.9714C1.42857 10.9714 1.82857 11.3714 1.82857 11.8857C1.82857 12.4 1.42857 12.8 0.914286 12.8C0.4 12.8 0 12.4 0 11.8857C0 11.3714 0.4 10.9714 0.914286 10.9714ZM0.914286 5.48571C1.42857 5.48571 1.82857 5.88571 1.82857 6.4C1.82857 6.91429 1.42857 7.31429 0.914286 7.31429C0.4 7.31429 0 6.91429 0 6.4C0 5.88571 0.4 5.48571 0.914286 5.48571ZM0 0.914286C0 0.4 0.4 0 0.914286 0C1.42857 0 1.82857 0.4 1.82857 0.914286C1.82857 1.42857 1.42857 1.82857 0.914286 1.82857C0.4 1.82857 0 1.42857 0 0.914286Z" fill="#5C6480"/></svg>';
 // Stage of an order: FIRST DRAFT until a final file is on Drive. After an upload, the order stays on that stage until
-// someone sends slides again; then it is the next revision (First Draft → Revision 1, Revision 2 → Revision 3).
+// someone sends slides again; then it is the next stage (Sample Draft → First Draft → Revision 1 → Revision 2…).
 function orderStage(p) {
   const set = orderMeta((S.assignments || {})[p.key]).stage;   // the DM's stage (Assign order dialog) wins
   if (set) return set;
   const d = finalFile(p);
   if (!d) return "First Draft";
-  const n = d.stage === "First Draft" ? 0 : parseInt(String(d.stage).replace(/\D/g, ""), 10) || 0;
   const after = p.slides.some((x) => (x.created_at || "") > (d.uploaded_at || "~"));
-  return after ? "Revision " + (n + 1) : d.stage;
+  return after ? STAGES[Math.min(STAGES.length - 1, stageNum(d.stage) + 1)] || d.stage : d.stage;
 }
 // The order's numbers for the card: slides expected (distribution and sent, normal slides only), sent, approved
 function orderCounts(p) {
@@ -1573,7 +1582,7 @@ function orderCard(p) {
   if (!p.slides.length) { c.classList.add("empty"); fan.classList.add("empty"); const n = el("span", "sl s0 nsy"); const im = new Image(); im.alt = ""; im.src = "assets/order-empty.svg"; im.width = 135; im.height = 72; n.append(im); fan.append(n); }   // nothing sent yet
   c.append(fan);
   const stats = el("div", "bd-stats"), stage = orderStage(p);
-  stats.append(el("span", "bd-stat" + (stage === "First Draft" ? "" : " rev"), stage.toUpperCase()));
+  stats.append(stageChip(stage));
   if (orderMeta((S.assignments || {})[p.key]).internal) stats.append(el("span", "bd-stat int", "INTERNAL"));
   if (p.teams && p.teams.size > 1) { const t = el("span", "bd-stat tt", "TAG TEAM"); t.title = [...p.teams].join(" + "); stats.append(t); }
   c.append(stats);
@@ -1658,9 +1667,9 @@ function boardTabs() {
   });
   return t;
 }
-function todayLine() {
+function todayLine(d) {
   const p = el("p", "bd-today"); p.innerHTML = ICONS.calday;
-  const d = new Date(); p.append(document.createTextNode(d.toLocaleDateString("en-GB", { weekday: "long" }) + ", " + d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })));
+  d = d || new Date(); p.append(document.createTextNode(d.toLocaleDateString("en-GB", { weekday: "long" }) + ", " + d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })));
   return p;
 }
 function newOrderBtn() { const b = el("button", "bd-new"); b.type = "button"; b.innerHTML = ICONS.plus; b.append(el("span", "", "Assign order")); b.onclick = () => openAssign(null); return b; }
@@ -1686,6 +1695,21 @@ function statusByNum(p) {
   (p ? p.slides : []).filter((x) => !x.alternative_of).forEach((x) => { const prev = by[x.slide_number]; by[x.slide_number] = prev === "approved" ? prev : x.status; });
   return by;
 }
+// Distribution day (Uda, 2026-11-28): each page shows the orders whose deadline falls on that day; arrows move a day
+// back (history) or forward (orders assigned for later). Today also keeps unfinished orders whose deadline has passed.
+const CHEV_L = '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M13.7976 16.4169C14.0673 16.6865 14.0673 17.1236 13.7976 17.3933C13.528 17.6629 13.0909 17.6629 12.8212 17.3933L6.40438 10.9764C5.86513 10.4371 5.86513 9.56291 6.40438 9.02361L12.8212 2.60678C13.0909 2.33712 13.528 2.33712 13.7976 2.60678C14.0673 2.87644 14.0673 3.31354 13.7976 3.58319L7.3808 10L13.7976 16.4169Z" fill="#5C6480"/></svg>';
+const CHEV_R = '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6.20225 16.4168C5.93259 16.6865 5.93259 17.1236 6.20225 17.3932C6.4719 17.6629 6.909 17.6629 7.17866 17.3932L13.5955 10.9764C14.1347 10.4371 14.1347 9.56289 13.5955 9.02358L7.17866 2.60675C6.909 2.3371 6.4719 2.3371 6.20225 2.60675C5.93259 2.87641 5.93259 3.31351 6.20225 3.58317L12.6191 10L6.20225 16.4168Z" fill="#5C6480"/></svg>';
+function viewDay() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + BOARD.day); return d; }
+function dayNav() {
+  const w = el("div", "dd-day"), go = (n) => { BOARD.day = n; hideNotePop(); renderBoard(); };
+  const label = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }); };
+  if (BOARD.day !== 0) { const t = el("button", "dd-todaybtn", "Today"); t.type = "button"; t.onclick = () => go(0); w.append(t); }
+  const prev = el("button", "rv-ibtn"); prev.type = "button"; prev.innerHTML = CHEV_L; prev.setAttribute("aria-label", "Previous day: " + label(BOARD.day - 1)); prev.title = "Previous day"; prev.onclick = () => go(BOARD.day - 1);
+  const next = el("button", "rv-ibtn"); next.type = "button"; next.innerHTML = CHEV_R; next.setAttribute("aria-label", "Next day: " + label(BOARD.day + 1)); next.title = "Next day"; next.onclick = () => go(BOARD.day + 1);
+  const day = todayLine(viewDay()); day.setAttribute("aria-live", "polite");
+  w.append(prev, day, next);
+  return w;
+}
 function renderDistribution(c) {
   const head = el("div", "bd-head"); const hl = el("div", "bd-headl"); hl.append(el("h2", "", "Order distributions"));
   const people = teamDesigners();
@@ -1694,7 +1718,7 @@ function renderDistribution(c) {
   if (BOARD.designer !== "all" && !people.some((p) => p.user_id === BOARD.designer)) BOARD.designer = "all";
   sel.value = BOARD.designer;
   sel.onchange = () => { BOARD.designer = sel.value; renderBoard(); };
-  const right = el("div", "bd-headtools"); right.append(sel, todayLine()); head.append(hl, right); c.append(head);
+  const right = el("div", "bd-headtools"); right.append(sel, dayNav()); head.append(hl, right); c.append(head);
   const grid = el("div", "dd-grid");
   const list = BOARD.designer === "all" ? people : people.filter((p) => p.user_id === BOARD.designer);
   if (!list.length) { c.append(el("p", "dd-empty", S.myTeam ? "No designers in " + S.myTeam + " yet." : "Choose your team to see its designers.")); return; }
@@ -1704,7 +1728,10 @@ function renderDistribution(c) {
 // Slide treatments (Assign order dialog, Distribution table) and their points per slide (Uda, 2026-11-27)
 const TREATS = [["fu", "FU", "Fix-up"], ["rd", "RD", "Redesign"], ["rw", "RW", "Redraw"]];
 const TREAT_POINTS = { fu: 1, rd: 4, rw: 8 };
-const STAGES = ["First Draft"].concat(Array.from({ length: 10 }, (_, i) => "Revision " + (i + 1)));
+// Sample Draft (Uda, 2026-11-28): the customer asks for a few sample slides before the full order; then First Draft
+const STAGES = ["Sample Draft", "First Draft"].concat(Array.from({ length: 10 }, (_, i) => "Revision " + (i + 1)));
+// Stage chip: Sample Draft grey, First Draft green, revisions yellow
+const stageChip = (st) => el("span", "bd-stat" + (/sample/i.test(st) ? " smp" : /first/i.test(st) ? "" : " rev"), String(st).toUpperCase());
 // Slides per treatment; distributions saved before the treatments existed count as Fix-up
 function treatmentsOf(a) {
   const t = a && a.treatments && typeof a.treatments === "object" ? a.treatments : null;
@@ -1720,10 +1747,10 @@ function orderMeta(rows) {
   const ds = rows.map((a) => a.deadline).filter(Boolean).sort();
   return { stage: (rows.find((a) => a.stage) || {}).stage || "", internal: rows.some((a) => a.internal), deadline: ds[0] || null };
 }
-// Stages: First Draft = 0, Revision n = n. A stage that was completed can't be chosen again:
+// Stages: Sample Draft = 0, First Draft = 1, Revision n = n + 1 (the place in STAGES). A completed stage can't be chosen again:
 // completed = a final file was uploaded for it (deliveries, latest per order), or it is the order's current
 // stage and every slide of the order is approved.
-const stageNum = (st) => (!st ? -1 : /first/i.test(st) ? 0 : parseInt(String(st).replace(/\D/g, ""), 10) || -1);
+const stageNum = (st) => (!st ? -1 : /sample/i.test(st) ? 0 : /first/i.test(st) ? 1 : (parseInt(String(st).replace(/\D/g, ""), 10) + 1) || -1);
 function completedStage(key) {
   if (!key) return -1;
   const d = (S.deliveries || {})[orderId(key)];
@@ -1738,7 +1765,7 @@ function completedStage(key) {
 function fillStages(key, current) {
   const st = $("asStage"), done = completedStage(key), keep = stageNum(current);
   st.innerHTML = ""; st.append(new Option("Select stage", ""));
-  STAGES.forEach((x) => { const n = stageNum(x), o = new Option(x, x); if (n <= done && n !== keep) { o.disabled = true; o.textContent = x + " \u00B7 completed"; } st.append(o); });
+  STAGES.forEach((x) => { const n = stageNum(x), o = new Option(x, x); if (n <= done && n !== keep) { o.disabled = true; if (n > 0 || done === 0) o.textContent = x + " \u00B7 completed"; } st.append(o); });   // a skipped Sample Draft is only greyed out
   const next = STAGES.find((x) => stageNum(x) === done + 1);
   st.value = current && STAGES.includes(current) ? current : done >= 0 && next ? next : "";
   st.classList.toggle("ph", !st.value);
@@ -1774,15 +1801,19 @@ function designerCard(d) {
   who.append(av, el("span", "dd-name", d.name)); top.append(who);
   const rows = [];
   Object.entries(S.assignments || {}).forEach(([key, list]) => list.forEach((a) => { if (a.assignee_id === d.user_id) rows.push({ key, a, meta: orderMeta(list) }); }));
-  const now = Date.now();
+  const now = Date.now(), d0 = viewDay().getTime(), d1 = d0 + 864e5, today = BOARD.day === 0, t0 = new Date().setHours(0, 0, 0, 0);
   rows.forEach((r) => {
     const st = statusByNum(S.projects[r.key]); r.done = r.a.slides.filter((n) => st[n] === "approved").length;
     r.complete = r.a.slides.length > 0 && r.done >= r.a.slides.length;
     const dl = r.a.deadline || r.meta.deadline;
     r.t = dl ? new Date(dl).getTime() : Infinity;
     r.late = !r.complete && r.t < now;
+    // Older days still waiting show on today's page with their date
+    r.carry = today && r.late && r.t < t0;
   });
-  // Assigned points: slides × TREAT_POINTS over every order listed on the card (finished ones too)
+  // This day's orders: deadline on the day; today also gets unfinished overdue orders and orders without a deadline
+  rows.splice(0, rows.length, ...rows.filter((r) => (r.t >= d0 && r.t < d1) || r.carry || (today && r.t === Infinity)));
+  // Assigned points: slides × TREAT_POINTS over the orders of this day (finished ones too)
   const pts = rows.reduce((s, r) => s + pointsOf(r.a), 0);
   const pw = el("div", "dd-pts"); pw.append(el("span", "", "Assigned points"), el("b", "", String(pts))); top.append(pw);
   card.append(top);
@@ -1794,7 +1825,7 @@ function designerCard(d) {
   const thr = el("span", "c-tr"); TREATS.forEach(([, , label]) => thr.append(el("span", "", label))); th.append(thr, el("span", "c-appr", "Approved slides"));
   table.append(th);
   const body = el("div", "dd-rows");
-  if (!rows.length) body.append(el("p", "dd-empty", "No orders assigned."));
+  if (!rows.length) body.append(el("p", "dd-empty", today ? "No orders for today." : "No orders on this day."));
   rows.forEach((r) => {
     const row = el("div", "dd-tr go"); row.tabIndex = 0; row.setAttribute("role", "link");
     const p = S.projects[r.key]; const name = p ? p.name : r.a.order_name;
@@ -1809,7 +1840,7 @@ function designerCard(d) {
     }
     row.append(oc);
     const tc = el("span", "c-type"), stage = r.meta.stage || (p ? orderStage(p) : "First Draft");
-    tc.append(el("span", "bd-stat" + (stage === "First Draft" ? "" : " rev"), stage.toUpperCase()));
+    tc.append(stageChip(stage));
     if (r.meta.internal) tc.append(el("span", "bd-stat int", "INTERNAL"));
     row.append(tc);
     const due = el("span", "c-due dd-due");
@@ -1817,9 +1848,10 @@ function designerCard(d) {
     else {
       const dt = new Date(r.t), left = r.t - now;
       if (!r.complete) { due.classList.toggle("late", left < 0); due.classList.toggle("soon", left >= 0 && left < 2 * 36e5); }
+      // Time only (Figma 1086:23318): the page is the day. Overdue orders carried over from an earlier day add their date.
       const a1 = el("span", "p"); a1.innerHTML = CLOCK20; a1.append(document.createTextNode(hhmm(dt)));
-      const a2 = el("span", "p"); a2.innerHTML = ICONS.calday; a2.append(document.createTextNode(shortDate(dt)));
-      due.append(a1, el("span", "dot"), a2);
+      due.append(a1);
+      if (r.carry) due.append(el("span", "dot"), el("span", "day", shortDate(dt)));
       due.title = (r.complete ? "Deadline " : left < 0 ? "Overdue: " : "Due ") + dt.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     }
     row.append(due);

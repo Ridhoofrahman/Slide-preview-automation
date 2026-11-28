@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
       case "start": {
         const order = String(b.order || ""), stage = String(b.stage || ""), name = String(b.name || "").trim(), size = Number(b.size || 0);
         if (!/^\d{3,9}$/.test(order)) return reply({ error: "Order number should be digits only." }, 400);
-        if (!/^(First Draft|Revision \d{1,2})$/.test(stage)) return reply({ error: "Stage should be First Draft or Revision N." }, 400);
+        if (!/^(Sample Draft|First Draft|Revision \d{1,2})$/.test(stage)) return reply({ error: "Stage should be Sample Draft, First Draft or Revision N." }, 400);
         if (!name || name.length > 120 || /[\\/:*?"<>|]/.test(name)) return reply({ error: "File name can't be empty or contain \\ / : * ? \" < > |" }, 400);
         if (!(size > 0)) return reply({ error: "Missing file size." }, 400);
         const fileName = `${order}_${name}_${stage}.pptx`;
@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
         const link = `https://drive.google.com/file/d/${id}/view`;
         // Record it (one row per order + stage; uploading the same stage again updates the row). The test page sends no order.
         const order = String(b.order || ""), stage = String(b.stage || ""), name = String(b.name || "").trim();
-        if (/^\d{3,9}$/.test(order) && /^(First Draft|Revision \d{1,2})$/.test(stage) && name) {
+        if (/^\d{3,9}$/.test(order) && /^(Sample Draft|First Draft|Revision \d{1,2})$/.test(stage) && name) {
           const meta = (u.user.user_metadata || {}) as Record<string, unknown>;
           const { error } = await admin.from("deliveries").upsert({ order_key: order, stage, name, file_name: f.name, file_id: id, link,
             size_bytes: Number(f.size) || null, uploaded_by: u.user.id, uploaded_by_name: String(meta.name || u.user.email || ""), uploaded_at: new Date().toISOString() },

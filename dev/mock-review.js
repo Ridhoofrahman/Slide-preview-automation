@@ -40,7 +40,10 @@ if(new URLSearchParams(location.search).get('dist')){const h=(x)=>new Date(Date.
  const dl=h(26);
  X('Order #351164',a=>({stage:'Revision 1',deadline:dl,treatments:a.assignee_id==='uBudi'?{fu:[1,2,3,4],rd:[5,7],rw:[9]}:{fu:a.slides,rd:[],rw:[]},note:a.assignee_id==='uBudi'?'Please make sure you use typeface no more than 10px and use the correct company background as seen on the CVI':null,note_by:'dm1'}));
  X('Order #351265',a=>({stage:'First Draft',internal:true,treatments:{fu:[],rd:a.slides,rw:[]}}));
- X('Order #999000',a=>({stage:'First Draft',treatments:{fu:[1],rd:[2],rw:[3]},note:'Redraw the map on slide 3 as vector.',note_by:'dm1'}));}
+ X('Order #999000',a=>({stage:'First Draft',treatments:{fu:[1],rd:[2],rw:[3]},note:'Redraw the map on slide 3 as vector.',note_by:'dm1'}));
+ // a sample order two days ahead, and Thomas's order from yesterday (still waiting: shows on today with its date)
+ db.slide_assignments.push(Object.assign(A('Order #777001','uBudi','Budi','Cascade',[1,2,3],h(50)),{stage:'Sample Draft',treatments:{fu:[1,2],rd:[3],rw:[]}}));
+ X('Order #351265',a=>({deadline:h(-26)}));}
 if(new URLSearchParams(location.search).get('empty')){db.slide_shots=[];db.slide_assignments=[];db.project_status=[];}
 window.supabase={createClient(){return{auth:{getSession:async()=>({data:{session:OUT?null:{user}}}),signInWithOAuth:async()=>({data:{},error:null}),signOut:async()=>{},updateUser:async()=>({data:{user},error:null}),signInWithPassword:async()=>({data:{user},error:null})},from:q,
  storage:{from(){return{createSignedUrls:async(p)=>({data:p.map(x=>({path:x,signedUrl:IM[x]})),error:null}),createSignedUrl:async(x)=>({data:{signedUrl:IM[x]},error:null}),upload:async()=>({data:{},error:null}),remove:async()=>({data:{},error:null})}}},

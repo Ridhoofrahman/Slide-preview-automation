@@ -806,7 +806,7 @@
 
 <script>
 const IMAGE_WIDTH = 1600, THUMB_WIDTH = 640;
-const APP_VERSION = "2.69";
+const APP_VERSION = "2.70";
 const STATUS_LABEL = { ready: "Waiting for review", approved: "Approved", changes: "Change needed" };
 const S = { files: {}, savedFiles: {}, filesLoaded: false, noteOpen: false, notes: {}, noteFor: null, undo: null, undoTimer: null, updating: {}, justSent: {}, summaryOpen: false, sb: null, user: null, slides: [], currentId: null, latest: {}, comments: {}, canImage: false, busy: false, thumbToken: 0, channel: null, handlerAdded: false };
 const $ = (id) => document.getElementById(id);
@@ -2325,7 +2325,7 @@ async function runCompile() {
    After compiling (or when a compiled file is opened again) the DM picks the stage and the file name; the panel reads the
    whole open file (getFileAsync, 4 MB slices) and sends it to the Edge Function drive-upload's one-time upload URL.
    Drive: <order>/<stage>/<order>_<name>_<stage>.pptx, shared with everyone at 24Slides. The same stage again replaces it. */
-const STAGES = ["First Draft"].concat([...Array(10)].map((_, i) => "Revision " + (i + 1)));
+const STAGES = ["Sample Draft", "First Draft"].concat([...Array(10)].map((_, i) => "Revision " + (i + 1)));
 const DV = { order: null, busy: false, fonts: null, list: [], last: null };
 function deliverySaved() { try { const v = docStore.get("slideshot.delivery"); const o = typeof v === "string" ? (v ? JSON.parse(v) : null) : v; return o && /^\d+$/.test(String(o.order || "")) ? o : null; } catch (e) { return null; } }
 async function isDm() { try { const r = await S.sb.from("design_managers").select("user_id").eq("user_id", S.user.id).maybeSingle(); return !r.error && !!r.data; } catch (e) { return false; } }
@@ -2358,7 +2358,11 @@ async function enterDelivery(order) {
   const top = Math.max(-1, ...list.map((d) => STAGES.indexOf(d.stage)));
   const sel = $("dvStage"); sel.innerHTML = "";
   STAGES.forEach((st) => { const o = document.createElement("option"); o.value = st; o.textContent = st + (dvUploaded(st) ? " · uploaded" : ""); sel.append(o); });
-  sel.value = saved.stage || STAGES[Math.min(STAGES.length - 1, top + 1)];   // this file's stage, or the next one for the order
+  // The DM's stage for the order (Assign order dialog), when it isn't uploaded yet
+  let dm = "";
+  try { const r = await S.sb.from("slide_assignments").select("stage").in("order_key", [order, "order #" + order]).not("stage", "is", null).limit(1); if (!r.error && r.data && r.data[0]) dm = r.data[0].stage || ""; } catch (e) {}
+  // This file's stage, else the DM's stage, else the next one after the order's latest upload (First Draft for a new order)
+  sel.value = saved.stage || (STAGES.indexOf(dm) > top ? dm : top < 0 ? "First Draft" : STAGES[Math.min(STAGES.length - 1, top + 1)]);
   $("dvName").value = saved.name || (list[0] && list[0].name) || "";
   dvNameError("");
   sel.onchange = () => { dvBtnLabel(); dvPreview(); };
