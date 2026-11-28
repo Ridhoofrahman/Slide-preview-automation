@@ -36,6 +36,8 @@ No style exists yet for 16 px (`font-size/l` + `line-height/l` = 16/24) or 13 px
 - `line-height`: xs 12, s 16, m 20, l 24, xl 28, xxl 32, xxxl 36, xxxxl 44
 
 ## Colour: Mapped tokens
+**Dark mode:** the Mapped collection has two modes, **Light** and **Dark** (read 2026-11-27). Dark values of the tokens used so far: elevation/default and elevation/secondary `#1A1F2E`, elevation/sunken `#0F121A`, background/neutral/default `#2F3547`, text/title `#EEF2F8`, text/body `#F7F9FC`, text/subtle `#A3ADC2`, text/color/brand `#6D9BFF`, outline/soft/neutral `#454C63`, outline/soft/brand `#1C43A5`, divider/default `#5C6480`, background/brand/default `#2557D4` (same), background/accent/soft/* brand `#132D70` · warning `#734D00` · success `#083F26` · danger `#7A1414` · information `#331C6B` · neutral `#454C63`, outline/soft/* warning `#AD7300` · success `#0A6139` · danger `#D62020` · information `#6035C4`, text/color/* warning `#FFCF52` · success `#34C47B` · danger `#FA7D7D` · information `#9D7CE8`, icons neutral `#C2CCDB` · brand `#6D9BFF` · success `#34C47B` · danger `#FA7D7D` · warning `#FFCF52` · information `#9D7CE8`. Used by the docs page (`docs/gen/style.css`); the add-in and dashboard have no dark mode.
+
 ### Text
 Palette read from the library on 2026-11-25 (Mapped collection; outline tokens are now `outline/soft/*`, plus `outline/strong/*` and `background/accent/soft|strong/*`). The add-in uses it since v2.55; the dashboard still has the previous values.
 

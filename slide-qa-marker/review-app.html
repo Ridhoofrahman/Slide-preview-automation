@@ -1782,8 +1782,8 @@ function designerCard(d) {
     r.t = dl ? new Date(dl).getTime() : Infinity;
     r.late = !r.complete && r.t < now;
   });
-  // Assigned points: slides × TREAT_POINTS over the orders still in progress
-  const pts = rows.filter((r) => !r.complete).reduce((s, r) => s + pointsOf(r.a), 0);
+  // Assigned points: slides × TREAT_POINTS over every order listed on the card (finished ones too)
+  const pts = rows.reduce((s, r) => s + pointsOf(r.a), 0);
   const pw = el("div", "dd-pts"); pw.append(el("span", "", "Assigned points"), el("b", "", String(pts))); top.append(pw);
   card.append(top);
   // Overdue first, then the nearest deadline; finished orders last
